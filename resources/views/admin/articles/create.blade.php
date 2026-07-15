@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.articles.store') }}" class="bg-white shadow rounded p-6 max-w-2xl">
+    <form method="POST" action="{{ route('admin.articles.store') }}" enctype="multipart/form-data" class="bg-white shadow rounded p-6 max-w-2xl">
         @csrf
 
         <div class="mb-4">
@@ -29,6 +29,11 @@
                 <input type="checkbox" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}>
                 Publier immédiatement
             </label>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium mb-1">Image</label>
+            <input type="file" name="image" class="w-full border rounded p-2">
         </div>
 
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Créer l'article</button>
