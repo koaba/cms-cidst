@@ -1,22 +1,22 @@
-# Environnement local — laravel-academy
+# Environnement local ï¿½ laravel-academy
 
-## Spécificité importante : deux installations PHP (résolu le 15/07/2026)
+## Spï¿½cificitï¿½ importante : deux installations PHP (rï¿½solu le 15/07/2026)
 
-Cette machine avait historiquement deux PHP installés en conflit :
-- Laragon : `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\` (OFFICIEL, à utiliser)
-- Ancien : `C:\Dev\Tools\php\` (SUPPRIMÉ du PATH système, ne plus réinstaller)
+Cette machine avait historiquement deux PHP installï¿½s en conflit :
+- Laragon : `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\` (OFFICIEL, ï¿½ utiliser)
+- Ancien : `C:\Dev\Tools\php\` (SUPPRIMï¿½ du PATH systï¿½me, ne plus rï¿½installer)
 
-Le PATH système a été corrigé pour placer Laragon en première position.
+Le PATH systï¿½me a ï¿½tï¿½ corrigï¿½ pour placer Laragon en premiï¿½re position.
 
-Vérifier avec `where.exe php` que seul celui de Laragon apparaît.
+Vï¿½rifier avec `where.exe php` que seul celui de Laragon apparaï¿½t.
 (`where` seul ne fonctionne pas dans PowerShell, utiliser `where.exe`)
 
 ## php.ini
 
 Chemin exact : `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.ini`
 
-Extensions confirmées actives : `mysqli`, `pdo_mysql` (déjà activées par
-défaut sur l'installation Laragon, rien à configurer manuellement).
+Extensions confirmï¿½es actives : `mysqli`, `pdo_mysql` (dï¿½jï¿½ activï¿½es par
+dï¿½faut sur l'installation Laragon, rien ï¿½ configurer manuellement).
 
 ## Stack
 
@@ -27,21 +27,49 @@ défaut sur l'installation Laragon, rien à configurer manuellement).
 
 ## Terminal VS Code
 
-Le fichier `.vscode/settings.json` (versionné sur Git, forcé avec `git add -f`)
-force le terminal intégré à s'ouvrir directement dans le dossier du projet.
+Le fichier `.vscode/settings.json` (versionnï¿½ sur Git, forcï¿½ avec `git add -f`)
+force le terminal intï¿½grï¿½ ï¿½ s'ouvrir directement dans le dossier du projet.
 
-TOUJOURS 2 terminaux séparés dans VS Code (Ctrl+ù puis + pour le second) :
-- Terminal 1 "Serveur" : `php artisan serve` (n'y plus rien taper après)
+TOUJOURS 2 terminaux sï¿½parï¿½s dans VS Code (Ctrl+ï¿½ puis + pour le second) :
+- Terminal 1 "Serveur" : `php artisan serve` (n'y plus rien taper aprï¿½s)
 - Terminal 2 "Commandes" : toutes les autres commandes (git, artisan make, npm...)
 
 ## Comptes de test
 
 - admin@academy.local / password123 (Super Admin)
-- user@academy.local / password123 (sans rôle, test 403)
+- user@academy.local / password123 (sans rï¿½le, test 403)
 
 ## Cette config est LOCALE uniquement
 
-Un environnement de production correctement configuré (un seul PHP,
-php.ini standard) n'aura pas ces problèmes. Ne pas reproduire ce
-setup de double-PHP ailleurs — c'était un accident historique, pas
+Un environnement de production correctement configurï¿½ (un seul PHP,
+php.ini standard) n'aura pas ces problï¿½mes. Ne pas reproduire ce
+setup de double-PHP ailleurs ï¿½ c'ï¿½tait un accident historique, pas
 une architecture voulue.
+## PiÃ¨ge : composer dump-autoload silencieux si mauvais dossier
+
+Le 15/07/2026, un nouveau controller (Admin\PageController) restait
+introuvable ("Target class ... does not exist") malgrÃ© un fichier
+parfaitement valide (syntaxe vÃ©rifiÃ©e avec php -l).
+
+Cause rÃ©elle : composer dump-autoload avait Ã©tÃ© lancÃ© depuis le
+terminal Laragon, mais positionnÃ© dans C:\laragon\www (dossier
+PARENT), pas dans C:\laragon\www\laravel-academy. Composer Ã©chouait
+donc silencieusement Ã  trouver composer.json, et le classmap n'Ã©tait
+jamais rÃ©gÃ©nÃ©rÃ© pour le bon projet.
+
+VÃ©rification aprÃ¨s tout "Class ... does not exist" :
+1. Confirmer le dossier courant avant de lancer composer
+2. Si besoin : cd C:\laragon\www\laravel-academy
+3. Relancer : composer dump-autoload -o
+4. VÃ©rifier dans le classmap que la classe y apparaÃ®t
+
+Note complÃ©mentaire : le terminal Laragon utilise Bash/MinGW, pas
+PowerShell. Utiliser grep (pas Select-String) et des slashs / (pas
+des antislashs \) pour les chemins dans ce terminal.
+
+## PiÃ¨ge : "dubious ownership" Git dans le terminal Laragon
+
+Le terminal Laragon peut refuser les commandes git avec l'erreur
+"detected dubious ownership". Correction unique (Ã  faire une fois) :
+
+git config --global --add safe.directory C:/laragon/www/laravel-academy
