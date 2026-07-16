@@ -7,6 +7,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\SliderController;
+use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,6 +19,8 @@ Route::get('/blog/{article:slug}', [ArticleController::class, 'show'])->name('bl
 
 Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
 Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
+
+Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -32,6 +36,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index']);
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
     Route::resource('admin/pages', AdminPageController::class)->names('admin.pages');
+    Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
 });
 
 require __DIR__.'/auth.php';
