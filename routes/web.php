@@ -9,6 +9,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
+use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
 });
 
 Route::middleware(['auth', 'role:Super Admin'])->group(function () {
