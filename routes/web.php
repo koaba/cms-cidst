@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController;
+use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,10 +18,8 @@ Route::get('/', function () {
 
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
 Route::get('/blog/{article:slug}', [ArticleController::class, 'show'])->name('blog.show');
-
 Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
 Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
-
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
 
 Route::get('/dashboard', function () {
@@ -31,7 +30,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
 });
 
 Route::middleware(['auth', 'role:Super Admin'])->group(function () {
@@ -39,6 +37,8 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
     Route::resource('admin/pages', AdminPageController::class)->names('admin.pages');
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
+    Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
+    Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
 });
 
 require __DIR__.'/auth.php';
