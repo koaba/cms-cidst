@@ -73,3 +73,22 @@ Le terminal Laragon peut refuser les commandes git avec l'erreur
 "detected dubious ownership". Correction unique (à faire une fois) :
 
 git config --global --add safe.directory C:/laragon/www/laravel-academy
+
+## Piège : `migrate:rollback --step=N` annule par ordre chronologique, pas par nom
+
+Si des migrations récentes à supprimer sont mêlées chronologiquement à d'autres,
+plus récentes encore, qu'on veut garder, un `rollback --step=N` global les
+mélange toutes dans le même lot sans distinction.
+
+Méthode fiable pour nettoyer des migrations orphelines dans ce cas (vérifiée le
+21/07/2026 sur le nettoyage des migrations `hero_pattern_*`) :
+
+1. `php artisan migrate:rollback --step=1` puis `php artisan migrate:status`
+   après CHAQUE étape, un cran à la fois
+2. Si une migration à garder est annulée au passage (parce qu'elle est plus
+   récente que celles à supprimer), la réappliquer immédiatement avec
+   `php artisan migrate` avant de continuer
+3. Une fois que seules les migrations à supprimer sont `Pending`, supprimer
+   leurs fichiers `.php` du dossier `database/migrations/`
+4. Relancer `php artisan migrate` — Laravel ne réappliquera que ce qui reste
+   physiquement sur le disque, donc uniquement ce qu'on veut garder

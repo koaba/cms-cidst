@@ -69,3 +69,22 @@ Session du 16/07/2026 :
 - 📝 `X-Powered-By: PHP/8.3.30` visible dans les headers — à masquer en prod (voir ci-dessus)
 
 - Sous-menus (dropdown) pour le module Menus — actuellement liste à plat par choix, à ajouter quand le site aura plus de contenu (ajouter parent_id nullable + logique récursive)
+
+## Session du 21/07/2026
+
+- ✅ Bug bloquant résolu : ParseError Blade sur `welcome.blade.php` causé par `@php(...)`
+  avec parenthèses imbriquées (`SiteSetting::current()`) — fix passé en `@php ... @endphp`.
+  Voir commit `70133f7`.
+- ✅ Audit complet du projet pour d'autres usages de `@php(...)` avec parenthèses
+  imbriquées — aucun autre cas trouvé
+  (`findstr /S /M /C:"@php(" resources\views\*.blade.php` → 0 résultat). Rien à corriger.
+- ✅ Nettoyage des 4 migrations orphelines `hero_pattern_*` (fonctionnalité de motif de
+  fond abandonnée, remplacée par un SVG statique) : rollback ciblé + suppression des
+  fichiers de migration, sans perte de la migration `hero_eyebrow_size`. Voir méthode
+  documentée dans `ENVIRONMENT.md`.
+- ✅ Commit `70133f7` : fix ParseError + module `hero_eyebrow_size` (migration, modèle,
+  controller, vue admin) + logo dynamique dans `MainMenu`/`main-menu.blade.php`
+  (utilise désormais `SiteSetting::current()->logo_path`, avec fallback vers le logo
+  par défaut).
+- 📝 Aucun point de la checklist de mise en production ci-dessus n'a été traité cette
+  session (APP_DEBUG, HTTPS, mots de passe, etc. — toujours en attente).
