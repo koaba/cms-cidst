@@ -1,11 +1,11 @@
-<x-layout title="CIDST — Centre d'Information et de Documentation Scientifique et Technique">
+<x-layout title="CIDST - Centre d'Information et de Documentation Scientifique et Technique">
 
-    @php($settings = \App\Models\SiteSetting::current())
+    @php
+    $settings = \App\Models\SiteSetting::current();
+@endphp
 
-    {{-- HERO --}}
     <section class="relative overflow-hidden -mx-4 sm:-mx-6 px-4 sm:px-6 -mt-10 pt-10">
 
-        {{-- Motif de fond : nœuds reliés, écho discret du logo --}}
         <svg class="absolute inset-0 w-full h-full opacity-[0.04] pointer-events-none" preserveAspectRatio="none">
             <defs>
                 <pattern id="nodes" width="90" height="90" patternUnits="userSpaceOnUse">
@@ -19,7 +19,17 @@
 
         <div class="relative py-20 sm:py-28 text-center">
             @if($settings->hero_eyebrow)
-                <p class="font-mono text-xs tracking-widest text-cidst-muted uppercase mb-5">
+                @php
+                    $eyebrowSizes = [
+                        'xs' => 'text-xs',
+                        'sm' => 'text-sm',
+                        'base' => 'text-base',
+                        'lg' => 'text-lg',
+                        'xl' => 'text-xl',
+                    ];
+                    $eyebrowSizeClass = $eyebrowSizes[$settings->hero_eyebrow_size] ?? 'text-xs';
+                @endphp
+                <p class="font-mono {{ $eyebrowSizeClass }} tracking-widest text-cidst-muted uppercase mb-5">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-cidst-red mr-2 align-middle"></span>
                     {{ $settings->hero_eyebrow }}
                 </p>
@@ -53,7 +63,6 @@
         </div>
     </section>
 
-    {{-- VALEURS --}}
     <section class="py-16 border-t border-cidst-border">
         <p class="font-mono text-xs text-cidst-muted mb-8">// Notre mission</p>
 
@@ -61,19 +70,19 @@
             <div class="bg-cidst-surface rounded-lg p-6 border border-cidst-border">
                 <h3 class="font-display font-semibold text-cidst-ink mb-2">Fiable</h3>
                 <p class="text-sm text-cidst-muted leading-relaxed">
-                    Une information vérifiée, issue de sources scientifiques reconnues.
+                    Une information verifiee, issue de sources scientifiques reconnues.
                 </p>
             </div>
             <div class="bg-cidst-surface rounded-lg p-6 border border-cidst-border">
-                <h3 class="font-display font-semibold text-cidst-ink mb-2">Structurée</h3>
+                <h3 class="font-display font-semibold text-cidst-ink mb-2">Structuree</h3>
                 <p class="text-sm text-cidst-muted leading-relaxed">
-                    Une documentation organisée, facile à explorer et à retrouver.
+                    Une documentation organisee, facile a explorer et a retrouver.
                 </p>
             </div>
             <div class="bg-cidst-surface rounded-lg p-6 border border-cidst-border">
                 <h3 class="font-display font-semibold text-cidst-ink mb-2">Accessible</h3>
                 <p class="text-sm text-cidst-muted leading-relaxed">
-                    Écrite pour être comprise, au-delà du seul cercle des spécialistes.
+                    Ecrite pour etre comprise, au-dela du seul cercle des specialistes.
                 </p>
             </div>
         </div>

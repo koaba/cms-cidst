@@ -4,7 +4,11 @@
 
             {{-- Logo --}}
             <a href="/" class="flex items-center gap-3">
-                <img src="{{ asset('images/logo-cidst.png') }}" alt="CIDST" class="h-12 w-auto">
+                @if($settings->logo_path)
+                    <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo" class="h-12 w-auto">
+                @else
+                    <img src="{{ asset('images/logo-cidst.png') }}" alt="Logo" class="h-12 w-auto">
+                @endif
             </a>
 
             {{-- Menu desktop --}}
