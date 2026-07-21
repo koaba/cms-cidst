@@ -64,7 +64,10 @@ Session du 16/07/2026 :
 - ✅ Headers de sécurité HTTP ajoutés et vérifiés en conditions réelles (commit 8d16e22) :
   X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy confirmés
   présents dans les réponses HTTP
-- 📝 Encodage UTF-8 à corriger dans les messages flash de `ArticleController.php`
+- - ✅ Encodage UTF-8 vérifié le 21/07/2026 : faux positif, les fichiers sont
+  correctement encodés en UTF-8. La distorsion venait de l'affichage du terminal
+  cmd.exe (code page par défaut) et non du code — `chcp 65001` avant `findstr`
+  confirme un affichage propre. Rien à corriger dans le code.
   (caractères mal encodés : "crÃ©Ã©" au lieu de "créé") — cosmétique, non bloquant
 - 📝 `X-Powered-By: PHP/8.3.30` visible dans les headers — à masquer en prod (voir ci-dessus)
 

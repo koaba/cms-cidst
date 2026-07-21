@@ -92,3 +92,13 @@ Méthode fiable pour nettoyer des migrations orphelines dans ce cas (vérifiée 
    leurs fichiers `.php` du dossier `database/migrations/`
 4. Relancer `php artisan migrate` — Laravel ne réappliquera que ce qui reste
    physiquement sur le disque, donc uniquement ce qu'on veut garder
+   **
+   ## Astuce : affichage UTF-8 dans le terminal cmd.exe
+
+Par défaut, cmd.exe affiche les caractères accentués déformés (ex: "créé" → "cr├®├®"),
+même si les fichiers source sont correctement encodés en UTF-8. Avant de diagnostiquer
+un "problème d'encodage", toujours vérifier avec :
+
+    chcp 65001
+
+Cette commande force l'affichage UTF-8 pour la session de terminal en cours.
