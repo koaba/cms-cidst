@@ -12,7 +12,7 @@
         <a href="{{ route('admin.articles.index') }}" class="hover:underline">Articles</a>
     </div>
     <div class="flex gap-4 items-center">
-        <span>{{ auth()->user()->name }} ({{ auth()->user()->role->name }})</span>
+        <span>{{ auth()->user()->name }} ({{ auth()->user()->getRoleNames()->first() }})</span>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="underline">Déconnexion</button>

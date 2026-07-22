@@ -91,3 +91,6 @@ Session du 16/07/2026 :
   par défaut).
 - 📝 Aucun point de la checklist de mise en production ci-dessus n'a été traité cette
   session (APP_DEBUG, HTTPS, mots de passe, etc. — toujours en attente).
+
+  - [ ] Mettre à jour `guzzlehttp/guzzle` vers >=7.15.1 (4 avis de sécurité medium
+      détectés le 21/07/2026 via `composer audit`, liés aux redirections/cookies HTTP)
