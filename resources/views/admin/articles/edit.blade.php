@@ -40,7 +40,7 @@
             <input type="file" name="image" class="w-full border rounded p-2">
         </div>
 
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Enregistrer</button>
+        <x-admin.button type="submit">Enregistrer</x-admin.button>
         <a href="{{ route('admin.articles.index') }}" class="ml-2 text-gray-600">Annuler</a>
     </form>
 </x-admin.layout>

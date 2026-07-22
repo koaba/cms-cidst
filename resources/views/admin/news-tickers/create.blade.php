@@ -30,6 +30,6 @@
             <label for="is_active">Actif</label>
         </div>
 
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Créer</button>
+        <x-admin.button type="submit">Créer</x-admin.button>
     </form>
 </x-admin.layout>

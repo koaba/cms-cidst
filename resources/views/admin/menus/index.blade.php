@@ -1,9 +1,7 @@
 <x-admin.layout>
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Menus de navigation</h1>
-        <a href="{{ route('admin.menus.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded">
-            + Nouveau menu
-        </a>
+        <x-admin.button href="{{ route('admin.menus.create') }}">+ Nouveau menu</x-admin.button>
     </div>
     @if(session('success'))
         <div class="alert alert-success mb-4">{{ session('success') }}</div>

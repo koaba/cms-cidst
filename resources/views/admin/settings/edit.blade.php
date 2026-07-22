@@ -75,6 +75,6 @@
             </div>
         </div>
 
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Enregistrer</button>
+        <x-admin.button type="submit">Enregistrer</x-admin.button>
     </form>
 </x-admin.layout>
