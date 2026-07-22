@@ -5,11 +5,9 @@
             + Nouveau menu
         </a>
     </div>
-
     @if(session('success'))
         <div class="alert alert-success mb-4">{{ session('success') }}</div>
     @endif
-
     <table class="w-full border-collapse">
         <thead>
             <tr class="text-left border-b">
@@ -22,27 +20,9 @@
         </thead>
         <tbody>
             @forelse($menus as $menu)
-            <tr class="border-b">
-                <td class="p-2">{{ $menu->label }}</td>
-                <td class="p-2 text-sm text-gray-500">{{ $menu->target }}</td>
-                <td class="p-2">{{ $menu->order }}</td>
-                <td class="p-2">
-                    <span class="{{ $menu->is_active ? 'text-green-600' : 'text-gray-400' }}">
-                        {{ $menu->is_active ? 'Oui' : 'Non' }}
-                    </span>
-                </td>
-                <td class="p-2 flex gap-2">
-                    <a href="{{ route('admin.menus.edit', $menu) }}" class="text-blue-600">Modifier</a>
-                    <form action="{{ route('admin.menus.destroy', $menu) }}" method="POST"
-                          onsubmit="return confirm('Supprimer ce menu ?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600">Supprimer</button>
-                    </form>
-                </td>
-            </tr>
+                <x-menu-row :menu="$menu" :depth="0" />
             @empty
-            <tr><td colspan="5" class="p-4 text-center text-gray-500">Aucun menu</td></tr>
+                <tr><td colspan="5" class="p-4 text-center text-gray-500">Aucun menu</td></tr>
             @endforelse
         </tbody>
     </table>
