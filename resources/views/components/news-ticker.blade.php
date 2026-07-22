@@ -1,5 +1,5 @@
 @if($items->count() > 0)
-<div class="bg-red-600 text-white overflow-hidden whitespace-nowrap py-2">
+<div class="bg-cidst-red text-white overflow-hidden whitespace-nowrap py-2">
     <div class="inline-block animate-marquee">
         @foreach($items as $item)
             @if($item->link_url)
