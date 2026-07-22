@@ -29,14 +29,7 @@
                                 </svg>
                             </button>
                             <div class="absolute left-0 top-full pt-2 hidden group-hover:block">
-                                <div class="bg-cidst-surface border border-cidst-border rounded shadow-lg py-2 min-w-[180px]">
-                                    @foreach($item->children as $child)
-                                        <a href="{{ $child->resolved_url }}"
-                                           class="block px-4 py-2 text-sm text-cidst-ink hover:bg-cidst-bg">
-                                            {{ $child->label }}
-                                        </a>
-                                    @endforeach
-                                </div>
+                                @include('components.menu-dropdown-desktop', ['items' => $item->children])
                             </div>
                         </div>
                     @endif
@@ -62,14 +55,7 @@
                         <summary class="text-cidst-ink text-sm font-medium py-2 cursor-pointer">
                             {{ $item->label }}
                         </summary>
-                        <div class="pl-4 space-y-1">
-                            @foreach($item->children as $child)
-                                <a href="{{ $child->resolved_url }}"
-                                   class="block text-cidst-ink text-sm py-2 px-2 rounded hover:bg-cidst-bg">
-                                    {{ $child->label }}
-                                </a>
-                            @endforeach
-                        </div>
+                        @include('components.menu-dropdown-mobile', ['items' => $item->children])
                     </details>
                 @endif
             @endforeach
