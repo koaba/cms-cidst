@@ -36,6 +36,22 @@
             <input type="file" name="image" class="w-full border rounded p-2">
         </div>
 
+        <div class="mb-4">
+            <label class="flex items-center gap-2">
+                <input type="checkbox" id="toggle-categories" onchange="document.getElementById('categories-field').classList.toggle('hidden', !this.checked)">
+                Ajouter des catégories
+            </label>
+            <div id="categories-field" class="hidden mt-2 flex flex-wrap gap-3">
+                @foreach ($categories as $category)
+                    <label class="flex items-center gap-1">
+                        <input type="checkbox" name="categories[]" value="{{ $category->id }}"
+                               {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
+                        {{ $category->name }}
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
         <x-admin.button type="submit">Créer l'article</x-admin.button>
         <a href="{{ route('admin.articles.index') }}" class="ml-2 text-gray-600">Annuler</a>
     </form>

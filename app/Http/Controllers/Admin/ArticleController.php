@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Category;
 
 class ArticleController extends Controller
 {
@@ -24,7 +25,9 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return view('admin.articles.create');
+        $categories = Category::all();
+
+        return view('admin.articles.create', compact('categories'));
     }
 
     /**
@@ -45,7 +48,9 @@ class ArticleController extends Controller
             $validated['image'] = $request->file('image')->store('articles', 'public');
         }
 
-        Article::create($validated);
+        $article = Article::create($validated);
+
+        $article->categories()->sync($request->input('categories', []));
 
         return redirect()->route('admin.articles.index')->with('success', 'Article créé avec succès.');
     }
@@ -64,8 +69,9 @@ class ArticleController extends Controller
     public function edit(string $id)
     {
         $article = Article::findOrFail($id);
+        $categories = Category::all();
 
-        return view('admin.articles.edit', compact('article'));
+        return view('admin.articles.edit', compact('article', 'categories'));
     }
 
     /**
@@ -90,6 +96,8 @@ class ArticleController extends Controller
         }
 
         $article->update($validated);
+
+        $article->categories()->sync($request->input('categories', []));
 
         return redirect()->route('admin.articles.index')->with('success', 'Article modifié avec succès.');
     }
