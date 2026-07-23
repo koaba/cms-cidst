@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,6 +20,7 @@ Route::get('/', function () {
 
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
 Route::get('/blog/{article:slug}', [ArticleController::class, 'show'])->name('blog.show');
+Route::get('/blog/categorie/{category:slug}', [ArticleController::class, 'byCategory'])->name('blog.category');
 Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
 Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
@@ -40,6 +42,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
     Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
+    Route::resource('admin/categories', AdminCategoryController::class)->names('admin.categories');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
 });
