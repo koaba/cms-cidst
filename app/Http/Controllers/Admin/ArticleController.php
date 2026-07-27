@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Article;
+use App\Models\Media;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -36,7 +37,7 @@ class ArticleController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
             'delete_images' => 'nullable|array',
-            'delete_images.*' => 'integer|exists:article_images,id',
+            'delete_images.*' => 'integer|exists:media,id',
         ]);
         $validated['user_id'] = auth()->id();
         $validated['published_at'] = $validated['published_at'] ?? now();
@@ -52,10 +53,13 @@ class ArticleController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('articles/gallery', 'public');
-                $article->images()->create([
+                $media = Media::create([
                     'path' => $path,
-                    'order' => $index,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'size' => $file->getSize(),
                 ]);
+                $article->media()->attach($media->id, ['order' => $index]);
             }
         }
 
@@ -89,7 +93,7 @@ class ArticleController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
             'delete_images' => 'nullable|array',
-            'delete_images.*' => 'integer|exists:article_images,id',
+            'delete_images.*' => 'integer|exists:media,id',
         ]);
 
         $validated['published_at'] = $validated['published_at'] ?? $article->published_at ?? now();
@@ -106,21 +110,21 @@ class ArticleController extends Controller
         $article->categories()->sync($request->input('categories', []));
 
         if ($request->filled('delete_images')) {
-            $article->images()
-                ->whereIn('id', $request->input('delete_images'))
-                ->get()
-                ->each->delete();
+            $article->media()->detach($request->input('delete_images'));
         }
 
         if ($request->hasFile('images')) {
-            $existingCount = $article->images()->count();
+            $existingCount = $article->media()->count();
             $maxNew = max(0, 15 - $existingCount);
             foreach (array_slice($request->file('images'), 0, $maxNew) as $index => $file) {
                 $path = $file->store('articles/gallery', 'public');
-                $article->images()->create([
+                $media = Media::create([
                     'path' => $path,
-                    'order' => $existingCount + $index,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'size' => $file->getSize(),
                 ]);
+                $article->media()->attach($media->id, ['order' => $existingCount + $index]);
             }
         }
 
@@ -130,7 +134,7 @@ class ArticleController extends Controller
     public function destroy(string $id)
     {
         $article = Article::findOrFail($id);
-        $article->images->each->delete();
+        $article->media()->detach();
         $article->delete();
 
         return redirect()->route('admin.articles.index')->with('success', 'Article supprimé avec succès.');

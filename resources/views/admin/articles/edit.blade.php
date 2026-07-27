@@ -46,18 +46,18 @@
         <div class="mb-4">
             <label class="flex items-center gap-2">
                 <input type="checkbox" id="toggle-gallery"
-                       {{ $article->images->isNotEmpty() ? 'checked' : '' }}
+                       {{ $article->media->isNotEmpty() ? 'checked' : '' }}
                        onchange="document.getElementById('gallery-field').classList.toggle('hidden', !this.checked)">
                 Galerie d'images
             </label>
-            <div id="gallery-field" class="{{ $article->images->isNotEmpty() ? '' : 'hidden' }} mt-2">
-                @if ($article->images->isNotEmpty())
+            <div id="gallery-field" class="{{ $article->media->isNotEmpty() ? '' : 'hidden' }} mt-2">
+                @if ($article->media->isNotEmpty())
                     <div class="flex flex-wrap gap-3 mb-3">
-                        @foreach ($article->images as $image)
+                        @foreach ($article->media as $media)
                             <label class="block w-24">
-                                <img src="{{ Storage::url($image->path) }}" class="w-24 h-24 object-cover rounded border">
+                                <img src="{{ Storage::url($media->path) }}" class="w-24 h-24 object-cover rounded border">
                                 <span class="flex items-center gap-1 text-xs mt-1">
-                                    <input type="checkbox" name="delete_images[]" value="{{ $image->id }}">
+                                    <input type="checkbox" name="delete_images[]" value="{{ $media->id }}">
                                     Supprimer
                                 </span>
                             </label>
@@ -66,6 +66,17 @@
                 @endif
                 <input type="file" name="images[]" accept="image/*" multiple class="w-full border rounded p-2">
                 <p class="text-xs text-gray-500 mt-1">15 images maximum au total, JPEG/PNG/WebP, 4 Mo max par image.</p>
+                <div class="mt-3">
+                    <label class="block font-medium mb-1 text-sm">Affichage de la galerie</label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="radio" name="gallery_display" value="grid" {{ old('gallery_display', $article->gallery_display) === 'grid' ? 'checked' : '' }}>
+                        Grille
+                    </label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="radio" name="gallery_display" value="slideshow" {{ old('gallery_display', $article->gallery_display) === 'slideshow' ? 'checked' : '' }}>
+                        Diaporama
+                    </label>
+                </div>
             </div>
         </div>
 

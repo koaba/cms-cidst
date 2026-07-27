@@ -32,6 +32,12 @@
         </div>
 
         <div class="mb-4">
+            <label class="block font-medium mb-1">Date de publication</label>
+            <input type="datetime-local" name="published_at" value="{{ old('published_at', now()->format('Y-m-d\TH:i')) }}" class="w-full border rounded p-2">
+            <p class="text-xs text-gray-500 mt-1">Laisse la date actuelle, ou choisis une date passée/future. Un article programmé dans le futur restera invisible au public jusqu'à cette date.</p>
+        </div>
+
+        <div class="mb-4">
             <label class="block font-medium mb-1">Image à la une</label>
             <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
         </div>
@@ -44,6 +50,17 @@
             <div id="gallery-field" class="hidden mt-2">
                 <input type="file" name="images[]" accept="image/*" multiple class="w-full border rounded p-2">
                 <p class="text-xs text-gray-500 mt-1">15 images maximum, JPEG/PNG/WebP, 4 Mo max par image.</p>
+                <div class="mt-3">
+                    <label class="block font-medium mb-1 text-sm">Affichage de la galerie</label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="radio" name="gallery_display" value="grid" checked>
+                        Grille
+                    </label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="radio" name="gallery_display" value="slideshow">
+                        Diaporama
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -55,15 +72,14 @@
             <div id="categories-field" class="hidden mt-2 flex flex-wrap gap-3">
                 @foreach ($categories as $category)
                     <label class="flex items-center gap-1">
-                        <input type="checkbox" name="categories[]" value="{{ $category->id }}"
-                               {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
+                        <input type="checkbox" name="categories[]" value="{{ $category->id }}">
                         {{ $category->name }}
                     </label>
                 @endforeach
             </div>
         </div>
 
-        <x-admin.button type="submit">Créer l'article</x-admin.button>
+        <x-admin.button type="submit">Créer</x-admin.button>
         <a href="{{ route('admin.articles.index') }}" class="ml-2 text-gray-600">Annuler</a>
     </form>
 </x-admin.layout>
