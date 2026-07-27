@@ -7,14 +7,15 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::where('is_published', true)
+            ->where('published_at', '<=', now())
             ->with(['categories', 'user'])
-            ->latest()
+            ->orderByDesc('published_at')
             ->paginate(9);
         return view('public.articles.index', compact('articles'));
     }
     public function show(Article $article)
     {
-        if (!$article->is_published) {
+        if (!$article->is_published || $article->published_at > now()) {
             abort(404);
         }
         return view('public.articles.show', compact('article'));
@@ -23,8 +24,9 @@ class ArticleController extends Controller
     {
         $articles = $category->articles()
             ->where('is_published', true)
+            ->where('published_at', '<=', now())
             ->with(['categories', 'user'])
-            ->latest()
+            ->orderByDesc('published_at')
             ->paginate(9);
         return view('public.articles.index', compact('articles', 'category'));
     }
