@@ -10,19 +10,13 @@ use App\Models\Category;
 
 class ArticleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $articles = Article::latest()->paginate(10);
+        $articles = Article::latest('published_at')->paginate(10);
 
         return view('admin.articles.index', compact('articles'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $categories = Category::all();
@@ -30,19 +24,20 @@ class ArticleController extends Controller
         return view('admin.articles.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'is_published' => 'nullable|boolean',
+            'published_at' => 'nullable|date',
             'image' => 'nullable|image|max:2048',
+            'images' => 'nullable|array|max:15',
+            'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
         ]);
 
         $validated['user_id'] = auth()->id();
+        $validated['published_at'] = $validated['published_at'] ?? now();
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('articles', 'public');
@@ -52,20 +47,24 @@ class ArticleController extends Controller
 
         $article->categories()->sync($request->input('categories', []));
 
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $file) {
+                $path = $file->store('articles/gallery', 'public');
+                $article->images()->create([
+                    'path' => $path,
+                    'order' => $index,
+                ]);
+            }
+        }
+
         return redirect()->route('admin.articles.index')->with('success', 'Article créé avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $article = Article::findOrFail($id);
@@ -74,9 +73,6 @@ class ArticleController extends Controller
         return view('admin.articles.edit', compact('article', 'categories'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $article = Article::findOrFail($id);
@@ -85,8 +81,15 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'is_published' => 'nullable|boolean',
+            'published_at' => 'nullable|date',
             'image' => 'nullable|image|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'integer|exists:article_images,id',
         ]);
+
+        $validated['published_at'] = $validated['published_at'] ?? $article->published_at ?? now();
 
         if ($request->hasFile('image')) {
             if ($article->image) {
@@ -99,15 +102,32 @@ class ArticleController extends Controller
 
         $article->categories()->sync($request->input('categories', []));
 
+        if ($request->filled('delete_images')) {
+            $article->images()
+                ->whereIn('id', $request->input('delete_images'))
+                ->get()
+                ->each->delete();
+        }
+
+        if ($request->hasFile('images')) {
+            $existingCount = $article->images()->count();
+            $maxNew = max(0, 15 - $existingCount);
+            foreach (array_slice($request->file('images'), 0, $maxNew) as $index => $file) {
+                $path = $file->store('articles/gallery', 'public');
+                $article->images()->create([
+                    'path' => $path,
+                    'order' => $existingCount + $index,
+                ]);
+            }
+        }
+
         return redirect()->route('admin.articles.index')->with('success', 'Article modifié avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $article = Article::findOrFail($id);
+        $article->images->each->delete();
         $article->delete();
 
         return redirect()->route('admin.articles.index')->with('success', 'Article supprimé avec succès.');

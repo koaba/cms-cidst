@@ -33,8 +33,40 @@
         </div>
 
         <div class="mb-4">
-            <label class="block font-medium mb-1">Image</label>
-            <input type="file" name="image" class="w-full border rounded p-2">
+            <label class="block font-medium mb-1">Date de publication</label>
+            <input type="datetime-local" name="published_at" value="{{ old('published_at', $article->published_at?->format('Y-m-d\TH:i')) }}" class="w-full border rounded p-2">
+            <p class="text-xs text-gray-500 mt-1">Modifie cette date pour antidater ou programmer la publication.</p>
+        </div>
+
+        <div class="mb-4">
+            <label class="block font-medium mb-1">Image à la une</label>
+            <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
+        </div>
+
+        <div class="mb-4">
+            <label class="flex items-center gap-2">
+                <input type="checkbox" id="toggle-gallery"
+                       {{ $article->images->isNotEmpty() ? 'checked' : '' }}
+                       onchange="document.getElementById('gallery-field').classList.toggle('hidden', !this.checked)">
+                Galerie d'images
+            </label>
+            <div id="gallery-field" class="{{ $article->images->isNotEmpty() ? '' : 'hidden' }} mt-2">
+                @if ($article->images->isNotEmpty())
+                    <div class="flex flex-wrap gap-3 mb-3">
+                        @foreach ($article->images as $image)
+                            <label class="block w-24">
+                                <img src="{{ Storage::url($image->path) }}" class="w-24 h-24 object-cover rounded border">
+                                <span class="flex items-center gap-1 text-xs mt-1">
+                                    <input type="checkbox" name="delete_images[]" value="{{ $image->id }}">
+                                    Supprimer
+                                </span>
+                            </label>
+                        @endforeach
+                    </div>
+                @endif
+                <input type="file" name="images[]" accept="image/*" multiple class="w-full border rounded p-2">
+                <p class="text-xs text-gray-500 mt-1">15 images maximum au total, JPEG/PNG/WebP, 4 Mo max par image.</p>
+            </div>
         </div>
 
         <div class="mb-4">

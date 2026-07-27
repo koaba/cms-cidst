@@ -32,8 +32,19 @@
         </div>
 
         <div class="mb-4">
-            <label class="block font-medium mb-1">Image</label>
-            <input type="file" name="image" class="w-full border rounded p-2">
+            <label class="block font-medium mb-1">Image à la une</label>
+            <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
+        </div>
+
+        <div class="mb-4">
+            <label class="flex items-center gap-2">
+                <input type="checkbox" id="toggle-gallery" onchange="document.getElementById('gallery-field').classList.toggle('hidden', !this.checked)">
+                Ajouter une galerie d'images
+            </label>
+            <div id="gallery-field" class="hidden mt-2">
+                <input type="file" name="images[]" accept="image/*" multiple class="w-full border rounded p-2">
+                <p class="text-xs text-gray-500 mt-1">15 images maximum, JPEG/PNG/WebP, 4 Mo max par image.</p>
+            </div>
         </div>
 
         <div class="mb-4">
