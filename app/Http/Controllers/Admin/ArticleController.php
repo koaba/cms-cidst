@@ -26,16 +26,18 @@ class ArticleController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+      $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'is_published' => 'nullable|boolean',
             'published_at' => 'nullable|date',
+            'gallery_display' => 'nullable|in:grid,slideshow',
             'image' => 'nullable|image|max:2048',
-            'images' => 'nullable|array|max:15',
+            'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'integer|exists:article_images,id',
         ]);
-
         $validated['user_id'] = auth()->id();
         $validated['published_at'] = $validated['published_at'] ?? now();
 
@@ -82,6 +84,7 @@ class ArticleController extends Controller
             'content' => 'required|string',
             'is_published' => 'nullable|boolean',
             'published_at' => 'nullable|date',
+            'gallery_display' => 'nullable|in:grid,slideshow',
             'image' => 'nullable|image|max:2048',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
