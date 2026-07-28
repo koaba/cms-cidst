@@ -29,6 +29,15 @@ Ce fichier liste les actions critiques de sécurité et de configuration à effe
   (`nouveauMotDePasse123`). À changer pour de vrais mots de passe forts avant
   l'ouverture publique du site.
 
+- [ ] **Mettre à jour `guzzlehttp/guzzle` vers >=7.15.1**
+  4 avis de sécurité medium détectés le 21/07/2026 via `composer audit`, liés aux
+  redirections/cookies HTTP. Vérifier via `composer audit` avant la mise en prod
+  qu'aucune autre dépendance n'a de vulnérabilité connue.
+
+- [ ] **`.env` jamais commité dans Git**
+  Vérifier `.gitignore`, et que `.env.example` ne contient aucune vraie valeur
+  sensible (clés API, mots de passe).
+
 ## 🟠 Important — configuration serveur
 
 - [ ] Base de données de production configurée (pas la base locale de dev)
@@ -36,6 +45,9 @@ Ce fichier liste les actions critiques de sécurité et de configuration à effe
 - [ ] Permissions fichiers correctes (`storage/`, `bootstrap/cache/`)
 - [ ] `npm run build` exécuté (assets compilés, pas de `npm run dev`)
 - [ ] Sauvegardes base de données automatisées (stratégie à définir — backlog projet)
+- [ ] Sauvegardes des fichiers uploadés (`storage/app/public`, notamment la médiathèque)
+      — pas seulement la base de données
+- [ ] `LOG_LEVEL` ajusté pour la prod (éviter un `laravel.log` qui grossit sans rotation)
 
 ## 🟡 À considérer
 
@@ -55,7 +67,7 @@ Ce fichier liste les actions critiques de sécurité et de configuration à effe
 
 ## Historique des vérifications sécurité (dev)
 
-Session du 16/07/2026 :
+### Session du 16/07/2026
 - ✅ Rate limiting login vérifié (natif Breeze, `LoginRequest.php`)
 - ✅ Politique de mot de passe renforcée ajoutée (`AppServiceProvider.php`)
 - ✅ Mass assignment vérifié sur tous les modèles (Article, Page, Slider, NewsTicker, User)
@@ -64,33 +76,34 @@ Session du 16/07/2026 :
 - ✅ Headers de sécurité HTTP ajoutés et vérifiés en conditions réelles (commit 8d16e22) :
   X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy confirmés
   présents dans les réponses HTTP
-- - ✅ Encodage UTF-8 vérifié le 21/07/2026 : faux positif, les fichiers sont
+- ✅ Encodage UTF-8 vérifié le 21/07/2026 : faux positif, les fichiers sont
   correctement encodés en UTF-8. La distorsion venait de l'affichage du terminal
   cmd.exe (code page par défaut) et non du code — `chcp 65001` avant `findstr`
   confirme un affichage propre. Rien à corriger dans le code.
-  (caractères mal encodés : "crÃ©Ã©" au lieu de "créé") — cosmétique, non bloquant
+  (caractères mal encodés à l'affichage : "crÃ©Ã©" au lieu de "créé") — cosmétique, non bloquant
 - 📝 `X-Powered-By: PHP/8.3.30` visible dans les headers — à masquer en prod (voir ci-dessus)
 
-- Sous-menus (dropdown) pour le module Menus — actuellement liste à plat par choix, à ajouter quand le site aura plus de contenu (ajouter parent_id nullable + logique récursive)
-
-## Session du 21/07/2026
-
-- ✅ Bug bloquant résolu : ParseError Blade sur `welcome.blade.php` causé par `@php(...)`
-  avec parenthèses imbriquées (`SiteSetting::current()`) — fix passé en `@php ... @endphp`.
-  Voir commit `70133f7`.
-- ✅ Audit complet du projet pour d'autres usages de `@php(...)` avec parenthèses
-  imbriquées — aucun autre cas trouvé
-  (`findstr /S /M /C:"@php(" resources\views\*.blade.php` → 0 résultat). Rien à corriger.
-- ✅ Nettoyage des 4 migrations orphelines `hero_pattern_*` (fonctionnalité de motif de
-  fond abandonnée, remplacée par un SVG statique) : rollback ciblé + suppression des
-  fichiers de migration, sans perte de la migration `hero_eyebrow_size`. Voir méthode
-  documentée dans `ENVIRONMENT.md`.
-- ✅ Commit `70133f7` : fix ParseError + module `hero_eyebrow_size` (migration, modèle,
-  controller, vue admin) + logo dynamique dans `MainMenu`/`main-menu.blade.php`
-  (utilise désormais `SiteSetting::current()->logo_path`, avec fallback vers le logo
-  par défaut).
+### Session du 27/07/2026
+- ✅ Validation `categories` ajoutée dans `ArticleController::store()` et `update()`
+  (`exists:categories,id`) — empêche l'insertion de pivots avec des IDs invalides.
+  Couvert par 3 tests Pest (`ArticleCategoryValidationTest`).
+- ✅ Bug réel trouvé et corrigé : `ArticleController::destroy()` ne supprimait que le
+  pivot (`detach()`), laissant les entrées `media` et fichiers physiques orphelins.
+  Fix avec garde-fou par compteur de références (`mediables()->count() <= 1`) pour
+  anticiper la future médiathèque partagée. Couvert par 2 tests Pest
+  (`ArticleMediaDeletionTest`).
+- ✅ Comportement `gallery_display` (grille/diaporama) vérifié et verrouillé par
+  3 tests Pest (`ArticleGalleryDisplayTest`).
+- ✅ Filtrage public `published_at` verrouillé par 4 tests Pest
+  (`ArticlePublicVisibilityTest`).
+- ✅ Re-confirmation : encodage UTF-8 des fichiers toujours correct — `findstr`
+  reste peu fiable pour juger de l'encodage sur ce projet, préférer `Select-String`
+  (PowerShell) ou une vérification hex via Tinker en cas de doute.
 - 📝 Aucun point de la checklist de mise en production ci-dessus n'a été traité cette
   session (APP_DEBUG, HTTPS, mots de passe, etc. — toujours en attente).
 
-  - [ ] Mettre à jour `guzzlehttp/guzzle` vers >=7.15.1 (4 avis de sécurité medium
-      détectés le 21/07/2026 via `composer audit`, liés aux redirections/cookies HTTP)
+### Notes de développement fonctionnel (hors périmètre déploiement)
+Voir handoff technique projet / changelog séparé pour : fix ParseError Blade
+(`@php(...)` imbriqué, commit `70133f7`), nettoyage migrations `hero_pattern_*`,
+logo dynamique `SiteSetting::current()`, sous-menus (dropdown) module Menus à
+prévoir (`parent_id` nullable + logique récursive).
