@@ -7,13 +7,20 @@ use Illuminate\Support\Str;
 
 class Page extends Model
 {
-    protected $fillable = ['title', 'slug', 'content', 'image', 'user_id', 'is_published'];
+    protected $fillable = ['title', 'slug', 'content', 'user_id', 'is_published'];
 
     protected $casts = ['is_published' => 'boolean'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function media()
+    {
+        return $this->morphToMany(Media::class, 'mediable')
+            ->withPivot('order')
+            ->orderByPivot('order');
     }
 
     protected static function boot()

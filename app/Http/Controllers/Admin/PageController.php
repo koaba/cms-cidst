@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\Media;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -29,14 +30,23 @@ class PageController extends Controller
             'is_published' => 'nullable|boolean',
         ]);
 
+        $pageData = collect($validated)->except('image')->toArray();
+        $pageData['user_id'] = auth()->id();
+        $pageData['is_published'] = $request->boolean('is_published');
+
+        $page = Page::create($pageData);
+
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('pages', 'public');
+            $file = $request->file('image');
+            $path = $file->store('pages', 'public');
+            $media = Media::create([
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getClientMimeType(),
+                'size' => $file->getSize(),
+            ]);
+            $page->media()->attach($media->id, ['order' => 0]);
         }
-
-        $validated['user_id'] = auth()->id();
-        $validated['is_published'] = $request->boolean('is_published');
-
-        Page::create($validated);
 
         return redirect()
             ->route('admin.pages.index')
@@ -62,13 +72,23 @@ class PageController extends Controller
             'is_published' => 'nullable|boolean',
         ]);
 
+        $pageData = collect($validated)->except('image')->toArray();
+        $pageData['is_published'] = $request->boolean('is_published');
+
+        $page->update($pageData);
+
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('pages', 'public');
+            $page->media()->detach();
+            $file = $request->file('image');
+            $path = $file->store('pages', 'public');
+            $media = Media::create([
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getClientMimeType(),
+                'size' => $file->getSize(),
+            ]);
+            $page->media()->attach($media->id, ['order' => 0]);
         }
-
-        $validated['is_published'] = $request->boolean('is_published');
-
-        $page->update($validated);
 
         return redirect()
             ->route('admin.pages.index')
@@ -77,6 +97,7 @@ class PageController extends Controller
 
     public function destroy(Page $page)
     {
+        $page->media()->detach();
         $page->delete();
 
         return redirect()
