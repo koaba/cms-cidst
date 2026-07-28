@@ -1,13 +1,13 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Article;
+use App\Models\Article; 
 use App\Models\Media;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Category;
+use App\Models\Category; 
 
 class ArticleController extends Controller
 {
@@ -17,7 +17,7 @@ class ArticleController extends Controller
 
         return view('admin.articles.index', compact('articles'));
     }
-
+ 
     public function create()
     {
         $categories = Category::all();
@@ -33,11 +33,13 @@ class ArticleController extends Controller
             'is_published' => 'nullable|boolean',
             'published_at' => 'nullable|date',
             'gallery_display' => 'nullable|in:grid,slideshow',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:2048', 
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:media,id',
+            'categories' => 'nullable|array',
+            'categories.*' => 'integer|exists:categories,id',
         ]);
         $validated['user_id'] = auth()->id();
         $validated['published_at'] = $validated['published_at'] ?? now();
@@ -48,9 +50,9 @@ class ArticleController extends Controller
 
         $article = Article::create($validated);
 
-        $article->categories()->sync($request->input('categories', []));
+        $article->categories()->sync($validated['categories'] ?? []);
 
-        if ($request->hasFile('images')) {
+        if ($request->hasFile('images')) { 
             foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('articles/gallery', 'public');
                 $media = Media::create([
@@ -59,13 +61,13 @@ class ArticleController extends Controller
                     'mime_type' => $file->getClientMimeType(),
                     'size' => $file->getSize(),
                 ]);
-                $article->media()->attach($media->id, ['order' => $index]);
+                $article->media()->attach($media->id, ['order' => $index]); 
             }
-        }
+        } 
 
         return redirect()->route('admin.articles.index')->with('success', 'Article créé avec succès.');
     }
-
+ 
     public function show(string $id)
     {
         //
@@ -73,7 +75,7 @@ class ArticleController extends Controller
 
     public function edit(string $id)
     {
-        $article = Article::findOrFail($id);
+        $article = Article::findOrFail($id); 
         $categories = Category::all();
 
         return view('admin.articles.edit', compact('article', 'categories'));
@@ -94,6 +96,8 @@ class ArticleController extends Controller
             'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'integer|exists:media,id',
+            'categories' => 'nullable|array',
+            'categories.*' => 'integer|exists:categories,id',
         ]);
 
         $validated['published_at'] = $validated['published_at'] ?? $article->published_at ?? now();
@@ -107,11 +111,11 @@ class ArticleController extends Controller
 
         $article->update($validated);
 
-        $article->categories()->sync($request->input('categories', []));
+        $article->categories()->sync($validated['categories'] ?? []);
 
         if ($request->filled('delete_images')) {
             $article->media()->detach($request->input('delete_images'));
-        }
+        } 
 
         if ($request->hasFile('images')) {
             $existingCount = $article->media()->count();
@@ -131,12 +135,20 @@ class ArticleController extends Controller
         return redirect()->route('admin.articles.index')->with('success', 'Article modifié avec succès.');
     }
 
-    public function destroy(string $id)
-    {
-        $article = Article::findOrFail($id);
-        $article->media()->detach();
-        $article->delete();
+ public function destroy(string $id)
+{
+    $article = Article::findOrFail($id);
 
-        return redirect()->route('admin.articles.index')->with('success', 'Article supprimé avec succès.');
+    foreach ($article->media as $media) {
+        // Supprime le fichier définitivement seulement s'il n'est pas partagé ailleurs
+        if ($media->mediables()->count() <= 1) {
+            $media->delete();
+        }
     }
+
+    $article->media()->detach();
+    $article->delete();
+
+    return redirect()->route('admin.articles.index')->with('success', 'Article supprimé avec succès.');
+}
 }
