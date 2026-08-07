@@ -27,6 +27,11 @@ class SiteSettingController extends Controller
             'cta_primary_target' => 'nullable|string|max:255',
             'cta_secondary_label' => 'nullable|string|max:100',
             'cta_secondary_target' => 'nullable|string|max:255',
+            'primary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'secondary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'news_ticker_direction' => 'nullable|in:horizontal,vertical',
+            'pages_grid_columns' => 'nullable|in:2,3,4',
+            'pages_image_size' => 'nullable|in:small,medium,large',
         ]);
 
         $settings = SiteSetting::current();
