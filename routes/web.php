@@ -1,5 +1,6 @@
 <?php
-
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ArticleController;
@@ -17,7 +18,7 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/recherche', [SearchController::class, 'index'])->name('search');
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
 Route::get('/blog/{article:slug}', [ArticleController::class, 'show'])->name('blog.show');
 Route::get('/blog/categorie/{category:slug}', [ArticleController::class, 'byCategory'])->name('blog.category');
@@ -36,13 +37,15 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:Super Admin'])->group(function () {
-    Route::get('/admin', [DashboardController::class, 'index']);
+  Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
     Route::resource('admin/pages', AdminPageController::class)->names('admin.pages');
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
     Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
     Route::resource('admin/categories', AdminCategoryController::class)->names('admin.categories');
+    Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');
+    Route::get('admin/media/picker', [AdminMediaController::class, 'picker'])->name('admin.media.picker');  
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
 });
