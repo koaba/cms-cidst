@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-
 class SiteSetting extends Model
 {
     protected $fillable = [
@@ -22,9 +19,18 @@ class SiteSetting extends Model
         'pages_grid_columns',
         'pages_image_size',
     ];
-
     protected $casts = [
     ];
+
+    public function getPrimaryColorAttribute($value): string
+    {
+        return preg_match('/^#[0-9A-Fa-f]{6}$/', $value ?? '') ? $value : '#000000';
+    }
+
+    public function getSecondaryColorAttribute($value): string
+    {
+        return preg_match('/^#[0-9A-Fa-f]{6}$/', $value ?? '') ? $value : '#FFFFFF';
+    }
 
     public static function current(): self
     {
