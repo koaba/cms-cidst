@@ -1,11 +1,11 @@
-set -x
 echo "Lint PHP des fichiers modifies..."
 FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.php$' | grep -v '\.blade\.php$' || true)
-echo "FILES=$FILES"
+
 if [ -z "$FILES" ]; then
     echo "Aucun fichier PHP a verifier."
     exit 0
 fi
+
 ERROR=0
 for FILE in $FILES; do
     php -l "$FILE" > /tmp/php_lint_output 2>&1
@@ -15,9 +15,12 @@ for FILE in $FILES; do
         ERROR=1
     fi
 done
+
 if [ $ERROR -eq 1 ]; then
     echo ""
+    echo "Commit bloque : corrige les erreurs de syntaxe PHP ci-dessus."
     exit 1
 fi
+
 echo "Tous les fichiers PHP sont valides."
 exit 0
