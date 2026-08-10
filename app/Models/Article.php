@@ -1,15 +1,23 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Article extends Model
 {
-   protected $fillable = ['title', 'slug', 'content', 'image', 'user_id', 'is_published', 'published_at', 'gallery_display'];
+    use HasFactory;
+
+    protected $fillable = ['title', 'slug', 'content', 'image', 'user_id', 'is_published', 'published_at', 'gallery_display'];
     protected $casts = [
         'published_at' => 'datetime',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function user()
     {
@@ -24,6 +32,15 @@ class Article extends Model
         return $this->morphToMany(Media::class, 'mediable')
             ->withPivot('order')
             ->orderByPivot('order');
+    }
+   public function diaporamas()
+    {
+        return $this->morphMany(Diaporama::class, 'diaporamable')->orderBy('order');
+    }
+
+    public function videos()
+    {
+        return $this->morphMany(Video::class, 'videoable')->orderBy('order');
     }
     protected static function boot()
     {

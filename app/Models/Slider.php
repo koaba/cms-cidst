@@ -2,11 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Slider extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['title', 'subtitle', 'image', 'link_url', 'order', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
+
+    public function media()
+    {
+        return $this->morphToMany(Media::class, 'mediable')
+            ->withPivot('order')
+            ->orderByPivot('order');
+    }
 }

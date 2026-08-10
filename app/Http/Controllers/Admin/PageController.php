@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\Media;
+use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
+    use HasOrphanMediaCleanup;
+
     public function index()
     {
         $pages = Page::latest()->paginate(10);
@@ -78,7 +81,8 @@ class PageController extends Controller
         $page->update($pageData);
 
         if ($request->hasFile('image')) {
-            $page->media()->detach();
+            $this->detachAndPruneOrphanMedia($page);
+
             $file = $request->file('image');
             $path = $file->store('pages', 'public');
             $media = Media::create([
@@ -97,7 +101,8 @@ class PageController extends Controller
 
     public function destroy(Page $page)
     {
-        $page->media()->detach();
+        $this->detachAndPruneOrphanMedia($page);
+
         $page->delete();
 
         return redirect()

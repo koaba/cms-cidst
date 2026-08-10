@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\NewsTicker;
 use Illuminate\Http\Request;
 
+
 class NewsTickerController extends Controller
 {
     public function index()

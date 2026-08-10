@@ -13,11 +13,14 @@ class ArticleController extends Controller
             ->paginate(9);
         return view('public.articles.index', compact('articles'));
     }
-    public function show(Article $article)
+   public function show(Article $article)
     {
         if (!$article->is_published || $article->published_at > now()) {
             abort(404);
         }
+
+        $article->load(['categories', 'user', 'media', 'diaporamas.media', 'videos']);
+
         return view('public.articles.show', compact('article'));
     }
     public function byCategory(Category $category)

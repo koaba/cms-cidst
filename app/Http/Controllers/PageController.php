@@ -9,6 +9,7 @@ class PageController extends Controller
     public function index()
     {
         $pages = Page::where('is_published', true)->latest()->paginate(9);
+
         return view('public.pages.index', compact('pages'));
     }
 
