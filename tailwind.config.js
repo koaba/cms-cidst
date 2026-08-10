@@ -17,8 +17,8 @@ export default {
             },
             colors: {
                 cidst: {
-                    red: '#C41E2A',
-                    ink: '#17181A',
+                    red: 'var(--color-primary, #C41E2A)',
+                    ink: 'var(--color-secondary, #17181A)',
                     surface: '#FFFFFF',
                     bg: '#F1F2F4',
                     border: '#D8DADE',
