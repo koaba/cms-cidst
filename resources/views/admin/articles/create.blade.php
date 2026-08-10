@@ -158,3 +158,55 @@
                     </label>
                     <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100" onclick="MediaPicker.open({ mode: 'multiple', onConfirm: items => addExistingMedia(items, 'diaporama-${index}-selected', 'diaporamas[${index}][existing_media][]') })">
                         Choisir depuis la médiathèque
+                        </button>
+                </div>
+            `;
+            document.getElementById('diaporamas-container').appendChild(wrapper);
+            updateAddButtons();
+        }
+
+        function addVideo() {
+            if (videoCount >= MAX_VIDEOS) return;
+            const index = videoCount++;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'border rounded p-3';
+            wrapper.id = `video-${index}`;
+            wrapper.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <input type="text" name="videos[${index}][title]" placeholder="Titre de la vidéo (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
+                    <button type="button" onclick="document.getElementById('video-${index}').remove(); updateAddButtons()" class="text-red-600 text-sm">Supprimer</button>
+                </div>
+                <div class="flex gap-4 mb-2 text-sm">
+                    <label class="flex items-center gap-1">
+                        <input type="radio" name="videos[${index}][source_type]" value="upload" checked onchange="toggleVideoSource(${index}, 'upload')">
+                        Upload
+                    </label>
+                    <label class="flex items-center gap-1">
+                        <input type="radio" name="videos[${index}][source_type]" value="external" onchange="toggleVideoSource(${index}, 'external')">
+                        Lien externe
+                    </label>
+                </div>
+                <div id="video-${index}-upload">
+                    <input type="file" name="videos[${index}][file]" accept="video/mp4,video/webm" class="w-full border rounded p-2 text-sm">
+                </div>
+                <div id="video-${index}-external" class="hidden">
+                    <input type="url" name="videos[${index}][url]" placeholder="https://youtube.com/..." class="w-full border rounded p-2 text-sm">
+                </div>
+            `;
+            document.getElementById('videos-container').appendChild(wrapper);
+            updateAddButtons();
+        }
+
+        function toggleVideoSource(index, type) {
+            document.getElementById(`video-${index}-upload`).classList.toggle('hidden', type !== 'upload');
+            document.getElementById(`video-${index}-external`).classList.toggle('hidden', type !== 'external');
+        }
+
+        function updateAddButtons() {
+            const diaporamaVisible = document.getElementById('diaporamas-container').children.length;
+            const videoVisible = document.getElementById('videos-container').children.length;
+            document.getElementById('add-diaporama-btn').disabled = diaporamaVisible >= MAX_DIAPORAMAS;
+            document.getElementById('add-video-btn').disabled = videoVisible >= MAX_VIDEOS;
+        }
+    </script>
+</x-admin.layout>
