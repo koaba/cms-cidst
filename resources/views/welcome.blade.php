@@ -1,4 +1,4 @@
-<x-layout title="CIDST - Centre d'Information et de Documentation Scientifique et Technique">
+﻿<x-layout title="CIDST - Centre d'Information et de Documentation Scientifique et Technique">
 
     @php
     $settings = \App\Models\SiteSetting::current();
@@ -87,5 +87,152 @@
             </div>
         </div>
     </section>
+
+    <section class="py-16 border-t border-cidst-border">
+        @php
+            $homeSliders = \App\Models\Slider::where('is_active', true)
+                ->orderBy('order')
+                ->take(5)
+                ->get();
+        @endphp
+
+        @if($homeSliders->isNotEmpty())
+            <p class="font-mono text-xs text-cidst-muted mb-8">// Actualités en images</p>
+
+            <div class="relative rounded-lg overflow-hidden border border-cidst-border" id="home-slider">
+                <div class="relative h-64 sm:h-80">
+                    @foreach($homeSliders as $index => $slider)
+                        <div
+                            class="home-slider-slide absolute inset-0 transition-opacity duration-700 {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}"
+                            data-index="{{ $index }}"
+                        >
+                            @if($slider->link_url)
+                                <a href="{{ $slider->link_url }}" class="block w-full h-full">
+                            @endif
+
+                            <img
+                                src="{{ Storage::url($slider->image) }}"
+                                alt="{{ $slider->title }}"
+                                class="w-full h-full object-cover"
+                                loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                            >
+
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                                <h3 class="font-display text-white text-lg font-semibold">{{ $slider->title }}</h3>
+                                @if($slider->subtitle)
+                                    <p class="text-white/80 text-sm mt-1">{{ $slider->subtitle }}</p>
+                                @endif
+                            </div>
+
+                            @if($slider->link_url)
+                                </a>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+
+                @if($homeSliders->count() > 1)
+                    <div class="absolute bottom-3 right-4 z-20 flex gap-2">
+                        @foreach($homeSliders as $index => $slider)
+                            <button
+                                type="button"
+                                class="home-slider-dot w-2 h-2 rounded-full transition-colors {{ $index === 0 ? 'bg-white' : 'bg-white/40' }}"
+                                data-index="{{ $index }}"
+                                aria-label="Aller à la diapositive {{ $index + 1 }}"
+                            ></button>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        @endif
+    </section>
+
+    <section class="py-16 border-t border-cidst-border">
+        @php
+            $recentArticles = \App\Models\Article::with('categories')
+                ->where('is_published', true)
+                ->where('published_at', '<=', now())
+                ->orderByDesc('published_at')
+                ->take(5)
+                ->get();
+        @endphp
+
+        @if($recentArticles->isNotEmpty())
+            <p class="font-mono text-xs text-cidst-muted mb-8">// Actualités récentes</p>
+
+            <div class="space-y-4">
+                @foreach($recentArticles as $article)
+                    <a href="{{ route('blog.show', $article) }}" class="flex gap-4 items-start group">
+                        @if($article->image)
+                            <img
+                                src="{{ Storage::url($article->image) }}"
+                                alt="{{ $article->title }}"
+                                class="w-20 h-20 object-cover rounded-md border border-cidst-border flex-shrink-0"
+                                loading="lazy"
+                            >
+                        @else
+                            <div class="w-20 h-20 rounded-md border border-cidst-border bg-cidst-surface flex-shrink-0"></div>
+                        @endif
+
+                        <div class="min-w-0">
+                            @if($article->categories->isNotEmpty())
+                                <span class="inline-block text-xs px-2 py-0.5 rounded {{ $article->categories->first()->badgeColor() }} mb-1">
+                                    {{ $article->categories->first()->name }}
+                                </span>
+                            @endif
+
+                            <h3 class="font-display text-sm font-semibold text-cidst-ink leading-snug line-clamp-2 group-hover:text-cidst-red transition-colors">
+                                {{ $article->title }}
+                            </h3>
+
+                            <p class="text-xs text-cidst-muted mt-1">
+                                {{ $article->published_at->diffForHumans() }}
+                            </p>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </section>
+
+    @if(isset($homeSliders) && $homeSliders->count() > 1)
+        <script>
+            (function () {
+                const container = document.getElementById('home-slider');
+                if (!container) return;
+
+                const slides = container.querySelectorAll('.home-slider-slide');
+                const dots = container.querySelectorAll('.home-slider-dot');
+                let current = 0;
+                let paused = false;
+                const total = slides.length;
+
+                function show(index) {
+                    slides.forEach((slide, i) => {
+                        slide.classList.toggle('opacity-100', i === index);
+                        slide.classList.toggle('z-10', i === index);
+                        slide.classList.toggle('opacity-0', i !== index);
+                        slide.classList.toggle('z-0', i !== index);
+                    });
+                    dots.forEach((dot, i) => {
+                        dot.classList.toggle('bg-white', i === index);
+                        dot.classList.toggle('bg-white/40', i !== index);
+                    });
+                    current = index;
+                }
+
+                dots.forEach(dot => {
+                    dot.addEventListener('click', () => show(parseInt(dot.dataset.index, 10)));
+                });
+
+                container.addEventListener('mouseenter', () => paused = true);
+                container.addEventListener('mouseleave', () => paused = false);
+
+                setInterval(() => {
+                    if (!paused) show((current + 1) % total);
+                }, 5000);
+            })();
+        </script>
+    @endif
 
 </x-layout>
