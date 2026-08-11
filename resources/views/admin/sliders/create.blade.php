@@ -1,6 +1,8 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Nouveau slider</h1>
 
+    <p class="text-sm text-gray-500 mb-4">{{ 5 - \App\Models\Slider::count() }} emplacement(s) restant(s) sur 5 maximum.</p>
+
     <form action="{{ route('admin.sliders.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
 
@@ -17,8 +19,19 @@
 
         <div>
             <label class="block font-semibold">Image</label>
-            <input type="file" name="image" class="border w-full p-2 rounded">
+            <input type="file" name="image" accept="image/*" class="border w-full p-2 rounded" onchange="document.getElementById('slider-picked-preview').classList.add('hidden')">
             @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+
+            <div class="mt-2">
+                <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
+                        onclick="MediaPicker.open({ mode: 'single', onConfirm: items => setSliderImage(items[0]) })">
+                    Ou choisir depuis la médiathèque
+                </button>
+                <input type="hidden" name="existing_media_id" id="slider-existing-media-id">
+                <div id="slider-picked-preview" class="hidden mt-2">
+                    <img id="slider-picked-img" class="w-24 h-24 object-cover rounded border">
+                </div>
+            </div>
         </div>
 
         <div>
@@ -39,4 +52,15 @@
 
         <x-admin.button type="submit">Créer</x-admin.button>
     </form>
+
+    <x-admin.media-picker />
+
+    <script>
+        function setSliderImage(item) {
+            document.getElementById('slider-existing-media-id').value = item.id;
+            document.getElementById('slider-picked-img').src = item.url;
+            document.getElementById('slider-picked-preview').classList.remove('hidden');
+            document.querySelector('input[name="image"]').value = '';
+        }
+    </script>
 </x-admin.layout>

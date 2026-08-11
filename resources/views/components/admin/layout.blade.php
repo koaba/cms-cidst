@@ -7,22 +7,22 @@
 </head>
 <body class="bg-gray-100">
     <nav class="bg-gray-800 text-white p-4 flex justify-between items-center">
-    <div class="flex gap-6 items-center">
         <span class="font-bold">CMS Admin</span>
-       <a href="{{ route('admin.articles.index') }}" class="hover:underline">Articles</a>
-        <a href="{{ route('admin.categories.index') }}" class="hover:underline">Catégories</a>
-    </div>
-    <div class="flex gap-4 items-center">
-        <span>{{ auth()->user()->name }} ({{ auth()->user()->getRoleNames()->first() }})</span>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="underline">Déconnexion</button>
-        </form>
-    </div>
-</nav>
+        <div class="flex gap-4 items-center">
+            <span>{{ auth()->user()->name }} ({{ auth()->user()->getRoleNames()->first() }})</span>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="underline">Déconnexion</button>
+            </form>
+        </div>
+    </nav>
 
-    <main class="p-6">
-        {{ $slot }}
-    </main>
+    <div class="flex">
+        <x-admin.sidebar />
+
+        <main class="p-6 flex-1">
+            {{ $slot }}
+        </main>
+    </div>
 </body>
 </html>

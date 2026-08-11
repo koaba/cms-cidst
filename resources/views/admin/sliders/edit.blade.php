@@ -7,6 +7,7 @@
         <div>
             <label class="block font-semibold">Titre</label>
             <input type="text" name="title" value="{{ old('title', $slider->title) }}" class="border w-full p-2 rounded">
+            @error('title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
@@ -14,11 +15,27 @@
             <input type="text" name="subtitle" value="{{ old('subtitle', $slider->subtitle) }}" class="border w-full p-2 rounded">
         </div>
 
-        <img src="{{ Storage::url($slider->image) }}" class="w-32 mb-2">
+        <div>
+            <label class="block font-semibold">Image actuelle</label>
+            <img src="{{ Storage::url($slider->image) }}" class="w-32 mb-2 rounded border">
+        </div>
 
         <div>
             <label class="block font-semibold">Nouvelle image (remplace l'existante)</label>
-            <input type="file" name="image" class="border w-full p-2 rounded">
+            <input type="file" name="image" accept="image/*" class="border w-full p-2 rounded" onchange="document.getElementById('slider-picked-preview').classList.add('hidden')">
+            @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+
+            <div class="mt-2">
+                <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
+                        onclick="MediaPicker.open({ mode: 'single', onConfirm: items => setSliderImage(items[0]) })">
+                    Ou choisir depuis la médiathèque
+                </button>
+                <input type="hidden" name="existing_media_id" id="slider-existing-media-id">
+                <div id="slider-picked-preview" class="hidden mt-2">
+                    <p class="text-xs text-gray-500 mb-1">Nouvelle image sélectionnée (remplacera l'actuelle après enregistrement) :</p>
+                    <img id="slider-picked-img" class="w-24 h-24 object-cover rounded border">
+                </div>
+            </div>
         </div>
 
         <div>
@@ -39,4 +56,15 @@
 
         <x-admin.button type="submit">Mettre à jour</x-admin.button>
     </form>
+
+    <x-admin.media-picker />
+
+    <script>
+        function setSliderImage(item) {
+            document.getElementById('slider-existing-media-id').value = item.id;
+            document.getElementById('slider-picked-img').src = item.url;
+            document.getElementById('slider-picked-preview').classList.remove('hidden');
+            document.querySelector('input[name="image"]').value = '';
+        }
+    </script>
 </x-admin.layout>
