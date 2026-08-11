@@ -1,6 +1,5 @@
 <aside class="bg-cidst-surface border border-cidst-border rounded-xl p-4 sticky top-6 self-start">
     <p class="font-semibold text-sm text-cidst-ink mb-3">Actualités récentes</p>
-
     @if ($articles->isEmpty())
         <p class="text-xs text-cidst-muted">Aucune actualité pour le moment.</p>
     @else
