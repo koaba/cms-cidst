@@ -119,7 +119,13 @@
                 @error('pages_image_size') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
         </div>
-
+<div>
+    <label class="block font-medium mb-1">URL Facebook</label>
+    <input type="url" name="facebook_url" value="{{ old('facebook_url', $settings->facebook_url) }}"
+           placeholder="https://facebook.com/votrepage"
+           class="w-full border rounded p-2">
+    @error('facebook_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
         <x-admin.button type="submit">Enregistrer</x-admin.button>
     </form>
 </x-admin.layout>

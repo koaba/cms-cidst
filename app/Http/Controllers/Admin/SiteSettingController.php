@@ -32,6 +32,7 @@ class SiteSettingController extends Controller
             'news_ticker_direction' => 'nullable|in:horizontal,vertical',
             'pages_grid_columns' => 'nullable|in:2,3,4',
             'pages_image_size' => 'nullable|in:small,medium,large',
+            'facebook_url' => 'nullable|url|max:255',
         ]);
 
         $settings = SiteSetting::current();

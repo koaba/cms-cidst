@@ -4,7 +4,9 @@ use Illuminate\Database\Eloquent\Model;
 class SiteSetting extends Model
 {
     protected $fillable = [
-        'hero_eyebrow',
+        
+'hero_eyebrow',
+'facebook_url',
         'hero_eyebrow_size',
         'hero_title',
         'hero_subtitle',
