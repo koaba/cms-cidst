@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import daisyui from 'daisyui';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -27,5 +28,28 @@ export default {
             },
         },
     },
-    plugins: [forms],
-};
+    plugins: [
+        forms,
+        daisyui,
+    ],
+    daisyui: {
+        themes: [
+            {
+                cidst: {
+                    primary: '#C41E2A',
+                    secondary: '#17181A',
+                    accent: '#C41E2A',
+                    neutral: '#17181A',
+                    'base-100': '#FFFFFF',
+                    'base-200': '#F1F2F4',
+                    'base-300': '#D8DADE',
+                    info: '#3ABFF8',
+                    success: '#36D399',
+                    warning: '#FBBD23',
+                    error: '#F87272',
+                },
+            },
+        ],
+        darkTheme: false,
+    },
+}
