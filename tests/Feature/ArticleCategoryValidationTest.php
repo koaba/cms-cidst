@@ -8,13 +8,11 @@ it('refuse la création d\'un article avec un ID de catégorie inexistant', func
     Role::create(['name' => 'Super Admin']);
     $user = User::factory()->create();
     $user->assignRole('Super Admin');
-
     $response = $this->actingAs($user)->post('/admin/articles', [
         'title' => 'Test article',
         'content' => 'Contenu test',
         'categories' => [9999],
     ]);
-
     $response->assertSessionHasErrors('categories.0');
     $this->assertDatabaseMissing('articles', ['title' => 'Test article']);
 });
@@ -30,7 +28,6 @@ it('accepte la création d\'un article avec des IDs de catégories valides', fun
         'content' => 'Contenu test',
         'categories' => [$category->id],
     ]);
-
     $response->assertSessionDoesntHaveErrors();
     $this->assertDatabaseHas('articles', ['title' => 'Test article valide']);
 });
@@ -39,7 +36,6 @@ it('refuse la modification d\'un article avec un ID de catégorie inexistant', f
     Role::create(['name' => 'Super Admin']);
     $user = User::factory()->create();
     $user->assignRole('Super Admin');
-
     $article = \App\Models\Article::create([
         'title' => 'Article existant',
         'slug' => 'article-existant',
@@ -48,12 +44,10 @@ it('refuse la modification d\'un article avec un ID de catégorie inexistant', f
         'is_published' => true,
         'published_at' => now(),
     ]);
-
-    $response = $this->actingAs($user)->put("/admin/articles/{$article->id}", [
+    $response = $this->actingAs($user)->put("/admin/articles/{$article->slug}", [
         'title' => 'Article existant modifié',
         'content' => 'Contenu',
         'categories' => [9999],
     ]);
-
     $response->assertSessionHasErrors('categories.0');
 });
