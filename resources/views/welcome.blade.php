@@ -147,55 +147,7 @@
         @endif
     </section>
 
-    <section class="py-16 border-t border-cidst-border">
-        @php
-            $recentArticles = \App\Models\Article::with('categories')
-                ->where('is_published', true)
-                ->where('published_at', '<=', now())
-                ->orderByDesc('published_at')
-                ->take(5)
-                ->get();
-        @endphp
-
-        @if($recentArticles->isNotEmpty())
-            <p class="font-mono text-xs text-cidst-muted mb-8">// Actualités récentes</p>
-
-            <div class="space-y-4">
-                @foreach($recentArticles as $article)
-                    <a href="{{ route('blog.show', $article) }}" class="flex gap-4 items-start group">
-                        @if($article->image)
-                            <img
-                                src="{{ Storage::url($article->image) }}"
-                                alt="{{ $article->title }}"
-                                class="w-20 h-20 object-cover rounded-md border border-cidst-border flex-shrink-0"
-                                loading="lazy"
-                            >
-                        @else
-                            <div class="w-20 h-20 rounded-md border border-cidst-border bg-cidst-surface flex-shrink-0"></div>
-                        @endif
-
-                        <div class="min-w-0">
-                            @if($article->categories->isNotEmpty())
-                                <span class="inline-block text-xs px-2 py-0.5 rounded {{ $article->categories->first()->badgeColor() }} mb-1">
-                                    {{ $article->categories->first()->name }}
-                                </span>
-                            @endif
-
-                            <h3 class="font-display text-sm font-semibold text-cidst-ink leading-snug line-clamp-2 group-hover:text-cidst-red transition-colors">
-                                {{ $article->title }}
-                            </h3>
-
-                            <p class="text-xs text-cidst-muted mt-1">
-                                {{ $article->published_at->diffForHumans() }}
-                            </p>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        @endif
-    </section>
-
-    @if(isset($homeSliders) && $homeSliders->count() > 1)
+@if(isset($homeSliders) && $homeSliders->count() > 1)
         <script>
             (function () {
                 const container = document.getElementById('home-slider');
