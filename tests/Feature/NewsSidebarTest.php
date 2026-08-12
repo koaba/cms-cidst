@@ -41,22 +41,19 @@ it('limite la sidebar à 5 articles', function () {
     $response->assertSee('Actualités récentes');
 });
 
-it('affiche le lien Facebook quand facebook_url est renseignée', function () {
+it('affiche le plugin Facebook quand facebook_url est renseignée', function () {
     SiteSetting::current()->update(['facebook_url' => 'https://facebook.com/cidst']);
-
     $response = $this->get('/pages');
-
     $response->assertOk();
-    $response->assertSee('https://facebook.com/cidst', false);
+    $response->assertSee('facebook.com/plugins/page.php', false);
+    $response->assertSee(urlencode('https://facebook.com/cidst'), false);
 });
-
-it('n\'affiche pas de lien Facebook quand facebook_url est vide', function () {
+it('n\'affiche pas de plugin Facebook quand facebook_url est vide', function () {
     SiteSetting::current()->update(['facebook_url' => null]);
-
     $response = $this->get('/pages');
 
     $response->assertOk();
-    $response->assertDontSee('Suivez le CIDST sur Facebook');
+    $response->assertDontSee('facebook.com/plugins/page.php');
 });
 
 it('affiche un état vide propre quand aucune actualité n\'existe', function () {

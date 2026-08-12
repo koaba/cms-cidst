@@ -23,12 +23,21 @@
     @endif
 
     @if ($facebookUrl)
-        <div class="border-t border-cidst-border mt-3 pt-3 flex items-center gap-2">
-            <a href="{{ $facebookUrl }}" target="_blank" rel="noopener noreferrer"
-               class="flex items-center gap-2 text-xs text-cidst-muted hover:text-cidst-red">
-                <span class="w-7 h-7 bg-cidst-red rounded flex items-center justify-center text-white text-xs font-semibold">f</span>
-                Suivez le CIDST sur Facebook
-            </a>
+        <div class="border-t border-cidst-border mt-3 pt-3">
+            <p class="text-xs font-medium text-cidst-ink mb-2">Suivez-nous sur Facebook</p>
+            <div class="rounded-lg overflow-hidden">
+                <iframe
+                    src="https://www.facebook.com/plugins/page.php?href={{ urlencode($facebookUrl) }}&tabs=timeline&width=280&height=400&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false&lazy=true"
+                    width="100%"
+                    height="400"
+                    style="border:none; overflow:hidden;"
+                    scrolling="no"
+                    frameborder="0"
+                    allowfullscreen="true"
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                    loading="lazy">
+                </iframe>
+            </div>
         </div>
     @endif
 </aside>
