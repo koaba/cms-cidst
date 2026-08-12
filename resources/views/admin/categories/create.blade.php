@@ -19,7 +19,9 @@
             <input type="text" name="name" value="{{ old('name') }}" class="w-full border rounded p-2">
         </div>
 
-        <x-admin.button type="submit">Créer</x-admin.button>
-        <a href="{{ route('admin.categories.index') }}" class="ml-2 text-gray-600">Annuler</a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.categories.index') }}" class="btn btn-ghost">Annuler</a>
+            <x-admin.button type="submit">Créer</x-admin.button>
+        </div>
     </form>
 </x-admin.layout>

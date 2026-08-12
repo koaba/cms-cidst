@@ -22,6 +22,9 @@
                 <input type="checkbox" name="is_published" value="1" {{ $page->is_published ? 'checked' : '' }}> Publiée
             </label>
         </div>
-        <x-admin.button type="submit">Mettre à jour</x-admin.button>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.pages.index') }}" class="btn btn-ghost">Annuler</a>
+            <x-admin.button type="submit">Mettre à jour</x-admin.button>
+        </div>
     </form>
 </x-admin.layout>

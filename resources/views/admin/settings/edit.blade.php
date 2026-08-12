@@ -126,6 +126,9 @@
            class="w-full border rounded p-2">
     @error('facebook_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
-        <x-admin.button type="submit">Enregistrer</x-admin.button>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>
+            <x-admin.button type="submit">Enregistrer</x-admin.button>
+        </div>
     </form>
 </x-admin.layout>

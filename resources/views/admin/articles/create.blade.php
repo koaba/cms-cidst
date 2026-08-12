@@ -102,8 +102,10 @@
             </div>
         </div>
 
-        <x-admin.button type="submit">Créer</x-admin.button>
-        <a href="{{ route('admin.articles.index') }}" class="ml-2 text-gray-600">Annuler</a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.articles.index') }}" class="btn btn-ghost">Annuler</a>
+            <x-admin.button type="submit">Créer</x-admin.button>
+        </div>
     </form>
 
     <x-admin.media-picker />
