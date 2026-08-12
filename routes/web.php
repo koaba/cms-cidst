@@ -36,18 +36,24 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth', 'role:Super Admin'])->group(function () {
-  Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
+// Accès partagé : Super Admin ET Publication (contenu éditorial)
+Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
+    Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
     Route::resource('admin/pages', AdminPageController::class)->names('admin.pages');
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
+    Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');
+    Route::get('admin/media/picker', [AdminMediaController::class, 'picker'])->name('admin.media.picker');
+});
+
+// Accès restreint : Super Admin uniquement (structure du site, réglages)
+Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
     Route::resource('admin/categories', AdminCategoryController::class)->names('admin.categories');
-    Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');
-    Route::get('admin/media/picker', [AdminMediaController::class, 'picker'])->name('admin.media.picker');  
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
+    Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
 });
 
 require __DIR__.'/auth.php';
