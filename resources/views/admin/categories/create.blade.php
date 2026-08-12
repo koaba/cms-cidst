@@ -20,8 +20,8 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.categories.index') }}" class="btn btn-ghost">Annuler</a>
             <x-admin.button type="submit">Créer</x-admin.button>
+            <a href="{{ route('admin.categories.index') }}" class="btn btn-ghost">Annuler</a>
         </div>
     </form>
 </x-admin.layout>

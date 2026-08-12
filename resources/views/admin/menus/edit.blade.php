@@ -38,8 +38,8 @@
             <label for="is_active">Actif</label>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.menus.index') }}" class="btn btn-ghost">Annuler</a>
             <x-admin.button type="submit">Mettre à jour</x-admin.button>
+            <a href="{{ route('admin.menus.index') }}" class="btn btn-ghost">Annuler</a>
         </div>
     </form>
 </x-admin.layout>

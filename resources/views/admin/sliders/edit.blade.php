@@ -55,8 +55,8 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.sliders.index') }}" class="btn btn-ghost">Annuler</a>
             <x-admin.button type="submit">Mettre à jour</x-admin.button>
+            <a href="{{ route('admin.sliders.index') }}" class="btn btn-ghost">Annuler</a>
         </div>
     </form>
 

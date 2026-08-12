@@ -127,8 +127,8 @@
     @error('facebook_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>
             <x-admin.button type="submit">Enregistrer</x-admin.button>
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>
         </div>
     </form>
 </x-admin.layout>
