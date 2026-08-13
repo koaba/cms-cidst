@@ -54,6 +54,9 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
     Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
+    Route::patch('admin/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])
+    ->name('admin.users.reset-password');
+    
 });
 
 require __DIR__.'/auth.php';
