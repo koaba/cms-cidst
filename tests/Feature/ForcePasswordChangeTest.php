@@ -10,7 +10,6 @@ it('force le changement de mot de passe pour un utilisateur marque must_change_p
     expect($user->fresh()->must_change_password)->toBeTrue();
 
     $response = $this->actingAs($user)->get('/admin');
-
     $response->assertRedirect(route('profile.edit'));
 });
 
@@ -20,16 +19,15 @@ it('ne boucle pas indefiniment sur la page profil', function () {
     ]);
 
     $response = $this->actingAs($user)->get(route('profile.edit'));
-
     $response->assertOk();
 });
 
-it('libere l’utilisateur apres changement de mot de passe', function () {
+it('libere l\'utilisateur apres changement de mot de passe', function () {
     $user = User::factory()->create([
         'must_change_password' => true,
     ]);
 
-    $this->actingAs($user)->put(route('profile.password.update') ?? route('password.update'), [
+    $this->actingAs($user)->put(route('password.update'), [
         'current_password' => 'password',
         'password' => 'nouveaumotdepasse123',
         'password_confirmation' => 'nouveaumotdepasse123',
