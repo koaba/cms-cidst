@@ -1,4 +1,8 @@
+import Alpine from 'alpinejs';
 import Chart from 'chart.js/auto';
+
+window.Alpine = Alpine;
+Alpine.start();
 
 const canvas = document.getElementById('activityChart');
 if (canvas && window.dashboardActivity) {
@@ -9,11 +13,10 @@ if (canvas && window.dashboardActivity) {
             datasets: [{
                 label: 'Articles publiés',
                 data: Object.values(window.dashboardActivity),
-                backgroundColor: '#C41E2A', // cidst-red, cohérence de marque
+                backgroundColor: '#C41E2A',
             }],
         },
         options: {
-            responsive: true,
             plugins: { legend: { display: false } },
             scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
         },
