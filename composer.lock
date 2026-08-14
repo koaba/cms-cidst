@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "041efc0c0849020738f37efb60624098",
+    "content-hash": "b91ac17045cd742b2f47db5495748d5f",
     "packages": [
         {
             "name": "brick/math",
@@ -642,21 +642,21 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.15.1",
+            "version": "7.15.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "61443dfb33c62f308ee8add20f45b4d6e4bf8d2f"
+                "reference": "ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/61443dfb33c62f308ee8add20f45b4d6e4bf8d2f",
-                "reference": "61443dfb33c62f308ee8add20f45b4d6e4bf8d2f",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc",
+                "reference": "ae311b8f045ea93ce7b1c9cdb7cec06c53f944bc",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "guzzlehttp/promises": "^2.5.1",
+                "guzzlehttp/promises": "^2.5.2",
                 "guzzlehttp/psr7": "^2.13",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0",
@@ -750,7 +750,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.15.1"
+                "source": "https://github.com/guzzle/guzzle/tree/7.15.3"
             },
             "funding": [
                 {
@@ -766,20 +766,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-18T11:23:11+00:00"
+            "time": "2026-08-05T19:48:21+00:00"
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "2.5.1",
+            "version": "2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "9ad1e4fc607446a055b95870c7f668e93b5cff29"
+                "reference": "2823687acff28b2dbe67b2508a6b300e2c3fa4ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/9ad1e4fc607446a055b95870c7f668e93b5cff29",
-                "reference": "9ad1e4fc607446a055b95870c7f668e93b5cff29",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/2823687acff28b2dbe67b2508a6b300e2c3fa4ce",
+                "reference": "2823687acff28b2dbe67b2508a6b300e2c3fa4ce",
                 "shasum": ""
             },
             "require": {
@@ -834,7 +834,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/promises/issues",
-                "source": "https://github.com/guzzle/promises/tree/2.5.1"
+                "source": "https://github.com/guzzle/promises/tree/2.5.2"
             },
             "funding": [
                 {
@@ -850,7 +850,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-08T15:48:39+00:00"
+            "time": "2026-08-05T19:30:54+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -1616,16 +1616,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.8.2",
+            "version": "2.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "59fb075d2101740c337c7216e3f32b36c204218b"
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/59fb075d2101740c337c7216e3f32b36c204218b",
-                "reference": "59fb075d2101740c337c7216e3f32b36c204218b",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
+                "reference": "d2d1aa8b35e072966c89bc0c66cf926e56767dc4",
                 "shasum": ""
             },
             "require": {
@@ -1647,8 +1647,8 @@
                 "github/gfm": "0.29.0",
                 "michelf/php-markdown": "^1.4 || ^2.0",
                 "nyholm/psr7": "^1.5",
-                "phpstan/phpstan": "^1.8.2",
-                "phpunit/phpunit": "^9.5.21 || ^10.5.9 || ^11.0.0",
+                "phpstan/phpstan": "^2.0.0",
+                "phpunit/phpunit": "^9.5.21 || ^10.5.9 || ^11.0.0 || ^12.0.0 || ^13.0.0",
                 "scrutinizer/ocular": "^1.8.1",
                 "symfony/finder": "^5.3 | ^6.0 | ^7.0 || ^8.0",
                 "symfony/process": "^5.4 | ^6.0 | ^7.0 || ^8.0",
@@ -1662,7 +1662,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "2.9-dev"
+                    "dev-main": "2.11-dev"
                 }
             },
             "autoload": {
@@ -1719,7 +1719,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-19T13:16:38+00:00"
+            "time": "2026-08-11T16:06:25+00:00"
         },
         {
             "name": "league/config",
@@ -2174,6 +2174,73 @@
             "time": "2026-03-08T20:05:35+00:00"
         },
         {
+            "name": "masterminds/html5",
+            "version": "2.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Masterminds/html5-php.git",
+                "reference": "fd5018f6815fff903946d0564977b44ce8010e29"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/fd5018f6815fff903946d0564977b44ce8010e29",
+                "reference": "fd5018f6815fff903946d0564977b44ce8010e29",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35 || ^5.7.21 || ^6 || ^7 || ^8 || ^9 || ^10"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Masterminds\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matt Butcher",
+                    "email": "technosophos@gmail.com"
+                },
+                {
+                    "name": "Matt Farina",
+                    "email": "matt@mattfarina.com"
+                },
+                {
+                    "name": "Asmir Mustafic",
+                    "email": "goetas@gmail.com"
+                }
+            ],
+            "description": "An HTML5 parser and serializer.",
+            "homepage": "http://masterminds.github.io/html5-php",
+            "keywords": [
+                "HTML5",
+                "dom",
+                "html",
+                "parser",
+                "querypath",
+                "serializer",
+                "xml"
+            ],
+            "support": {
+                "issues": "https://github.com/Masterminds/html5-php/issues",
+                "source": "https://github.com/Masterminds/html5-php/tree/2.10.1"
+            },
+            "time": "2026-06-23T18:43:15+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "3.10.0",
             "source": {
@@ -2450,16 +2517,16 @@
         },
         {
             "name": "nette/utils",
-            "version": "v4.1.4",
+            "version": "v4.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/utils.git",
-                "reference": "7da6c396d7ebe142bc857c20479d5e70a5e1aac7"
+                "reference": "b043439dbdf954e6c28b5ea7e34b0100f83165e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/utils/zipball/7da6c396d7ebe142bc857c20479d5e70a5e1aac7",
-                "reference": "7da6c396d7ebe142bc857c20479d5e70a5e1aac7",
+                "url": "https://api.github.com/repos/nette/utils/zipball/b043439dbdf954e6c28b5ea7e34b0100f83165e0",
+                "reference": "b043439dbdf954e6c28b5ea7e34b0100f83165e0",
                 "shasum": ""
             },
             "require": {
@@ -2479,7 +2546,7 @@
             },
             "suggest": {
                 "ext-gd": "to use Image",
-                "ext-iconv": "to use Strings::webalize(), toAscii(), chr() and reverse()",
+                "ext-iconv": "to use Strings::chr(), ord() and reverse()",
                 "ext-intl": "to use Strings::webalize(), toAscii(), normalize() and compare()",
                 "ext-json": "to use Nette\\Utils\\Json",
                 "ext-mbstring": "to use Strings::lower() etc...",
@@ -2535,9 +2602,63 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/utils/issues",
-                "source": "https://github.com/nette/utils/tree/v4.1.4"
+                "source": "https://github.com/nette/utils/tree/v4.1.5"
             },
-            "time": "2026-05-11T20:49:54+00:00"
+            "time": "2026-07-17T23:02:45+00:00"
+        },
+        {
+            "name": "nicmart/tree",
+            "version": "0.10.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nicmart/Tree.git",
+                "reference": "2ef11e329d26005ef49dbacd0223bcfd2515b6cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nicmart/Tree/zipball/2ef11e329d26005ef49dbacd0223bcfd2515b6cc",
+                "reference": "2ef11e329d26005ef49dbacd0223bcfd2515b6cc",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.48.2",
+                "ergebnis/license": "^2.7.0",
+                "ergebnis/php-cs-fixer-config": "^6.28.1",
+                "fakerphp/faker": "^1.24.1",
+                "infection/infection": "~0.26.19",
+                "phpunit/phpunit": "^9.6.19",
+                "psalm/plugin-phpunit": "~0.19.0",
+                "vimeo/psalm": "^5.26.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Tree\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolò Martini",
+                    "email": "nicmartnic@gmail.com"
+                },
+                {
+                    "name": "Andreas Möller",
+                    "email": "am@localheinz.com"
+                }
+            ],
+            "description": "A basic but flexible php tree data structure and a fluent tree builder implementation.",
+            "support": {
+                "issues": "https://github.com/nicmart/Tree/issues",
+                "source": "https://github.com/nicmart/Tree/tree/0.10.1"
+            },
+            "time": "2025-11-25T08:51:01+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -3448,6 +3569,142 @@
             "time": "2026-06-18T03:57:49+00:00"
         },
         {
+            "name": "spatie/browsershot",
+            "version": "5.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/browsershot.git",
+                "reference": "dcf7a65fd1d0fc8fd113739b84982377728d0b2f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/browsershot/zipball/dcf7a65fd1d0fc8fd113739b84982377728d0b2f",
+                "reference": "dcf7a65fd1d0fc8fd113739b84982377728d0b2f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "ext-json": "*",
+                "php": "^8.2",
+                "spatie/temporary-directory": "^2.0",
+                "symfony/process": "^6.0|^7.0|^8.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^3.0|^4.0",
+                "spatie/image": "^3.6",
+                "spatie/pdf-to-text": "^1.52",
+                "spatie/phpunit-snapshot-assertions": "^5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Browsershot\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://github.com/freekmurze",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Convert a webpage to an image or pdf using headless Chrome",
+            "homepage": "https://github.com/spatie/browsershot",
+            "keywords": [
+                "chrome",
+                "convert",
+                "headless",
+                "image",
+                "pdf",
+                "puppeteer",
+                "screenshot",
+                "webpage"
+            ],
+            "support": {
+                "source": "https://github.com/spatie/browsershot/tree/5.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-05-26T13:13:33+00:00"
+        },
+        {
+            "name": "spatie/crawler",
+            "version": "8.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/crawler.git",
+                "reference": "18198a2198adff1637c0028cb60d2c9559721556"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/crawler/zipball/18198a2198adff1637c0028cb60d2c9559721556",
+                "reference": "18198a2198adff1637c0028cb60d2c9559721556",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.3",
+                "guzzlehttp/psr7": "^2.0",
+                "illuminate/collections": "^10.0|^11.0|^12.0|^13.0",
+                "nicmart/tree": "^0.10",
+                "php": "^8.2",
+                "spatie/browsershot": "^5.0.5",
+                "spatie/robots-txt": "^2.0",
+                "symfony/dom-crawler": "^6.0|^7.0|^8.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^2.0|^3.0|^4.0",
+                "spatie/ray": "^1.37"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Crawler\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be"
+                }
+            ],
+            "description": "Crawl all internal links found on a website",
+            "homepage": "https://github.com/spatie/crawler",
+            "keywords": [
+                "crawler",
+                "link",
+                "spatie",
+                "website"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/crawler/issues",
+                "source": "https://github.com/spatie/crawler/tree/8.5.0"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-02-21T22:52:37+00:00"
+        },
+        {
             "name": "spatie/laravel-package-tools",
             "version": "1.93.1",
             "source": {
@@ -3595,6 +3852,200 @@
                 }
             ],
             "time": "2026-07-03T15:36:01+00:00"
+        },
+        {
+            "name": "spatie/laravel-sitemap",
+            "version": "8.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/laravel-sitemap.git",
+                "reference": "8c79e1420a6f41405707ea7d00bb6cc10160c0ac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/laravel-sitemap/zipball/8c79e1420a6f41405707ea7d00bb6cc10160c0ac",
+                "reference": "8c79e1420a6f41405707ea7d00bb6cc10160c0ac",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.8",
+                "illuminate/support": "^11.0|^12.0||^13.0",
+                "nesbot/carbon": "^2.71|^3.0",
+                "php": "^8.2||^8.3||^8.4||^8.5",
+                "spatie/crawler": "^8.0.1",
+                "spatie/laravel-package-tools": "^1.16.1",
+                "symfony/dom-crawler": "^6.3.4|^7.0|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6.6",
+                "orchestra/testbench": "^9.0|^10.0||^11.0",
+                "pestphp/pest": "^3.7.4|^4.0",
+                "spatie/pest-plugin-snapshots": "^2.1",
+                "spatie/phpunit-snapshot-assertions": "^5.1.2",
+                "spatie/temporary-directory": "^2.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Spatie\\Sitemap\\SitemapServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Sitemap\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Create and generate sitemaps with ease",
+            "homepage": "https://github.com/spatie/laravel-sitemap",
+            "keywords": [
+                "laravel-sitemap",
+                "spatie"
+            ],
+            "support": {
+                "source": "https://github.com/spatie/laravel-sitemap/tree/8.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                }
+            ],
+            "time": "2026-02-21T23:01:14+00:00"
+        },
+        {
+            "name": "spatie/robots-txt",
+            "version": "2.5.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/robots-txt.git",
+                "reference": "a8dd35d0a94e863f52509a366a634978e9c1db03"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/robots-txt/zipball/a8dd35d0a94e863f52509a366a634978e9c1db03",
+                "reference": "a8dd35d0a94e863f52509a366a634978e9c1db03",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^11.5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Robots\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brent Roose",
+                    "email": "brent@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Determine if a page may be crawled from robots.txt and robots meta tags",
+            "homepage": "https://github.com/spatie/robots-txt",
+            "keywords": [
+                "robots-txt",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/robots-txt/issues",
+                "source": "https://github.com/spatie/robots-txt/tree/2.5.4"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-02-25T07:59:20+00:00"
+        },
+        {
+            "name": "spatie/temporary-directory",
+            "version": "2.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/temporary-directory.git",
+                "reference": "32cbb9645b28839cf4f476708e99a2c70e6802c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/temporary-directory/zipball/32cbb9645b28839cf4f476708e99a2c70e6802c9",
+                "reference": "32cbb9645b28839cf4f476708e99a2c70e6802c9",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\TemporaryDirectory\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Vanderbist",
+                    "email": "alex@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Easily create, use and destroy temporary directories",
+            "homepage": "https://github.com/spatie/temporary-directory",
+            "keywords": [
+                "php",
+                "spatie",
+                "temporary-directory"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/temporary-directory/issues",
+                "source": "https://github.com/spatie/temporary-directory/tree/2.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-06-22T07:55:44+00:00"
         },
         {
             "name": "symfony/clock",
@@ -3911,6 +4362,78 @@
                 }
             ],
             "time": "2026-06-05T06:23:12+00:00"
+        },
+        {
+            "name": "symfony/dom-crawler",
+            "version": "v7.4.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dom-crawler.git",
+                "reference": "b59b59122690976550fd142c23fab62c84738db6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/b59b59122690976550fd142c23fab62c84738db6",
+                "reference": "b59b59122690976550fd142c23fab62c84738db6",
+                "shasum": ""
+            },
+            "require": {
+                "masterminds/html5": "^2.6",
+                "php": ">=8.2",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/polyfill-ctype": "~1.8",
+                "symfony/polyfill-mbstring": "~1.0"
+            },
+            "require-dev": {
+                "symfony/css-selector": "^6.4|^7.0|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\DomCrawler\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Eases DOM navigation for HTML and XML documents",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/dom-crawler/tree/v7.4.12"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-05-20T07:20:23+00:00"
         },
         {
             "name": "symfony/error-handler",
