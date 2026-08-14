@@ -1,12 +1,18 @@
 <?php
 
 namespace App\Models;
+
+use App\Concerns\HasPublicVisibility;
+use App\Concerns\HasSeo;
+use App\Contracts\HasPublicUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Article extends Model
+class Article extends Model implements HasPublicUrl
 {
+    use HasSeo;
+    use HasPublicVisibility;
     use HasFactory;
 
     protected $fillable = ['title', 'slug', 'content', 'image', 'user_id', 'is_published', 'published_at', 'gallery_display'];
@@ -23,17 +29,20 @@ class Article extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function categories()
     {
         return $this->belongsToMany(Category::class);
     }
+
     public function media()
     {
         return $this->morphToMany(Media::class, 'mediable')
             ->withPivot('order')
             ->orderByPivot('order');
     }
-   public function diaporamas()
+
+    public function diaporamas()
     {
         return $this->morphMany(Diaporama::class, 'diaporamable')->orderBy('order');
     }
@@ -42,6 +51,12 @@ class Article extends Model
     {
         return $this->morphMany(Video::class, 'videoable')->orderBy('order');
     }
+
+    public function publicUrl(): string
+    {
+        return route('blog.show', $this);
+    }
+
     protected static function boot()
     {
         parent::boot();

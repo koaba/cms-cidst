@@ -9,6 +9,7 @@ use App\Models\Diaporama;
 use App\Models\Media;
 use App\Models\Video;
 use App\Traits\HasOrphanMediaCleanup;
+use App\Concerns\SavesSeoMeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +18,7 @@ use Illuminate\Validation\Rule;
 
 class ArticleController extends Controller
 {
-    use HasOrphanMediaCleanup;
+    use HasOrphanMediaCleanup, SavesSeoMeta;
 
     private const MAX_GALLERY_IMAGES = 20;
     private const MAX_DIAPORAMAS = 4;
@@ -52,6 +53,7 @@ class ArticleController extends Controller
             }
 
             $article = Article::create($validated);
+            $this->saveSeo($article, $validated);
             $article->categories()->sync($validated['categories'] ?? []);
 
             $this->syncGallery($request, $article);
@@ -92,6 +94,7 @@ class ArticleController extends Controller
             }
 
             $article->update($validated);
+            $this->saveSeo($article, $validated);
             $article->categories()->sync($validated['categories'] ?? []);
 
             $this->syncGallery($request, $article, isUpdate: true);
@@ -146,6 +149,9 @@ class ArticleController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,webp|max:2048',
             'categories' => 'nullable|array',
             'categories.*' => 'integer|exists:categories,id',
+            'seo' => 'nullable|array',
+'seo.meta_title' => 'nullable|string|max:60',
+'seo.meta_description' => 'nullable|string|max:320',
 
             // Galerie simple
             'images' => 'nullable|array',

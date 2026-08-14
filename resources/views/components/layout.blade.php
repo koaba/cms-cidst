@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $title ?? 'CIDST' }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.seo-meta', ['model' => $seo ?? null, 'title' => $title ?? null])
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>

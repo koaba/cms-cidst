@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Article;
+use App\Concerns\SavesSeoMeta;
 use App\Models\Category;
 class ArticleController extends Controller
 {
+    use SavesSeoMeta;
     public function index()
     {
         $articles = Article::where('is_published', true)

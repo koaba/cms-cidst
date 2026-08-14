@@ -26,5 +26,6 @@
             <x-admin.button type="submit">Mettre à jour</x-admin.button>
             <a href="{{ route('admin.pages.index') }}" class="btn btn-ghost">Annuler</a>
         </div>
+       @include('admin.partials.seo-fields', ['model' => $page]) 
     </form>
 </x-admin.layout>

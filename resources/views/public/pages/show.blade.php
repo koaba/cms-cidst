@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout :seo="$page">
     <h1 class="text-3xl font-bold mb-4">{{ $page->title }}</h1>
     @if($page->media->isNotEmpty())
         <img src="{{ Storage::url($page->media->first()->path) }}" class="w-full max-w-2xl mb-4 rounded">
