@@ -67,23 +67,24 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Utilisateur mis à jour.');
     }
 
-   public function resetPassword(Request $request, User $user)
-{
-    if ($user->id === auth()->id()) {
-        return back()->with('error', 'Utilisez votre page de profil pour changer votre propre mot de passe.');
+    public function resetPassword(Request $request, User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Utilisez votre page de profil pour changer votre propre mot de passe.');
+        }
+
+        $validated = $request->validate([
+            'new_password' => 'required|string|min:8',
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['new_password']),
+            'must_change_password' => true,
+        ]);
+
+        return back()->with('success', "Mot de passe réinitialisé pour {$user->name}.");
     }
 
-    $validated = $request->validate([
-        'new_password' => 'required|string|min:8',
-    ]);
-
-  $user->update([
-    'password' => $validated['new_password'],
-    'must_change_password' => true,
-]);
-
-    return back()->with('success', "Mot de passe réinitialisé pour {$user->name}.");
-}
     public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {
