@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
 {
+    use HasFactory;
+
     protected $table = 'media';
     protected $fillable = ['path', 'thumbnail_path', 'original_name', 'mime_type', 'size'];
 
@@ -43,7 +46,9 @@ class Media extends Model
         parent::boot();
 
         static::created(function (Media $media) {
-            \App\Jobs\GenerateMediaThumbnail::dispatch($media);
+            if (str_starts_with($media->mime_type, 'image/')) {
+                \App\Jobs\GenerateMediaThumbnail::dispatch($media);
+            }
         });
 
         static::deleting(function ($media) {

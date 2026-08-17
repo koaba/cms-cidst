@@ -2,8 +2,12 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
+use App\Traits\HasOrderedMediaCollection;
+
 class Menu extends Model
 {
+    use HasOrderedMediaCollection;
+
     protected $fillable = ['label', 'target', 'order', 'is_active', 'parent_id'];
     protected $casts = ['is_active' => 'boolean'];
 
@@ -18,9 +22,25 @@ class Menu extends Model
     }
 
     /**
-     * Retourne les IDs de tous les descendants (enfants, petits-enfants, etc.)
-     * de ce menu, recursivement. Utilise pour eviter les boucles de hierarchie.
+     * Relation media polymorphique partagee (voir §3.1 doc technique).
+     * Ne jamais Storage::delete() a la main sur un media : passer par
+     * HasOrphanMediaCleanup::detachAndPruneOrphanMedia().
      */
+    public function media()
+    {
+        return $this->morphToMany(Media::class, 'mediable')
+            ->withPivot('order')
+            ->orderByPivot('order');
+    }
+
+    /**
+     * Documents PDF attaches a ce menu (rapports, brochures...).
+     */
+    public function pdfs()
+    {
+        return $this->media()->where('mime_type', 'application/pdf');
+    }
+
     public function descendantIds(): array
     {
         $ids = [];
@@ -31,9 +51,6 @@ class Menu extends Model
         return $ids;
     }
 
-    /**
-     * Calcule la profondeur de ce menu dans la hierarchie (0 = premier niveau).
-     */
     public function depth(): int
     {
         $depth = 0;
@@ -45,10 +62,6 @@ class Menu extends Model
         return $depth;
     }
 
-    /**
-     * Resout la cible : si c'est un nom de route existant, genere l'URL via route().
-     * Sinon, retourne la valeur telle quelle (URL brute ou externe).
-     */
     public function getResolvedUrlAttribute(): string
     {
         if (Route::has($this->target)) {
