@@ -1,14 +1,13 @@
 <?php
-
 namespace App\Models;
-
+use App\Traits\HasOrderedMediaCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug'];
+    use HasOrderedMediaCollection;
 
+    protected $fillable = ['name', 'slug'];
     private const BADGE_COLORS = [
         'bg-blue-100 text-blue-800',
         'bg-yellow-100 text-yellow-800',
@@ -19,18 +18,25 @@ class Category extends Model
         'bg-teal-100 text-teal-800',
         'bg-red-100 text-red-800',
     ];
-
     public function badgeColor(): string
     {
         $index = crc32($this->name) % count(self::BADGE_COLORS);
         return self::BADGE_COLORS[$index];
     }
-
     public function articles()
     {
         return $this->belongsToMany(Article::class);
     }
-
+    public function media()
+    {
+        return $this->morphToMany(Media::class, 'mediable')
+            ->withPivot('order')
+            ->orderByPivot('order');
+    }
+    public function pdfs()
+    {
+        return $this->media()->where('mime_type', 'application/pdf');
+    }
     protected static function boot()
     {
         parent::boot();
