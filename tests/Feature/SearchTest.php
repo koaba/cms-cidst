@@ -3,7 +3,7 @@
 use App\Models\Article;
 use App\Models\Page;
 
-it('finds a published article matching the title', function () {
+it('trouve un article publié correspondant au titre', function () {
     Article::factory()->create([
         'title' => 'Colloque international sur la biodiversité',
         'is_published' => true,
@@ -16,7 +16,7 @@ it('finds a published article matching the title', function () {
     $response->assertSee('Colloque international sur la biodiversité');
 });
 
-it('does not show unpublished or future-dated articles in search', function () {
+it('n\'affiche pas les articles non publiés ou datés dans le futur dans la recherche', function () {
     Article::factory()->create([
         'title' => 'Article brouillon biodiversité',
         'is_published' => false,
@@ -36,7 +36,7 @@ it('does not show unpublished or future-dated articles in search', function () {
     $response->assertDontSee('Article futur biodiversité');
 });
 
-it('finds a published page matching the title', function () {
+it('trouve une page publiée correspondant au titre', function () {
     Page::factory()->create([
         'title' => 'À propos du CIDST',
         'is_published' => true,
@@ -48,7 +48,7 @@ it('finds a published page matching the title', function () {
     $response->assertSee('À propos du CIDST');
 });
 
-it('does not show unpublished pages in search', function () {
+it('n\'affiche pas les pages non publiées dans la recherche', function () {
     Page::factory()->create([
         'title' => 'Page brouillon CIDST',
         'is_published' => false,
@@ -60,14 +60,14 @@ it('does not show unpublished pages in search', function () {
     $response->assertDontSee('Page brouillon CIDST');
 });
 
-it('shows an empty state message when the query is empty', function () {
+it('affiche un message d\'état vide quand la requête est vide', function () {
     $response = $this->get('/recherche');
 
     $response->assertOk();
     $response->assertSee('Entrez un mot-clé');
 });
 
-it('shows a no-results message when nothing matches', function () {
+it('affiche un message \'aucun resultat\' quand rien ne correspond', function () {
     $response = $this->get('/recherche?q=zzzintrouvableXYZ');
 
     $response->assertOk();

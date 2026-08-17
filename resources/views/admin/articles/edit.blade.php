@@ -94,7 +94,7 @@
                 @foreach ($article->diaporamas as $i => $diaporama)
                     <div class="border rounded p-3" id="diaporama-{{ $i }}">
                         <input type="hidden" name="diaporamas[{{ $i }}][id]" value="{{ $diaporama->id }}">
-                        <div class="flex justify-between items-center mb-2">
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                             <input type="text" name="diaporamas[{{ $i }}][title]" value="{{ $diaporama->title }}" placeholder="Titre du diaporama (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                             <label class="flex items-center gap-1 text-xs text-red-600">
                                 <input type="checkbox" name="delete_diaporamas[]" value="{{ $diaporama->id }}">
@@ -146,7 +146,7 @@
                         <input type="hidden" name="videos[{{ $loop->index }}][id]" value="{{ $video->id }}">
                         <input type="hidden" name="videos[{{ $loop->index }}][source_type]" value="{{ $video->source_type }}">
 
-                        <div class="flex justify-between items-center mb-2">
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                             <input type="text" name="videos[{{ $loop->index }}][title]" value="{{ $video->title }}" placeholder="Titre (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                             <label class="flex items-center gap-1 text-xs text-red-600">
                                 <input type="checkbox" name="delete_videos[]" value="{{ $video->id }}">
@@ -159,7 +159,8 @@
                             <input type="file" name="videos[{{ $loop->index }}][file]" accept="video/mp4,video/webm" class="w-full border rounded p-2 text-sm">
                             <p class="text-xs text-gray-500 mt-1">Laisse vide pour garder le fichier actuel, ou choisis-en un nouveau pour le remplacer (MP4/WebM, 15 Mo max).</p>
                         @else
-                            <input type="url" name="videos[{{ $loop->index }}][url]" value="{{ $video->url }}" placeholder="https://youtube.com/..." class="w-full border rounded p-2 text-sm">
+                            <input type="url" name="videos[{{ $loop->index }}][url]" value="{{ $video->url }}" placeholder="https://youtube.com/..."
+class="w-full border rounded p-2 text-sm">
                         @endif
                     </div>
                 @endforeach
@@ -190,11 +191,12 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        @include('admin.partials.seo-fields', ['model' => $article])
+
+        <div class="flex items-center gap-3 border-t pt-4">
             <x-admin.button type="submit">Mettre à jour</x-admin.button>
             <a href="{{ route('admin.articles.index') }}" class="btn btn-ghost">Annuler</a>
         </div>
-@include('admin.partials.seo-fields', ['model' => $article])
     </form>
 
     <x-admin.media-picker />
@@ -239,7 +241,7 @@
             wrapper.className = 'border rounded p-3';
             wrapper.id = `diaporama-${index}`;
             wrapper.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                     <input type="text" name="diaporamas[${index}][title]" placeholder="Titre du diaporama (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                     <button type="button" onclick="document.getElementById('diaporama-${index}').remove()" class="text-red-600 text-sm">Retirer</button>
                 </div>
@@ -265,7 +267,7 @@
             wrapper.className = 'border rounded p-3';
             wrapper.id = `video-${index}`;
             wrapper.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                     <input type="text" name="videos[${index}][title]" placeholder="Titre (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                     <button type="button" onclick="document.getElementById('video-${index}').remove()" class="text-red-600 text-sm">Retirer</button>
                 </div>

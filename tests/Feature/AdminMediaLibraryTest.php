@@ -5,7 +5,7 @@ use App\Models\Media;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
-it('lists all uploaded media for a Super Admin', function () {
+it('liste tous les médias uploadés pour un Super Admin', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
@@ -23,7 +23,7 @@ it('lists all uploaded media for a Super Admin', function () {
     $response->assertSee('image-un.jpg');
 });
 
-it('filters media by filename search', function () {
+it('filtre les médias par recherche de nom de fichier', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
@@ -48,7 +48,7 @@ it('filters media by filename search', function () {
     $response->assertDontSee('photo-evenement.jpg');
 });
 
-it('shows which article uses a given media file', function () {
+it('affiche quel article utilise un média donné', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
@@ -68,7 +68,7 @@ it('shows which article uses a given media file', function () {
     $response->assertSee('Article de test médiathèque');
 });
 
-it('denies media library access to a user without the Super Admin role', function () {
+it('refuse l\'accès à la médiathèque à un utilisateur sans le rôle Super Admin', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get(route('admin.media.index'));

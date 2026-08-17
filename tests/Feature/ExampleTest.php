@@ -1,6 +1,6 @@
 <?php
 
-it('returns a successful response', function () {
+it('retourne une réponse réussie', function () {
     $response = $this->get('/');
 
     $response->assertStatus(200);

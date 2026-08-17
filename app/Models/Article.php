@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Concerns\HasPublicVisibility;
 use App\Concerns\HasSeo;
 use App\Contracts\HasPublicUrl;
+use App\Traits\HasOrderedMediaCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -14,6 +15,7 @@ class Article extends Model implements HasPublicUrl
     use HasSeo;
     use HasPublicVisibility;
     use HasFactory;
+    use HasOrderedMediaCollection;
 
     protected $fillable = ['title', 'slug', 'content', 'image', 'user_id', 'is_published', 'published_at', 'gallery_display'];
     protected $casts = [

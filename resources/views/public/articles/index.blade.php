@@ -39,9 +39,6 @@
                     {{ Str::limit(strip_tags($article->content), 120) }}
                 </p>
                 <span class="text-cidst-red text-sm font-medium mt-2">Lire la suite &rarr;</span>
-                <p class="text-cidst-muted text-xs mt-auto">
-                    {{ $article->published_at?->format('d/m/Y') }} - {{ $article->user->name }}
-                </p>
             </div>
         </a>
     @endforeach

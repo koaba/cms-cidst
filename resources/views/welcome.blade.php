@@ -1,4 +1,4 @@
-﻿<x-layout title="CIDST - Centre d'Information et de Documentation Scientifique et Technique">
+﻿<x-layout title="CIDST - Centre d'Information et de Documentation Scientifique et Technique" :sidebar="false">
 
     @php
     $settings = \App\Models\SiteSetting::current();

@@ -50,7 +50,7 @@
 
         <div>
             <label>
-                <input type="checkbox" name="is_active" value="1" {{ $slider->is_active ? 'checked' : '' }}> Actif
+                <input type="checkbox" name="is_active" value="1" {{ old('is_active', $slider->is_active) ? 'checked' : '' }}> Actif
             </label>
         </div>
 

@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\Media;
 use App\Traits\HasOrphanMediaCleanup;
+use App\Concerns\SavesSeoMeta;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
-    use HasOrphanMediaCleanup;
+    use HasOrphanMediaCleanup, SavesSeoMeta;
 
     public function index()
     {
@@ -29,27 +30,30 @@ class PageController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'published_at' => 'required|date',
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_published' => 'nullable|boolean',
+            'seo' => 'nullable|array',
+            'seo.meta_title' => 'nullable|string|max:60',
+            'seo.meta_description' => 'nullable|string|max:320',
         ]);
 
-        $pageData = collect($validated)->except('image')->toArray();
+        $pageData = collect($validated)->except(['image', 'seo'])->toArray();
         $pageData['user_id'] = auth()->id();
         $pageData['is_published'] = $request->boolean('is_published');
 
         $page = Page::create($pageData);
+        $this->saveSeo($page, $validated);
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $path = $file->store('pages', 'public');
-            $media = Media::create([
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ]);
-            $page->media()->attach($media->id, ['order' => 0]);
-        }
+        $file = $request->file('image');
+        $path = $file->store('pages', 'public');
+        $media = Media::create([
+            'path' => $path,
+            'original_name' => $file->getClientOriginalName(),
+            'mime_type' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+        ]);
+        $page->media()->attach($media->id, ['order' => 0]);
 
         return redirect()
             ->route('admin.pages.index')
@@ -71,14 +75,21 @@ class PageController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'published_at' => 'required|date',
+            'image' => $page->media->isEmpty()
+                ? 'required|image|mimes:jpg,jpeg,png,webp|max:2048'
+                : 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_published' => 'nullable|boolean',
+            'seo' => 'nullable|array',
+            'seo.meta_title' => 'nullable|string|max:60',
+            'seo.meta_description' => 'nullable|string|max:320',
         ]);
 
-        $pageData = collect($validated)->except('image')->toArray();
+        $pageData = collect($validated)->except(['image', 'seo'])->toArray();
         $pageData['is_published'] = $request->boolean('is_published');
 
         $page->update($pageData);
+        $this->saveSeo($page, $validated);
 
         if ($request->hasFile('image')) {
             $this->detachAndPruneOrphanMedia($page);

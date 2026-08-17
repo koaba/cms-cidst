@@ -1,12 +1,15 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Sliders</h1>
 
-    <x-admin.button href="{{ route('admin.sliders.create') }}">+ Nouveau slider</x-admin.button>
+    @if($sliders->count() >= \App\Http\Controllers\Admin\SliderController::MAX_SLIDERS)
+        <p class="text-sm text-amber-600 mt-2">Limite de {{ \App\Http\Controllers\Admin\SliderController::MAX_SLIDERS }} sliders atteinte — supprimez-en un pour en ajouter un nouveau.</p>
+    @else
+        <x-admin.button href="{{ route('admin.sliders.create') }}">+ Nouveau slider</x-admin.button>
+    @endif
 
     @if(session('success'))
         <p class="text-green-600 mt-2">{{ session('success') }}</p>
     @endif
-
     <table class="w-full mt-4 border-collapse">
         <thead>
             <tr class="border-b">

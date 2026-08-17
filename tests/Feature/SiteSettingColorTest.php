@@ -4,7 +4,7 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
-it('updates the site colors with valid hex values', function () {
+it('met à jour les couleurs du site avec des valeurs hexadécimales valides', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
@@ -20,7 +20,7 @@ it('updates the site colors with valid hex values', function () {
     expect(SiteSetting::current()->secondary_color)->toBe('#000000');
 });
 
-it('rejects an invalid hex color', function () {
+it('rejette une couleur hexadécimale invalide', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
@@ -33,7 +33,7 @@ it('rejects an invalid hex color', function () {
     $response->assertSessionHasErrors('primary_color');
 });
 
-it('falls back to the default color when an invalid value is stored directly', function () {
+it('revient à la couleur par défaut quand une valeur invalide est stockée directement', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');

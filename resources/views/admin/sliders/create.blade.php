@@ -1,7 +1,7 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Nouveau slider</h1>
 
-    <p class="text-sm text-gray-500 mb-4">{{ 5 - \App\Models\Slider::count() }} emplacement(s) restant(s) sur 5 maximum.</p>
+    <p class="text-sm text-gray-500 mb-4">{{ $remainingSlots }} emplacement(s) restant(s) sur {{ \App\Http\Controllers\Admin\SliderController::MAX_SLIDERS }} maximum.</p>
 
     <form action="{{ route('admin.sliders.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
@@ -46,7 +46,7 @@
 
         <div>
             <label>
-                <input type="checkbox" name="is_active" value="1" checked> Actif
+                <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}> Actif
             </label>
         </div>
 

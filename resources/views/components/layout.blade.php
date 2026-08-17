@@ -10,14 +10,18 @@
     <x-news-ticker />
     <x-main-menu />
     <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <div class="flex-1 min-w-0">
-                {{ $slot }}
+        @if($sidebar ?? true)
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="flex-1 min-w-0">
+                    {{ $slot }}
+                </div>
+                <div class="w-full lg:w-72 flex-shrink-0">
+                    <x-news-sidebar />
+                </div>
             </div>
-            <div class="w-full lg:w-72 flex-shrink-0">
-                <x-news-sidebar />
-            </div>
-        </div>
+        @else
+            {{ $slot }}
+        @endif
     </main>
 </body>
 </html>

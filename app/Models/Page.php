@@ -13,8 +13,8 @@ class Page extends Model implements HasPublicUrl
 {
     use HasFactory, HasSeo, HasPublicVisibility;
 
-    protected $fillable = ['title', 'slug', 'content', 'user_id', 'is_published'];
-    protected $casts = ['is_published' => 'boolean'];
+  protected $fillable = ['title', 'slug', 'content', 'user_id', 'is_published', 'published_at'];
+    protected $casts = ['is_published' => 'boolean', 'published_at' => 'date'];
 
     public function user()
     {

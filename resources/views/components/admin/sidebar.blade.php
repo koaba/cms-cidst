@@ -13,8 +13,10 @@ $navItems = [
 ];
 @endphp
 
-<aside class="w-56 bg-gray-800 text-gray-300 min-h-screen p-4 shrink-0">
-    <nav class="space-y-1">
+<aside id="admin-sidebar"
+       class="w-56 bg-gray-800 text-gray-300 min-h-screen p-4 shrink-0
+              fixed inset-y-0 left-0 z-40 -translate-x-full transition-transform duration-300
+              md:static md:translate-x-0">
         @foreach ($navItems as $item)
             @if (!isset($item['roles']) || auth()->user()->hasAnyRole($item['roles']))
                 <a href="{{ route($item['route']) }}"

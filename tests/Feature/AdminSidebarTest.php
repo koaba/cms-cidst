@@ -3,7 +3,7 @@
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
-it('shows the sidebar with all admin sections for a logged-in Super Admin', function () {
+it('affiche la barre latérale avec toutes les sections admin pour un Super Admin connecté', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
@@ -21,7 +21,7 @@ it('shows the sidebar with all admin sections for a logged-in Super Admin', func
     $response->assertSee('Réglages');
 });
 
-it('marks the current section as active in the sidebar', function () {
+it('marque la section courante comme active dans la barre latérale', function () {
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
@@ -32,7 +32,7 @@ it('marks the current section as active in the sidebar', function () {
     $response->assertSeeInOrder(['Pages', 'bg-gray-700']);
 });
 
-it('denies sidebar access to a user without the Super Admin role', function () {
+it('refuse l\'accès à la barre latérale à un utilisateur sans le rôle Super Admin', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->get(route('admin.articles.index'));

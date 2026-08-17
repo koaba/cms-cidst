@@ -27,7 +27,7 @@ Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.s
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// AccÃ¨s partagÃ© : Super Admin ET Publication (contenu Ã©ditorial)
+// Accès partagé : Super Admin ET Publication (contenu éditorial)
 Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
@@ -47,7 +47,7 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
     Route::get('admin/media/picker', [AdminMediaController::class, 'picker'])->name('admin.media.picker');
 });
 
-// AccÃ¨s restreint : Super Admin uniquement (structure du site, rÃ©glages)
+// Accès restreint : Super Admin uniquement (structure du site, réglages)
 Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
     Route::resource('admin/categories', AdminCategoryController::class)->names('admin.categories');
@@ -56,7 +56,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
     Route::patch('admin/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])
     ->name('admin.users.reset-password');
-    
+
 });
 
 require __DIR__.'/auth.php';

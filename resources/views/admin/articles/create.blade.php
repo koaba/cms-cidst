@@ -102,10 +102,13 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-3">
+        @include('admin.partials.seo-fields', ['model' => null])
+
+        <div class="flex items-center gap-3 border-t pt-4">
             <x-admin.button type="submit">Créer</x-admin.button>
             <a href="{{ route('admin.articles.index') }}" class="btn btn-ghost">Annuler</a>
-        </div>
+        </div>
+
     </form>
 
     <x-admin.media-picker />
@@ -148,7 +151,7 @@
             wrapper.className = 'border rounded p-3';
             wrapper.id = `diaporama-${index}`;
             wrapper.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                     <input type="text" name="diaporamas[${index}][title]" placeholder="Titre du diaporama (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                     <button type="button" onclick="document.getElementById('diaporama-${index}').remove(); updateAddButtons()" class="text-red-600 text-sm">Supprimer</button>
                 </div>
@@ -174,7 +177,7 @@
             wrapper.className = 'border rounded p-3';
             wrapper.id = `video-${index}`;
             wrapper.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                     <input type="text" name="videos[${index}][title]" placeholder="Titre de la vidéo (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                     <button type="button" onclick="document.getElementById('video-${index}').remove(); updateAddButtons()" class="text-red-600 text-sm">Supprimer</button>
                 </div>

@@ -7,14 +7,13 @@ use App\Models\Media;
 use App\Models\Slider;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class SliderController extends Controller
 {
     use HasOrphanMediaCleanup;
 
-    private const MAX_SLIDERS = 5;
+    public const MAX_SLIDERS = 5;
 
     public function index()
     {
@@ -24,7 +23,8 @@ class SliderController extends Controller
 
     public function create()
     {
-        return view('admin.sliders.create');
+        $remainingSlots = self::MAX_SLIDERS - Slider::count();
+        return view('admin.sliders.create', compact('remainingSlots'));
     }
 
     public function store(Request $request)
@@ -42,6 +42,7 @@ class SliderController extends Controller
         $validated['image'] = $path;
         $validated['is_active'] = $request->boolean('is_active');
         $validated['order'] = $validated['order'] ?? 0;
+        unset($validated['existing_media_id']);
 
         $slider = Slider::create($validated);
         $slider->media()->attach($media->id, ['order' => 0]);
@@ -64,16 +65,13 @@ class SliderController extends Controller
         if ($request->hasFile('image') || $request->filled('existing_media_id')) {
             $this->detachAndPruneOrphanMedia($slider);
 
-            if ($slider->image && Storage::disk('public')->exists($slider->image)) {
-                Storage::disk('public')->delete($slider->image);
-            }
-
             [$path, $media] = $this->resolveImage($request);
 
             $validated['image'] = $path;
             $slider->media()->attach($media->id, ['order' => 0]);
         }
 
+        unset($validated['existing_media_id']);
         $slider->update($validated);
 
         return redirect()->route('admin.sliders.index')->with('success', 'Slider mis à jour.');
@@ -82,11 +80,6 @@ class SliderController extends Controller
     public function destroy(Slider $slider)
     {
         $this->detachAndPruneOrphanMedia($slider);
-
-        if ($slider->image && Storage::disk('public')->exists($slider->image)) {
-            Storage::disk('public')->delete($slider->image);
-        }
-
         $slider->delete();
 
         return redirect()->route('admin.sliders.index')->with('success', 'Slider supprimé.');
@@ -125,7 +118,7 @@ class SliderController extends Controller
      * Retourne [path, Media] selon que l'image vient d'un upload direct
      * ou d'une sélection existante dans la médiathèque.
      */
-   private function resolveImage(Request $request): array
+    private function resolveImage(Request $request): array
     {
         if ($request->hasFile('image')) {
             $file = $request->file('image');
@@ -145,4 +138,4 @@ class SliderController extends Controller
 
         return [$media->path, $media];
     }
-     }
+}

@@ -2,13 +2,13 @@
 
 use App\Models\User;
 
-test('login screen can be rendered', function () {
+test('l\'écran de connexion peut s\'afficher', function () {
     $response = $this->get('/login');
 
     $response->assertStatus(200);
 });
 
-test('users can authenticate using the login screen', function () {
+test('les utilisateurs peuvent s\'authentifier via l\'écran de connexion', function () {
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
@@ -20,7 +20,7 @@ test('users can authenticate using the login screen', function () {
     $response->assertRedirect(route('admin.dashboard', absolute: false));
 });
 
-test('users can not authenticate with invalid password', function () {
+test('les utilisateurs ne peuvent pas s\'authentifier avec un mot de passe invalide', function () {
     $user = User::factory()->create();
 
     $this->post('/login', [
@@ -31,7 +31,7 @@ test('users can not authenticate with invalid password', function () {
     $this->assertGuest();
 });
 
-test('users can logout', function () {
+test('les utilisateurs peuvent se déconnecter', function () {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post('/logout');

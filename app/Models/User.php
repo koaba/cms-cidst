@@ -27,8 +27,4 @@ class User extends Authenticatable
     'must_change_password' => 'boolean',
 ];
     }
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
 }

@@ -23,9 +23,10 @@ it('supprime le média et le fichier physique quand on supprime la page', functi
 
     $file = UploadedFile::fake()->image('photo.jpg');
 
-    $response = $this->post(route('admin.pages.store'), [
+    $this->post(route('admin.pages.store'), [
         'title' => 'Page test',
         'content' => 'Contenu',
+        'published_at' => '2026-08-14',
         'image' => $file,
         'is_published' => true,
     ]);
@@ -50,6 +51,7 @@ it('ne supprime pas le média encore utilisé par un autre contenu', function ()
     $this->post(route('admin.pages.store'), [
         'title' => 'Page A',
         'content' => 'Contenu A',
+        'published_at' => '2026-08-14',
         'image' => $file,
         'is_published' => true,
     ]);
@@ -75,6 +77,7 @@ it('supprime l\'ancien média orphelin quand on remplace l\'image de la page', f
     $this->post(route('admin.pages.store'), [
         'title' => 'Page à modifier',
         'content' => 'Contenu',
+        'published_at' => '2026-08-14',
         'image' => $firstFile,
         'is_published' => true,
     ]);
@@ -88,6 +91,7 @@ it('supprime l\'ancien média orphelin quand on remplace l\'image de la page', f
     $this->put(route('admin.pages.update', $page), [
         'title' => 'Page à modifier',
         'content' => 'Contenu',
+        'published_at' => '2026-08-14',
         'image' => $newFile,
         'is_published' => true,
     ]);
