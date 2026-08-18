@@ -85,7 +85,7 @@ class UserController extends Controller
         return back()->with('success', "Mot de passe réinitialisé pour {$user->name}.");
     }
 
-    public function destroy(User $user)
+     public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {
             return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
