@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
@@ -14,6 +15,9 @@ use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\PdfDocumentController;
+use App\Http\Controllers\Admin\PdfCategoryController as AdminPdfCategoryController;
+use App\Http\Controllers\Admin\PdfDocumentController as AdminPdfDocumentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,6 +28,9 @@ Route::get('/blog/{article:slug}', [ArticleController::class, 'show'])->name('bl
 Route::get('/blog/categorie/{category:slug}', [ArticleController::class, 'byCategory'])->name('blog.category');
 Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
 Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
+Route::get('/documents', [PdfDocumentController::class, 'index'])->name('documents.index');
+Route::get('/documents/categorie/{pdfCategory:slug}', [PdfDocumentController::class, 'byCategory'])->name('documents.category');
+Route::get('/documents/{pdfDocument:slug}', [PdfDocumentController::class, 'show'])->name('documents.show');
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
 Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/dashboard', function () {
@@ -51,6 +58,8 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
 Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
     Route::resource('admin/categories', AdminCategoryController::class)->names('admin.categories');
+      Route::resource('admin/pdf-categories', AdminPdfCategoryController::class)->names('admin.pdf-categories');
+    Route::resource('admin/pdf-documents', AdminPdfDocumentController::class)->names('admin.pdf-documents');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
     Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
