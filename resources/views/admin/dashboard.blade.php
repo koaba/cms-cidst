@@ -1,4 +1,37 @@
-﻿<div class="card bg-base-100 shadow">
+﻿<x-admin.layout>
+    <h1 class="text-2xl font-bold mb-6">Tableau de bord</h1>
+
+    {{-- Cartes de statistiques : composant natif daisyUI, zéro CSS custom --}}
+    <div class="stats shadow w-full mb-8 flex-wrap">
+        <div class="stat">
+            <div class="stat-title">Articles publiés</div>
+            <div class="stat-value text-primary">{{ $stats['articles'] }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-title">Pages</div>
+            <div class="stat-value text-primary">{{ $stats['pages'] }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-title">Sliders</div>
+            <div class="stat-value text-primary">{{ $stats['sliders'] }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-title">Utilisateurs</div>
+            <div class="stat-value text-primary">{{ $stats['users'] }}</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {{-- Graphique d'activité --}}
+        <div class="card bg-base-100 shadow lg:col-span-2">
+            <div class="card-body">
+                <h2 class="card-title">Articles publiés — 6 derniers mois</h2>
+                <canvas id="activityChart" height="90"></canvas>
+            </div>
+        </div>
+
+        {{-- Flux d'activité récente --}}
+        <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <h2 class="card-title">Activité récente</h2>
                 <ul class="mt-2 space-y-3">

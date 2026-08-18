@@ -26,11 +26,11 @@ class DashboardController extends Controller
         $months = collect(range(5, 0))->map(fn ($i) => now()->subMonths($i)->format('Y-m'));
 
         $articlesParMois = Article::where('is_published', true)
-            ->whereNotNull('published_at')
-            ->where('published_at', '>=', now()->subMonths(6)->startOfMonth())
-            ->selectRaw('DATE_FORMAT(published_at, "%Y-%m") as mois, COUNT(*) as total')
-            ->groupBy('mois')
-            ->pluck('total', 'mois');
+    ->whereNotNull('published_at')
+    ->where('published_at', '>=', now()->subMonths(6)->startOfMonth())
+    ->get(['published_at'])
+    ->groupBy(fn (Article $article) => $article->published_at->format('Y-m'))
+    ->map->count();
 
         $activiteMensuelle = $months->mapWithKeys(fn ($mois) => [
             $mois => $articlesParMois->get($mois, 0),
