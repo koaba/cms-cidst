@@ -12,19 +12,19 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $urls = Cache::remember('sitemap.xml', 3600, function () {
-            $articles = Article::publiclyVisible()->get()->map(function (Article $article) {
-                return [
+            $articles = Article::publiclyVisible()->with('seo')->get()
+                ->reject(fn (Article $article) => $article->seo?->no_index)
+                ->map(fn (Article $article) => [
                     'loc' => $article->publicUrl(),
                     'lastmod' => $article->updated_at->toAtomString(),
-                ];
-            });
+                ]);
 
-            $pages = Page::publiclyVisible()->get()->map(function (Page $page) {
-                return [
+            $pages = Page::publiclyVisible()->with('seo')->get()
+                ->reject(fn (Page $page) => $page->seo?->no_index)
+                ->map(fn (Page $page) => [
                     'loc' => $page->publicUrl(),
                     'lastmod' => $page->updated_at->toAtomString(),
-                ];
-            });
+                ]);
 
             return $articles->merge($pages);
         });

@@ -10,9 +10,6 @@ trait SavesSeoMeta
             return;
         }
 
-        $model->seo()->updateOrCreate(
-            ['seoable_id' => $model->id, 'seoable_type' => $model::class],
-            $validated['seo']
-        );
+        $model->seo()->updateOrCreate([], $validated['seo']);
     }
 }
