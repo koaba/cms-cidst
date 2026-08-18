@@ -13,9 +13,10 @@ class MediaController extends Controller
     {
         $term = trim($request->query('q', ''));
 
-        return Media::query()
-            ->when($term !== '', fn ($query) => $query->where('original_name', 'like', "%{$term}%"))
-            ->latest();
+       return Media::query()
+    ->with('mediables')
+    ->when($term !== '', fn ($query) => $query->where('original_name', 'like', "%{$term}%"))
+    ->latest();
     }
    public function index(Request $request)
     {

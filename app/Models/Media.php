@@ -28,7 +28,7 @@ class Media extends Model
 
                 return $model ? [
                     'type' => class_basename($pivot->mediable_type),
-                    'title' => $model->title,
+                   'title' => $model->title ?? $model->name ?? $model->label ?? '(sans titre)',
                 ] : null;
             })
             ->filter()
