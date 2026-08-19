@@ -54,7 +54,6 @@
             <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-gray-500 font-normal">(20 max)</span></h2>
 
             <div id="gallery-selected" class="flex flex-wrap gap-2 mb-2"></div>
-
             <div class="flex gap-2">
                 <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100">
                     + Uploader des images
@@ -65,6 +64,11 @@
                     Choisir depuis la médiathèque
                 </button>
             </div>
+
+            <label class="flex items-center gap-2 text-sm text-gray-700 mt-2">
+                <input type="checkbox" name="apply_watermark_images" value="1">
+                Appliquer le filigrane de protection sur les nouvelles images
+            </label>
         </div>
 
         <div class="mb-6 border-t pt-4">
