@@ -53,7 +53,7 @@ class WatermarkService
                 x: $marginPx,
                 y: $marginPx,
                 alignment: $this->mapImageAlignment(config('watermark.position', 'br')),
-              transparency: ((int) config('watermark.opacity', 20)) / 100
+              transparency: ((int) config('watermark.opacity', 15)) / 100
             );
 
             $image->save($fullPath);
@@ -99,9 +99,9 @@ class WatermarkService
 
             $pageCount = $pdf->setSourceFile($fullPath);
 
-            $sizePercent = config('watermark.size_percent', 9);
-            $marginPercent = config('watermark.margin_percent', 2);
-            $opacity = config('watermark.opacity', 25);
+            $sizePercent = config('watermark.size_percent', 7);
+            $marginPercent = config('watermark.margin_percent', 3);
+            $opacity = config('watermark.opacity', 15);
             $position = config('watermark.position', 'br');
 
             for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
