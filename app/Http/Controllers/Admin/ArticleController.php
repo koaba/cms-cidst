@@ -280,23 +280,13 @@ class ArticleController extends Controller
         if ($request->filled('existing_media')) {
             $article->attachExistingMedia($request->input('existing_media'));
         }
-
-                if ($request->hasFile('images')) {
+        if ($request->hasFile('images')) {
             $applyWatermark = $request->boolean('apply_watermark_images');
-
-            \Illuminate\Support\Facades\Log::info('DEBUG syncGallery', [
-                'applyWatermark' => $applyWatermark,
-                'raw_checkbox_value' => $request->input('apply_watermark_images'),
-                'nb_files' => count($request->file('images')),
-            ]);
 
             $article->attachUploadedFiles(
                 $request->file('images'),
                 'articles/gallery',
-                $applyWatermark ? function (string $path) {
-                    $result = $this->watermarkService->watermarkImage($path);
-                    \Illuminate\Support\Facades\Log::info('DEBUG watermarkImage result', ['path' => $path, 'result' => $result]);
-                } : null
+                $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkImage($path) : null
             );
         }
     }
