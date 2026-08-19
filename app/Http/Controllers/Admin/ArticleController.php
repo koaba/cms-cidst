@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Diaporama;
 use App\Models\Media;
 use App\Models\Video;
+use App\Services\WatermarkService;
 use App\Traits\HasOrphanMediaCleanup;
 use App\Concerns\SavesSeoMeta;
 use Illuminate\Http\Request;
@@ -25,6 +26,15 @@ class ArticleController extends Controller
     private const MAX_IMAGES_PER_DIAPORAMA = 10;
     private const MAX_VIDEOS = 5;
     private const MAX_VIDEO_UPLOAD_KB = 15360; // 15 Mo
+    private const MAX_PDFS = 10;
+    private const MAX_PDF_UPLOAD_KB = 10240; // 10 Mo par PDF
+
+    private WatermarkService $watermarkService;
+
+    public function __construct(WatermarkService $watermarkService)
+    {
+        $this->watermarkService = $watermarkService;
+    }
 
     public function index()
     {
@@ -57,6 +67,7 @@ class ArticleController extends Controller
             $article->categories()->sync($validated['categories'] ?? []);
 
             $this->syncGallery($request, $article);
+            $this->syncPdfs($request, $article);
             $this->syncDiaporamas($request, $article);
             $this->syncVideos($request, $article);
 
@@ -98,6 +109,7 @@ class ArticleController extends Controller
             $article->categories()->sync($validated['categories'] ?? []);
 
             $this->syncGallery($request, $article, isUpdate: true);
+            $this->syncPdfs($request, $article, isUpdate: true);
             $this->syncDiaporamas($request, $article, isUpdate: true);
             $this->syncVideos($request, $article, isUpdate: true);
         });
@@ -154,12 +166,27 @@ class ArticleController extends Controller
 'seo.meta_description' => 'nullable|string|max:320',
 
             // Galerie simple
-            'images' => 'nullable|array',
+                        'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,webp|max:4096',
+            'apply_watermark_images' => 'nullable|boolean',
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
             'delete_images' => 'nullable|array',
             'delete_images.*' => [
+                'integer',
+                $article
+                    ? Rule::exists('mediables', 'media_id')
+                        ->where('mediable_type', Article::class)
+                        ->where('mediable_id', $article->id)
+                    : 'exists:media,id',
+            ],
+
+            // Documents PDF (visibles publiquement sur la page article)
+            'pdfs' => 'nullable|array',
+            'pdfs.*' => 'file|mimes:pdf|max:' . self::MAX_PDF_UPLOAD_KB,
+            'apply_watermark_pdfs' => 'nullable|boolean',
+            'delete_pdfs' => 'nullable|array',
+            'delete_pdfs.*' => [
                 'integer',
                 $article
                     ? Rule::exists('mediables', 'media_id')
@@ -193,11 +220,20 @@ class ArticleController extends Controller
 
         $validator->after(function ($validator) use ($request, $article) {
             // Galerie simple : total (existantes conservées + nouvelles + sélectionnées) <= 20
-            $currentGalleryCount = $article ? $article->media()->count() : 0;
+            // Ne compte que les images : depuis l'ajout des PDF joints, media() mélange les deux types.
+            $currentGalleryCount = $article ? $article->media()->where('mime_type', 'like', 'image/%')->count() : 0;
             $toDelete = count($request->input('delete_images', []));
             $incoming = count($request->file('images', [])) + count($request->input('existing_media', []));
             if (($currentGalleryCount - $toDelete + $incoming) > self::MAX_GALLERY_IMAGES) {
                 $validator->errors()->add('images', 'La galerie ne peut pas dépasser ' . self::MAX_GALLERY_IMAGES . ' images au total.');
+            }
+
+            // Documents PDF : total (existants conservés + nouveaux) <= MAX_PDFS
+            $currentPdfCount = $article ? $article->media()->where('mime_type', 'application/pdf')->count() : 0;
+            $toDeletePdf = count($request->input('delete_pdfs', []));
+            $incomingPdf = count($request->file('pdfs', []));
+            if (($currentPdfCount - $toDeletePdf + $incomingPdf) > self::MAX_PDFS) {
+                $validator->errors()->add('pdfs', 'Un article ne peut pas dépasser ' . self::MAX_PDFS . ' documents PDF.');
             }
 
             // Chaque diaporama : chaque bloc doit fournir au moins un titre ou des images
@@ -236,7 +272,7 @@ class ArticleController extends Controller
     /*  Synchronisation galerie simple                                    */
     /* ------------------------------------------------------------------ */
 
-    private function syncGallery(Request $request, Article $article, bool $isUpdate = false): void
+      private function syncGallery(Request $request, Article $article, bool $isUpdate = false): void
     {
         if ($isUpdate && $request->filled('delete_images')) {
             $article->detachOwnedMedia($request->input('delete_images'));
@@ -247,7 +283,63 @@ class ArticleController extends Controller
         }
 
         if ($request->hasFile('images')) {
-            $article->attachUploadedFiles($request->file('images'), 'articles/gallery');
+            $applyWatermark = $request->boolean('apply_watermark_images');
+            $order = $article->media()->count();
+
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('articles/gallery', 'public');
+
+                if ($applyWatermark) {
+                    $this->watermarkService->watermarkImage($path);
+                }
+
+                $media = Media::create([
+                    'original_name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'mime_type' => $file->getClientMimeType(),
+                    'size' => Storage::disk('public')->size($path),
+                ]);
+
+                $article->media()->attach($media->id, ['order' => $order++]);
+            }
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Synchronisation documents PDF                                     */
+    /* ------------------------------------------------------------------ */
+
+    private function syncPdfs(Request $request, Article $article, bool $isUpdate = false): void
+    {
+        if ($isUpdate && $request->filled('delete_pdfs')) {
+            $article->detachOwnedMedia($request->input('delete_pdfs'));
+        }
+
+        if (! $request->hasFile('pdfs')) {
+            return;
+        }
+
+        // Passe par un stockage manuel (plutôt que attachUploadedFiles générique) car
+        // le filigrane doit être appliqué au fichier stocké avant de créer le Media,
+        // et la taille finale doit refléter le fichier après filigrane.
+        $applyWatermark = $request->boolean('apply_watermark_pdfs');
+        $order = $article->media()->count();
+
+        foreach ($request->file('pdfs') as $file) {
+            $path = $file->store('articles/pdfs', 'public');
+
+            if ($applyWatermark) {
+                $this->watermarkService->watermarkPdf($path);
+            }
+
+            $media = Media::create([
+                'original_name' => $file->getClientOriginalName(),
+                'path' => $path,
+                'mime_type' => $file->getClientMimeType(),
+                'size' => Storage::disk('public')->size($path),
+            ]);
+
+            $article->media()->attach($media->id, ['order' => $order++]);
         }
     }
 

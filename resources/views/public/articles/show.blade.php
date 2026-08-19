@@ -15,11 +15,16 @@
         </div>
     @endif
     <div class="prose">{{ $article->content }}</div>
-    @if ($article->media->isNotEmpty())
+    @php
+        // media() mélange images et PDF depuis l'ajout des documents joints : on sépare ici pour l'affichage.
+        $galleryImages = $article->media->filter(fn ($m) => str_starts_with($m->mime_type, 'image/'));
+        $attachedPdfs = $article->media->filter(fn ($m) => $m->mime_type === 'application/pdf');
+    @endphp
+    @if ($galleryImages->isNotEmpty())
         <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Galerie</h2>
         @if ($article->gallery_display === 'slideshow')
             <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
-                @foreach ($article->media as $media)
+                @foreach ($galleryImages as $media)
                     <img src="{{ Storage::url($media->path) }}"
                          alt="{{ $article->title }} - image {{ $loop->iteration }}"
                          class="w-full max-w-md flex-shrink-0 snap-center aspect-video object-cover rounded">
@@ -27,13 +32,29 @@
             </div>
         @else
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                @foreach ($article->media as $media)
+                @foreach ($galleryImages as $media)
                     <img src="{{ Storage::url($media->path) }}"
                          alt="{{ $article->title }} - image {{ $loop->iteration }}"
                          class="w-full aspect-square object-cover rounded">
                 @endforeach
             </div>
         @endif
+    @endif
+
+    @if ($attachedPdfs->isNotEmpty())
+        <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Documents joints</h2>
+        <ul class="space-y-2 mb-6">
+            @foreach ($attachedPdfs as $pdf)
+                <li>
+                    <a href="{{ Storage::url($pdf->path) }}"
+                       target="_blank" rel="noopener"
+                       class="inline-flex items-center gap-2 text-cidst-red hover:underline">
+                        <span aria-hidden="true">&#128196;</span>
+                        {{ $pdf->original_name }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     @endif
 
     @if ($article->diaporamas->isNotEmpty())

@@ -55,12 +55,17 @@
         </div>
 
         {{-- ===================== GALERIE SIMPLE ===================== --}}
+        @php
+            // media() mélange désormais images et PDF joints : on sépare ici pour l'affichage.
+            $galleryImages = $article->media->filter(fn ($m) => str_starts_with($m->mime_type, 'image/'));
+            $attachedPdfs = $article->media->filter(fn ($m) => $m->mime_type === 'application/pdf');
+        @endphp
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-gray-500 font-normal">(20 max)</span></h2>
 
-            @if ($article->media->isNotEmpty())
+            @if ($galleryImages->isNotEmpty())
                 <div class="flex flex-wrap gap-3 mb-3">
-                    @foreach ($article->media as $media)
+                    @foreach ($galleryImages as $media)
                         <label class="block w-24">
                             <img src="{{ Storage::url($media->path) }}" class="w-24 h-24 object-cover rounded border">
                             <span class="flex items-center gap-1 text-xs mt-1">
@@ -84,6 +89,36 @@
                     Choisir depuis la médiathèque
                 </button>
             </div>
+        </div>
+
+        {{-- ===================== DOCUMENTS PDF ===================== --}}
+        <div class="mb-6 border-t pt-4">
+            <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-gray-500 font-normal">(10 max, visibles publiquement sur la page article)</span></h2>
+
+            @if ($attachedPdfs->isNotEmpty())
+                <div class="space-y-2 mb-3">
+                    @foreach ($attachedPdfs as $pdf)
+                        <label class="flex items-center gap-2 text-sm border rounded px-3 py-2 bg-gray-50">
+                            <span aria-hidden="true">&#128196;</span>
+                            <span class="flex-1">{{ $pdf->original_name }}</span>
+                            <span class="flex items-center gap-1 text-xs">
+                                <input type="checkbox" name="delete_pdfs[]" value="{{ $pdf->id }}">
+                                Supprimer
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+            @endif
+
+            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100 inline-block mb-2">
+                + Ajouter des PDF
+                <input type="file" name="pdfs[]" accept="application/pdf" multiple class="hidden">
+            </label>
+
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <input type="checkbox" name="apply_watermark_pdfs" value="1">
+                Appliquer le filigrane de protection sur ces documents
+            </label>
         </div>
 
         {{-- ===================== DIAPORAMAS ===================== --}}
