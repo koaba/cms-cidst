@@ -20,26 +20,37 @@
         $galleryImages = $article->media->filter(fn ($m) => str_starts_with($m->mime_type, 'image/'));
         $attachedPdfs = $article->media->filter(fn ($m) => $m->mime_type === 'application/pdf');
     @endphp
-    @if ($galleryImages->isNotEmpty())
-        <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Galerie</h2>
-        @if ($article->gallery_display === 'slideshow')
-            <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
-                @foreach ($galleryImages as $media)
-                    <img src="{{ Storage::url($media->path) }}"
-                         alt="{{ $article->title }} - image {{ $loop->iteration }}"
-                         class="w-full max-w-md flex-shrink-0 snap-center aspect-video object-cover rounded">
-                @endforeach
-            </div>
-        @else
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                @foreach ($galleryImages as $media)
-                    <img src="{{ Storage::url($media->path) }}"
-                         alt="{{ $article->title }} - image {{ $loop->iteration }}"
-                         class="w-full aspect-square object-cover rounded">
-                @endforeach
-            </div>
-        @endif
+  @if ($galleryImages->isNotEmpty())
+    <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Galerie</h2>
+
+    <script type="application/json" id="diaporama-data-gallery">
+        {!! json_encode($galleryImages->map(fn ($m) => [
+            'url' => Storage::url($m->path),
+            'thumbnail_url' => Storage::url($m->path),
+            'alt' => $article->title,
+        ])->values(), JSON_HEX_TAG | JSON_HEX_AMP) !!}
+    </script>
+
+    @if ($article->gallery_display === 'slideshow')
+        <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
+            @foreach ($galleryImages as $media)
+                <img src="{{ Storage::url($media->path) }}"
+                     alt="{{ $article->title }} - image {{ $loop->iteration }}"
+                     class="w-full max-w-md flex-shrink-0 snap-center aspect-video object-cover rounded cursor-pointer"
+                     onclick="openLightbox('gallery', {{ $loop->index }})">
+            @endforeach
+        </div>
+    @else
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            @foreach ($galleryImages as $media)
+                <img src="{{ Storage::url($media->path) }}"
+                     alt="{{ $article->title }} - image {{ $loop->iteration }}"
+                     class="w-full aspect-square object-cover rounded cursor-pointer"
+                     onclick="openLightbox('gallery', {{ $loop->index }})">
+            @endforeach
+        </div>
     @endif
+@endif
 
     @if ($attachedPdfs->isNotEmpty())
         <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Documents joints</h2>
@@ -156,7 +167,16 @@
                 lightbox.classList.remove('hidden');
                 lightbox.classList.add('flex');
             }
-
+function openLightbox(diaporamaId, index) {
+    const dataEl = document.getElementById('diaporama-data-' + diaporamaId);
+    if (!dataEl) return;
+    currentGroup = JSON.parse(dataEl.textContent);
+    currentIndex = index;
+    render();
+    lightbox.classList.remove('hidden');
+    lightbox.classList.add('flex');
+} 
+window.openLightbox = openLightbox;
             function render() {
                 const item = currentGroup[currentIndex];
                 lightboxImg.src = item.url;
