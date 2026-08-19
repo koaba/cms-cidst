@@ -3,6 +3,8 @@
 namespace App\Traits;
 
 use App\Models\Media;
+use Closure;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Factorise les opérations communes sur une collection de médias ordonnée
@@ -31,16 +33,29 @@ trait HasOrderedMediaCollection
         }
     }
 
-    public function attachUploadedFiles(array $files, string $storagePath): void
+    /**
+     * @param  Closure(string $path): void|null  $beforeCreate  Hook optionnel exécuté sur le
+     *         fichier déjà stocké, avant la création du Media (ex: filigrane). Le hook travaille
+     *         en place sur le disque 'public' ; la taille est recalculée après son exécution pour
+     *         refléter le fichier final (un filigrane peut changer la taille du fichier).
+     */
+    public function attachUploadedFiles(array $files, string $storagePath, ?Closure $beforeCreate = null): void
     {
         $order = $this->media()->count();
         foreach ($files as $file) {
             $path = $file->store($storagePath, 'public');
+            $size = $file->getSize();
+
+            if ($beforeCreate !== null) {
+                $beforeCreate($path);
+                $size = Storage::disk('public')->size($path);
+            }
+
             $media = Media::create([
                 'original_name' => $file->getClientOriginalName(),
                 'path' => $path,
                 'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
+                'size' => $size,
             ]);
             $this->media()->attach($media->id, ['order' => $order++]);
         }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Diaporama;
-use App\Models\Media;
 use App\Models\Video;
 use App\Services\WatermarkService;
 use App\Traits\HasOrphanMediaCleanup;
@@ -284,24 +283,12 @@ class ArticleController extends Controller
 
         if ($request->hasFile('images')) {
             $applyWatermark = $request->boolean('apply_watermark_images');
-            $order = $article->media()->count();
 
-            foreach ($request->file('images') as $file) {
-                $path = $file->store('articles/gallery', 'public');
-
-                if ($applyWatermark) {
-                    $this->watermarkService->watermarkImage($path);
-                }
-
-                $media = Media::create([
-                    'original_name' => $file->getClientOriginalName(),
-                    'path' => $path,
-                    'mime_type' => $file->getClientMimeType(),
-                    'size' => Storage::disk('public')->size($path),
-                ]);
-
-                $article->media()->attach($media->id, ['order' => $order++]);
-            }
+            $article->attachUploadedFiles(
+                $request->file('images'),
+                'articles/gallery',
+                $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkImage($path) : null
+            );
         }
     }
 
@@ -319,28 +306,13 @@ class ArticleController extends Controller
             return;
         }
 
-        // Passe par un stockage manuel (plutôt que attachUploadedFiles générique) car
-        // le filigrane doit être appliqué au fichier stocké avant de créer le Media,
-        // et la taille finale doit refléter le fichier après filigrane.
         $applyWatermark = $request->boolean('apply_watermark_pdfs');
-        $order = $article->media()->count();
 
-        foreach ($request->file('pdfs') as $file) {
-            $path = $file->store('articles/pdfs', 'public');
-
-            if ($applyWatermark) {
-                $this->watermarkService->watermarkPdf($path);
-            }
-
-            $media = Media::create([
-                'original_name' => $file->getClientOriginalName(),
-                'path' => $path,
-                'mime_type' => $file->getClientMimeType(),
-                'size' => Storage::disk('public')->size($path),
-            ]);
-
-            $article->media()->attach($media->id, ['order' => $order++]);
-        }
+        $article->attachUploadedFiles(
+            $request->file('pdfs'),
+            'articles/pdfs',
+            $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkPdf($path) : null
+        );
     }
 
     /* ------------------------------------------------------------------ */
