@@ -116,9 +116,11 @@
             @endif
 
             <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100 inline-block mb-2">
-                + Ajouter des PDF
-                <input type="file" name="pdfs[]" accept="application/pdf" multiple class="hidden">
+            + Ajouter des PDF 
+            <input type="file" name="pdfs[]" id="pdf-input" accept="application/pdf" multiple class="hidden">
             </label>
+            <div id="pdf-thumbnails-preview" class="flex flex-wrap gap-2 mb-2"></div>
+            <input type="hidden" name="pdf_thumbnails" id="pdf-thumbnails-data">
 
             <label class="flex items-center gap-2 text-sm text-gray-700">
                 <input type="checkbox" name="apply_watermark_pdfs" value="1">
@@ -337,4 +339,39 @@ class="w-full border rounded p-2 text-sm">
             document.getElementById(`video-${index}-external`).classList.toggle('hidden', type !== 'external');
         }
     </script>
+    @push('scripts')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+        <script>
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            document.getElementById('pdf-input')?.addEventListener('change', async function (e) {
+                const files = Array.from(e.target.files);
+                const preview = document.getElementById('pdf-thumbnails-preview');
+                const dataInput = document.getElementById('pdf-thumbnails-data');
+                preview.innerHTML = '';
+                const thumbnails = [];
+                for (const file of files) {
+                    try {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                        const page = await pdf.getPage(1);
+                        const viewport = page.getViewport({ scale: 0.5 });
+                        const canvas = document.createElement('canvas');
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        thumbnails.push({ name: file.name, thumbnail: dataUrl });
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        img.className = 'w-16 h-20 object-cover rounded border';
+                        preview.appendChild(img);
+                    } catch (err) {
+                        console.error('Erreur génération miniature PDF pour', file.name, err);
+                        thumbnails.push({ name: file.name, thumbnail: null });
+                    }
+                }
+                dataInput.value = JSON.stringify(thumbnails);
+            });
+        </script>
+    @endpush
 </x-admin.layout>

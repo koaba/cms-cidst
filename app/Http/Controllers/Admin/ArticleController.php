@@ -295,24 +295,33 @@ class ArticleController extends Controller
     /*  Synchronisation documents PDF                                     */
     /* ------------------------------------------------------------------ */
 
-    private function syncPdfs(Request $request, Article $article, bool $isUpdate = false): void
-    {
-        if ($isUpdate && $request->filled('delete_pdfs')) {
-            $article->detachOwnedMedia($request->input('delete_pdfs'));
-        }
-
-        if (! $request->hasFile('pdfs')) {
-            return;
-        }
-
-        $applyWatermark = $request->boolean('apply_watermark_pdfs');
-
-        $article->attachUploadedFiles(
-            $request->file('pdfs'),
-            'articles/pdfs',
-            $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkPdf($path) : null
-        );
+   private function syncPdfs(Request $request, Article $article, bool $isUpdate = false): void
+{
+    if ($isUpdate && $request->filled('delete_pdfs')) {
+        $article->detachOwnedMedia($request->input('delete_pdfs'));
     }
+
+    if (! $request->hasFile('pdfs')) {
+        return;
+    }
+
+    $applyWatermark = $request->boolean('apply_watermark_pdfs');
+
+    $thumbnails = [];
+    if ($request->filled('pdf_thumbnails')) {
+        $decoded = json_decode($request->input('pdf_thumbnails'), true);
+        if (is_array($decoded)) {
+            $thumbnails = $decoded;
+        }
+    }
+
+    $article->attachUploadedFiles(
+        $request->file('pdfs'),
+        'articles/pdfs',
+        $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkPdf($path) : null,
+        $thumbnails
+    );
+}
 
     /* ------------------------------------------------------------------ */
     /*  Synchronisation diaporamas                                        */

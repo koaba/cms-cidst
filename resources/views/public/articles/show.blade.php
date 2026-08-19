@@ -52,18 +52,20 @@
     @endif
 @endif
 
-    @if ($attachedPdfs->isNotEmpty())
+        @if ($attachedPdfs->isNotEmpty())
         <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Documents joints</h2>
-        <ul class="space-y-2 mb-6">
+        <div class="flex flex-wrap gap-4 mb-6">
             @foreach ($attachedPdfs as $pdf)
-                <li>
-                    <a href="{{ Storage::url($pdf->path) }}"
-                       target="_blank" rel="noopener"
-                       class="inline-flex items-center gap-2 text-cidst-red hover:underline">
-                        <span aria-hidden="true">&#128196;</span>
+                <a href="{{ Storage::url($pdf->path) }}"
+                   target="_blank" rel="noopener"
+                   class="flex flex-col items-center gap-1 w-28 text-center group">
+                    <img src="{{ $pdf->thumbnail_url }}"
+                         alt="Aperçu du document {{ $pdf->original_name }}"
+                         class="w-24 h-32 object-cover rounded border group-hover:opacity-80 transition">
+                    <span class="text-xs text-cidst-red group-hover:underline break-words">
                         {{ $pdf->original_name }}
-                    </a>
-                </li>
+                    </span>
+                </a>
             @endforeach
         </ul>
     @endif

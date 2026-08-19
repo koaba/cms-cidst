@@ -33,33 +33,48 @@ trait HasOrderedMediaCollection
         }
     }
 
-    /**
-     * @param  Closure(string $path): void|null  $beforeCreate  Hook optionnel exécuté sur le
-     *         fichier déjà stocké, avant la création du Media (ex: filigrane). Le hook travaille
-     *         en place sur le disque 'public' ; la taille est recalculée après son exécution pour
-     *         refléter le fichier final (un filigrane peut changer la taille du fichier).
-     */
-    public function attachUploadedFiles(array $files, string $storagePath, ?Closure $beforeCreate = null): void
-    {
-        $order = $this->media()->count();
-        foreach ($files as $file) {
-            $path = $file->store($storagePath, 'public');
-            $size = $file->getSize();
+   /**
+ * @param  Closure(string $path): void|null  $beforeCreate  Hook optionnel exécuté sur le
+ *         fichier déjà stocké, avant la création du Media (ex: filigrane). Le hook travaille
+ *         en place sur le disque 'public' ; la taille est recalculée après son exécution pour
+ *         refléter le fichier final (un filigrane peut changer la taille du fichier).
+ * @param  array  $thumbnails  Tableau optionnel de miniatures alignées par nom de fichier
+ *         original, au format [['name' => string, 'thumbnail' => string|null dataURL base64], ...].
+ *         Utilisé notamment pour les miniatures PDF générées côté navigateur (pdf.js).
+ */
+public function attachUploadedFiles(array $files, string $storagePath, ?Closure $beforeCreate = null, array $thumbnails = []): void
+{
+    $order = $this->media()->count();
 
-            if ($beforeCreate !== null) {
-                $beforeCreate($path);
-                $size = Storage::disk('public')->size($path);
-            }
+    $thumbnailsByName = collect($thumbnails)->keyBy('name');
 
-            $media = Media::create([
-                'original_name' => $file->getClientOriginalName(),
-                'path' => $path,
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $size,
-            ]);
-            $this->media()->attach($media->id, ['order' => $order++]);
+    foreach ($files as $file) {
+        $path = $file->store($storagePath, 'public');
+        $size = $file->getSize();
+        if ($beforeCreate !== null) {
+            $beforeCreate($path);
+            $size = Storage::disk('public')->size($path);
         }
+
+        $thumbnailPath = null;
+        $thumbnailData = $thumbnailsByName->get($file->getClientOriginalName())['thumbnail'] ?? null;
+        if ($thumbnailData && preg_match('/^data:image\/(\w+);base64,(.+)$/', $thumbnailData, $matches)) {
+            $extension = $matches[1];
+            $binaryData = base64_decode($matches[2]);
+            $thumbnailPath = $storagePath.'/thumbnails/'.uniqid('pdf_', true).'.'.$extension;
+            Storage::disk('public')->put($thumbnailPath, $binaryData);
+        }
+
+        $media = Media::create([
+            'original_name' => $file->getClientOriginalName(),
+            'path' => $path,
+            'thumbnail_path' => $thumbnailPath,
+            'mime_type' => $file->getClientMimeType(),
+            'size' => $size,
+        ]);
+        $this->media()->attach($media->id, ['order' => $order++]);
     }
+}
 
     public function detachOwnedMedia(array $mediaIds): void
     {
