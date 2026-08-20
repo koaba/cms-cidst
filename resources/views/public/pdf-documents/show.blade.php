@@ -19,19 +19,28 @@
         @if ($document->pdfs->isEmpty())
             <p class="text-cidst-muted">Aucun fichier disponible pour le moment.</p>
         @else
-            <ul class="space-y-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 @foreach ($document->pdfs as $pdf)
-                    <li class="flex items-center justify-between bg-cidst-surface border border-cidst-border rounded p-3">
-                        <span class="text-cidst-ink text-sm">
-                            📄 {{ $pdf->original_name ?? basename($pdf->path) }}
+                    <a href="{{ Storage::url($pdf->path) }}" target="_blank"
+                       class="flex flex-col items-center bg-cidst-surface border border-cidst-border rounded p-3 hover:shadow-lg transition-shadow">
+                        @if ($pdf->thumbnail_path)
+                            <img src="{{ Storage::url($pdf->thumbnail_path) }}"
+                                 class="w-full h-32 object-cover rounded border border-cidst-border mb-2"
+                                 alt="{{ $pdf->original_name ?? basename($pdf->path) }}">
+                        @else
+                            <div class="w-full h-32 flex items-center justify-center bg-cidst-red/5 rounded border border-cidst-border mb-2 text-3xl">
+                                📄
+                            </div>
+                        @endif
+                        <span class="text-cidst-ink text-xs text-center line-clamp-2">
+                            {{ $pdf->original_name ?? basename($pdf->path) }}
                         </span>
-                        <a href="{{ Storage::url($pdf->path) }}" target="_blank"
-                           class="text-cidst-red text-sm font-medium">
+                        <span class="text-cidst-red text-xs font-medium mt-1">
                             Télécharger &rarr;
-                        </a>
-                    </li>
+                        </span>
+                    </a>
                 @endforeach
-            </ul>
+            </div>
         @endif
 
         <a href="{{ route('documents.index') }}" class="inline-block mt-6 text-cidst-red text-sm font-medium">

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\PdfCategory;
 use App\Models\PdfDocument;
+use App\Services\WatermarkService;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -15,6 +16,10 @@ class PdfDocumentController extends Controller
     use HasOrphanMediaCleanup;
 
     private const MAX_PDFS = 10;
+
+    public function __construct(private WatermarkService $watermarkService)
+    {
+    }
 
     public function index()
     {
@@ -96,7 +101,7 @@ class PdfDocumentController extends Controller
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
             'delete_pdfs' => 'nullable|array',
-            'delete_pdfs.*' => [
+                       'delete_pdfs.*' => [
                 'integer',
                 $document
                     ? Rule::exists('mediables', 'media_id')
@@ -104,6 +109,7 @@ class PdfDocumentController extends Controller
                         ->where('mediable_id', $document->id)
                     : 'exists:media,id',
             ],
+            'apply_watermark' => 'nullable|boolean',
         ]);
 
         $validator->after(function ($validator) use ($request, $document) {
@@ -132,8 +138,23 @@ class PdfDocumentController extends Controller
             $document->attachExistingMedia($request->input('existing_media'));
         }
 
-        if ($request->hasFile('pdfs')) {
-            $document->attachUploadedFiles($request->file('pdfs'), 'pdf-documents/pdfs');
+               if ($request->hasFile('pdfs')) {
+            $applyWatermark = $request->boolean('apply_watermark');
+
+            $thumbnails = [];
+            if ($request->filled('pdf_thumbnails')) {
+                $decoded = json_decode($request->input('pdf_thumbnails'), true);
+                if (is_array($decoded)) {
+                    $thumbnails = $decoded;
+                }
+            }
+
+            $document->attachUploadedFiles(
+                $request->file('pdfs'),
+                'pdf-documents/pdfs',
+                $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkPdf($path) : null,
+                $thumbnails
+            );
         }
     }
 }
