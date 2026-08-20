@@ -33,14 +33,6 @@ class Menu extends Model
             ->orderByPivot('order');
     }
 
-    /**
-     * Documents PDF attaches a ce menu (rapports, brochures...).
-     */
-    public function pdfs()
-    {
-        return $this->media()->where('mime_type', 'application/pdf');
-    }
-
     public function descendantIds(): array
     {
         $ids = [];

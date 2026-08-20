@@ -4,13 +4,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class MenuController extends Controller
 {
     use HasOrphanMediaCleanup;
-
-    private const MAX_PDFS = 10;
 
     public function index()
     {
@@ -31,16 +28,13 @@ class MenuController extends Controller
     {
         $validated = $this->validateMenu($request);
 
-        $menu = Menu::create($this->extractMenuData($validated, $request));
-
-        $this->syncPdfs($request, $menu);
+        Menu::create($this->extractMenuData($validated, $request));
 
         return redirect()->route('admin.menus.index')->with('success', 'Menu créé.');
     }
 
     public function edit(Menu $menu)
     {
-        $menu->load('media');
         $excludedIds = array_merge([$menu->id], $menu->descendantIds());
         $parents = $this->availableParents($excludedIds);
         return view('admin.menus.edit', compact('menu', 'parents'));
@@ -58,8 +52,6 @@ class MenuController extends Controller
         }
 
         $menu->update($this->extractMenuData($validated, $request));
-
-        $this->syncPdfs($request, $menu, isUpdate: true);
 
         return redirect()->route('admin.menus.index')->with('success', 'Menu mis à jour.');
     }
@@ -84,42 +76,17 @@ class MenuController extends Controller
 
     private function validateMenu(Request $request, ?Menu $menu = null): array
     {
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        return $request->validate([
             'label' => 'required|string|max:255',
             'target' => 'required|string|max:255',
             'order' => 'nullable|integer',
             'is_active' => 'nullable|boolean',
             'parent_id' => 'nullable|exists:menus,id',
-            'pdfs' => 'nullable|array|max:' . self::MAX_PDFS,
-            'pdfs.*' => 'file|mimes:pdf|max:10240',
-            'existing_media' => 'nullable|array',
-            'existing_media.*' => 'integer|exists:media,id',
-            'delete_pdfs' => 'nullable|array',
-            'delete_pdfs.*' => [
-                'integer',
-                $menu
-                    ? Rule::exists('mediables', 'media_id')
-                        ->where('mediable_type', Menu::class)
-                        ->where('mediable_id', $menu->id)
-                    : 'exists:media,id',
-            ],
         ]);
-
-        $validator->after(function ($validator) use ($request, $menu) {
-            $currentCount = $menu ? $menu->media()->count() : 0;
-            $toDelete = count($request->input('delete_pdfs', []));
-            $incoming = count($request->file('pdfs', [])) + count($request->input('existing_media', []));
-            if (($currentCount - $toDelete + $incoming) > self::MAX_PDFS) {
-                $validator->errors()->add('pdfs', 'Un menu ne peut pas avoir plus de ' . self::MAX_PDFS . ' documents PDF.');
-            }
-        });
-
-        return $validator->validate();
     }
 
     /**
-     * Isole les champs propres au modele Menu (exclut les champs media
-     * pdfs/existing_media/delete_pdfs geres separement par syncPdfs()).
+     * Isole les champs propres au modele Menu.
      */
     private function extractMenuData(array $validated, Request $request): array
     {
@@ -130,21 +97,6 @@ class MenuController extends Controller
             'is_active' => $request->boolean('is_active'),
             'parent_id' => $validated['parent_id'] ?? null,
         ];
-    }
-
-    private function syncPdfs(Request $request, Menu $menu, bool $isUpdate = false): void
-    {
-        if ($isUpdate && $request->filled('delete_pdfs')) {
-            $menu->detachOwnedMedia($request->input('delete_pdfs'));
-        }
-
-        if ($request->filled('existing_media')) {
-            $menu->attachExistingMedia($request->input('existing_media'));
-        }
-
-        if ($request->hasFile('pdfs')) {
-            $menu->attachUploadedFiles($request->file('pdfs'), 'menus/pdfs');
-        }
     }
 
     private function availableParents(array $excludedIds = [])
