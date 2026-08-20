@@ -33,6 +33,8 @@ class SiteSettingController extends Controller
             'pages_grid_columns' => 'nullable|in:2,3,4',
             'pages_image_size' => 'nullable|in:small,medium,large',
             'facebook_url' => 'nullable|url|max:255',
+            'pdf_documents_title' => 'nullable|string|max:255',
+            'pdf_documents_content' => 'nullable|string|max:2000',
         ]);
 
         $settings = SiteSetting::current();

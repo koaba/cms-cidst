@@ -20,6 +20,8 @@ class SiteSetting extends Model
         'news_ticker_direction',
         'pages_grid_columns',
         'pages_image_size',
+        'pdf_documents_title',
+        'pdf_documents_content',
     ];
     protected $casts = [
     ];

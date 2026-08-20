@@ -121,13 +121,27 @@
                 </select>
                 @error('pages_image_size') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
-        </div>
+              </div>
 <div>
     <label class="block font-medium mb-1">URL Facebook</label>
     <input type="url" name="facebook_url" value="{{ old('facebook_url', $settings->facebook_url) }}"
            placeholder="https://facebook.com/votrepage"
            class="w-full border rounded p-2">
     @error('facebook_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+<div>
+    <label class="block font-medium mb-1">Titre de la page Documents PDF</label>
+    <input type="text" name="pdf_documents_title" value="{{ old('pdf_documents_title', $settings->pdf_documents_title) }}"
+           placeholder="Documents et ressources"
+           class="w-full border rounded p-2">
+    @error('pdf_documents_title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+<div>
+    <label class="block font-medium mb-1">Contenu introductif de la page Documents PDF</label>
+    <textarea name="pdf_documents_content" rows="4"
+              placeholder="Texte affiché en haut de la page listant les documents..."
+              class="w-full border rounded p-2">{{ old('pdf_documents_content', $settings->pdf_documents_content) }}</textarea>
+    @error('pdf_documents_content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
         <div class="flex items-center gap-3">
             <x-admin.button type="submit">Enregistrer</x-admin.button>
