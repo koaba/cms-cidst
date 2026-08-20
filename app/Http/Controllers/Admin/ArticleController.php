@@ -57,8 +57,11 @@ class ArticleController extends Controller
             $validated['user_id'] = auth()->id();
             $validated['published_at'] = $validated['published_at'] ?? now();
 
-            if ($request->hasFile('image')) {
+                     if ($request->hasFile('image')) {
                 $validated['image'] = $request->file('image')->store('articles', 'public');
+                if ($request->boolean('apply_watermark_images')) {
+                    $this->watermarkService->watermarkImage($validated['image']);
+                }
             }
 
             $article = Article::create($validated);
@@ -96,11 +99,14 @@ class ArticleController extends Controller
         DB::transaction(function () use ($request, $validated, $article) {
             $validated['published_at'] = $validated['published_at'] ?? $article->published_at ?? now();
 
-            if ($request->hasFile('image')) {
+                       if ($request->hasFile('image')) {
                 if ($article->image) {
                     Storage::disk('public')->delete($article->image);
                 }
                 $validated['image'] = $request->file('image')->store('articles', 'public');
+                if ($request->boolean('apply_watermark_images')) {
+                    $this->watermarkService->watermarkImage($validated['image']);
+                }
             }
 
             $article->update($validated);

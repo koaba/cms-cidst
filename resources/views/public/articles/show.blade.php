@@ -2,8 +2,17 @@
     <a href="{{ route('blog.index') }}" class="text-cidst-red hover:underline">&larr; Retour au blog</a>
     <h1 class="text-3xl font-display font-bold mt-4 mb-2 text-cidst-ink">{{ $article->title }}</h1>
     <p class="text-cidst-muted mb-6">{{ $article->published_at?->format('d/m/Y') }} - {{ $article->user->name }}</p>
-    @if ($article->image)
-    <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}" class="w-full max-h-[500px] object-cover rounded mb-6">
+        @if ($article->image)
+    <script type="application/json" id="diaporama-data-featured">
+        {!! json_encode([[
+            'url' => Storage::url($article->image),
+            'thumbnail_url' => Storage::url($article->image),
+            'alt' => $article->title,
+        ]], JSON_HEX_TAG | JSON_HEX_AMP) !!}
+    </script>
+    <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}"
+         onclick="openLightbox('featured', 0)"
+         class="w-full max-h-[500px] object-cover rounded mb-6 cursor-pointer">
 @endif
     @if ($article->categories->isNotEmpty())
         <div class="flex flex-wrap gap-1 mb-6">

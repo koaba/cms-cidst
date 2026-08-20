@@ -46,12 +46,16 @@
             </select>
         </div>
 
-        <div class="mb-4">
-            <label class="block font-medium mb-1">Image à la une</label>
+                <div class="mb-4">
+                                   <label class="block font-medium mb-1">Image à la une</label>
             <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
             @if ($article->image)
                 <img src="{{ Storage::url($article->image) }}" class="w-32 h-32 object-cover rounded border mt-2">
             @endif
+            <label class="flex items-center gap-2 text-sm text-gray-700 mt-2">
+                <input type="checkbox" name="apply_watermark_images" value="1">
+                Appliquer le filigrane de protection sur la nouvelle image à la une
+            </label>
         </div>
 
         {{-- ===================== GALERIE SIMPLE ===================== --}}

@@ -46,8 +46,12 @@
         </div>
 
         <div class="mb-4">
-            <label class="block font-medium mb-1">Image à la une</label>
+                      <label class="block font-medium mb-1">Image à la une</label>
             <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
+            <label class="flex items-center gap-2 text-sm text-gray-700 mt-2">
+                <input type="checkbox" name="apply_watermark_images" value="1">
+                Appliquer le filigrane de protection sur l'image à la une
+            </label>
         </div>
 
         <div class="mb-6 border-t pt-4">
