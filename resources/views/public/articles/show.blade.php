@@ -74,9 +74,9 @@
                     <span class="text-xs text-cidst-red group-hover:underline break-words">
                         {{ $pdf->original_name }}
                     </span>
-                </a>
+                            </a>
             @endforeach
-        </ul>
+        </div>
     @endif
 
     @if ($article->diaporamas->isNotEmpty())
@@ -89,10 +89,10 @@
                         @if ($diaporama->title)
                             <h3 class="font-display text-sm font-semibold text-cidst-ink mb-3">{{ $diaporama->title }}</h3>
                         @endif
-                        <button type="button"
-                                class="diaporama-auto group relative aspect-video w-full max-w-2xl overflow-hidden rounded-lg border border-cidst-border block"
-                                data-diaporama="{{ $diaporama->id }}"
-                                data-current-index="0">
+                       <button type="button"
+        class="diaporama-auto group relative w-full max-w-2xl h-64 sm:h-80 overflow-hidden rounded-lg border border-cidst-border block"
+        data-diaporama="{{ $diaporama->id }}"
+        data-current-index="0">
                             <img src="{{ $diaporama->media->first()->thumbnail_url }}"
          alt="{{ $diaporama->title ?? $article->title }}"
          class="diaporama-auto-img w-full h-full object-cover transition-opacity duration-500">
@@ -155,11 +155,11 @@
         </section>
     @endif
 
-    <div id="lightbox" class="fixed inset-0 z-50 hidden bg-black/90 items-center justify-center">
-        <button type="button" id="lightbox-close" class="absolute top-4 right-4 text-white text-3xl leading-none">&times;</button>
-        <button type="button" id="lightbox-prev" class="absolute left-4 text-white text-4xl leading-none">&lsaquo;</button>
-        <img id="lightbox-img" src="" alt="" class="max-h-[85vh] max-w-[90vw] object-contain rounded-lg">
-        <button type="button" id="lightbox-next" class="absolute right-4 text-white text-4xl leading-none">&rsaquo;</button>
+      <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 opacity-0 transition-opacity duration-300">
+        <button type="button" id="lightbox-close" class="absolute top-4 right-4 text-white text-3xl leading-none hover:text-cidst-red transition-colors">&times;</button>
+        <button type="button" id="lightbox-prev" class="absolute left-4 text-white text-4xl leading-none hover:text-cidst-red transition-colors">&lsaquo;</button>
+        <img id="lightbox-img" src="" alt="" class="max-h-[92vh] max-w-[95vw] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300">
+        <button type="button" id="lightbox-next" class="absolute right-4 text-white text-4xl leading-none hover:text-cidst-red transition-colors">&rsaquo;</button>
     </div>
 
     <script>
@@ -169,7 +169,7 @@
             let currentGroup = [];
             let currentIndex = 0;
 
-            function openLightbox(diaporamaId, index) {
+                                   function openLightbox(diaporamaId, index) {
                 const dataEl = document.getElementById('diaporama-data-' + diaporamaId);
                 if (!dataEl) return;
                 currentGroup = JSON.parse(dataEl.textContent);
@@ -177,26 +177,25 @@
                 render();
                 lightbox.classList.remove('hidden');
                 lightbox.classList.add('flex');
+                requestAnimationFrame(() => {
+                    lightbox.classList.remove('opacity-0');
+                    lightboxImg.classList.remove('scale-95');
+                });
             }
-function openLightbox(diaporamaId, index) {
-    const dataEl = document.getElementById('diaporama-data-' + diaporamaId);
-    if (!dataEl) return;
-    currentGroup = JSON.parse(dataEl.textContent);
-    currentIndex = index;
-    render();
-    lightbox.classList.remove('hidden');
-    lightbox.classList.add('flex');
-} 
-window.openLightbox = openLightbox;
+            window.openLightbox = openLightbox;
             function render() {
                 const item = currentGroup[currentIndex];
                 lightboxImg.src = item.url;
                 lightboxImg.alt = item.alt;
             }
 
-            function close() {
-                lightbox.classList.add('hidden');
-                lightbox.classList.remove('flex');
+                    function close() {
+                lightbox.classList.add('opacity-0');
+                lightboxImg.classList.add('scale-95');
+                setTimeout(() => {
+                    lightbox.classList.add('hidden');
+                    lightbox.classList.remove('flex');
+                }, 300);
             }
 
             document.getElementById('lightbox-close').addEventListener('click', close);
