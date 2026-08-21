@@ -212,6 +212,7 @@ class ArticleController extends Controller
             'diaporamas.*.delete_images.*' => 'integer|exists:media,id',
             'delete_diaporamas' => 'nullable|array',
             'delete_diaporamas.*' => 'integer|exists:diaporamas,id',
+            'apply_watermark_diaporamas' => 'nullable|boolean',
 
             // Vidéos
             'videos' => 'nullable|array|max:' . self::MAX_VIDEOS,
@@ -335,6 +336,8 @@ class ArticleController extends Controller
 
     private function syncDiaporamas(Request $request, Article $article, bool $isUpdate = false): void
     {
+        $applyWatermark = $request->boolean('apply_watermark_diaporamas');
+
         if ($isUpdate && $request->filled('delete_diaporamas')) {
             $ownedIds = $article->diaporamas()->pluck('id')->all();
             foreach (array_intersect($request->input('delete_diaporamas'), $ownedIds) as $diaporamaId) {
@@ -365,7 +368,11 @@ class ArticleController extends Controller
             }
 
             $diaporama->attachExistingMedia($data['existing_media'] ?? []);
-            $diaporama->attachUploadedFiles($request->file("diaporamas.$index.images", []), 'articles/diaporamas');
+            $diaporama->attachUploadedFiles(
+                $request->file("diaporamas.$index.images", []),
+                'articles/diaporamas',
+                $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkImage($path) : null
+            );
         }
     }
 
