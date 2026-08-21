@@ -65,16 +65,20 @@
         <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Documents joints</h2>
         <div class="flex flex-wrap gap-4 mb-6">
             @foreach ($attachedPdfs as $pdf)
-                <a href="{{ Storage::url($pdf->path) }}"
+                               <a href="{{ Storage::url($pdf->path) }}"
                    target="_blank" rel="noopener"
                    class="flex flex-col items-center gap-1 w-28 text-center group">
-                    <img src="{{ $pdf->thumbnail_url }}"
-                         alt="Aperçu du document {{ $pdf->original_name }}"
-                         class="w-24 h-32 object-cover rounded border group-hover:opacity-80 transition">
+                    @if ($pdf->thumbnail_path)
+                        <img src="{{ $pdf->thumbnail_url }}"
+                             alt="Aperçu du document {{ $pdf->original_name }}"
+                             class="w-24 h-32 object-cover rounded border group-hover:opacity-80 transition">
+                    @else
+                        <div class="w-24 h-32 flex items-center justify-center bg-cidst-red/5 rounded border text-3xl group-hover:opacity-80 transition">📄</div>
+                    @endif
                     <span class="text-xs text-cidst-red group-hover:underline break-words">
                         {{ $pdf->original_name }}
                     </span>
-                            </a>
+                </a>
             @endforeach
         </div>
     @endif
