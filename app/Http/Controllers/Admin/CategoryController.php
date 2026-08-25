@@ -74,7 +74,7 @@ class CategoryController extends Controller
     {
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'pdfs' => 'nullable|array|max:' . self::MAX_PDFS,
+            'pdfs' => 'nullable|array|max:' . config('media.max_pdfs'),
             'pdfs.*' => 'file|mimes:pdf|max:10240',
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
@@ -93,8 +93,8 @@ class CategoryController extends Controller
             $currentCount = $category ? $category->media()->count() : 0;
             $toDelete = count($request->input('delete_pdfs', []));
             $incoming = count($request->file('pdfs', [])) + count($request->input('existing_media', []));
-            if (($currentCount - $toDelete + $incoming) > self::MAX_PDFS) {
-                $validator->errors()->add('pdfs', 'Une catégorie ne peut pas avoir plus de ' . self::MAX_PDFS . ' documents PDF.');
+            if (($currentCount - $toDelete + $incoming) > config('media.max_pdfs')) {
+                $validator->errors()->add('pdfs', 'Une catégorie ne peut pas avoir plus de ' . config('media.max_pdfs') . ' documents PDF.');
             }
         });
 
