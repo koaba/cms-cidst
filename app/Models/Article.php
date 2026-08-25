@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasPageViews;
 use App\Concerns\HasPublicVisibility;
 use App\Concerns\HasSeo;
 use App\Contracts\HasPublicUrl;
@@ -14,6 +15,7 @@ class Article extends Model implements HasPublicUrl
 {
     use HasSeo;
     use HasPublicVisibility;
+    use HasPageViews;
     use HasFactory;
     use HasOrderedMediaCollection;
 
@@ -62,14 +64,17 @@ class Article extends Model implements HasPublicUrl
     protected static function boot()
     {
         parent::boot();
+
         static::creating(function ($article) {
             $baseSlug = Str::slug($article->title);
             $slug = $baseSlug;
             $counter = 1;
+
             while (static::where('slug', $slug)->exists()) {
                 $slug = $baseSlug . '-' . $counter;
                 $counter++;
             }
+
             $article->slug = $slug;
         });
     }
