@@ -75,7 +75,7 @@ class CategoryController extends Controller
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'pdfs' => 'nullable|array|max:' . config('media.max_pdfs'),
-            'pdfs.*' => 'file|mimes:pdf|max:10240',
+            'pdfs.*' => 'file|mimes:pdf|max:' . config('media.max_pdf_upload_kb'),
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
             'delete_pdfs' => 'nullable|array',
