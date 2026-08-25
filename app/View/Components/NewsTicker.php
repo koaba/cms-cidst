@@ -10,11 +10,6 @@ use Illuminate\View\Component;
 
 class NewsTicker extends Component
 {
-    /** Nombre maximum d'articles récents injectés dans le bandeau */
-    private const MAX_RECENT_ARTICLES = 5;
-    /** Un article n'est considéré "récent" que s'il a été publié il y a moins de X jours */
-    private const RECENT_DAYS = 30;
-
     public Collection $items;
     public string $direction;
 
@@ -22,9 +17,9 @@ class NewsTicker extends Component
     {
         $recentArticles = Article::where('is_published', true)
             ->where('published_at', '<=', now())
-            ->where('published_at', '>=', now()->subDays(self::RECENT_DAYS))
+            ->where('published_at', '>=', now()->subDays(config('display.ticker_recent_days')))
             ->orderByDesc('published_at')
-            ->limit(self::MAX_RECENT_ARTICLES)
+            ->limit(config('display.max_ticker_articles'))
             ->get()
             ->map(fn (Article $article) => (object) [
                 'content'  => $article->title,
@@ -39,7 +34,7 @@ class NewsTicker extends Component
                 'link_url' => $ticker->link_url,
             ]);
 
-        // Articles récents d'abord, tickers manuels ensuite (choix demandé)
+        // Articles recents d'abord, tickers manuels ensuite (choix demande)
         $this->items = $recentArticles->concat($manualTickers);
         $this->direction = SiteSetting::current()->news_ticker_direction ?? 'horizontal';
     }
