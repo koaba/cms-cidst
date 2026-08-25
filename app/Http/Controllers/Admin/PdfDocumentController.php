@@ -3,21 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Media;
 use App\Models\PdfCategory;
 use App\Models\PdfDocument;
-use App\Services\WatermarkService;
+use App\Services\MediaSyncService;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class PdfDocumentController extends Controller
 {
     use HasOrphanMediaCleanup;
 
-    private const MAX_PDFS = 10;
-
-    public function __construct(private WatermarkService $watermarkService)
+    public function __construct(private MediaSyncService $mediaSync)
     {
     }
 
@@ -45,7 +43,7 @@ class PdfDocumentController extends Controller
             'pdf_category_id' => $validated['pdf_category_id'],
         ]);
 
-        $this->syncPdfs($request, $document);
+        $this->mediaSync->syncPdfDocument($request, $document);
 
         return redirect()
             ->route('admin.pdf-documents.index')
@@ -70,7 +68,7 @@ class PdfDocumentController extends Controller
             'pdf_category_id' => $validated['pdf_category_id'],
         ]);
 
-        $this->syncPdfs($request, $pdfDocument, isUpdate: true);
+        $this->mediaSync->syncPdfDocument($request, $pdfDocument, isUpdate: true);
 
         return redirect()
             ->route('admin.pdf-documents.index')
@@ -92,16 +90,16 @@ class PdfDocumentController extends Controller
 
     private function validateDocument(Request $request, ?PdfDocument $document = null): array
     {
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'pdf_category_id' => 'required|exists:pdf_categories,id',
-            'pdfs' => 'nullable|array|max:' . self::MAX_PDFS,
-            'pdfs.*' => 'file|mimes:pdf|max:10240',
+            'pdfs' => 'nullable|array|max:' . config('media.max_pdfs'),
+            'pdfs.*' => 'file|mimes:pdf|max:' . config('media.max_pdf_upload_kb'),
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
             'delete_pdfs' => 'nullable|array',
-                       'delete_pdfs.*' => [
+            'delete_pdfs.*' => [
                 'integer',
                 $document
                     ? Rule::exists('mediables', 'media_id')
@@ -116,8 +114,8 @@ class PdfDocumentController extends Controller
             $currentCount = $document ? $document->pdfs()->count() : 0;
             $toDelete = count($request->input('delete_pdfs', []));
             $incoming = count($request->file('pdfs', [])) + count($request->input('existing_media', []));
-            if (($currentCount - $toDelete + $incoming) > self::MAX_PDFS) {
-                $validator->errors()->add('pdfs', 'Un document ne peut pas avoir plus de ' . self::MAX_PDFS . ' fichiers PDF.');
+            if (($currentCount - $toDelete + $incoming) > config('media.max_pdfs')) {
+                $validator->errors()->add('pdfs', 'Un document ne peut pas avoir plus de ' . config('media.max_pdfs') . ' fichiers PDF.');
             }
 
             if (! $document && $incoming === 0) {
@@ -126,35 +124,5 @@ class PdfDocumentController extends Controller
         });
 
         return $validator->validate();
-    }
-
-    private function syncPdfs(Request $request, PdfDocument $document, bool $isUpdate = false): void
-    {
-        if ($isUpdate && $request->filled('delete_pdfs')) {
-            $document->detachOwnedMedia($request->input('delete_pdfs'));
-        }
-
-        if ($request->filled('existing_media')) {
-            $document->attachExistingMedia($request->input('existing_media'));
-        }
-
-               if ($request->hasFile('pdfs')) {
-            $applyWatermark = $request->boolean('apply_watermark');
-
-            $thumbnails = [];
-            if ($request->filled('pdf_thumbnails')) {
-                $decoded = json_decode($request->input('pdf_thumbnails'), true);
-                if (is_array($decoded)) {
-                    $thumbnails = $decoded;
-                }
-            }
-
-            $document->attachUploadedFiles(
-                $request->file('pdfs'),
-                'pdf-documents/pdfs',
-                $applyWatermark ? fn (string $path) => $this->watermarkService->watermarkPdf($path) : null,
-                $thumbnails
-            );
-        }
     }
 }
