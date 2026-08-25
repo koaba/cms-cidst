@@ -25,9 +25,12 @@ class PdfCategory extends Model
             $baseSlug = Str::slug($category->name);
             $slug = $baseSlug;
             $counter = 1;
+
             while (static::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter++;
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
             }
+
             $category->slug = $slug;
         });
     }
