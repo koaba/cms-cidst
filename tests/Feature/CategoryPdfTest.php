@@ -79,6 +79,24 @@ it('refuse plus de 10 documents PDF sur une categorie', function () {
     $this->assertDatabaseMissing('categories', ['name' => 'Categorie trop de pdf']);
 });
 
+it('rejette un ajout de PDF qui depasse le quota configure', function () {
+    config(['media.max_pdfs' => 2]);
+    Storage::fake('public');
+    $user = actingAsAdminCategory();
+
+    $category = Category::create(['name' => 'Categorie quota']);
+    Media::factory()->count(2)->create(['mime_type' => 'application/pdf'])
+        ->each(fn ($media) => $category->media()->attach($media->id, ['order' => 0]));
+
+    $response = $this->actingAs($user)->put(route('admin.categories.update', $category), [
+        'name' => 'Categorie quota',
+        'pdfs' => [UploadedFile::fake()->create('extra.pdf', 100, 'application/pdf')],
+    ]);
+
+    $response->assertSessionHasErrors('pdfs');
+    expect($category->fresh()->pdfs)->toHaveCount(2);
+});
+
 it('empeche de supprimer le PDF d\'une autre categorie via delete_pdfs', function () {
     Storage::fake('public');
     $user = actingAsAdminCategory();
@@ -126,6 +144,7 @@ it('met a jour une categorie en supprimant un PDF existant et en ajoutant un nou
 });
 
 it('refuse la creation d\'une categorie sans nom', function () {
+    Storage::fake('public');
     $user = actingAsAdminCategory();
 
     $response = $this->actingAs($user)->post('/admin/categories', []);
