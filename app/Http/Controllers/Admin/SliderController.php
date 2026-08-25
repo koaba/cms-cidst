@@ -13,8 +13,6 @@ class SliderController extends Controller
 {
     use HasOrphanMediaCleanup;
 
-    public const MAX_SLIDERS = 5;
-
     public function index()
     {
         $sliders = Slider::orderBy('order')->get();
@@ -23,7 +21,7 @@ class SliderController extends Controller
 
     public function create()
     {
-        $remainingSlots = self::MAX_SLIDERS - Slider::count();
+        $remainingSlots = config('display.max_sliders') - Slider::count();
         return view('admin.sliders.create', compact('remainingSlots'));
     }
 
@@ -31,10 +29,10 @@ class SliderController extends Controller
     {
         $validated = $this->validateSlider($request);
 
-        if (Slider::count() >= self::MAX_SLIDERS) {
+        if (Slider::count() >= config('display.max_sliders')) {
             return back()
                 ->withInput()
-                ->withErrors(['image' => 'Le nombre maximum de sliders (' . self::MAX_SLIDERS . ') est déjà atteint. Supprimez-en un avant d\'en créer un nouveau.']);
+                ->withErrors(['image' => 'Le nombre maximum de sliders (' . config('display.max_sliders') . ') est déjà atteint. Supprimez-en un avant d\'en créer un nouveau.']);
         }
 
         [$path, $media] = $this->resolveImage($request);

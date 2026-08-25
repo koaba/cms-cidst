@@ -9,8 +9,6 @@ use Illuminate\View\Component;
 
 class NewsSidebar extends Component
 {
-    private const MAX_ARTICLES = 5;
-
     public Collection $articles;
     public ?string $facebookUrl;
 
@@ -19,9 +17,8 @@ class NewsSidebar extends Component
         $this->articles = Article::where('is_published', true)
             ->where('published_at', '<=', now())
             ->orderByDesc('published_at')
-            ->limit(self::MAX_ARTICLES)
+            ->limit(config('display.max_sidebar_articles'))
             ->get();
-
         $this->facebookUrl = SiteSetting::current()->facebook_url;
     }
 
