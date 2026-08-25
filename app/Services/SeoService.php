@@ -87,6 +87,11 @@ class SeoService
         return (bool) ($model->seo?->no_index ?? false);
     }
 
+    public static function ogType(Model $model): string
+    {
+        return $model instanceof \App\Models\Article ? 'article' : 'website';
+    }
+
     protected static function siteName(): string
     {
         return config('app.name', 'CIDST');
