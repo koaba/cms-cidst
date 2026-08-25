@@ -19,9 +19,13 @@
             <div class="stat-title">Utilisateurs</div>
             <div class="stat-value text-primary">{{ $stats['users'] }}</div>
         </div>
+        <div class="stat">
+            <div class="stat-title">Vues (30 derniers jours)</div>
+            <div class="stat-value text-primary">{{ $stats['views_30d'] }}</div>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {{-- Graphique d'activité --}}
         <div class="card bg-base-100 shadow lg:col-span-2">
             <div class="card-body">
@@ -63,9 +67,39 @@
         </div>
     </div>
 
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {{-- Graphique des vues --}}
+        <div class="card bg-base-100 shadow lg:col-span-2">
+            <div class="card-body">
+                <h2 class="card-title">Vues du blog — 30 derniers jours</h2>
+                <canvas id="viewsChart" height="90"></canvas>
+            </div>
+        </div>
+
+        {{-- Top 5 articles les plus vus --}}
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <h2 class="card-title">Top 5 articles (30j)</h2>
+                @if ($topArticles->isEmpty() || $topArticles->sum('page_views_count') === 0)
+                    <p class="text-sm opacity-60 mt-2">Aucune vue enregistrée pour l'instant.</p>
+                @else
+                    <ul class="mt-2 space-y-3">
+                        @foreach ($topArticles as $article)
+                            <li class="text-sm flex justify-between items-center gap-2">
+                                <span class="font-medium truncate">{{ $article->title }}</span>
+                                <span class="badge badge-primary badge-outline shrink-0">{{ $article->page_views_count }} vues</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             window.dashboardActivity = @json($activiteMensuelle);
+            window.dashboardViews = @json($activiteVues);
         </script>
     @endpush
 </x-admin.layout>
