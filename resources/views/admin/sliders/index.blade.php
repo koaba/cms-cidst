@@ -1,8 +1,8 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Sliders</h1>
 
-    @if($sliders->count() >= \App\Http\Controllers\Admin\SliderController::MAX_SLIDERS)
-        <p class="text-sm text-amber-600 mt-2">Limite de {{ \App\Http\Controllers\Admin\SliderController::MAX_SLIDERS }} sliders atteinte — supprimez-en un pour en ajouter un nouveau.</p>
+    @if($sliders->count() >= config('display.max_sliders'))
+        <p class="text-sm text-amber-600 mt-2">Limite de {{ config('display.max_sliders') }} sliders atteinte — supprimez-en un pour en ajouter un nouveau.</p>
     @else
         <x-admin.button href="{{ route('admin.sliders.create') }}">+ Nouveau slider</x-admin.button>
     @endif

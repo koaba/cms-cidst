@@ -1,7 +1,7 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Nouveau slider</h1>
 
-    <p class="text-sm text-gray-500 mb-4">{{ $remainingSlots }} emplacement(s) restant(s) sur {{ \App\Http\Controllers\Admin\SliderController::MAX_SLIDERS }} maximum.</p>
+    <p class="text-sm text-gray-500 mb-4">{{ $remainingSlots }} emplacement(s) restant(s) sur {{ config('display.max_sliders') }} maximum.</p>
 
     <form action="{{ route('admin.sliders.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
