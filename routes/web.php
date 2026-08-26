@@ -24,7 +24,9 @@ Route::get('/', function () {
 });
 Route::get('/recherche', [SearchController::class, 'index'])->name('search');
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
-Route::get('/blog/{article:slug}', [ArticleController::class, 'show'])->name('blog.show');
+Route::get('/blog/{article:slug}', [ArticleController::class, 'show'])
+    ->middleware('track.view:article')
+    ->name('blog.show');
 Route::get('/blog/categorie/{category:slug}', [ArticleController::class, 'byCategory'])->name('blog.category');
 Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
 Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
@@ -58,14 +60,13 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
 Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
     Route::resource('admin/categories', AdminCategoryController::class)->names('admin.categories');
-      Route::resource('admin/pdf-categories', AdminPdfCategoryController::class)->names('admin.pdf-categories');
+    Route::resource('admin/pdf-categories', AdminPdfCategoryController::class)->names('admin.pdf-categories');
     Route::resource('admin/pdf-documents', AdminPdfDocumentController::class)->names('admin.pdf-documents');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
     Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
     Route::patch('admin/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])
-    ->name('admin.users.reset-password');
-
+        ->name('admin.users.reset-password');
 });
 
 require __DIR__.'/auth.php';
