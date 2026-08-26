@@ -38,19 +38,6 @@ distinct, plus lourd en traitement â€” Ã  traiter sÃ©parÃ©ment du fil
 pas dans le mÃªme lot.
 **DÃ©clencheur** : Ã  rediscuter en fin de projet avec le porteur de projet.
 ---
----
-## ðŸ“Œ Ã€ reprendre en fin de projet â€” Zones de dÃ©pÃ´t drag & drop (25/08/2026)
-**Demande** : ajouter le glisser-dÃ©poser sur toutes les zones d'upload de fichiers 
-(galerie images, PDF articles, PDF documents autonomes, diaporamas, vidÃ©os), en 
-complÃ©ment du bouton "Parcourir" classique (pas en remplacement).
-**Contrainte d'architecture Ã  respecter** : un seul module JS gÃ©nÃ©rique et rÃ©utilisable 
-(mÃªme principe que pdf-thumbnail.js â€” pilotÃ© par data-attributes, attachÃ© une fois 
-via querySelectorAll), jamais une implÃ©mentation dupliquÃ©e par type de mÃ©dia ou par vue.
-**Pourquoi pas maintenant** : chantier transversal touchant plusieurs vues Ã  la fois, 
-mieux traitÃ© dans une session dÃ©diÃ©e avec le temps de vÃ©rifier chaque zone individuellement, 
-plutÃ´t qu'en fin de session de nettoyage.
----
----
 ## 📌 À reprendre en fin de projet — Filigrane : miniatures propres + vidéo (25/08/2026)
 **Statut** : en attente, discuté en session mais pas implémenté.
 **Demande du porteur de projet** : le filigrane ne doit plus être visible sur les 
