@@ -133,14 +133,21 @@ trait ValidatesArticleMedia
             }
 
             // Vidéos : chaque entrée upload doit avoir un fichier, chaque entrée external doit avoir une url
-            foreach ($this->input('videos', []) as $index => $video) {
-                if (($video['source_type'] ?? null) === 'upload' && !$this->hasFile("videos.$index.file")) {
-                    $validator->errors()->add("videos.$index.file", 'Un fichier vidéo est requis pour ce type de source.');
-                }
-                if (($video['source_type'] ?? null) === 'external' && empty($video['url'])) {
-                    $validator->errors()->add("videos.$index.url", 'Une URL est requise pour une vidéo externe.');
-                }
-            }
+           foreach ($this->input('videos', []) as $index => $video) {
+    // Vidéo existante (a un id) : gérée par syncVideos, qui ne remplace le
+    // fichier que si un nouveau est effectivement fourni. Pas de validation
+    // stricte ici, sinon toute modification d'article avec vidéo existante
+    // échoue dès qu'on ne re-upload pas un fichier à chaque fois.
+    if (!empty($video['id'])) {
+        continue;
+    }
+    if (($video['source_type'] ?? null) === 'upload' && !$this->hasFile("videos.$index.file")) {
+        $validator->errors()->add("videos.$index.file", 'Un fichier vidéo est requis pour ce type de source.');
+    }
+    if (($video['source_type'] ?? null) === 'external' && empty($video['url'])) {
+        $validator->errors()->add("videos.$index.url", 'Une URL est requise pour une vidéo externe.');
+    }
+}
         });
     }
 }
