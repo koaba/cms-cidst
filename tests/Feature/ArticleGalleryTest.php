@@ -55,3 +55,45 @@ it('retire une image de la galerie d\'un article', function () {
     $response->assertRedirect(route('admin.articles.index'));
     expect($article->fresh()->media)->toHaveCount(0);
 });
+it('permet de modifier un article sans re-uploader ses videos existantes', function () {
+    $article = Article::factory()->create();
+    $video = $article->videos()->create([
+        'source_type' => 'upload',
+        'path' => 'articles/videos/existant.mp4',
+        'title' => 'Video existante',
+        'order' => 0,
+    ]);
+
+    $response = $this->actingAs($this->admin)->put(route('admin.articles.update', $article), [
+        'title' => 'Titre modifie',
+        'content' => $article->content,
+        'videos' => [
+            [
+                'id' => $video->id,
+                'source_type' => 'upload',
+                'title' => 'Video existante',
+            ],
+        ],
+    ]);
+
+    $response->assertRedirect(route('admin.articles.index'));
+    $response->assertSessionDoesntHaveErrors();
+    expect($article->fresh()->title)->toBe('Titre modifie');
+});
+
+it('rejette une nouvelle video upload sans fichier fourni', function () {
+    $article = Article::factory()->create();
+
+    $response = $this->actingAs($this->admin)->put(route('admin.articles.update', $article), [
+        'title' => $article->title,
+        'content' => $article->content,
+        'videos' => [
+            [
+                'source_type' => 'upload',
+                'title' => 'Nouvelle video sans fichier',
+            ],
+        ],
+    ]);
+
+    $response->assertSessionHasErrors('videos.0.file');
+});
