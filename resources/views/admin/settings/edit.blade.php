@@ -45,22 +45,18 @@
             </select>
             @error('news_ticker_direction') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
-<div class="form-control w-full mb-4">
-    <label class="label cursor-pointer justify-start gap-3">
+<div>
+    <label class="flex items-center gap-2 font-medium mb-1">
         <input
             type="checkbox"
             name="video_watermark_default_enabled"
             value="1"
-            class="checkbox checkbox-primary"
+            class="h-4 w-4"
             {{ old('video_watermark_default_enabled', $settings->video_watermark_default_enabled) ? 'checked' : '' }}
         >
-        <span class="label-text">
-            Activer le filigrane par défaut pour les nouvelles vidéos
-        </span>
+        Activer le filigrane par défaut pour les nouvelles vidéos
     </label>
-    @error('video_watermark_default_enabled')
-        <span class="text-error text-sm mt-1">{{ $message }}</span>
-    @enderror
+    @error('video_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
         <div>
             <label class="block font-medium mb-1">Eyebrow (petit label au-dessus du titre)</label>
