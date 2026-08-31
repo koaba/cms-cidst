@@ -35,6 +35,8 @@ class SiteSettingController extends Controller
             'facebook_url' => 'nullable|url|max:255',
             'pdf_documents_title' => 'nullable|string|max:255',
             'pdf_documents_content' => 'nullable|string|max:2000',
+            'video_watermark_default_enabled' => 'nullable|boolean',
+            
         ]);
 
         $settings = SiteSetting::current();
@@ -47,6 +49,7 @@ class SiteSettingController extends Controller
         }
 
         unset($validated['logo']);
+        $validated['video_watermark_default_enabled'] = $request->boolean('video_watermark_default_enabled');
 
         $settings->update($validated);
 

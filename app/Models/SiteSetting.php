@@ -21,9 +21,11 @@ class SiteSetting extends Model
         'pages_grid_columns',
         'pages_image_size',
         'pdf_documents_title',
-        'pdf_documents_content',
+             'pdf_documents_content',
+        'video_watermark_default_enabled',
     ];
-    protected $casts = [
+      protected $casts = [
+        'video_watermark_default_enabled' => 'boolean',
     ];
 
     public function getPrimaryColorAttribute($value): string

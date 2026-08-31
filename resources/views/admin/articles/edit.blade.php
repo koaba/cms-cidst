@@ -213,7 +213,7 @@
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
-            <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videos->count() }}" data-new-container="videos-new-container">
+            <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videos->count() }}" data-new-container="videos-new-container" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}">
                 @foreach ($article->videos as $video)
                     <div class="border rounded p-3">
                         <input type="hidden" name="videos[{{ $loop->index }}][id]" value="{{ $video->id }}">

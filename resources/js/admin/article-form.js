@@ -110,8 +110,8 @@ function addVideo() {
             <input type="text" name="videos[${index}][title]" placeholder="Titre de la vidéo (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                         <button type="button" onclick="ArticleForm.removeVideo(${index})" class="text-red-600 text-sm">Supprimer</button>
         </div>
-        <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
-            <input type="checkbox" name="videos[${index}][apply_watermark]" value="1">
+              <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
+            <input type="checkbox" name="videos[${index}][apply_watermark]" value="1" ${videoWatermarkDefault ? 'checked' : ''}>
             Appliquer le filigrane
         </label>
         <div class="flex gap-4 mb-2 text-sm">
@@ -140,14 +140,14 @@ function removeVideo(index) {
     updateAddButtons();
 }
 
+let videoWatermarkDefault = false;
 function init() {
     const diaporamaContainer = document.getElementById(DIAPORAMA_CONTAINER_ID);
     diaporamaCount = parseInt(diaporamaContainer?.dataset.initialCount || '0', 10);
-
     const videoContainer = document.getElementById(VIDEO_CONTAINER_ID);
     videoCount = parseInt(videoContainer?.dataset.initialCount || '0', 10);
     videoNewContainerId = videoContainer?.dataset.newContainer || VIDEO_CONTAINER_ID;
-
+    videoWatermarkDefault = videoContainer?.dataset.watermarkDefault === '1';
     updateAddButtons();
 }
 
