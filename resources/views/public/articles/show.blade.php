@@ -128,14 +128,26 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @foreach ($article->videos as $video)
-                    <div class="aspect-video rounded-lg overflow-hidden border border-cidst-border bg-cidst-surface">
+                         <div class="relative aspect-video rounded-lg overflow-hidden border border-cidst-border bg-cidst-surface">
                         @if ($video->source_type === 'upload')
-                            <video controls preload="metadata" class="w-full h-full object-cover">
+                                                                             <video controls @if ($video->apply_watermark) controlsList="nofullscreen" @endif preload="metadata" class="w-full h-full object-cover js-watermarked-video">
                                 <source src="{{ $video->display_url }}" type="{{ $video->mime }}">
                                 Votre navigateur ne supporte pas la lecture vidéo.
                             </video>
+                                                       @if ($video->source_type === 'upload' && $video->apply_watermark)
+                                <button type="button" class="js-custom-fullscreen absolute top-2 right-2 z-20 bg-black/60 hover:bg-black/80 text-white rounded p-2 transition-colors" aria-label="Plein écran">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                                    </svg>
+                                </button>
+                                <button type="button" class="js-custom-exit-fullscreen hidden absolute top-2 right-2 z-20 bg-black/60 hover:bg-black/80 text-white rounded p-2 transition-colors" aria-label="Quitter le plein écran">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9V4.5M9 9H4.5M9 9L3.5 3.5M15 9V4.5M15 9h4.5M15 9l5.5-5.5M9 15v4.5M9 15H4.5M9 15l-5.5 5.5M15 15v4.5M15 15h4.5M15 15l5.5 5.5"/>
+                                    </svg>
+                                </button>
+                            @endif
                         @else
-                            <div class="video-facade relative w-full h-full cursor-pointer group"
+                            <div cla ss="video-facade relative w-full h-full cursor-pointer group"
                                  data-embed-url="{{ $video->embed_url }}">
                                 @if ($video->youtube_thumbnail)
                                     <img src="{{ $video->youtube_thumbnail }}"
@@ -152,6 +164,9 @@
                                     </div>
                                 </div>
                             </div>
+                        @endif
+                        @if ($video->apply_watermark)
+                            <x-watermark-overlay />
                         @endif
                     </div>
                 @endforeach
@@ -264,6 +279,30 @@
                     iframe.allow = 'autoplay; fullscreen';
                     iframe.setAttribute('allowfullscreen', '');
                     facade.replaceWith(iframe);
+                });
+            });
+                              document.querySelectorAll('.js-custom-fullscreen').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const container = btn.closest('.relative.aspect-video');
+                    if (container?.requestFullscreen) {
+                        container.requestFullscreen();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.js-custom-exit-fullscreen').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                });
+            });
+
+            document.addEventListener('fullscreenchange', () => {
+                document.querySelectorAll('.relative.aspect-video').forEach((container) => {
+                    const isFs = document.fullscreenElement === container;
+                    container.querySelector('.js-custom-fullscreen')?.classList.toggle('hidden', isFs);
+                    container.querySelector('.js-custom-exit-fullscreen')?.classList.toggle('hidden', !isFs);
                 });
             });
         })();

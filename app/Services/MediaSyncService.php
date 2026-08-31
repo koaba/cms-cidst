@@ -192,8 +192,11 @@ class MediaSyncService
         foreach ($request->input('videos', []) as $index => $data) {
             $existingVideo = !empty($data['id']) ? $article->videos()->find($data['id']) : null;
 
-            if ($existingVideo) {
-                $updates = ['title' => $data['title'] ?? null];
+                        if ($existingVideo) {
+                $updates = [
+                    'title' => $data['title'] ?? null,
+                    'apply_watermark' => !empty($data['apply_watermark']),
+                ];
 
                 if ($existingVideo->source_type === 'upload' && $request->hasFile("videos.$index.file")) {
                     Storage::disk('public')->delete($existingVideo->path);
@@ -206,20 +209,22 @@ class MediaSyncService
                 continue;
             }
 
-            if (($data['source_type'] ?? null) === 'upload' && $request->hasFile("videos.$index.file")) {
+                       if (($data['source_type'] ?? null) === 'upload' && $request->hasFile("videos.$index.file")) {
                 $file = $request->file("videos.$index.file");
-                $article->videos()->create([
+                $article->videos()->create([ 
                     'source_type' => 'upload',
                     'path' => $file->store('articles/videos', 'public'),
                     'title' => $data['title'] ?? null,
                     'order' => $order++,
+                    'apply_watermark' => !empty($data['apply_watermark']),
                 ]);
             } elseif (($data['source_type'] ?? null) === 'external' && !empty($data['url'])) {
                 $article->videos()->create([
                     'source_type' => 'external',
                     'url' => $data['url'],
                     'title' => $data['title'] ?? null,
-                    'order' => $order++,
+                    'order' => $order++, 
+                    'apply_watermark' => !empty($data['apply_watermark']),
                 ]);
             }
         }

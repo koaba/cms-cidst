@@ -108,8 +108,12 @@ function addVideo() {
     wrapper.innerHTML = `
         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
             <input type="text" name="videos[${index}][title]" placeholder="Titre de la vidéo (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
-            <button type="button" onclick="ArticleForm.removeVideo(${index})" class="text-red-600 text-sm">Supprimer</button>
+                        <button type="button" onclick="ArticleForm.removeVideo(${index})" class="text-red-600 text-sm">Supprimer</button>
         </div>
+        <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
+            <input type="checkbox" name="videos[${index}][apply_watermark]" value="1">
+            Appliquer le filigrane
+        </label>
         <div class="flex gap-4 mb-2 text-sm">
             <label class="flex items-center gap-1">
                 <input type="radio" name="videos[${index}][source_type]" value="upload" checked onchange="ArticleForm.toggleVideoSource(${index}, 'upload')">

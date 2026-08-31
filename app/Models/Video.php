@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Storage;
 
 class Video extends Model
 {
-    protected $fillable = [
+       protected $fillable = [
         'videoable_type', 'videoable_id',
-        'source_type', 'path', 'url', 'title', 'order',
+        'source_type', 'path', 'url', 'title', 'order', 'apply_watermark',
+    ];
+
+    protected $casts = [
+        'apply_watermark' => 'boolean',
     ];
 
     public function videoable()

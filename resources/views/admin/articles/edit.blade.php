@@ -164,6 +164,10 @@
                                 Supprimer tout le diaporama
                             </label>
                         </div>
+                                                <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
+                            <input type="checkbox" name="videos[{{ $loop->index }}][apply_watermark]" value="1" @checked($video->apply_watermark)>
+                            Appliquer le filigrane
+                        </label>
 
                         @if ($diaporama->media->isNotEmpty())
                             <div class="flex flex-wrap gap-2 mb-2">

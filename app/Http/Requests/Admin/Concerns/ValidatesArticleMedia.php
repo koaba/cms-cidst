@@ -82,8 +82,9 @@ trait ValidatesArticleMedia
             'videos' => 'nullable|array|max:' . config('media.max_videos'),
             'videos.*.source_type' => 'required_with:videos|in:upload,external',
             'videos.*.file' => 'nullable|file|mimes:mp4,webm|max:' . config('media.max_video_upload_kb'),
-            'videos.*.url' => 'nullable|url|max:2048',
+                        'videos.*.url' => 'nullable|url|max:2048', 
             'videos.*.title' => 'nullable|string|max:255',
+            'videos.*.apply_watermark' => 'nullable|boolean',
             'delete_videos' => 'nullable|array',
             'delete_videos.*' => 'integer|exists:videos,id',
         ];

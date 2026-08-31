@@ -73,3 +73,18 @@ via querySelectorAll), jamais une implémentation dupliquée par type de média 
 mieux traité dans une session dédiée avec le temps de vérifier chaque zone individuellement, 
 plutôt qu'en fin de session de nettoyage.
 **Déclencheur** : à rediscuter en fin de projet avec le porteur de projet.
+## Session du 26/08/2026 (suite) — Couverture de tests sur les rendus admin
+
+**Constat de départ** : aucun test Feature ne couvrait le rendu GET des pages `create`/`edit` sur les 9 ressources admin (articles, pages, sliders, news-tickers, menus, categories, pdf-categories, pdf-documents, users) — exactement le trou qui avait laissé passer le bug `create.blade.php` plus tôt cette session (voir §2.11).
+
+**Bug de régression trouvé et corrigé en cours de route** : `resources/views/admin/sliders/create.blade.php` et `index.blade.php` référençaient encore `\App\Http\Controllers\Admin\SliderController::MAX_SLIDERS`, une constante supprimée lors de la migration vers `config('display.max_sliders')` (§2.4). Le contrôleur avait été migré, les vues non — aurait cassé la page `admin/sliders` en prod. Corrigé (3 occurrences).
+
+**Factories manquantes ajoutées** : `SliderFactory` et `MenuFactory` n'existaient pas. `Menu` n'avait pas non plus le trait `HasFactory` (oubli, contrairement aux autres modèles). Les deux ajoutés.
+
+**Nouveau fichier** : `tests/Feature/AdminFormsRenderTest.php`, couvre create/edit/index sur les 9 ressources admin de façon générique (boucle sur un tableau de factories).
+
+**Baseline de tests** : passée de **161 à 187** tests (392 assertions).
+
+**Commits** : `ea0e25e` (fix vues), `76e4471` (factories), `711b453` (nouveau test).
+
+**Reste à faire (pas traité cette session)** : comprendre pourquoi le test `create` sur sliders n'a pas immédiatement révélé le bug alors que la constante y était aussi référencée (probablement lié au cache de compilation Blade ou à un chemin conditionnel non atteint) — creusé rapidement, résultat inchangé, mais pas d'explication définitive trouvée. Sans impact sur la correction, mais à garder en tête si un cas similaire se reproduit ailleurs.
