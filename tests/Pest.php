@@ -48,3 +48,24 @@ function something()
 {
     // ..
 }
+
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
+/**
+ * Authentifie un admin habilité (rôle "Super Admin") pour les tests Feature.
+ *
+ * RefreshDatabase vide la base entre chaque test, y compris la table des
+ * rôles Spatie — le rôle "Super Admin" n'existe donc pas tant qu'on ne le
+ * crée pas explicitement ici (firstOrCreate évite de le recréer en double
+ * si plusieurs tests l'appellent dans le même run).
+ */
+function adminUser(): User
+{
+    Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+
+    $user = User::factory()->create();
+    $user->assignRole('Super Admin');
+
+    return $user;
+}
