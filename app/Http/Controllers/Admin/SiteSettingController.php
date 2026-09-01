@@ -12,6 +12,7 @@ class SiteSettingController extends Controller
     public function edit()
     {
         $settings = SiteSetting::current();
+
         return view('admin.settings.edit', compact('settings'));
     }
 
@@ -36,7 +37,10 @@ class SiteSettingController extends Controller
             'pdf_documents_title' => 'nullable|string|max:255',
             'pdf_documents_content' => 'nullable|string|max:2000',
             'video_watermark_default_enabled' => 'nullable|boolean',
-            
+            'image_watermark_default_enabled' => 'nullable|boolean',
+            'pdf_watermark_default_enabled' => 'nullable|boolean',
+            'diaporama_watermark_default_enabled' => 'nullable|boolean',
+
         ]);
 
         $settings = SiteSetting::current();
@@ -50,6 +54,9 @@ class SiteSettingController extends Controller
 
         unset($validated['logo']);
         $validated['video_watermark_default_enabled'] = $request->boolean('video_watermark_default_enabled');
+        $validated['image_watermark_default_enabled'] = $request->boolean('image_watermark_default_enabled');
+        $validated['pdf_watermark_default_enabled'] = $request->boolean('pdf_watermark_default_enabled');
+        $validated['diaporama_watermark_default_enabled'] = $request->boolean('diaporama_watermark_default_enabled');
 
         $settings->update($validated);
 

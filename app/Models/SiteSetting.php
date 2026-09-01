@@ -1,12 +1,15 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
+
 class SiteSetting extends Model
 {
     protected $fillable = [
-        
-'hero_eyebrow',
-'facebook_url',
+
+        'hero_eyebrow',
+        'facebook_url',
         'hero_eyebrow_size',
         'hero_title',
         'hero_subtitle',
@@ -21,11 +24,18 @@ class SiteSetting extends Model
         'pages_grid_columns',
         'pages_image_size',
         'pdf_documents_title',
-             'pdf_documents_content',
+        'pdf_documents_content',
         'video_watermark_default_enabled',
+        'image_watermark_default_enabled',
+        'pdf_watermark_default_enabled',
+        'diaporama_watermark_default_enabled',
     ];
-      protected $casts = [
+
+    protected $casts = [
         'video_watermark_default_enabled' => 'boolean',
+        'image_watermark_default_enabled' => 'boolean',
+        'pdf_watermark_default_enabled' => 'boolean',
+        'diaporama_watermark_default_enabled' => 'boolean',
     ];
 
     public function getPrimaryColorAttribute($value): string

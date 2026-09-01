@@ -43,7 +43,7 @@
                 <option value="horizontal" {{ old('news_ticker_direction', $settings->news_ticker_direction) === 'horizontal' ? 'selected' : '' }}>Horizontal (défilement latéral)</option>
                 <option value="vertical" {{ old('news_ticker_direction', $settings->news_ticker_direction) === 'vertical' ? 'selected' : '' }}>Vertical (défilement du bas vers le haut)</option>
             </select>
-            @error('news_ticker_direction') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                      @error('news_ticker_direction') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 <div>
     <label class="flex items-center gap-2 font-medium mb-1">
@@ -56,7 +56,48 @@
         >
         Activer le filigrane par défaut pour les nouvelles vidéos
     </label>
-    @error('video_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('video_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+<div>
+    <label class="flex items-center gap-2 font-medium mb-1">
+        <input
+            type="checkbox"
+            name="image_watermark_default_enabled"
+            value="1"
+            class="h-4 w-4"
+            {{ old('image_watermark_default_enabled', $settings->image_watermark_default_enabled) ? 'checked' : '' }}
+        >
+        Activer le filigrane par défaut pour les nouvelles images
+    </label>
+    @error('image_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+
+<div>
+    <label class="flex items-center gap-2 font-medium mb-1">
+        <input
+            type="checkbox"
+            name="pdf_watermark_default_enabled"
+            value="1"
+            class="h-4 w-4"
+            {{ old('pdf_watermark_default_enabled', $settings->pdf_watermark_default_enabled) ? 'checked' : '' }}
+        >
+        Activer le filigrane par défaut pour les nouveaux PDF
+    </label>
+    @error('pdf_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+
+<div>
+    <label class="flex items-center gap-2 font-medium mb-1">
+        <input
+            type="checkbox"
+            name="diaporama_watermark_default_enabled"
+            value="1"
+            class="h-4 w-4"
+            {{ old('diaporama_watermark_default_enabled', $settings->diaporama_watermark_default_enabled) ? 'checked' : '' }}
+        >
+        Activer le filigrane par défaut pour les nouveaux diaporamas
+    </label>
+    @error('diaporama_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
         <div>
             <label class="block font-medium mb-1">Eyebrow (petit label au-dessus du titre)</label>
