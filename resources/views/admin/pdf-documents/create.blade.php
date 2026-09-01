@@ -44,7 +44,8 @@
             @error('pdfs') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             <ul id="pdfs-preview" class="text-sm mt-2 space-y-1"></ul>
             <label class="flex items-center gap-2 text-sm text-gray-700 mt-2">
-                <input type="checkbox" name="apply_watermark" value="1">
+                <input type="checkbox" name="apply_watermark" value="1"
+                       {{ old('apply_watermark', \App\Models\SiteSetting::current()->pdf_watermark_default_enabled) ? 'checked' : '' }}>
                 Appliquer le filigrane de protection sur ces documents
             </label>
         </div>

@@ -70,7 +70,8 @@
             <div id="pdf-thumbnails-preview" class="flex flex-wrap gap-2 mb-2"></div>
             <input type="hidden" name="pdf_thumbnails" id="pdf-thumbnails-data">
             <label class="flex items-center gap-2 text-sm text-gray-700 mt-2">
-                <input type="checkbox" name="apply_watermark" value="1">
+                <input type="checkbox" name="apply_watermark" value="1"
+                       {{ old('apply_watermark', \App\Models\SiteSetting::current()->pdf_watermark_default_enabled) ? 'checked' : '' }}>
                 Appliquer le filigrane de protection sur ces documents
             </label>
         </div>
