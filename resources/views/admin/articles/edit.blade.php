@@ -53,8 +53,9 @@
                 <img src="{{ Storage::url($article->image) }}" class="w-32 h-32 object-cover rounded border mt-2">
             @endif
             <x-admin.watermark-checkbox
-                name="apply_watermark_images"
+                name="apply_watermark_cover_image"
                 id="watermark-cover-image"
+                :checked="old('apply_watermark_cover_image', \App\Models\SiteSetting::current()->image_watermark_default_enabled)"
                 label="Appliquer le filigrane de protection sur la nouvelle image à la une"
             />
         </div>
@@ -98,6 +99,7 @@
             <x-admin.watermark-checkbox
                 name="apply_watermark_images"
                 id="watermark-gallery-images"
+                :checked="old('apply_watermark_images', \App\Models\SiteSetting::current()->image_watermark_default_enabled)"
                 label="Appliquer le filigrane de protection sur les nouvelles images"
             />
         </div>
@@ -144,6 +146,7 @@
             <x-admin.watermark-checkbox
                 name="apply_watermark_pdfs"
                 id="watermark-pdfs"
+                :checked="old('apply_watermark_pdfs', \App\Models\SiteSetting::current()->pdf_watermark_default_enabled)"
                 label="Appliquer le filigrane de protection sur ces documents"
                 class=""
             />
@@ -164,11 +167,6 @@
                                 Supprimer tout le diaporama
                             </label>
                         </div>
-                                                <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
-                            <input type="checkbox" name="videos[{{ $loop->index }}][apply_watermark]" value="1" @checked($video->apply_watermark)>
-                            Appliquer le filigrane
-                        </label>
-
                         @if ($diaporama->media->isNotEmpty())
                             <div class="flex flex-wrap gap-2 mb-2">
                                 @foreach ($diaporama->media as $media)
@@ -205,6 +203,7 @@
             <x-admin.watermark-checkbox
                 name="apply_watermark_diaporamas"
                 id="watermark-diaporamas"
+                :checked="old('apply_watermark_diaporamas', \App\Models\SiteSetting::current()->diaporama_watermark_default_enabled)"
                 label="Appliquer le filigrane de protection sur les images des diaporamas"
             />
         </div>
@@ -226,6 +225,11 @@
                                 Supprimer
                             </label>
                         </div>
+
+                        <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
+                            <input type="checkbox" name="videos[{{ $loop->index }}][apply_watermark]" value="1" @checked($video->apply_watermark)>
+                            Appliquer le filigrane
+                        </label>
 
                         @if ($video->source_type === 'upload')
                             <p class="text-xs text-gray-500 mb-1">Fichier actuel : {{ basename($video->path) }}</p>

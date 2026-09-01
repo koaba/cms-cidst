@@ -49,8 +49,9 @@
             <label class="block font-medium mb-1">Image ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  la une</label>
             <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
             <x-admin.watermark-checkbox
-                name="apply_watermark_images"
+                name="apply_watermark_cover_image"
                 id="watermark-cover-image"
+                :checked="old('apply_watermark_cover_image', \App\Models\SiteSetting::current()->image_watermark_default_enabled)"
                 label="Appliquer le filigrane de protection sur l'image ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  la une"
             />
         </div>
@@ -73,6 +74,7 @@
             <x-admin.watermark-checkbox
                 name="apply_watermark_images"
                 id="watermark-gallery-images"
+                :checked="old('apply_watermark_images', \App\Models\SiteSetting::current()->image_watermark_default_enabled)"
                 label="Appliquer le filigrane de protection sur les nouvelles images"
             />
         </div>
@@ -90,6 +92,7 @@
             <x-admin.watermark-checkbox
                 name="apply_watermark_pdfs"
                 id="watermark-pdfs"
+                :checked="old('apply_watermark_pdfs', \App\Models\SiteSetting::current()->pdf_watermark_default_enabled)"
                 label="Appliquer le filigrane de protection sur ces documents"
                 class=""
             />
@@ -106,6 +109,7 @@
             <x-admin.watermark-checkbox
     name="apply_watermark_diaporamas"
     id="watermark-diaporamas"
+    :checked="old('apply_watermark_diaporamas', \App\Models\SiteSetting::current()->diaporama_watermark_default_enabled)"
     label="Appliquer le filigrane de protection sur les images des diaporamas"
 />
         </div>

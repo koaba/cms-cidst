@@ -23,12 +23,10 @@ class MediaSyncService
 {
     use HasOrphanMediaCleanup;
 
-    public function __construct(private WatermarkService $watermarkService)
-    {
-    }
+    public function __construct(private WatermarkService $watermarkService) {}
 
     /* ------------------------------------------------------------------ */
-    /*  Image à la une (Article uniquement)                               */
+    /*  Image à la une (Article uniquement) */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -36,10 +34,15 @@ class MediaSyncService
      * l'ancienne (en update), applique le filigrane si demandé.
      * Retourne le chemin stocké, ou null si aucun fichier n'a été envoyé
      * (dans ce cas, ne pas toucher au champ 'image' de l'article).
+     *
+     * Note : le filigrane de l'image à la une est piloté par son propre
+     * champ apply_watermark_cover_image, indépendant de apply_watermark_images
+     * (qui ne gouverne que la galerie) — les deux étaient auparavant fusionnés
+     * sur un seul champ partagé, ce qui empêchait de les régler séparément.
      */
     public function syncCoverImage(Request $request, ?Article $article): ?string
     {
-        if (!$request->hasFile('image')) {
+        if (! $request->hasFile('image')) {
             return null;
         }
 
@@ -49,7 +52,7 @@ class MediaSyncService
 
         $path = $request->file('image')->store('articles', 'public');
 
-        if ($request->boolean('apply_watermark_images')) {
+        if ($request->boolean('apply_watermark_cover_image')) {
             $this->watermarkService->watermarkImage($path);
         }
 
@@ -57,7 +60,7 @@ class MediaSyncService
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Galerie simple (Article)                                          */
+    /*  Galerie simple (Article) */
     /* ------------------------------------------------------------------ */
 
     public function syncGallery(Request $request, Article $article, bool $isUpdate = false): void
@@ -80,7 +83,7 @@ class MediaSyncService
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Documents PDF — Article et PdfDocument                            */
+    /*  Documents PDF — Article et PdfDocument */
     /* ------------------------------------------------------------------ */
 
     public function syncPdfs(Request $request, Article $article, bool $isUpdate = false): void
@@ -116,7 +119,7 @@ class MediaSyncService
             $model->attachExistingMedia($request->input('existing_media'));
         }
 
-        if (!$request->hasFile('pdfs')) {
+        if (! $request->hasFile('pdfs')) {
             return;
         }
 
@@ -129,7 +132,7 @@ class MediaSyncService
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Diaporamas (Article)                                              */
+    /*  Diaporamas (Article) */
     /* ------------------------------------------------------------------ */
 
     public function syncDiaporamas(Request $request, Article $article, bool $isUpdate = false): void
@@ -148,11 +151,11 @@ class MediaSyncService
         }
 
         foreach ($request->input('diaporamas', []) as $index => $data) {
-            $diaporama = !empty($data['id'])
+            $diaporama = ! empty($data['id'])
                 ? $article->diaporamas()->find($data['id'])
                 : null;
 
-            if (!$diaporama) {
+            if (! $diaporama) {
                 $diaporama = $article->diaporamas()->create([
                     'title' => $data['title'] ?? null,
                     'order' => $index,
@@ -161,7 +164,7 @@ class MediaSyncService
                 $diaporama->update(['title' => $data['title'] ?? $diaporama->title]);
             }
 
-            if (!empty($data['delete_images'])) {
+            if (! empty($data['delete_images'])) {
                 $diaporama->detachOwnedMedia($data['delete_images']);
             }
 
@@ -175,7 +178,7 @@ class MediaSyncService
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Vidéos (Article)                                                  */
+    /*  Vidéos (Article) */
     /* ------------------------------------------------------------------ */
 
     public function syncVideos(Request $request, Article $article, bool $isUpdate = false): void
@@ -190,53 +193,54 @@ class MediaSyncService
         $order = $article->videos()->count();
 
         foreach ($request->input('videos', []) as $index => $data) {
-            $existingVideo = !empty($data['id']) ? $article->videos()->find($data['id']) : null;
+            $existingVideo = ! empty($data['id']) ? $article->videos()->find($data['id']) : null;
 
-                        if ($existingVideo) {
+            if ($existingVideo) {
                 $updates = [
                     'title' => $data['title'] ?? null,
-                    'apply_watermark' => !empty($data['apply_watermark']),
+                    'apply_watermark' => ! empty($data['apply_watermark']),
                 ];
 
                 if ($existingVideo->source_type === 'upload' && $request->hasFile("videos.$index.file")) {
                     Storage::disk('public')->delete($existingVideo->path);
                     $updates['path'] = $request->file("videos.$index.file")->store('articles/videos', 'public');
-                } elseif ($existingVideo->source_type === 'external' && !empty($data['url'])) {
+                } elseif ($existingVideo->source_type === 'external' && ! empty($data['url'])) {
                     $updates['url'] = $data['url'];
                 }
 
                 $existingVideo->update($updates);
+
                 continue;
             }
 
-                       if (($data['source_type'] ?? null) === 'upload' && $request->hasFile("videos.$index.file")) {
+            if (($data['source_type'] ?? null) === 'upload' && $request->hasFile("videos.$index.file")) {
                 $file = $request->file("videos.$index.file");
-                $article->videos()->create([ 
+                $article->videos()->create([
                     'source_type' => 'upload',
                     'path' => $file->store('articles/videos', 'public'),
                     'title' => $data['title'] ?? null,
                     'order' => $order++,
-                    'apply_watermark' => !empty($data['apply_watermark']),
+                    'apply_watermark' => ! empty($data['apply_watermark']),
                 ]);
-            } elseif (($data['source_type'] ?? null) === 'external' && !empty($data['url'])) {
+            } elseif (($data['source_type'] ?? null) === 'external' && ! empty($data['url'])) {
                 $article->videos()->create([
                     'source_type' => 'external',
                     'url' => $data['url'],
                     'title' => $data['title'] ?? null,
-                    'order' => $order++, 
-                    'apply_watermark' => !empty($data['apply_watermark']),
+                    'order' => $order++,
+                    'apply_watermark' => ! empty($data['apply_watermark']),
                 ]);
             }
         }
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Helpers                                                           */
+    /*  Helpers */
     /* ------------------------------------------------------------------ */
 
     private function watermarkCallback(bool $apply, string $type): ?\Closure
     {
-        if (!$apply) {
+        if (! $apply) {
             return null;
         }
 
@@ -260,13 +264,13 @@ class MediaSyncService
      */
     private function parseThumbnails(?string $raw): array
     {
-        if (!$raw) {
+        if (! $raw) {
             return [];
         }
 
         $decoded = json_decode($raw, true);
 
-        if (!is_array($decoded)) {
+        if (! is_array($decoded)) {
             return [];
         }
 
@@ -274,7 +278,7 @@ class MediaSyncService
 
         return collect($decoded)
             ->filter(function ($item) use ($validPattern) {
-                if (!is_array($item) || empty($item['name']) || !is_string($item['name'])) {
+                if (! is_array($item) || empty($item['name']) || ! is_string($item['name'])) {
                     return false;
                 }
 

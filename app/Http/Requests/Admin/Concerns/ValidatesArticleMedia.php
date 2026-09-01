@@ -28,6 +28,7 @@ trait ValidatesArticleMedia
             'published_at' => 'nullable|date',
             'gallery_display' => 'nullable|in:grid,slideshow',
             'image' => 'nullable|image|mimes:jpeg,png,webp|max:2048',
+            'apply_watermark_cover_image' => 'nullable|boolean',
             'categories' => 'nullable|array',
             'categories.*' => 'integer|exists:categories,id',
             'seo' => 'nullable|array',
@@ -52,7 +53,7 @@ trait ValidatesArticleMedia
 
             // Documents PDF (visibles publiquement sur la page article)
             'pdfs' => 'nullable|array',
-            'pdfs.*' => 'file|mimes:pdf|max:' . config('media.max_pdf_upload_kb'),
+            'pdfs.*' => 'file|mimes:pdf|max:'.config('media.max_pdf_upload_kb'),
             'apply_watermark_pdfs' => 'nullable|boolean',
             'delete_pdfs' => 'nullable|array',
             'delete_pdfs.*' => [
@@ -65,10 +66,10 @@ trait ValidatesArticleMedia
             ],
 
             // Diaporamas
-            'diaporamas' => 'nullable|array|max:' . config('media.max_diaporamas'),
+            'diaporamas' => 'nullable|array|max:'.config('media.max_diaporamas'),
             'diaporamas.*.id' => 'nullable|integer|exists:diaporamas,id',
             'diaporamas.*.title' => 'nullable|string|max:255',
-            'diaporamas.*.images' => 'nullable|array|max:' . config('media.max_images_per_diaporama'),
+            'diaporamas.*.images' => 'nullable|array|max:'.config('media.max_images_per_diaporama'),
             'diaporamas.*.images.*' => 'image|mimes:jpeg,png,webp|max:4096',
             'diaporamas.*.existing_media' => 'nullable|array',
             'diaporamas.*.existing_media.*' => 'integer|exists:media,id',
@@ -79,10 +80,10 @@ trait ValidatesArticleMedia
             'apply_watermark_diaporamas' => 'nullable|boolean',
 
             // Vidéos
-            'videos' => 'nullable|array|max:' . config('media.max_videos'),
+            'videos' => 'nullable|array|max:'.config('media.max_videos'),
             'videos.*.source_type' => 'required_with:videos|in:upload,external',
-            'videos.*.file' => 'nullable|file|mimes:mp4,webm|max:' . config('media.max_video_upload_kb'),
-                        'videos.*.url' => 'nullable|url|max:2048', 
+            'videos.*.file' => 'nullable|file|mimes:mp4,webm|max:'.config('media.max_video_upload_kb'),
+            'videos.*.url' => 'nullable|url|max:2048',
             'videos.*.title' => 'nullable|string|max:255',
             'videos.*.apply_watermark' => 'nullable|boolean',
             'delete_videos' => 'nullable|array',
@@ -104,7 +105,7 @@ trait ValidatesArticleMedia
             $toDelete = count($this->input('delete_images', []));
             $incoming = count($this->file('images', [])) + count($this->input('existing_media', []));
             if (($currentGalleryCount - $toDelete + $incoming) > config('media.max_gallery_images')) {
-                $validator->errors()->add('images', 'La galerie ne peut pas dépasser ' . config('media.max_gallery_images') . ' images au total.');
+                $validator->errors()->add('images', 'La galerie ne peut pas dépasser '.config('media.max_gallery_images').' images au total.');
             }
 
             // Documents PDF : total (existants conservés + nouveaux) <= MAX_PDFS
@@ -112,13 +113,13 @@ trait ValidatesArticleMedia
             $toDeletePdf = count($this->input('delete_pdfs', []));
             $incomingPdf = count($this->file('pdfs', []));
             if (($currentPdfCount - $toDeletePdf + $incomingPdf) > config('media.max_pdfs')) {
-                $validator->errors()->add('pdfs', 'Un article ne peut pas dépasser ' . config('media.max_pdfs') . ' documents PDF.');
+                $validator->errors()->add('pdfs', 'Un article ne peut pas dépasser '.config('media.max_pdfs').' documents PDF.');
             }
 
             // Chaque diaporama : chaque bloc doit fournir au moins un titre ou des images
             foreach ($this->input('diaporamas', []) as $index => $diaporama) {
                 $existingCount = 0;
-                if (!empty($diaporama['id'])) {
+                if (! empty($diaporama['id'])) {
                     $existingCount = Diaporama::find($diaporama['id'])?->media()->count() ?? 0;
                 }
                 $toDeleteCount = count($diaporama['delete_images'] ?? []);
@@ -128,27 +129,27 @@ trait ValidatesArticleMedia
                 if (($existingCount - $toDeleteCount + $incomingCount) > config('media.max_images_per_diaporama')) {
                     $validator->errors()->add(
                         "diaporamas.$index.images",
-                        'Un diaporama ne peut pas dépasser ' . config('media.max_images_per_diaporama') . ' images.'
+                        'Un diaporama ne peut pas dépasser '.config('media.max_images_per_diaporama').' images.'
                     );
                 }
             }
 
             // Vidéos : chaque entrée upload doit avoir un fichier, chaque entrée external doit avoir une url
-           foreach ($this->input('videos', []) as $index => $video) {
-    // Vidéo existante (a un id) : gérée par syncVideos, qui ne remplace le
-    // fichier que si un nouveau est effectivement fourni. Pas de validation
-    // stricte ici, sinon toute modification d'article avec vidéo existante
-    // échoue dès qu'on ne re-upload pas un fichier à chaque fois.
-    if (!empty($video['id'])) {
-        continue;
-    }
-    if (($video['source_type'] ?? null) === 'upload' && !$this->hasFile("videos.$index.file")) {
-        $validator->errors()->add("videos.$index.file", 'Un fichier vidéo est requis pour ce type de source.');
-    }
-    if (($video['source_type'] ?? null) === 'external' && empty($video['url'])) {
-        $validator->errors()->add("videos.$index.url", 'Une URL est requise pour une vidéo externe.');
-    }
-}
+            foreach ($this->input('videos', []) as $index => $video) {
+                // Vidéo existante (a un id) : gérée par syncVideos, qui ne remplace le
+                // fichier que si un nouveau est effectivement fourni. Pas de validation
+                // stricte ici, sinon toute modification d'article avec vidéo existante
+                // échoue dès qu'on ne re-upload pas un fichier à chaque fois.
+                if (! empty($video['id'])) {
+                    continue;
+                }
+                if (($video['source_type'] ?? null) === 'upload' && ! $this->hasFile("videos.$index.file")) {
+                    $validator->errors()->add("videos.$index.file", 'Un fichier vidéo est requis pour ce type de source.');
+                }
+                if (($video['source_type'] ?? null) === 'external' && empty($video['url'])) {
+                    $validator->errors()->add("videos.$index.url", 'Une URL est requise pour une vidéo externe.');
+                }
+            }
         });
     }
 }
