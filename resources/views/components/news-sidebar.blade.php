@@ -6,13 +6,13 @@
         <div class="flex flex-col gap-3">
             @foreach ($articles as $article)
                 <a href="{{ route('blog.show', $article) }}" class="flex gap-2 items-center group">
-                    @if ($article->media->isNotEmpty())
-                        <img src="{{ Storage::url($article->media->first()->path) }}"
-                             alt="{{ $article->title }}"
-                             class="w-11 h-11 object-cover rounded flex-shrink-0">
-                    @else
-                        <div class="w-11 h-11 bg-cidst-bg rounded flex-shrink-0"></div>
-                    @endif
+                @if ($article->image)
+                    <img src="{{ Storage::url($article->image) }}"
+                    alt="{{ $article->title }}"
+                    class="w-11 h-11 object-cover rounded flex-shrink-0">
+                @else
+    <div class="w-11 h-11 bg-cidst-bg rounded flex-shrink-0"></div>
+@endif
                     <div>
                         <p class="text-xs text-cidst-ink line-clamp-2 group-hover:underline">{{ $article->title }}</p>
                         <p class="text-[10px] text-cidst-muted mt-0.5">{{ $article->published_at?->format('d/m') }}</p>

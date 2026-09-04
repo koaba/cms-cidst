@@ -62,3 +62,17 @@ it('affiche un état vide propre quand aucune actualité n\'existe', function ()
     $response->assertOk();
     $response->assertSee('Aucune actualité pour le moment');
 });
+
+it('affiche la vraie image de couverture, pas un média attaché quelconque', function () {
+    Article::factory()->create([
+        'title' => 'Article avec couverture',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+        'image' => 'articles/vraie-couverture.jpg',
+    ]);
+
+    $response = $this->get('/pages');
+
+    $response->assertOk();
+    $response->assertSee('articles/vraie-couverture.jpg', false);
+});
