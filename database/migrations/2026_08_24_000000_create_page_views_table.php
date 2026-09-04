@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -26,7 +26,7 @@ return new class extends Migration
 
             $table->index(['viewable_type', 'viewable_id']);
             $table->index('viewed_at');
-            // Index dédié au dédoublonnage (recherche "cette IP a-t-elle déjÃ  vu
+            // Index dédié au dédoublonnage (recherche "cette IP a-t-elle déjà vu
             // cet article récemment ?"), évite un scan complet de la table.
             $table->index(['viewable_type', 'viewable_id', 'ip_hash', 'viewed_at'], 'page_views_dedup_index');
         });

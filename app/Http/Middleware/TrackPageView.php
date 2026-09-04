@@ -18,11 +18,11 @@ use Symfony\Component\HttpFoundation\Response;
  * aller-retour ne gonfle artificiellement les statistiques.
  *
  * Vie privée : l'IP n'est jamais stockée en clair, uniquement son hash SHA-256
- * combiné Ã  APP_KEY (empêche la ré-identification par simple recherche inverse
- * de hash, et rend le hash différent d'une installation Laravel Ã  l'autre).
+ * combiné à APP_KEY (empêche la ré-identification par simple recherche inverse
+ * de hash, et rend le hash différent d'une installation Laravel à l'autre).
  *
  * Usage : middleware('track.view:article') sur une route dont le premier
- * paramètre résolu est le modèle Ã  tracker (route model binding).
+ * paramètre résolu est le modèle à tracker (route model binding).
  */
 class TrackPageView
 {

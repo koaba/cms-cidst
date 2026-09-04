@@ -8,7 +8,7 @@
 
 @php
     // Sécurité : $name, $label et $id ne doivent jamais provenir d'une entrée
-    // utilisateur brute Ã¢â‚¬â€ ce composant est prévu pour des valeurs codées en dur
+    // utilisateur brute — ce composant est prévu pour des valeurs codées en dur
     // dans les vues admin. {{ }} échappe systématiquement (protection XSS).
     $checkboxId = $id ?? $name;
 @endphp

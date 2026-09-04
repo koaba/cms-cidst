@@ -27,14 +27,14 @@
         <div class="mb-4">
             <label class="flex items-center gap-2">
                 <input type="checkbox" name="is_published" value="1" {{ old('is_published') ? 'checked' : '' }}>
-                Publier immÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©diatement
+                Publier immédiatement
             </label>
         </div>
 
         <div class="mb-4">
             <label class="block font-medium mb-1">Date de publication</label>
             <input type="datetime-local" name="published_at" value="{{ old('published_at', now()->format('Y-m-d\TH:i')) }}" class="w-full border rounded p-2">
-            <p class="text-xs text-gray-500 mt-1">Laisse la date actuelle, ou choisis une date passÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©e/future. Un article programmÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© dans le futur restera invisible au public jusqu'ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  cette date.</p>
+            <p class="text-xs text-gray-500 mt-1">Laisse la date actuelle, ou choisis une date passée/future. Un article programmé dans le futur restera invisible au public jusqu'à cette date.</p>
         </div>
 
         <div class="mb-4">
@@ -46,13 +46,13 @@
         </div>
 
         <div class="mb-4">
-            <label class="block font-medium mb-1">Image ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  la une</label>
+            <label class="block font-medium mb-1">Image à la une</label>
             <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
             <x-admin.watermark-checkbox
                 name="apply_watermark_cover_image"
                 id="watermark-cover-image"
                 :checked="old('apply_watermark_cover_image', \App\Models\SiteSetting::current()->image_watermark_default_enabled)"
-                label="Appliquer le filigrane de protection sur l'image ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  la une"
+                label="Appliquer le filigrane de protection sur l'image à la une"
             />
         </div>
 
@@ -67,7 +67,7 @@
                 </label>
                 <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
                         onclick="ArticleForm.pickExistingMedia('gallery-selected', 'existing_media[]')">
-                    Choisir depuis la mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©diathÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¨que
+                    Choisir depuis la médiathèque
                 </button>
             </div>
 
@@ -115,19 +115,19 @@
         </div>
 
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">VidÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©os <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
+            <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
             <div id="videos-container" class="space-y-4" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}"></div>
 
             <button type="button" id="add-video-btn" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100 mt-2" onclick="ArticleForm.addVideo()">
-                + Ajouter une vidÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©o
+                + Ajouter une vidéo
             </button>
         </div>
 
         <div class="mb-4 border-t pt-4">
             <label class="flex items-center gap-2">
                 <input type="checkbox" id="toggle-categories" onchange="document.getElementById('categories-field').classList.toggle('hidden', !this.checked)">
-                Ajouter des catÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©gories
+                Ajouter des catégories
             </label>
             <div id="categories-field" class="hidden mt-2 flex flex-wrap gap-3">
                 @foreach ($categories as $category)
@@ -142,7 +142,7 @@
         @include('admin.partials.seo-fields', ['model' => null])
 
         <div class="flex items-center gap-3 border-t pt-4">
-            <x-admin.button type="submit">CrÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©er</x-admin.button>
+            <x-admin.button type="submit">Créer</x-admin.button>
             <a href="{{ route('admin.articles.index') }}" class="btn btn-ghost">Annuler</a>
         </div>
 
