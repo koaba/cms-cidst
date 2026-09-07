@@ -13,13 +13,14 @@ use Illuminate\Support\Str;
 
 class Article extends Model implements HasPublicUrl
 {
-    use HasSeo;
-    use HasPublicVisibility;
-    use HasPageViews;
     use HasFactory;
     use HasOrderedMediaCollection;
+    use HasPageViews;
+    use HasPublicVisibility;
+    use HasSeo;
 
     protected $fillable = ['title', 'slug', 'content', 'image', 'user_id', 'is_published', 'published_at', 'gallery_display'];
+
     protected $casts = [
         'published_at' => 'datetime',
     ];
@@ -56,6 +57,11 @@ class Article extends Model implements HasPublicUrl
         return $this->morphMany(Video::class, 'videoable')->orderBy('order');
     }
 
+    public function videoMedia()
+    {
+        return $this->media()->where('media.type', 'video');
+    }
+
     public function publicUrl(): string
     {
         return route('blog.show', $this);
@@ -71,7 +77,7 @@ class Article extends Model implements HasPublicUrl
             $counter = 1;
 
             while (static::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter;
+                $slug = $baseSlug.'-'.$counter;
                 $counter++;
             }
 
