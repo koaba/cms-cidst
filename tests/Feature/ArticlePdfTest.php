@@ -166,3 +166,37 @@ it('rejette un fichier qui n\'est pas un PDF dans le champ pdfs', function () {
 
     $response->assertSessionHasErrors('pdfs.0');
 });
+
+it('genere la miniature PDF cote serveur, distincte de la miniature client pdf.js', function () {
+    $article = Article::factory()->create();
+
+    // Contenu PDF minimal mais reellement valide (parsable par Poppler),
+    // contrairement a UploadedFile::fake()->create() qui produit des octets
+    // factices sans structure PDF exploitable.
+    $minimalPdf = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+        ."2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+        ."3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]>>endobj\n"
+        ."xref\n0 4\n0000000000 65535 f \n"
+        ."trailer<</Size 4/Root 1 0 R>>\nstartxref\n0\n%%EOF";
+
+    $pdf = UploadedFile::fake()->createWithContent('rapport.pdf', $minimalPdf);
+
+    $response = $this->actingAs($this->admin)->put(route('admin.articles.update', $article), [
+        'title' => $article->title,
+        'content' => $article->content,
+        'pdfs' => [$pdf],
+        'apply_watermark_pdfs' => '0',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    $media = $article->fresh()->media()->where('mime_type', 'application/pdf')->first();
+
+    expect($media)->not->toBeNull();
+    expect($media->thumbnail_path)->not->toBeNull();
+    // Signature du generateur serveur (nom base sur le fichier source, .jpg)
+    // plutot que celle de l'ancienne miniature client pdf.js (prefixe "pdf_", .jpeg/.png).
+    expect($media->thumbnail_path)->toEndWith('.jpg');
+    expect($media->thumbnail_path)->not->toContain('pdf_');
+    Storage::disk('public')->assertExists($media->thumbnail_path);
+});
