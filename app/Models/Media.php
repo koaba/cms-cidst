@@ -77,6 +77,25 @@ class Media extends Model
         return null;
     }
 
+    public function getTitleAttribute(): ?string
+    {
+        return $this->original_name;
+    }
+
+    public function getMimeAttribute(): ?string
+    {
+        return $this->mime_type;
+    }
+
+    public function getDisplayUrlAttribute(): ?string
+    {
+        if ($this->path) {
+            return Storage::disk('public')->url($this->path);
+        }
+
+        return $this->url;
+    }
+
     protected static function boot()
     {
         parent::boot();
