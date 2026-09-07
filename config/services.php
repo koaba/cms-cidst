@@ -34,5 +34,8 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'pdf_thumbnail' => [
+        'driver' => env('PDF_THUMBNAIL_DRIVER', 'poppler'),
+        'poppler_binary' => env('PDF_THUMBNAIL_POPPLER_BINARY', 'pdftoppm'),
+    ],
 ];

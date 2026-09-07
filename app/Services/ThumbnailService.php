@@ -12,8 +12,8 @@ class ThumbnailService
     private const HEIGHT = 225;
 
     /**
-     * Génère une miniature redimensionnée pour un fichier déjà stocké sur le disque 'public'.
-     * Retourne le chemin relatif de la miniature, ou null en cas d'échec (image non traitable, etc.).
+     * GÃ©nÃ¨re une miniature redimensionnÃ©e pour un fichier dÃ©jÃ  stockÃ© sur le disque 'public'.
+     * Retourne le chemin relatif de la miniature, ou null en cas d'Ã©chec (image non traitable, etc.).
      */
     public function generate(string $originalPath): ?string
     {

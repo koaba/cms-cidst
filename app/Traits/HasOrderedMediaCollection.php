@@ -51,7 +51,7 @@ trait HasOrderedMediaCollection
      * incohérente ne soit persistée en base, ce qui fausserait l'affichage
      * public (filtrage image/PDF dans les vues, ex. show.blade.php).
      */
-    public function attachUploadedFiles(array $files, string $storagePath, ?Closure $beforeCreate = null, array $thumbnails = []): void
+    public function attachUploadedFiles(array $files, string $storagePath, ?Closure $beforeCreate = null, array $thumbnails = [], ?Closure $thumbnailGenerator = null): void
     {
         $order = $this->media()->count();
         $thumbnailsByName = collect($thumbnails)->keyBy('name');
@@ -76,6 +76,16 @@ trait HasOrderedMediaCollection
                 $binaryData = base64_decode($matches[2]);
                 $thumbnailPath = $storagePath.'/thumbnails/'.uniqid('pdf_', true).'.'.$extension;
                 Storage::disk('public')->put($thumbnailPath, $binaryData);
+            }
+
+            // Si un générateur serveur est fourni (ex: miniature PDF après filigrane),
+            // il prend le pas sur la miniature client (pdf.js), générée AVANT filigrane
+            // et donc jamais fiable pour un document filigrané.
+            if ($thumbnailGenerator !== null) {
+                $serverThumbnail = $thumbnailGenerator($path);
+                if ($serverThumbnail !== null) {
+                    $thumbnailPath = $serverThumbnail;
+                }
             }
 
             $media = Media::create([

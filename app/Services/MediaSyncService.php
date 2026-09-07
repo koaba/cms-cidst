@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services;
-
+use App\Services\PdfThumbnail\PdfThumbnailGeneratorFactory;
 use App\Models\Article;
 use App\Models\Diaporama;
 use App\Models\PdfDocument;
@@ -123,11 +123,12 @@ class MediaSyncService
             return;
         }
 
-        $model->attachUploadedFiles(
+                $model->attachUploadedFiles(
             $request->file('pdfs'),
             $storagePath,
             $this->watermarkCallback($request->boolean($watermarkField), 'pdf'),
-            $this->parseThumbnails($request->input('pdf_thumbnails'))
+            $this->parseThumbnails($request->input('pdf_thumbnails')),
+            $this->pdfThumbnailGenerator($storagePath)
         );
     }
 
@@ -234,7 +235,7 @@ class MediaSyncService
         }
     }
 
-    /* ------------------------------------------------------------------ */
+       /* ------------------------------------------------------------------ */
     /*  Helpers */
     /* ------------------------------------------------------------------ */
 
@@ -247,6 +248,29 @@ class MediaSyncService
         return $type === 'pdf'
             ? fn (string $path) => $this->watermarkService->watermarkPdf($path)
             : fn (string $path) => $this->watermarkService->watermarkImage($path);
+    }
+
+    /**
+     * Génère, côté serveur, la miniature d'un PDF déjà stocké (et déjà
+     * filigrané si applicable) sur le disque 'public'. Retourne le chemin
+     * relatif de la miniature, ou null en cas d'échec — dans ce cas
+     * attachUploadedFiles() retombe sur la miniature client (pdf.js) si
+     * elle existe, ou aucune miniature sinon (dégradation gracieuse).
+     */
+    private function pdfThumbnailGenerator(string $storagePath): \Closure
+    {
+        return function (string $path) use ($storagePath): ?string {
+            $disk = Storage::disk('public');
+            $thumbnailPath = $storagePath.'/thumbnails/'.pathinfo($path, PATHINFO_FILENAME).'.jpg';
+
+            $success = PdfThumbnailGeneratorFactory::make()->generate(
+                $disk->path($path),
+                $disk->path($thumbnailPath),
+                400
+            );
+
+            return $success ? $thumbnailPath : null;
+        };
     }
 
     /**
