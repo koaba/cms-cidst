@@ -24,11 +24,17 @@ class MigrateVideosToMedia extends Command
 
         foreach ($videos as $video) {
             if ($dryRun) {
-                $this->line("- [{$video->id}] {$video->title} ({$video->source_type}) -> {$video->videoable_type}#{$video->videoable_id}");
+                $alreadyMigrated = $this->isAlreadyMigrated($video);
+                $status = $alreadyMigrated ? 'DEJA MIGREE, sera ignoree' : 'a migrer';
+                $this->line("- [{$video->id}] {$video->title} ({$video->source_type}) -> {$video->videoable_type}#{$video->videoable_id} [{$status}]");
 
                 continue;
             }
+            if ($this->isAlreadyMigrated($video)) {
+                $this->line("- [{$video->id}] deja migree, ignoree.");
 
+                continue;
+            }
             DB::transaction(function () use ($video, &$migrated) {
                 $media = Media::create([
                     'type' => 'video',
@@ -57,5 +63,33 @@ class MigrateVideosToMedia extends Command
         }
 
         return self::SUCCESS;
+
+    }
+
+    /**
+     * Verifie si une Video a deja ete migree vers Media, en comparant le
+     * fichier (path) ou l'URL selon le type de source, et en verifiant
+     * qu'un Mediable existe deja pour le meme couple (mediable_type, mediable_id).
+     * Necessaire car cette commande peut etre relancee plusieurs fois
+     * (nouvelles videos creees via l'ancien systeme entre deux executions),
+     * sans etre idempotente par defaut.
+     */
+    private function isAlreadyMigrated(Video $video): bool
+    {
+        $query = Media::query()
+            ->where('type', 'video')
+            ->where('source_type', $video->source_type)
+            ->whereHas('mediables', function ($q) use ($video) {
+                $q->where('mediable_type', $video->videoable_type)
+                    ->where('mediable_id', $video->videoable_id);
+            });
+
+        if ($video->source_type === 'upload') {
+            $query->where('path', $video->path);
+        } else {
+            $query->where('url', $video->url);
+        }
+
+        return $query->exists();
     }
 }
