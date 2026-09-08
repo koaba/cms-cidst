@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Concerns;
 
 use App\Models\Article;
 use App\Models\Diaporama;
+use App\Models\Media;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
 
@@ -42,28 +43,14 @@ trait ValidatesArticleMedia
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
             'delete_images' => 'nullable|array',
-            'delete_images.*' => [
-                'integer',
-                $article
-                    ? Rule::exists('mediables', 'media_id')
-                        ->where('mediable_type', Article::class)
-                        ->where('mediable_id', $article->id)
-                    : 'exists:media,id',
-            ],
+            'delete_images.*' => $this->deletableMediaRule($article, 'image'),
 
             // Documents PDF (visibles publiquement sur la page article)
             'pdfs' => 'nullable|array',
             'pdfs.*' => 'file|mimes:pdf|max:'.config('media.max_pdf_upload_kb'),
             'apply_watermark_pdfs' => 'nullable|boolean',
             'delete_pdfs' => 'nullable|array',
-            'delete_pdfs.*' => [
-                'integer',
-                $article
-                    ? Rule::exists('mediables', 'media_id')
-                        ->where('mediable_type', Article::class)
-                        ->where('mediable_id', $article->id)
-                    : 'exists:media,id',
-            ],
+            'delete_pdfs.*' => $this->deletableMediaRule($article, 'pdf'),
 
             // Diaporamas
             'diaporamas' => 'nullable|array|max:'.config('media.max_diaporamas'),
@@ -87,15 +74,58 @@ trait ValidatesArticleMedia
             'videos.*.title' => 'nullable|string|max:255',
             'videos.*.apply_watermark' => 'nullable|boolean',
             'delete_videos' => 'nullable|array',
-            'delete_videos.*' => [
-                'integer',
-                $article
-                    ? Rule::exists('mediables', 'media_id')
-                        ->where('mediable_type', Article::class)
-                        ->where('mediable_id', $article->id)
-                    : 'exists:media,id',
-            ],
+            'delete_videos.*' => $this->deletableMediaRule($article, 'video'),
         ];
+    }
+
+    /**
+     * Construit la règle de validation d'un id de média à supprimer, pour un
+     * type donné ('image', 'pdf', 'video'). Combine deux contraintes :
+     *
+     * 1. Le média doit appartenir à *cet* article (scope mediable_type/id sur
+     *    la table pivot mediables) — ou simplement exister en base en
+     *    création (pas d'article à scoper, cf. delete_images en Store).
+     * 2. Le média doit correspondre au *genre* attendu par ce champ.
+     *
+     * Note : la colonne `type` de Media n'est fiable que pour distinguer les
+     * vidéos (mise explicitement à 'video' dans MediaSyncService::syncVideos()).
+     * Images et PDF ne la renseignent pas de façon garantie — le reste du
+     * code du projet (cf. withArticleValidation() ci-dessous, déjà en place
+     * avant ce patch) les distingue via mime_type, donc on suit la même
+     * convention ici plutôt que d'en inventer une nouvelle.
+     *
+     * @param  'image'|'pdf'|'video'  $kind
+     */
+    protected function deletableMediaRule(?Article $article, string $kind): array
+    {
+        return [
+            'integer',
+            $article
+                ? Rule::exists('mediables', 'media_id')
+                    ->where('mediable_type', Article::class)
+                    ->where('mediable_id', $article->id)
+                : 'exists:media,id',
+            function ($attribute, $value, $fail) use ($kind) {
+                $media = Media::find($value);
+
+                if (! $media || ! $this->mediaMatchesKind($media, $kind)) {
+                    $fail("Le média sélectionné n'est pas du type attendu ($kind).");
+                }
+            },
+        ];
+    }
+
+    /**
+     * @param  'image'|'pdf'|'video'  $kind
+     */
+    protected function mediaMatchesKind(Media $media, string $kind): bool
+    {
+        return match ($kind) {
+            'video' => $media->type === 'video',
+            'pdf' => $media->mime_type === 'application/pdf',
+            'image' => $media->type !== 'video' && str_starts_with((string) $media->mime_type, 'image/'),
+            default => false,
+        };
     }
 
     /**

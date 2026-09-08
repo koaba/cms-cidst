@@ -55,3 +55,21 @@ it('retire une image de la galerie d\'un article', function () {
     $response->assertRedirect(route('admin.articles.index'));
     expect($article->fresh()->media)->toHaveCount(0);
 });
+
+it('rejette un id de suppression qui correspond en realite a une video', function () {
+    $article = Article::factory()->create();
+    $video = Media::factory()->create(['type' => 'video']);
+    $article->media()->attach($video->id, ['order' => 0]);
+
+    $response = $this->actingAs($this->admin)->put(route('admin.articles.update', $article), [
+        'title' => $article->title,
+        'content' => $article->content,
+        'delete_images' => [$video->id], // id valide pour l'article, mais c'est une video
+    ]);
+
+    $response->assertSessionHasErrors('delete_images.0');
+    $this->assertDatabaseHas('mediables', [
+        'media_id' => $video->id,
+        'mediable_id' => $article->id,
+    ]);
+});
