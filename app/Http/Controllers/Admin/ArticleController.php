@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\SavesSeoMeta;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreArticleRequest;
 use App\Http\Requests\Admin\UpdateArticleRequest;
@@ -9,7 +10,6 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Services\MediaSyncService;
 use App\Traits\HasOrphanMediaCleanup;
-use App\Concerns\SavesSeoMeta;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,9 +17,7 @@ class ArticleController extends Controller
 {
     use HasOrphanMediaCleanup, SavesSeoMeta;
 
-    public function __construct(private MediaSyncService $mediaSync)
-    {
-    }
+    public function __construct(private MediaSyncService $mediaSync) {}
 
     public function index()
     {
@@ -69,7 +67,7 @@ class ArticleController extends Controller
 
     public function edit(Article $article)
     {
-        $article->load(['diaporamas.media', 'videos', 'media']);
+        $article->load(['diaporamas.media', 'videoMedia', 'media']);
         $categories = Category::all();
 
         return view('admin.articles.edit', compact('article', 'categories'));
@@ -101,7 +99,7 @@ class ArticleController extends Controller
 
     public function destroy(Article $article)
     {
-        $article->load(['diaporamas', 'videos']);
+        $article->load(['diaporamas']);
 
         DB::transaction(function () use ($article) {
             // Galerie simple

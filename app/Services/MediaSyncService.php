@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Services;
-use App\Services\PdfThumbnail\PdfThumbnailGeneratorFactory;
+
 use App\Models\Article;
 use App\Models\Diaporama;
+use App\Models\Media;
 use App\Models\PdfDocument;
-use App\Models\Video;
+use App\Services\PdfThumbnail\PdfThumbnailGeneratorFactory;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -123,7 +124,7 @@ class MediaSyncService
             return;
         }
 
-                $model->attachUploadedFiles(
+        $model->attachUploadedFiles(
             $request->file('pdfs'),
             $storagePath,
             $this->watermarkCallback($request->boolean($watermarkField), 'pdf'),
@@ -184,27 +185,31 @@ class MediaSyncService
 
     public function syncVideos(Request $request, Article $article, bool $isUpdate = false): void
     {
+        $deletedIds = $request->input('delete_videos', []);
         if ($isUpdate && $request->filled('delete_videos')) {
-            $ownedIds = $article->videos()->pluck('id')->all();
-            foreach (array_intersect($request->input('delete_videos'), $ownedIds) as $videoId) {
-                Video::find($videoId)?->delete(); // le model event supprime le fichier si uploadé
-            }
+            $article->detachOwnedMedia($request->input('delete_videos'));
         }
 
-        $order = $article->videos()->count();
+        $order = $article->media()->count();
 
         foreach ($request->input('videos', []) as $index => $data) {
-            $existingVideo = ! empty($data['id']) ? $article->videos()->find($data['id']) : null;
+            if (! empty($data['id']) && in_array($data['id'], $deletedIds)) {
+                continue;
+            }
+            $existingVideo = ! empty($data['id']) ? $article->videoMedia()->find($data['id']) : null;
 
             if ($existingVideo) {
                 $updates = [
-                    'title' => $data['title'] ?? null,
+                    'original_name' => $data['title'] ?? null,
                     'apply_watermark' => ! empty($data['apply_watermark']),
                 ];
 
                 if ($existingVideo->source_type === 'upload' && $request->hasFile("videos.$index.file")) {
                     Storage::disk('public')->delete($existingVideo->path);
-                    $updates['path'] = $request->file("videos.$index.file")->store('articles/videos', 'public');
+                    $file = $request->file("videos.$index.file");
+                    $updates['path'] = $file->store('articles/videos', 'public');
+                    $updates['mime_type'] = $file->getMimeType() ?? $file->getClientMimeType();
+                    $updates['size'] = $file->getSize();
                 } elseif ($existingVideo->source_type === 'external' && ! empty($data['url'])) {
                     $updates['url'] = $data['url'];
                 }
@@ -216,26 +221,34 @@ class MediaSyncService
 
             if (($data['source_type'] ?? null) === 'upload' && $request->hasFile("videos.$index.file")) {
                 $file = $request->file("videos.$index.file");
-                $article->videos()->create([
+                $path = $file->store('articles/videos', 'public');
+
+                $media = Media::create([
+                    'type' => 'video',
                     'source_type' => 'upload',
-                    'path' => $file->store('articles/videos', 'public'),
-                    'title' => $data['title'] ?? null,
-                    'order' => $order++,
+                    'path' => $path,
+                    'original_name' => $data['title'] ?? null,
+                    'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
+                    'size' => $file->getSize(),
                     'apply_watermark' => ! empty($data['apply_watermark']),
                 ]);
+
+                $article->media()->attach($media->id, ['order' => $order++]);
             } elseif (($data['source_type'] ?? null) === 'external' && ! empty($data['url'])) {
-                $article->videos()->create([
+                $media = Media::create([
+                    'type' => 'video',
                     'source_type' => 'external',
                     'url' => $data['url'],
-                    'title' => $data['title'] ?? null,
-                    'order' => $order++,
+                    'original_name' => $data['title'] ?? null,
                     'apply_watermark' => ! empty($data['apply_watermark']),
                 ]);
+
+                $article->media()->attach($media->id, ['order' => $order++]);
             }
         }
     }
 
-       /* ------------------------------------------------------------------ */
+    /* ------------------------------------------------------------------ */
     /*  Helpers */
     /* ------------------------------------------------------------------ */
 

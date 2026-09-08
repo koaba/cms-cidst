@@ -87,7 +87,14 @@ trait ValidatesArticleMedia
             'videos.*.title' => 'nullable|string|max:255',
             'videos.*.apply_watermark' => 'nullable|boolean',
             'delete_videos' => 'nullable|array',
-            'delete_videos.*' => 'integer|exists:videos,id',
+            'delete_videos.*' => [
+                'integer',
+                $article
+                    ? Rule::exists('mediables', 'media_id')
+                        ->where('mediable_type', Article::class)
+                        ->where('mediable_id', $article->id)
+                    : 'exists:media,id',
+            ],
         ];
     }
 

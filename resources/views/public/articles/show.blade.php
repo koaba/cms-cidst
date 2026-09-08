@@ -122,12 +122,12 @@
         </section>
     @endif
 
-    @if ($article->videos->isNotEmpty())
+    @if ($article->videoMedia->isNotEmpty())
         <section class="py-10 border-t border-cidst-border">
             <p class="font-mono text-xs text-cidst-muted mb-8">// Vidéos</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                @foreach ($article->videos as $video)
+                @foreach ($article->videoMedia as $video)
                          <div class="relative aspect-video rounded-lg overflow-hidden border border-cidst-border bg-cidst-surface">
                         @if ($video->source_type === 'upload')
                                                                              <video controls @if ($video->apply_watermark) controlsList="nofullscreen" @endif preload="metadata" class="w-full h-full object-cover js-watermarked-video">
