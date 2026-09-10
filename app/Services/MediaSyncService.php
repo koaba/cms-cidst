@@ -6,7 +6,7 @@ use App\Models\Article;
 use App\Models\Diaporama;
 use App\Models\Media;
 use App\Models\PdfDocument;
-use App\Services\PdfThumbnail\PdfThumbnailGeneratorFactory;
+use App\Services\PdfThumbnail\PdfThumbnailProcessor;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -24,7 +24,10 @@ class MediaSyncService
 {
     use HasOrphanMediaCleanup;
 
-    public function __construct(private WatermarkService $watermarkService) {}
+    public function __construct(
+        private WatermarkService $watermarkService,
+        private PdfThumbnailProcessor $pdfThumbnailProcessor,
+    ) {}
 
     /* ------------------------------------------------------------------ */
     /*  Image à la une (Article uniquement) */
@@ -128,8 +131,8 @@ class MediaSyncService
             $request->file('pdfs'),
             $storagePath,
             $this->watermarkCallback($request->boolean($watermarkField), 'pdf'),
-            $this->parseThumbnails($request->input('pdf_thumbnails')),
-            $this->pdfThumbnailGenerator($storagePath)
+            $this->pdfThumbnailProcessor->parseThumbnails($request->input('pdf_thumbnails')),
+            $this->pdfThumbnailProcessor->pdfThumbnailGenerator($storagePath)
         );
     }
 
@@ -263,71 +266,4 @@ class MediaSyncService
             : fn (string $path) => $this->watermarkService->watermarkImage($path);
     }
 
-    /**
-     * Génère, côté serveur, la miniature d'un PDF déjà stocké (et déjà
-     * filigrané si applicable) sur le disque 'public'. Retourne le chemin
-     * relatif de la miniature, ou null en cas d'échec — dans ce cas
-     * attachUploadedFiles() retombe sur la miniature client (pdf.js) si
-     * elle existe, ou aucune miniature sinon (dégradation gracieuse).
-     */
-    private function pdfThumbnailGenerator(string $storagePath): \Closure
-    {
-        return function (string $path) use ($storagePath): ?string {
-            $disk = Storage::disk('public');
-            $thumbnailPath = $storagePath.'/thumbnails/'.pathinfo($path, PATHINFO_FILENAME).'.jpg';
-
-            $success = PdfThumbnailGeneratorFactory::make()->generate(
-                $disk->path($path),
-                $disk->path($thumbnailPath),
-                400
-            );
-
-            return $success ? $thumbnailPath : null;
-        };
-    }
-
-    /**
-     * Décode et valide la structure des miniatures PDF envoyées par le client
-     * (générées côté navigateur via pdf.js, voir resources/js/admin/pdf-thumbnail.js).
-     *
-     * Sécurité : le JSON provient d'un champ hidden rempli par du JavaScript
-     * client, donc potentiellement modifiable par un utilisateur malveillant
-     * avant soumission. On ne fait confiance qu'à la structure attendue :
-     * chaque élément doit avoir un `name` (string non vide) et un `thumbnail`
-     * qui est soit null, soit une chaîne respectant strictement le format
-     * data-URL image en base64. Tout élément non conforme est silencieusement
-     * écarté (dégradation gracieuse : au pire l'article/document perd cette
-     * miniature, jamais une erreur bloquante pour l'utilisateur).
-     */
-    private function parseThumbnails(?string $raw): array
-    {
-        if (! $raw) {
-            return [];
-        }
-
-        $decoded = json_decode($raw, true);
-
-        if (! is_array($decoded)) {
-            return [];
-        }
-
-        $validPattern = '/^data:image\/(jpe?g|png|webp);base64,[A-Za-z0-9+\/]+={0,2}$/';
-
-        return collect($decoded)
-            ->filter(function ($item) use ($validPattern) {
-                if (! is_array($item) || empty($item['name']) || ! is_string($item['name'])) {
-                    return false;
-                }
-
-                $thumbnail = $item['thumbnail'] ?? null;
-
-                return $thumbnail === null || (is_string($thumbnail) && preg_match($validPattern, $thumbnail) === 1);
-            })
-            ->map(fn (array $item) => [
-                'name' => $item['name'],
-                'thumbnail' => $item['thumbnail'] ?? null,
-            ])
-            ->values()
-            ->all();
-    }
 }
