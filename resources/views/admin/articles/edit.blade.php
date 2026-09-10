@@ -185,8 +185,8 @@
             <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
                       <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videoMedia->count() }}" data-new-container="videos-new-container" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}" data-max-videos="{{ config('media.max_videos') }}" data-max-video-kb="{{ config('media.max_video_upload_kb') }}">
-                      @foreach ($article->videoMedia as $video)
-                         <div class="border rounded p-3">
+                     @foreach ($article->videoMedia as $video)
+                     <div class="border rounded p-3" data-dropzone>
                         <input type="hidden" name="videos[{{ $loop->index }}][id]" value="{{ $video->id }}">
                         <input type="hidden" name="videos[{{ $loop->index }}][source_type]" value="{{ $video->source_type }}">
 
