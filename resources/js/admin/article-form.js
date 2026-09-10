@@ -107,6 +107,7 @@ function addVideo() {
     const wrapper = document.createElement('div');
     wrapper.className = 'border rounded p-3';
     wrapper.id = `video-${index}`;
+    wrapper.setAttribute('data-dropzone', '');
     wrapper.innerHTML = `
         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
             <input type="text" name="videos[${index}][title]" placeholder="Titre de la vidéo (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
@@ -134,6 +135,7 @@ function addVideo() {
         </div>
     `;
     document.getElementById(videoNewContainerId).appendChild(wrapper);
+    window.FileDropzone?.scan();
     updateAddButtons();
 }
 

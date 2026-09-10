@@ -224,13 +224,9 @@
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
-                        <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videoMedia->count() }}" data-new-container="videos-new-container" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}"
-                             data-media-reorder
-                             data-reorder-url="{{ route('admin.media.reorder') }}"
-                             data-model-type="article"
-                             data-model-id="{{ $article->id }}">
+                        <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videoMedia->count() }}" data-new-container="videos-new-container" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}">
                       @foreach ($article->videoMedia as $video)
-                         <div class="border rounded p-3 cursor-move" draggable="true" data-media-id="{{ $video->id }}">
+                         <div class="border rounded p-3">
                         <input type="hidden" name="videos[{{ $loop->index }}][id]" value="{{ $video->id }}">
                         <input type="hidden" name="videos[{{ $loop->index }}][source_type]" value="{{ $video->source_type }}">
 
