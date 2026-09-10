@@ -59,17 +59,13 @@
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-gray-500 font-normal">(20 max)</span></h2>
 
-            <div id="gallery-selected" class="flex flex-wrap gap-2 mb-2"></div>
-            <div class="flex gap-2">
-                <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100">
-                    + Uploader des images
-                    <input type="file" name="images[]" accept="image/*" multiple class="hidden" onchange="ArticleForm.previewNewUploads(this, 'gallery-selected')">
-                </label>
-                <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
-                        onclick="ArticleForm.pickExistingMedia('gallery-selected', 'existing_media[]')">
-                    Choisir depuis la médiathèque
-                </button>
-            </div>
+          <x-admin.media-add-controls
+    preview-container-id="gallery-selected"
+    upload-field-name="images[]"
+    pick-field-name="existing_media[]"
+    accept="image/*"
+    label="Uploader des images"
+/>
 
             <x-admin.watermark-checkbox
                 name="apply_watermark_images"

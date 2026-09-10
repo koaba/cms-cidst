@@ -67,73 +67,45 @@
             $attachedPdfs = $article->media->filter(fn ($m) => $m->mime_type === 'application/pdf');
         @endphp
         <div class="mb-6 border-t pt-4" data-dropzone>
-            <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-gray-500 font-normal">(20 max)</span></h2>
+    <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-gray-500 font-normal">(20 max)</span></h2>
 
-            @if ($galleryImages->isNotEmpty())
-                <div class="flex flex-wrap gap-3 mb-3"
-                     data-media-reorder
-                     data-reorder-url="{{ route('admin.media.reorder') }}"
-                     data-model-type="article"
-                     data-model-id="{{ $article->id }}">
-                    @foreach ($galleryImages as $media)
-                        <label class="block w-24 cursor-move" draggable="true" data-media-id="{{ $media->id }}">
-                            <img src="{{ Storage::url($media->path) }}" class="w-24 h-24 object-cover rounded border" draggable="false">
-                            <span class="flex items-center gap-1 text-xs mt-1">
-                                <input type="checkbox" name="delete_images[]" value="{{ $media->id }}">
-                                Supprimer
-                            </span>
-                        </label>
-                    @endforeach
-                </div>
-            @endif
+    <x-admin.media-reorder-list
+        :items="$galleryImages"
+        variant="image"
+        model-type="article"
+        :model-id="$article->id"
+        delete-field="delete_images[]"
+        width-class="w-24"
+        height-class="h-24"
+    />
 
-            <div id="gallery-selected" class="flex flex-wrap gap-2 mb-2"></div>
+    <x-admin.media-add-controls
+        preview-container-id="gallery-selected"
+        upload-field-name="images[]"
+        pick-field-name="existing_media[]"
+        accept="image/*"
+        label="Uploader des images"
+    />
 
-            <div class="flex gap-2">
-                <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100">
-                    + Uploader des images
-                    <input type="file" name="images[]" accept="image/*" multiple class="hidden" onchange="ArticleForm.previewNewUploads(this, 'gallery-selected')">
-                </label>
-                <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
-                        onclick="ArticleForm.pickExistingMedia('gallery-selected', 'existing_media[]')">
-                    Choisir depuis la médiathèque
-                </button>
-            </div>
-
-            <x-admin.watermark-checkbox
-                name="apply_watermark_images"
-                id="watermark-gallery-images"
-                :checked="old('apply_watermark_images', \App\Models\SiteSetting::current()->image_watermark_default_enabled)"
-                label="Appliquer le filigrane de protection sur les nouvelles images"
-            />
-        </div>
+    <x-admin.watermark-checkbox
+        name="apply_watermark_images"
+        id="watermark-gallery-images"
+        :checked="old('apply_watermark_images', \App\Models\SiteSetting::current()->image_watermark_default_enabled)"
+        label="Appliquer le filigrane de protection sur les nouvelles images"
+    />
+</div>
 
         {{-- ===================== DOCUMENTS PDF ===================== --}}
         <div class="mb-6 border-t pt-4" data-dropzone>
             <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-gray-500 font-normal">(10 max, visibles publiquement sur la page article)</span></h2>
 
-            @if ($attachedPdfs->isNotEmpty())
-                <div class="space-y-2 mb-3"
-                     data-media-reorder
-                     data-reorder-url="{{ route('admin.media.reorder') }}"
-                     data-model-type="article"
-                     data-model-id="{{ $article->id }}">
-                    @foreach ($attachedPdfs as $pdf)
-                        <label class="flex items-center gap-2 text-sm border rounded px-3 py-2 bg-gray-50 cursor-move" draggable="true" data-media-id="{{ $pdf->id }}">
-                            @if ($pdf->thumbnail_path)
-                                <img src="{{ Storage::url($pdf->thumbnail_path) }}" class="w-8 h-10 object-cover rounded border" draggable="false">
-                            @else
-                                <span aria-hidden="true">&#128196;</span>
-                            @endif
-                            <span class="flex-1">{{ $pdf->original_name }}</span>
-                            <span class="flex items-center gap-1 text-xs">
-                                <input type="checkbox" name="delete_pdfs[]" value="{{ $pdf->id }}">
-                                Supprimer
-                            </span>
-                        </label>
-                    @endforeach
-                </div>
-            @endif
+           <x-admin.media-reorder-list
+    :items="$attachedPdfs"
+    variant="pdf"
+    model-type="article"
+    :model-id="$article->id"
+    delete-field="delete_pdfs[]"
+/>
 
             <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100 inline-block mb-2">
                 + Ajouter des PDF
@@ -175,35 +147,23 @@
                                 Supprimer tout le diaporama
                             </label>
                         </div>
-                        @if ($diaporama->media->isNotEmpty())
-                            <div class="flex flex-wrap gap-2 mb-2"
-                                 data-media-reorder
-                                 data-reorder-url="{{ route('admin.media.reorder') }}"
-                                 data-model-type="diaporama"
-                                 data-model-id="{{ $diaporama->id }}">
-                                @foreach ($diaporama->media as $media)
-                                    <label class="block w-20 cursor-move" draggable="true" data-media-id="{{ $media->id }}">
-                                        <img src="{{ Storage::url($media->path) }}" class="w-20 h-20 object-cover rounded border" draggable="false">
-                                        <span class="flex items-center gap-1 text-xs">
-                                            <input type="checkbox" name="diaporamas[{{ $i }}][delete_images][]" value="{{ $media->id }}">
-                                            Suppr.
-                                        </span>
-                                    </label>
-                                @endforeach
-                            </div>
-                        @endif
+                        <x-admin.media-reorder-list
+    :items="$diaporama->media"
+    variant="image"
+    model-type="diaporama"
+    :model-id="$diaporama->id"
+    delete-field="diaporamas[{{ $i }}][delete_images][]"
+    width-class="w-20"
+    height-class="h-20"
+/>
 
-                        <div id="diaporama-{{ $i }}-selected" class="flex flex-wrap gap-2 mb-2"></div>
-                        <div class="flex gap-2">
-                            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                + Uploader
-                                <input type="file" name="diaporamas[{{ $i }}][images][]" accept="image/*" multiple class="hidden" onchange="ArticleForm.previewNewUploads(this, 'diaporama-{{ $i }}-selected')">
-                            </label>
-                            <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
-                                    onclick="ArticleForm.pickExistingMedia('diaporama-{{ $i }}-selected', 'diaporamas[{{ $i }}][existing_media][]')">
-                                Choisir depuis la médiathèque
-                            </button>
-                        </div>
+<x-admin.media-add-controls
+    preview-container-id="diaporama-{{ $i }}-selected"
+    upload-field-name="diaporamas[{{ $i }}][images][]"
+    pick-field-name="diaporamas[{{ $i }}][existing_media][]"
+    accept="image/*"
+    label="Uploader"
+/>
                     </div>
                 @endforeach
             </div>
