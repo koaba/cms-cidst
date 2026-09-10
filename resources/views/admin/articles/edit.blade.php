@@ -164,7 +164,7 @@
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Diaporamas <span class="text-xs text-gray-500 font-normal">(4 max, 10 images max chacun)</span></h2>
 
-            <div id="diaporamas-container" class="space-y-4" data-initial-count="{{ $article->diaporamas->count() }}">
+            <div id="diaporamas-container" class="space-y-4" data-initial-count="{{ $article->diaporamas->count() }}" data-max-diaporamas="{{ config('media.max_diaporamas') }}" data-max-images-per-diaporama="{{ config('media.max_images_per_diaporama') }}">
                 @foreach ($article->diaporamas as $i => $diaporama)
                     <div class="border rounded p-3" id="diaporama-{{ $i }}" data-dropzone>
                         <input type="hidden" name="diaporamas[{{ $i }}][id]" value="{{ $diaporama->id }}">
@@ -224,7 +224,7 @@
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
-                        <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videoMedia->count() }}" data-new-container="videos-new-container" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}">
+                      <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videoMedia->count() }}" data-new-container="videos-new-container" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}" data-max-videos="{{ config('media.max_videos') }}" data-max-video-kb="{{ config('media.max_video_upload_kb') }}">
                       @foreach ($article->videoMedia as $video)
                          <div class="border rounded p-3">
                         <input type="hidden" name="videos[{{ $loop->index }}][id]" value="{{ $video->id }}">

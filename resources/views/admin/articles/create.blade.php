@@ -101,7 +101,7 @@
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Diaporamas <span class="text-xs text-gray-500 font-normal">(4 max, 10 images max chacun)</span></h2>
 
-            <div id="diaporamas-container" class="space-y-4"></div>
+            <div id="diaporamas-container" class="space-y-4" data-max-diaporamas="{{ config('media.max_diaporamas') }}" data-max-images-per-diaporama="{{ config('media.max_images_per_diaporama') }}"></div>
 
             <button type="button" id="add-diaporama-btn" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100 mt-2" onclick="ArticleForm.addDiaporama()">
                 + Ajouter un diaporama
@@ -117,7 +117,7 @@
         <div class="mb-6 border-t pt-4">
             <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
-            <div id="videos-container" class="space-y-4" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}"></div>
+           <div id="videos-container" class="space-y-4" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}" data-max-videos="{{ config('media.max_videos') }}" data-max-video-kb="{{ config('media.max_video_upload_kb') }}"></div>
 
             <button type="button" id="add-video-btn" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100 mt-2" onclick="ArticleForm.addVideo()">
                 + Ajouter une vidéo

@@ -1,8 +1,8 @@
 // Gère les blocs dynamiques du formulaire article : galerie, diaporamas, vidéos.
 // Utilisé par resources/views/admin/articles/create.blade.php et edit.blade.php.
 
-const MAX_DIAPORAMAS = 4;
-const MAX_VIDEOS = 5;
+let MAX_DIAPORAMAS = 4;
+let MAX_VIDEOS = 5;
 
 const DIAPORAMA_CONTAINER_ID = 'diaporamas-container';
 const VIDEO_CONTAINER_ID = 'videos-container';
@@ -148,10 +148,12 @@ let videoWatermarkDefault = false;
 function init() {
     const diaporamaContainer = document.getElementById(DIAPORAMA_CONTAINER_ID);
     diaporamaCount = parseInt(diaporamaContainer?.dataset.initialCount || '0', 10);
+    MAX_DIAPORAMAS = parseInt(diaporamaContainer?.dataset.maxDiaporamas, 10) || MAX_DIAPORAMAS;
     const videoContainer = document.getElementById(VIDEO_CONTAINER_ID);
     videoCount = parseInt(videoContainer?.dataset.initialCount || '0', 10);
     videoNewContainerId = videoContainer?.dataset.newContainer || VIDEO_CONTAINER_ID;
     videoWatermarkDefault = videoContainer?.dataset.watermarkDefault === '1';
+    MAX_VIDEOS = parseInt(videoContainer?.dataset.maxVideos, 10) || MAX_VIDEOS;
     updateAddButtons();
 }
 
