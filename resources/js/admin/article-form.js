@@ -74,6 +74,7 @@ function addDiaporama() {
     const wrapper = document.createElement('div');
     wrapper.className = 'border rounded p-3';
     wrapper.id = `diaporama-${index}`;
+    wrapper.setAttribute('data-dropzone', '');
     wrapper.innerHTML = `
         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
             <input type="text" name="diaporamas[${index}][title]" placeholder="Titre du diaporama (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
@@ -91,6 +92,7 @@ function addDiaporama() {
         </div>
     `;
     document.getElementById(DIAPORAMA_CONTAINER_ID).appendChild(wrapper);
+    window.FileDropzone?.scan();
     updateAddButtons();
 }
 

@@ -54,6 +54,7 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
     Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');
     Route::get('admin/media/picker', [AdminMediaController::class, 'picker'])->name('admin.media.picker');
+    Route::post('admin/media/reorder', [\App\Http\Controllers\Admin\MediaOrderController::class, 'update'])->name('admin.media.reorder');
 });
 
 // Accès restreint : Super Admin uniquement (structure du site, réglages)
