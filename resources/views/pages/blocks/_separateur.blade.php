@@ -1,0 +1,1 @@
+<hr class="{{ ($data['style'] ?? 'fin') === 'epais' ? 'border-t-4' : 'border-t' }} border-gray-300 my-6">

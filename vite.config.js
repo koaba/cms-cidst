@@ -11,7 +11,7 @@ export default defineConfig({
                 'resources/js/admin/pdf-thumbnail.js',
                 'resources/js/admin/media-reorder.js',
                 'resources/js/admin/file-dropzone.js',
-                'resources/js/admin/file-dropzone.js',
+                'resources/js/admin/page-blocks-reorder.js',
             ],
             refresh: true,
         }),

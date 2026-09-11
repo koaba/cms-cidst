@@ -22,6 +22,7 @@
                     <td class="p-2">{{ $page->is_published ? 'Publiée' : 'Brouillon' }}</td>
                     <td class="p-2 space-x-2">
                         <a href="{{ route('admin.pages.edit', $page) }}" class="text-blue-600">Modifier</a>
+                        <a href="{{ route('admin.pages.blocks.index', $page) }}" class="text-purple-600">Blocs</a>
                         <form action="{{ route('admin.pages.destroy', $page) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             <button class="text-red-600" onclick="return confirm('Supprimer ?')">Supprimer</button>

@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\PageBlockController as AdminPageBlockController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController;
@@ -50,6 +51,15 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
     Route::resource('admin/pages', AdminPageController::class)->names('admin.pages');
+    Route::prefix('admin/pages/{page}/blocks')->name('admin.pages.blocks.')->group(function () {
+        Route::get('/', [AdminPageBlockController::class, 'index'])->name('index');
+        Route::get('/create/{type}', [AdminPageBlockController::class, 'create'])->name('create');
+        Route::post('/', [AdminPageBlockController::class, 'store'])->name('store');
+        Route::get('/{blockId}/edit', [AdminPageBlockController::class, 'edit'])->name('edit');
+        Route::put('/{blockId}', [AdminPageBlockController::class, 'update'])->name('update');
+        Route::delete('/{blockId}', [AdminPageBlockController::class, 'destroy'])->name('destroy');
+        Route::post('/reorder', [AdminPageBlockController::class, 'reorder'])->name('reorder');
+    });
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
     Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');

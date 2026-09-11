@@ -28,6 +28,11 @@ class Page extends Model implements HasPublicUrl
             ->orderByPivot('order');
     }
 
+    public function blocks()
+    {
+        return $this->hasMany(PageBlock::class)->orderBy('order');
+    }
+
     public function publicUrl(): string
     {
         return route('pages.show', $this);
