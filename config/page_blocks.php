@@ -8,7 +8,8 @@ return [
         'image' => 'Image',
         'video' => 'Vidéo',
         'section_fond' => 'Section à fond coloré',
-        // Types restants à implémenter (lot 4+) :
-        // 'galerie', 'pdf', 'colonnes', 'accordeon', 'banniere_hero', 'chiffres_cles'
+        'galerie' => 'Galerie',
+        // Types restants à implémenter (lot 5+) :
+        // 'pdf', 'colonnes', 'accordeon', 'banniere_hero', 'chiffres_cles'
     ],
 ];

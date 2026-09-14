@@ -8,5 +8,5 @@ class Mediable extends MorphPivot
 {
     protected $table = 'mediables';
 
-    protected $fillable = ['media_id', 'mediable_id', 'mediable_type', 'order'];
+    protected $fillable = ['media_id', 'mediable_id', 'mediable_type', 'order', 'alt', 'caption'];
 }

@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait HasOrphanMediaCleanup
 {
-    protected function detachAndPruneOrphanMedia(Model $model): void
+    public function detachAndPruneOrphanMedia(Model $model): void
     {
         $mediaItems = $model->media()->get();
 

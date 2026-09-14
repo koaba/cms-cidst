@@ -2,7 +2,11 @@
     <label class="block text-sm font-medium mb-1">Image</label>
     @if(isset($block) && $block->media->isNotEmpty())
         <img src="{{ Storage::url($block->media->first()->path) }}" class="w-40 rounded mb-2">
-        <p class="text-xs text-gray-500 mb-2">Laisse vide pour garder l'image actuelle.</p>
+        <label class="flex items-center gap-2 text-sm text-red-600 mb-2">
+            <input type="checkbox" name="delete_image" value="1">
+            Supprimer l'image actuelle
+        </label>
+        <p class="text-xs text-gray-500 mb-2">Laisse vide pour garder l'image actuelle, ou coche la case pour la retirer.</p>
     @endif
     <input type="file" name="image" accept="image/*" class="w-full border rounded p-2 text-sm">
     @error('image')

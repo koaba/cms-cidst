@@ -36,7 +36,8 @@ class PageBlockController extends Controller
         }
 
         $data = $this->validateForType($request, $type, isCreate: true);
-        unset($data['video_file'], $data['image']);
+        $data = $this->stripMediaFields($data);
+
         $block = $page->blocks()->create([
             'type' => $type,
             'data' => $data,
@@ -62,7 +63,8 @@ class PageBlockController extends Controller
         $block = $page->blocks()->findOrFail($blockId);
 
         $data = $this->validateForType($request, $block->type, isCreate: false);
-        unset($data['video_file'], $data['image']);
+        $data = $this->stripMediaFields($data);
+
         $block->update(['data' => $data]);
 
         $this->handleMedia($request, $block, $block->type);
@@ -71,10 +73,11 @@ class PageBlockController extends Controller
             ->route('admin.pages.blocks.index', $page)
             ->with('success', 'Le bloc a été modifié avec succès.');
     }
-
     public function destroy(Page $page, int $blockId)
     {
         $block = $page->blocks()->findOrFail($blockId);
+
+        $block->detachAndPruneOrphanMedia($block);
         $block->delete();
 
         return redirect()
@@ -122,12 +125,14 @@ class PageBlockController extends Controller
                 'image' => ($isCreate ? 'required' : 'nullable') . '|image|max:5120',
                 'alt' => 'nullable|string|max:255',
                 'caption' => 'nullable|string|max:255',
+                'delete_image' => 'nullable|boolean',
             ]),
             'video' => $request->validate([
                 'title' => 'nullable|string|max:255',
                 'source_type' => 'required|in:upload,url',
                 'url' => 'required_if:source_type,url|nullable|string|max:255',
                 'video_file' => 'required_if:source_type,upload|nullable|file|mimes:mp4,webm|max:15360',
+                'delete_video' => 'nullable|boolean',
             ]),
             'section_fond' => $request->validate([
                 'title' => 'nullable|string|max:255',
@@ -137,40 +142,108 @@ class PageBlockController extends Controller
                 'button_url' => 'nullable|string|max:255',
                 'button_new_tab' => 'nullable|boolean',
             ]),
+            'galerie' => $request->validate([
+                'layout' => 'required|in:grid,carousel',
+                'images' => ($isCreate ? 'required' : 'nullable') . '|array|min:1|max:20',
+                'images.*' => 'image|max:5120',
+                'images_alt' => 'nullable|array',
+                'images_alt.*' => 'nullable|string|max:255',
+                'images_caption' => 'nullable|array',
+                'images_caption.*' => 'nullable|string|max:255',
+                'delete_media' => 'nullable|array',
+                'delete_media.*' => 'integer',
+            ]),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
     }
 
-    private function handleMedia(Request $request, PageBlock $block, string $type): void
+    /**
+     * Retire du tableau de données validées tout ce qui concerne les
+     * fichiers/médias : ces champs sont traités par handleMedia() et ne
+     * doivent jamais être stockés dans la colonne JSON `data` du bloc.
+     */
+    private function stripMediaFields(array $data): array
     {
-        if ($type === 'image' && $request->hasFile('image')) {
-            $block->media()->detach();
+        unset(
+            $data['image'], $data['delete_image'],
+            $data['video_file'], $data['delete_video'],
+            $data['images'], $data['images_alt'], $data['images_caption'], $data['delete_media'],
+        );
 
-            $file = $request->file('image');
-            $path = $file->store('pages', 'public');
-            $media = Media::create([
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-                'type' => 'image',
-            ]);
-            $block->media()->attach($media->id, ['order' => 0]);
+        return $data;
+    }
+
+        private function handleMedia(Request $request, PageBlock $block, string $type): void
+    {
+        if ($type === 'image') {
+            if ($request->boolean('delete_image')) {
+                $block->detachOwnedMedia($block->media()->pluck('media.id')->all());
+            }
+
+            if ($request->hasFile('image')) {
+                $block->detachOwnedMedia($block->media()->pluck('media.id')->all());
+
+                $file = $request->file('image');
+                $path = $file->store('pages', 'public');
+                $media = Media::create([
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
+                    'size' => $file->getSize(),
+                    'type' => 'image',
+                ]);
+                $block->media()->attach($media->id, ['order' => 0]);
+            }
         }
 
-        if ($type === 'video' && ($block->data['source_type'] ?? null) === 'upload' && $request->hasFile('video_file')) {
-            $block->media()->detach();
+        if ($type === 'video') {
+            if ($request->boolean('delete_video')) {
+                $block->detachOwnedMedia($block->media()->pluck('media.id')->all());
+            }
 
-            $file = $request->file('video_file');
-            $path = $file->store('pages', 'public');
-            $media = Media::create([
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-                'type' => 'video',
-            ]);
-            $block->media()->attach($media->id, ['order' => 0]);
+            if (($block->data['source_type'] ?? null) === 'upload' && $request->hasFile('video_file')) {
+                $block->detachOwnedMedia($block->media()->pluck('media.id')->all());
+
+                $file = $request->file('video_file');
+                $path = $file->store('pages', 'public');
+                $media = Media::create([
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
+                    'size' => $file->getSize(),
+                    'type' => 'video',
+                ]);
+                $block->media()->attach($media->id, ['order' => 0]);
+            }
+        }
+
+        if ($type === 'galerie') {
+            if ($request->filled('delete_media')) {
+                $block->detachOwnedMedia($request->input('delete_media'));
+            }
+
+            if ($request->hasFile('images')) {
+                $startOrder = $block->media()->count();
+                $alts = $request->input('images_alt', []);
+                $captions = $request->input('images_caption', []);
+
+                foreach ($request->file('images') as $index => $file) {
+                    $path = $file->store('pages', 'public');
+                    $media = Media::create([
+                        'path' => $path,
+                        'original_name' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
+                        'size' => $file->getSize(),
+                        'type' => 'image',
+                    ]);
+
+                    $block->media()->attach($media->id, [
+                        'order' => $startOrder + $index,
+                        'alt' => $alts[$index] ?? null,
+                        'caption' => $captions[$index] ?? null,
+                    ]);
+                }
+            }
         }
     }
 }

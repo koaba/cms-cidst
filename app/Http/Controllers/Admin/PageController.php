@@ -31,7 +31,7 @@ class PageController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'published_at' => 'required|date',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_published' => 'nullable|boolean',
             'seo' => 'nullable|array',
             'seo.meta_title' => 'nullable|string|max:60',
@@ -45,15 +45,17 @@ class PageController extends Controller
         $page = Page::create($pageData);
         $this->saveSeo($page, $validated);
 
-        $file = $request->file('image');
-        $path = $file->store('pages', 'public');
-        $media = Media::create([
-            'path' => $path,
-            'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getClientMimeType(),
-            'size' => $file->getSize(),
-        ]);
-        $page->media()->attach($media->id, ['order' => 0]);
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $path = $file->store('pages', 'public');
+            $media = Media::create([
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
+                'size' => $file->getSize(),
+            ]);
+            $page->media()->attach($media->id, ['order' => 0]);
+        }
 
         return redirect()
             ->route('admin.pages.index')
@@ -76,9 +78,7 @@ class PageController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'published_at' => 'required|date',
-            'image' => $page->media->isEmpty()
-                ? 'required|image|mimes:jpg,jpeg,png,webp|max:2048'
-                : 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_published' => 'nullable|boolean',
             'seo' => 'nullable|array',
             'seo.meta_title' => 'nullable|string|max:60',
@@ -99,7 +99,7 @@ class PageController extends Controller
             $media = Media::create([
                 'path' => $path,
                 'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
+                'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
                 'size' => $file->getSize(),
             ]);
             $page->media()->attach($media->id, ['order' => 0]);

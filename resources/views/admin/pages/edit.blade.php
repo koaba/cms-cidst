@@ -9,8 +9,7 @@
         </div>
         <div>
             <label class="block font-semibold">Contenu</label>
-            <textarea name="content" rows="10" class="border w-full p-2 rounded" required>{{ old('content', $page->content) }}</textarea>
-            @error('content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            <textarea name="content" rows="10" class="border w-full p-2 rounded" required>{{ old('content', $page->content) }}</textarea>            @error('content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
             <label class="block font-semibold">Date de publication</label>
@@ -21,8 +20,8 @@
             <img src="{{ Storage::url($page->media->first()->path) }}" class="w-32 mb-2">
         @endif
         <div>
-            <label class="block font-semibold">Nouvelle image (remplace l'existante)</label>
-            <input type="file" name="image" class="border w-full p-2 rounded" {{ $page->media->isEmpty() ? 'required' : '' }}>
+            <label class="block font-semibold">Nouvelle image (remplace l'existante, optionnelle)</label>
+            <input type="file" name="image" class="border w-full p-2 rounded">
             @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         <div>

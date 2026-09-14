@@ -23,8 +23,8 @@
         </div>
 
         <div>
-            <label class="block font-semibold">Image à la une</label>
-            <input type="file" name="image" class="border w-full p-2 rounded" required>
+            <label class="block font-semibold">Image à la une (optionnelle)</label>
+            <input type="file" name="image" class="border w-full p-2 rounded">
             @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 
