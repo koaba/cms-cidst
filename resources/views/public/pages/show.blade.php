@@ -7,7 +7,7 @@
    @if($page->blocks->isNotEmpty())
         <div class="page-blocks space-y-6">
             @foreach($page->blocks as $block)
-                @include('pages.blocks._' . $block->type, ['data' => $block->data])
+               @include('pages.blocks._' . $block->type, ['data' => $block->data, 'media' => $block->media])
             @endforeach
         </div>
     @else

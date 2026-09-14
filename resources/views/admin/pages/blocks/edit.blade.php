@@ -1,7 +1,7 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Modifier un bloc — {{ $page->title }}</h1>
 
-    <form action="{{ route('admin.pages.blocks.update', [$page, $block->id]) }}" method="POST">
+    <form action="{{ route('admin.pages.blocks.update', [$page, $block->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 

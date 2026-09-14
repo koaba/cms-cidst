@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
 
 class PageBlockController extends Controller
 {
-   public function index(Page $page)
+    public function index(Page $page)
     {
         $blocks = $page->blocks;
         $types = config('page_blocks.types');
@@ -34,13 +35,15 @@ class PageBlockController extends Controller
             abort(404);
         }
 
-        $data = $this->validateForType($request, $type);
-
-        $page->blocks()->create([
+        $data = $this->validateForType($request, $type, isCreate: true);
+        unset($data['video_file'], $data['image']);
+        $block = $page->blocks()->create([
             'type' => $type,
             'data' => $data,
             'order' => $page->blocks()->max('order') + 1,
         ]);
+
+        $this->handleMedia($request, $block, $type);
 
         return redirect()
             ->route('admin.pages.blocks.index', $page)
@@ -58,9 +61,11 @@ class PageBlockController extends Controller
     {
         $block = $page->blocks()->findOrFail($blockId);
 
-        $data = $this->validateForType($request, $block->type);
-
+        $data = $this->validateForType($request, $block->type, isCreate: false);
+        unset($data['video_file'], $data['image']);
         $block->update(['data' => $data]);
+
+        $this->handleMedia($request, $block, $block->type);
 
         return redirect()
             ->route('admin.pages.blocks.index', $page)
@@ -93,7 +98,7 @@ class PageBlockController extends Controller
         return response()->json(['success' => true]);
     }
 
-    private function validateForType(Request $request, string $type): array
+    private function validateForType(Request $request, string $type, bool $isCreate = false): array
     {
         return match ($type) {
             'texte' => $request->validate([
@@ -113,7 +118,59 @@ class PageBlockController extends Controller
                 'style' => 'nullable|in:primaire,secondaire,outline',
                 'new_tab' => 'nullable|boolean',
             ]),
+            'image' => $request->validate([
+                'image' => ($isCreate ? 'required' : 'nullable') . '|image|max:5120',
+                'alt' => 'nullable|string|max:255',
+                'caption' => 'nullable|string|max:255',
+            ]),
+            'video' => $request->validate([
+                'title' => 'nullable|string|max:255',
+                'source_type' => 'required|in:upload,url',
+                'url' => 'required_if:source_type,url|nullable|string|max:255',
+                'video_file' => 'required_if:source_type,upload|nullable|file|mimes:mp4,webm|max:15360',
+            ]),
+            'section_fond' => $request->validate([
+                'title' => 'nullable|string|max:255',
+                'text' => 'required|string',
+                'bg_color' => 'nullable|in:gray,blue,dark',
+                'button_label' => 'nullable|string|max:100',
+                'button_url' => 'nullable|string|max:255',
+                'button_new_tab' => 'nullable|boolean',
+            ]),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
+    }
+
+    private function handleMedia(Request $request, PageBlock $block, string $type): void
+    {
+        if ($type === 'image' && $request->hasFile('image')) {
+            $block->media()->detach();
+
+            $file = $request->file('image');
+            $path = $file->store('pages', 'public');
+            $media = Media::create([
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getClientMimeType(),
+                'size' => $file->getSize(),
+                'type' => 'image',
+            ]);
+            $block->media()->attach($media->id, ['order' => 0]);
+        }
+
+        if ($type === 'video' && ($block->data['source_type'] ?? null) === 'upload' && $request->hasFile('video_file')) {
+            $block->media()->detach();
+
+            $file = $request->file('video_file');
+            $path = $file->store('pages', 'public');
+            $media = Media::create([
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getClientMimeType(),
+                'size' => $file->getSize(),
+                'type' => 'video',
+            ]);
+            $block->media()->attach($media->id, ['order' => 0]);
+        }
     }
 }
