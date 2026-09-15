@@ -24,7 +24,10 @@ class PopplerPdfThumbnailGenerator implements PdfThumbnailGeneratorInterface
             return false;
         }
 
-        $tempPrefix = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'pdfthumb_' . uniqid();
+        $isolatedTempDir = storage_path('app/tmp/pdfthumb_' . uniqid());
+        mkdir($isolatedTempDir, 0755, true);
+
+        $tempPrefix = $isolatedTempDir . DIRECTORY_SEPARATOR . 'thumb';
 
         $process = new Process([
             $this->pdftoppmBinary,
@@ -38,6 +41,7 @@ class PopplerPdfThumbnailGenerator implements PdfThumbnailGeneratorInterface
         ]);
 
         $process->setTimeout(30);
+        $process->setEnv(['TMP' => $isolatedTempDir, 'TEMP' => $isolatedTempDir]);
 
         try {
             $process->run();
@@ -47,27 +51,48 @@ class PopplerPdfThumbnailGenerator implements PdfThumbnailGeneratorInterface
             }
         } catch (\Throwable $e) {
             Log::error("PopplerPdfThumbnailGenerator : echec de generation pour {$pdfPath}. " . $e->getMessage());
+            $this->cleanupTempDir($isolatedTempDir);
             return false;
         }
 
-        $generated = $tempPrefix . '-1.png';
+        $matches = glob($tempPrefix . '-*.{png,PNG}', GLOB_BRACE);
 
-        if (!is_file($generated)) {
-            Log::error("PopplerPdfThumbnailGenerator : fichier attendu introuvable apres execution ({$generated}).");
-            return false;
-        }
+if (empty($matches)) {
+    Log::error("PopplerPdfThumbnailGenerator : fichier attendu introuvable apres execution (motif {$tempPrefix}-*.png).");
+    $this->cleanupTempDir($isolatedTempDir);
+    return false;
+}
+
+$generated = $matches[0];
+
+       
 
         $outputDir = dirname($outputPath);
         if (!is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
 
-        if (!rename($generated, $outputPath)) {
+        $success = rename($generated, $outputPath);
+
+        if (!$success) {
             Log::error("PopplerPdfThumbnailGenerator : impossible de deplacer {$generated} vers {$outputPath}.");
-            @unlink($generated);
-            return false;
         }
 
-        return true;
+        $this->cleanupTempDir($isolatedTempDir);
+
+        return $success;
+    }
+
+       private function cleanupTempDir(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        foreach (glob($dir . DIRECTORY_SEPARATOR . '*') as $file) {
+            @unlink($file);
+        }
+
+        @rmdir($dir);
     }
 }
