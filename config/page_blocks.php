@@ -1,4 +1,5 @@
 <?php
+
 return [
     'types' => [
         'texte' => 'Texte',
@@ -9,7 +10,8 @@ return [
         'video' => 'Vidéo',
         'section_fond' => 'Section à fond coloré',
         'galerie' => 'Galerie',
+        'pdf' => 'Document PDF',
         // Types restants à implémenter (lot 5+) :
-        // 'pdf', 'colonnes', 'accordeon', 'banniere_hero', 'chiffres_cles'
+        // 'colonnes', 'accordeon', 'banniere_hero', 'chiffres_cles'
     ],
 ];

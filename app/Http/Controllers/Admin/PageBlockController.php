@@ -7,9 +7,19 @@ use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
+use App\Models\PdfDocument;
+use App\Models\PdfCategory;
+use App\Services\MediaSyncService;
+use App\Services\WatermarkService;
 
 class PageBlockController extends Controller
 {
+    public function __construct(
+        private MediaSyncService $mediaSync,
+        private WatermarkService $watermarkService,
+    ) {
+    }
+
     public function index(Page $page)
     {
         $blocks = $page->blocks;
@@ -24,7 +34,11 @@ class PageBlockController extends Controller
             abort(404);
         }
 
-        return view('admin.pages.blocks.create', compact('page', 'type'));
+        $pdfDocuments = $type === 'pdf'
+            ? PdfDocument::orderBy('title')->get()
+            : collect();
+
+        return view('admin.pages.blocks.create', compact('page', 'type', 'pdfDocuments'));
     }
 
     public function store(Request $request, Page $page)
@@ -55,7 +69,11 @@ class PageBlockController extends Controller
     {
         $block = $page->blocks()->findOrFail($blockId);
 
-        return view('admin.pages.blocks.edit', compact('page', 'block'));
+        $pdfDocuments = $block->type === 'pdf'
+            ? PdfDocument::orderBy('title')->get()
+            : collect();
+
+        return view('admin.pages.blocks.edit', compact('page', 'block', 'pdfDocuments'));
     }
 
     public function update(Request $request, Page $page, int $blockId)
@@ -73,6 +91,7 @@ class PageBlockController extends Controller
             ->route('admin.pages.blocks.index', $page)
             ->with('success', 'Le bloc a été modifié avec succès.');
     }
+
     public function destroy(Page $page, int $blockId)
     {
         $block = $page->blocks()->findOrFail($blockId);
@@ -126,6 +145,7 @@ class PageBlockController extends Controller
                 'alt' => 'nullable|string|max:255',
                 'caption' => 'nullable|string|max:255',
                 'delete_image' => 'nullable|boolean',
+                'apply_watermark' => 'nullable|boolean',
             ]),
             'video' => $request->validate([
                 'title' => 'nullable|string|max:255',
@@ -133,6 +153,7 @@ class PageBlockController extends Controller
                 'url' => 'required_if:source_type,url|nullable|string|max:255',
                 'video_file' => 'required_if:source_type,upload|nullable|file|mimes:mp4,webm|max:15360',
                 'delete_video' => 'nullable|boolean',
+                'apply_watermark' => 'nullable|boolean',
             ]),
             'section_fond' => $request->validate([
                 'title' => 'nullable|string|max:255',
@@ -152,6 +173,16 @@ class PageBlockController extends Controller
                 'images_caption.*' => 'nullable|string|max:255',
                 'delete_media' => 'nullable|array',
                 'delete_media.*' => 'integer',
+                'apply_watermark' => 'nullable|boolean',
+            ]),
+            'pdf' => $request->validate([
+                'title' => 'nullable|string|max:255',
+                'pdf_source' => 'required|in:existing,new',
+                'pdf_document_id' => 'required_if:pdf_source,existing|nullable|exists:pdf_documents,id',
+                'pdf_title' => 'required_if:pdf_source,new|nullable|string|max:255',
+                'pdfs' => 'required_if:pdf_source,new|nullable|array|max:' . config('media.max_pdfs', 10),
+                'pdfs.*' => 'mimes:pdf|max:' . config('media.max_pdf_upload_kb', 10240),
+                'apply_watermark' => 'nullable|boolean',
             ]),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
@@ -160,7 +191,9 @@ class PageBlockController extends Controller
     /**
      * Retire du tableau de données validées tout ce qui concerne les
      * fichiers/médias : ces champs sont traités par handleMedia() et ne
-     * doivent jamais être stockés dans la colonne JSON `data` du bloc.
+     * doivent jamais être stockés tels quels dans la colonne JSON `data`
+     * du bloc. Pour le type `pdf`, la référence finale (`pdf_document_id`)
+     * est réinjectée par handleMedia() une fois résolue.
      */
     private function stripMediaFields(array $data): array
     {
@@ -168,12 +201,14 @@ class PageBlockController extends Controller
             $data['image'], $data['delete_image'],
             $data['video_file'], $data['delete_video'],
             $data['images'], $data['images_alt'], $data['images_caption'], $data['delete_media'],
+            $data['pdf_source'], $data['pdf_document_id'], $data['pdf_title'], $data['pdfs'],
+            $data['apply_watermark'],
         );
 
         return $data;
     }
 
-        private function handleMedia(Request $request, PageBlock $block, string $type): void
+    private function handleMedia(Request $request, PageBlock $block, string $type): void
     {
         if ($type === 'image') {
             if ($request->boolean('delete_image')) {
@@ -185,6 +220,11 @@ class PageBlockController extends Controller
 
                 $file = $request->file('image');
                 $path = $file->store('pages', 'public');
+
+                if ($request->boolean('apply_watermark')) {
+                    $this->watermarkService->watermarkImage($path);
+                }
+
                 $media = Media::create([
                     'path' => $path,
                     'original_name' => $file->getClientOriginalName(),
@@ -212,6 +252,7 @@ class PageBlockController extends Controller
                     'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
                     'size' => $file->getSize(),
                     'type' => 'video',
+                    'apply_watermark' => $request->boolean('apply_watermark'),
                 ]);
                 $block->media()->attach($media->id, ['order' => 0]);
             }
@@ -229,6 +270,11 @@ class PageBlockController extends Controller
 
                 foreach ($request->file('images') as $index => $file) {
                     $path = $file->store('pages', 'public');
+
+                    if ($request->boolean('apply_watermark')) {
+                        $this->watermarkService->watermarkImage($path);
+                    }
+
                     $media = Media::create([
                         'path' => $path,
                         'original_name' => $file->getClientOriginalName(),
@@ -245,5 +291,40 @@ class PageBlockController extends Controller
                 }
             }
         }
+
+        if ($type === 'pdf') {
+            $documentId = $this->resolvePdfDocument($request);
+
+            $data = $block->data;
+            $data['pdf_document_id'] = $documentId;
+            $block->update(['data' => $data]);
+        }
+    }
+
+    /**
+     * Résout la référence PdfDocument du bloc : soit un document déjà
+     * existant sélectionné en bibliothèque, soit un nouveau document créé
+     * à la volée (catégorie "Non classé" auto-créée) dont les fichiers
+     * sont synchronisés via l'infrastructure MediaSyncService déjà utilisée
+     * par le module Documents PDF classique.
+     */
+       private function resolvePdfDocument(Request $request): int
+    {
+        if ($request->input('pdf_source') === 'existing') {
+            return (int) $request->input('pdf_document_id');
+        }
+
+        // PdfCategory::boot() régénère toujours le slug depuis 'name' à la
+        // création (static::creating) : pas besoin de le passer ici.
+        $category = PdfCategory::firstOrCreate(['name' => 'Non classé']);
+
+        $document = PdfDocument::create([
+            'title' => $request->input('pdf_title'),
+            'pdf_category_id' => $category->id,
+        ]);
+
+        $this->mediaSync->syncPdfDocument($request, $document);
+
+        return $document->id;
     }
 }

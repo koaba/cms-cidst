@@ -12,6 +12,10 @@
     @error('image')
         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
     @enderror
+    <label class="flex items-center gap-2 text-sm mt-2">
+        <input type="checkbox" name="apply_watermark" value="1" {{ old('apply_watermark', true) ? 'checked' : '' }}>
+        Appliquer un filigrane
+    </label>
 </div>
 
 <div class="mb-4">
