@@ -42,6 +42,7 @@ return [
         'pdf_document_id' => 'document existant',
         'pdf_title' => 'titre du document',
         'pdfs' => 'fichiers PDF',
+        'pdfs.*' => 'fichier PDF',
     ],
 
 ];
