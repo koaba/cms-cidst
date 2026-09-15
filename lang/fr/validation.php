@@ -8,6 +8,7 @@ return [
     'max' => [
         'string' => 'Le champ :attribute ne doit pas dépasser :max caractères.',
         'file' => 'Le fichier :attribute ne doit pas dépasser :max kilo-octets.',
+        'array' => 'Le champ :attribute ne doit pas contenir plus de :max éléments.',
     ],
     'image' => 'Le champ :attribute doit être une image.',
     'mimes' => 'Le champ :attribute doit être un fichier de type : :values.',
@@ -37,6 +38,10 @@ return [
         'button_label' => 'texte du bouton',
         'button_url' => 'lien du bouton',
         'button_new_tab' => 'nouvel onglet',
+        'pdf_source' => 'source du document',
+        'pdf_document_id' => 'document existant',
+        'pdf_title' => 'titre du document',
+        'pdfs' => 'fichiers PDF',
     ],
 
 ];
