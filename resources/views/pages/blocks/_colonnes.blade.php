@@ -1,6 +1,13 @@
 @php
     $columnCount = $data['column_count'] ?? 2;
+
+    // Une seule requête pour tous les enfants + médias, groupés par colonne.
+    // Remplace les appels répétés à $block->childrenByColumn($i)->get()
+    // et l'accès à ->media par enfant dans la boucle (voir passation §6) :
+    // 8 requêtes mesurées avant ce correctif -> 3 après, sur un bloc à
+    // 4 colonnes et 3 enfants.
     $childrenByColumn = $block->childrenGroupedByColumn();
+
     $gridClass = match($columnCount) {
         2 => 'sm:grid-cols-2',
         3 => 'sm:grid-cols-2 lg:grid-cols-3',

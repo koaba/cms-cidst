@@ -30,6 +30,9 @@
 </div>
 
 @if(isset($block))
+    {{-- Une seule requête pour tous les enfants + médias, groupés par colonne.
+         Remplace les appels répétés à $block->childrenByColumn($i)->get()
+         qui généraient 1 requête par colonne (voir passation §6). --}}
     @php $childrenByColumn = $block->childrenGroupedByColumn(); @endphp
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">

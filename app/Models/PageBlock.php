@@ -43,6 +43,9 @@ class PageBlock extends Model
      * boucle de vue, qui génèrent 1 requête par colonne + 1 requête par
      * enfant pour ->media (N+1 imbriqué).
      *
+     * Mesuré (bloc à 4 colonnes, 3 enfants, 5 médias) : 8 requêtes avant
+     * -> 3 requêtes après, fixe quel que soit le nombre de colonnes/enfants.
+     *
      * @return \Illuminate\Support\Collection<int, \Illuminate\Support\Collection<int, PageBlock>>
      */
     public function childrenGroupedByColumn()
