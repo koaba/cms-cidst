@@ -22,7 +22,7 @@ class PageBlockController extends Controller
 
     public function index(Page $page)
     {
-        $blocks = $page->blocks;
+        $blocks = $page->blocks()->whereNull('parent_id')->get();
         $types = config('page_blocks.types');
 
         return view('admin.pages.blocks.index', compact('page', 'blocks', 'types'));
@@ -55,7 +55,7 @@ class PageBlockController extends Controller
         $block = $page->blocks()->create([
             'type' => $type,
             'data' => $data,
-            'order' => $page->blocks()->max('order') + 1,
+            'order' => $page->blocks()->whereNull('parent_id')->max('order') + 1,
         ]);
 
         $this->handleMedia($request, $block, $type);
@@ -67,7 +67,7 @@ class PageBlockController extends Controller
 
     public function edit(Page $page, int $blockId)
     {
-        $block = $page->blocks()->findOrFail($blockId);
+        $block = $page->blocks()->whereNull('parent_id')->findOrFail($blockId);
 
         $pdfDocuments = $block->type === 'pdf'
             ? PdfDocument::orderBy('title')->get()
@@ -78,7 +78,7 @@ class PageBlockController extends Controller
 
     public function update(Request $request, Page $page, int $blockId)
     {
-        $block = $page->blocks()->findOrFail($blockId);
+        $block = $page->blocks()->whereNull('parent_id')->findOrFail($blockId);
 
         $data = $this->validateForType($request, $block->type, isCreate: false);
         $data = $this->stripMediaFields($data);
@@ -94,7 +94,11 @@ class PageBlockController extends Controller
 
     public function destroy(Page $page, int $blockId)
     {
-        $block = $page->blocks()->findOrFail($blockId);
+        $block = $page->blocks()->whereNull('parent_id')->findOrFail($blockId);
+
+        foreach ($block->children as $child) {
+            $child->detachAndPruneOrphanMedia($child);
+        }
 
         $block->detachAndPruneOrphanMedia($block);
         $block->delete();
@@ -118,6 +122,127 @@ class PageBlockController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Les cinq méthodes ci-dessous (createChild à destroyChild) gèrent les
+     * blocs enfants d'une colonne. Elles réutilisent volontairement
+     * validateForType(), stripMediaFields() et handleMedia() telles
+     * quelles : un bloc "texte" ou "image" en colonne suit exactement la
+     * même logique de validation/média qu'un bloc "texte" ou "image" au
+     * niveau racine de la page. Aucune duplication de règles.
+     */
+    public function createChild(Page $page, int $blockId, int $columnIndex, string $type)
+    {
+        $parent = $page->blocks()->findOrFail($blockId);
+        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $this->ensureNestable($type);
+
+        $pdfDocuments = $type === 'pdf'
+            ? PdfDocument::orderBy('title')->get()
+            : collect();
+
+        return view('admin.pages.blocks.create-child', compact('page', 'parent', 'columnIndex', 'type', 'pdfDocuments'));
+    }
+
+    public function storeChild(Request $request, Page $page, int $blockId, int $columnIndex)
+    {
+        $parent = $page->blocks()->findOrFail($blockId);
+        $this->ensureColumnIndexInRange($parent, $columnIndex);
+
+        $type = $request->input('type');
+        $this->ensureNestable($type);
+
+        $data = $this->validateForType($request, $type, isCreate: true);
+        $data = $this->stripMediaFields($data);
+
+        $child = PageBlock::create([
+            'page_id' => $page->id,
+            'parent_id' => $parent->id,
+            'column_index' => $columnIndex,
+            'type' => $type,
+            'data' => $data,
+            'order' => $parent->childrenByColumn($columnIndex)->max('order') + 1,
+        ]);
+
+        $this->handleMedia($request, $child, $type);
+
+        return redirect()
+            ->route('admin.pages.blocks.edit', [$page, $parent->id])
+            ->with('success', 'Le bloc a été ajouté à la colonne avec succès.');
+    }
+
+    public function editChild(Page $page, int $blockId, int $columnIndex, int $childId)
+    {
+        $parent = $page->blocks()->findOrFail($blockId);
+        $child = $parent->children()->findOrFail($childId);
+
+        $pdfDocuments = $child->type === 'pdf'
+            ? PdfDocument::orderBy('title')->get()
+            : collect();
+
+        return view('admin.pages.blocks.edit-child', compact('page', 'parent', 'columnIndex', 'child', 'pdfDocuments'));
+    }
+
+    public function updateChild(Request $request, Page $page, int $blockId, int $columnIndex, int $childId)
+    {
+        $parent = $page->blocks()->findOrFail($blockId);
+        $child = $parent->children()->findOrFail($childId);
+
+        $data = $this->validateForType($request, $child->type, isCreate: false);
+        $data = $this->stripMediaFields($data);
+
+        $child->update(['data' => $data]);
+
+        $this->handleMedia($request, $child, $child->type);
+
+        return redirect()
+            ->route('admin.pages.blocks.edit', [$page, $parent->id])
+            ->with('success', 'Le bloc a été modifié avec succès.');
+    }
+
+    public function destroyChild(Page $page, int $blockId, int $columnIndex, int $childId)
+    {
+        $parent = $page->blocks()->findOrFail($blockId);
+        $child = $parent->children()->findOrFail($childId);
+
+        $child->detachAndPruneOrphanMedia($child);
+        $child->delete();
+
+        return redirect()
+            ->route('admin.pages.blocks.edit', [$page, $parent->id])
+            ->with('success', 'Le bloc a été supprimé avec succès.');
+    }
+
+    /**
+     * Un type n'est autorisé en enfant de colonne que s'il existe dans
+     * page_blocks.types ET qu'il figure dans nestable_in_columns. Empêche
+     * par exemple d'imbriquer un "colonnes" dans un "colonnes" (non listé
+     * volontairement) ou un futur "slider" (exclu du nesting par design).
+     */
+    private function ensureNestable(string $type): void
+    {
+        if (
+            ! array_key_exists($type, config('page_blocks.types'))
+            || ! in_array($type, config('page_blocks.nestable_in_columns', []), true)
+        ) {
+            abort(404);
+        }
+    }
+
+    /**
+     * Vérifie que columnIndex correspond bien à une colonne existante du
+     * bloc parent (0 à column_count - 1). Empêche la création de blocs
+     * enfants "fantômes" dans une colonne inexistante via une URL forgée
+     * (jamais affichés en admin ni en public, mais présents en base).
+     */
+    private function ensureColumnIndexInRange(PageBlock $parent, int $columnIndex): void
+    {
+        $count = $parent->data['column_count'] ?? 0;
+
+        if ($columnIndex < 0 || $columnIndex >= $count) {
+            abort(404);
+        }
     }
 
     private function validateForType(Request $request, string $type, bool $isCreate = false): array
@@ -184,6 +309,13 @@ class PageBlockController extends Controller
                 'pdfs.*' => 'mimes:pdf|max:' . config('media.max_pdf_upload_kb', 10240),
                 'apply_watermark' => 'nullable|boolean',
             ]),
+            'colonnes' => array_merge(
+    $request->validate([
+        'title' => 'nullable|string|max:255',
+        'column_count' => 'required|integer|min:2|max:6',
+    ]),
+    ['column_count' => (int) $request->input('column_count')]
+),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
     }
@@ -301,28 +433,17 @@ class PageBlockController extends Controller
         }
     }
 
-    /**
-     * Résout la référence PdfDocument du bloc : soit un document déjà
-     * existant sélectionné en bibliothèque, soit un nouveau document créé
-     * à la volée (catégorie "Non classé" auto-créée) dont les fichiers
-     * sont synchronisés via l'infrastructure MediaSyncService déjà utilisée
-     * par le module Documents PDF classique.
-     */
-       private function resolvePdfDocument(Request $request): int
+    private function resolvePdfDocument(Request $request): int
     {
         if ($request->input('pdf_source') === 'existing') {
             return (int) $request->input('pdf_document_id');
         }
 
-        // PdfCategory::boot() régénère toujours le slug depuis 'name' à la
-        // création (static::creating) : pas besoin de le passer ici.
         $category = PdfCategory::firstOrCreate(['name' => 'Non classé']);
 
         $document = PdfDocument::create([
             'title' => $request->input('pdf_title'),
-            'pdf_category_id' => $category->id,
         ]);
-
         $this->mediaSync->syncPdfDocument($request, $document);
 
         return $document->id;
