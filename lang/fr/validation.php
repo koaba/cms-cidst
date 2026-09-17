@@ -10,6 +10,11 @@ return [
         'file' => 'Le fichier :attribute ne doit pas dépasser :max kilo-octets.',
         'array' => 'Le champ :attribute ne doit pas contenir plus de :max éléments.',
     ],
+    'min' => [
+        'string' => 'Le champ :attribute doit contenir au moins :min caractères.',
+        'file' => 'Le fichier :attribute doit être supérieur ou égal à :min kilo-octets.',
+        'array' => 'Le champ :attribute doit contenir au moins :min éléments.',
+    ],
     'image' => 'Le champ :attribute doit être une image.',
     'mimes' => 'Le champ :attribute doit être un fichier de type : :values.',
     'file' => 'Le champ :attribute doit être un fichier.',
@@ -43,6 +48,11 @@ return [
         'pdf_title' => 'titre du document',
         'pdfs' => 'fichiers PDF',
         'pdfs.*' => 'fichier PDF',
+        'columns' => 'colonnes',
+        'columns.*.title' => 'titre de la colonne',
+        'columns.*.content' => 'contenu de la colonne',
+        'columns.*.image' => 'image de la colonne',
+        'column_count' => 'nombre de colonnes',
     ],
 
 ];

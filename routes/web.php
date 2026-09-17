@@ -59,6 +59,14 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
         Route::put('/{blockId}', [AdminPageBlockController::class, 'update'])->name('update');
         Route::delete('/{blockId}', [AdminPageBlockController::class, 'destroy'])->name('destroy');
         Route::post('/reorder', [AdminPageBlockController::class, 'reorder'])->name('reorder');
+
+        Route::prefix('{blockId}/columns/{columnIndex}')->name('columns.')->group(function () {
+            Route::get('/create/{type}', [AdminPageBlockController::class, 'createChild'])->name('create');
+            Route::post('/', [AdminPageBlockController::class, 'storeChild'])->name('store');
+            Route::get('/{childId}/edit', [AdminPageBlockController::class, 'editChild'])->name('edit');
+            Route::put('/{childId}', [AdminPageBlockController::class, 'updateChild'])->name('update');
+            Route::delete('/{childId}', [AdminPageBlockController::class, 'destroyChild'])->name('destroy');
+        });
     });
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');

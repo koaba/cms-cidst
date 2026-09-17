@@ -83,6 +83,13 @@ class PageBlockController extends Controller
         $data = $this->validateForType($request, $block->type, isCreate: false);
         $data = $this->stripMediaFields($data);
 
+        if ($block->type === 'colonnes') {
+            // column_count est figé après création : le changer casserait
+            // l'affichage des enfants déjà répartis dans les colonnes
+            // existantes (colonne 4 orpheline si on repasse de 5 à 3, etc.).
+            $data['column_count'] = $block->data['column_count'];
+        }
+
         $block->update(['data' => $data]);
 
         $this->handleMedia($request, $block, $block->type);
@@ -96,6 +103,10 @@ class PageBlockController extends Controller
     {
         $block = $page->blocks()->whereNull('parent_id')->findOrFail($blockId);
 
+        // cascadeOnDelete() sur parent_id supprime bien les lignes enfants
+        // au niveau SQL, mais ne déclenche aucun événement Eloquent sur
+        // elles : sans ce nettoyage manuel, les médias (fichiers + lignes
+        // media/mediables) des blocs enfants resteraient orphelins.
         foreach ($block->children as $child) {
             $child->detachAndPruneOrphanMedia($child);
         }
@@ -124,19 +135,16 @@ class PageBlockController extends Controller
         return response()->json(['success' => true]);
     }
 
-    /**
-     * Les cinq méthodes ci-dessous (createChild à destroyChild) gèrent les
-     * blocs enfants d'une colonne. Elles réutilisent volontairement
-     * validateForType(), stripMediaFields() et handleMedia() telles
-     * quelles : un bloc "texte" ou "image" en colonne suit exactement la
-     * même logique de validation/média qu'un bloc "texte" ou "image" au
-     * niveau racine de la page. Aucune duplication de règles.
-     */
+    // -----------------------------------------------------------------
+    // Gestion des blocs enfants (imbriqués dans une colonne)
+    // -----------------------------------------------------------------
+
     public function createChild(Page $page, int $blockId, int $columnIndex, string $type)
     {
-        $parent = $page->blocks()->findOrFail($blockId);
-        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
+
         $this->ensureNestable($type);
+        $this->ensureColumnIndexInRange($parent, $columnIndex);
 
         $pdfDocuments = $type === 'pdf'
             ? PdfDocument::orderBy('title')->get()
@@ -147,17 +155,17 @@ class PageBlockController extends Controller
 
     public function storeChild(Request $request, Page $page, int $blockId, int $columnIndex)
     {
-        $parent = $page->blocks()->findOrFail($blockId);
-        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
 
         $type = $request->input('type');
+
         $this->ensureNestable($type);
+        $this->ensureColumnIndexInRange($parent, $columnIndex);
 
         $data = $this->validateForType($request, $type, isCreate: true);
         $data = $this->stripMediaFields($data);
 
-        $child = PageBlock::create([
-            'page_id' => $page->id,
+        $child = $page->blocks()->create([
             'parent_id' => $parent->id,
             'column_index' => $columnIndex,
             'type' => $type,
@@ -174,8 +182,10 @@ class PageBlockController extends Controller
 
     public function editChild(Page $page, int $blockId, int $columnIndex, int $childId)
     {
-        $parent = $page->blocks()->findOrFail($blockId);
-        $child = $parent->children()->findOrFail($childId);
+        $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
+        $this->ensureColumnIndexInRange($parent, $columnIndex);
+
+        $child = $parent->childrenByColumn($columnIndex)->findOrFail($childId);
 
         $pdfDocuments = $child->type === 'pdf'
             ? PdfDocument::orderBy('title')->get()
@@ -186,8 +196,10 @@ class PageBlockController extends Controller
 
     public function updateChild(Request $request, Page $page, int $blockId, int $columnIndex, int $childId)
     {
-        $parent = $page->blocks()->findOrFail($blockId);
-        $child = $parent->children()->findOrFail($childId);
+        $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
+        $this->ensureColumnIndexInRange($parent, $columnIndex);
+
+        $child = $parent->childrenByColumn($columnIndex)->findOrFail($childId);
 
         $data = $this->validateForType($request, $child->type, isCreate: false);
         $data = $this->stripMediaFields($data);
@@ -198,32 +210,32 @@ class PageBlockController extends Controller
 
         return redirect()
             ->route('admin.pages.blocks.edit', [$page, $parent->id])
-            ->with('success', 'Le bloc a été modifié avec succès.');
+            ->with('success', 'Le bloc de la colonne a été modifié avec succès.');
     }
 
     public function destroyChild(Page $page, int $blockId, int $columnIndex, int $childId)
     {
-        $parent = $page->blocks()->findOrFail($blockId);
-        $child = $parent->children()->findOrFail($childId);
+        $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
+        $this->ensureColumnIndexInRange($parent, $columnIndex);
+
+        $child = $parent->childrenByColumn($columnIndex)->findOrFail($childId);
 
         $child->detachAndPruneOrphanMedia($child);
         $child->delete();
 
         return redirect()
             ->route('admin.pages.blocks.edit', [$page, $parent->id])
-            ->with('success', 'Le bloc a été supprimé avec succès.');
+            ->with('success', 'Le bloc a été retiré de la colonne avec succès.');
     }
 
     /**
-     * Un type n'est autorisé en enfant de colonne que s'il existe dans
-     * page_blocks.types ET qu'il figure dans nestable_in_columns. Empêche
-     * par exemple d'imbriquer un "colonnes" dans un "colonnes" (non listé
-     * volontairement) ou un futur "slider" (exclu du nesting par design).
+     * Vérifie que le type existe dans page_blocks.types ET dans
+     * nestable_in_columns. 404 sinon (ex. tentative d'imbriquer un
+     * bloc `colonnes` dans une colonne, ou un type pas encore implémenté).
      */
     private function ensureNestable(string $type): void
     {
-        if (
-            ! array_key_exists($type, config('page_blocks.types'))
+        if (! array_key_exists($type, config('page_blocks.types'))
             || ! in_array($type, config('page_blocks.nestable_in_columns', []), true)
         ) {
             abort(404);
@@ -231,16 +243,18 @@ class PageBlockController extends Controller
     }
 
     /**
-     * Vérifie que columnIndex correspond bien à une colonne existante du
-     * bloc parent (0 à column_count - 1). Empêche la création de blocs
-     * enfants "fantômes" dans une colonne inexistante via une URL forgée
-     * (jamais affichés en admin ni en public, mais présents en base).
+     * Vérifie que $columnIndex est bien compris entre 0 et
+     * column_count - 1 du parent. Sans ce garde-fou, une URL forgée
+     * (ex. .../columns/99/create/texte) créerait un enfant dans une
+     * colonne inexistante : enregistré en base mais jamais affiché
+     * (données fantômes, pas une faille de sécurité en soi, mais à
+     * bloquer proprement).
      */
     private function ensureColumnIndexInRange(PageBlock $parent, int $columnIndex): void
     {
-        $count = $parent->data['column_count'] ?? 0;
+        $columnCount = (int) ($parent->data['column_count'] ?? 0);
 
-        if ($columnIndex < 0 || $columnIndex >= $count) {
+        if ($columnIndex < 0 || $columnIndex >= $columnCount) {
             abort(404);
         }
     }
@@ -310,12 +324,16 @@ class PageBlockController extends Controller
                 'apply_watermark' => 'nullable|boolean',
             ]),
             'colonnes' => array_merge(
-    $request->validate([
-        'title' => 'nullable|string|max:255',
-        'column_count' => 'required|integer|min:2|max:6',
-    ]),
-    ['column_count' => (int) $request->input('column_count')]
-),
+                $request->validate([
+                    'title' => 'nullable|string|max:255',
+                    'column_count' => 'required|integer|min:2|max:6',
+                ]),
+                // Laravel valide correctement une chaîne numérique avec la
+                // règle `integer` mais ne la caste pas automatiquement :
+                // sans ce cast explicite, column_count serait stocké comme
+                // chaîne ("4") dans le JSON `data`.
+                ['column_count' => (int) $request->input('column_count')]
+            ),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
     }
@@ -433,17 +451,28 @@ class PageBlockController extends Controller
         }
     }
 
-    private function resolvePdfDocument(Request $request): int
+    /**
+     * Résout la référence PdfDocument du bloc : soit un document déjà
+     * existant sélectionné en bibliothèque, soit un nouveau document créé
+     * à la volée (catégorie "Non classé" auto-créée) dont les fichiers
+     * sont synchronisés via l'infrastructure MediaSyncService déjà utilisée
+     * par le module Documents PDF classique.
+     */
+       private function resolvePdfDocument(Request $request): int
     {
         if ($request->input('pdf_source') === 'existing') {
             return (int) $request->input('pdf_document_id');
         }
 
+        // PdfCategory::boot() régénère toujours le slug depuis 'name' à la
+        // création (static::creating) : pas besoin de le passer ici.
         $category = PdfCategory::firstOrCreate(['name' => 'Non classé']);
 
         $document = PdfDocument::create([
             'title' => $request->input('pdf_title'),
+            'pdf_category_id' => $category->id,
         ]);
+
         $this->mediaSync->syncPdfDocument($request, $document);
 
         return $document->id;

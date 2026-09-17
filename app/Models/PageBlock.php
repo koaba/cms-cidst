@@ -14,6 +14,7 @@ class PageBlock extends Model
 
     protected $casts = [
         'data' => 'array',
+        'column_index' => 'integer',
     ];
 
     public function page()
@@ -37,16 +38,11 @@ class PageBlock extends Model
     }
 
     /**
-     * Charge tous les enfants du bloc (toutes colonnes confondues) en une
-     * seule requête, médias inclus, puis les groupe par column_index.
-     * Remplace les appels répétés à childrenByColumn($i)->get() dans une
-     * boucle de vue, qui génèrent 1 requête par colonne + 1 requête par
-     * enfant pour ->media (N+1 imbriqué).
-     *
-     * Mesuré (bloc à 4 colonnes, 3 enfants, 5 médias) : 8 requêtes avant
-     * -> 3 requêtes après, fixe quel que soit le nombre de colonnes/enfants.
-     *
-     * @return \Illuminate\Support\Collection<int, \Illuminate\Support\Collection<int, PageBlock>>
+     * Charge tous les enfants (+ leurs médias) en une seule requête,
+     * regroupés par colonne. À utiliser dans les vues qui itèrent sur
+     * plusieurs colonnes, pour éviter le N+1 de childrenByColumn()
+     * appelé en boucle. childrenByColumn() reste utile pour cibler un
+     * enfant précis (ex. dans le contrôleur).
      */
     public function childrenGroupedByColumn()
     {

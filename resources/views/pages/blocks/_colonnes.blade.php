@@ -1,31 +1,20 @@
-@php
-    $columnCount = $data['column_count'] ?? 2;
+@php($childrenByColumn = $block->childrenGroupedByColumn())
 
-    // Une seule requête pour tous les enfants + médias, groupés par colonne.
-    // Remplace les appels répétés à $block->childrenByColumn($i)->get()
-    // et l'accès à ->media par enfant dans la boucle (voir passation §6) :
-    // 8 requêtes mesurées avant ce correctif -> 3 après, sur un bloc à
-    // 4 colonnes et 3 enfants.
-    $childrenByColumn = $block->childrenGroupedByColumn();
-
-    $gridClass = match($columnCount) {
-        2 => 'sm:grid-cols-2',
-        3 => 'sm:grid-cols-2 lg:grid-cols-3',
-        4 => 'sm:grid-cols-2 lg:grid-cols-4',
-        5 => 'sm:grid-cols-2 lg:grid-cols-5',
-        6 => 'sm:grid-cols-2 lg:grid-cols-6',
-        default => 'sm:grid-cols-2',
-    };
-@endphp
-
-<div class="my-8">
+<div>
     @if(!empty($data['title']))
-        <h2 class="text-2xl font-bold mb-6 text-center">{{ $data['title'] }}</h2>
+        <h2 class="text-xl font-semibold mb-4">{{ $data['title'] }}</h2>
     @endif
 
-    <div class="grid grid-cols-1 {{ $gridClass }} gap-6">
-        @for($i = 0; $i < $columnCount; $i++)
-            <div class="space-y-4">
+    <style>
+        #colonnes-{{ $block->id }} { grid-template-columns: repeat({{ $data['column_count'] }}, minmax(0, 1fr)); }
+        @media (max-width: 768px) {
+            #colonnes-{{ $block->id }} { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <div id="colonnes-{{ $block->id }}" class="grid gap-6">
+        @for($i = 0; $i < $data['column_count']; $i++)
+            <div class="space-y-6">
                 @foreach($childrenByColumn->get($i, collect()) as $child)
                     @include('pages.blocks._' . $child->type, ['data' => $child->data, 'media' => $child->media, 'block' => $child])
                 @endforeach
