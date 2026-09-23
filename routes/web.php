@@ -59,6 +59,30 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
         Route::put('/{blockId}', [AdminPageBlockController::class, 'update'])->name('update');
         Route::delete('/{blockId}', [AdminPageBlockController::class, 'destroy'])->name('destroy');
         Route::post('/reorder', [AdminPageBlockController::class, 'reorder'])->name('reorder');
+
+        Route::prefix('{blockId}/columns/{slotIndex}')->name('columns.')->group(function () {
+            Route::get('/create/{type}', [AdminPageBlockController::class, 'createChild'])->name('create');
+            Route::post('/', [AdminPageBlockController::class, 'storeChild'])->name('store');
+            Route::get('/{childId}/edit', [AdminPageBlockController::class, 'editChild'])->name('edit');
+            Route::put('/{childId}', [AdminPageBlockController::class, 'updateChild'])->name('update');
+            Route::delete('/{childId}', [AdminPageBlockController::class, 'destroyChild'])->name('destroy');
+        });
+
+        Route::prefix('{blockId}/items')->name('items.')->group(function () {
+            Route::post('/', [AdminPageBlockController::class, 'storeAccordionItem'])->name('store');
+            Route::get('/{itemId}/edit', [AdminPageBlockController::class, 'editAccordionItem'])->name('edit');
+            Route::put('/{itemId}', [AdminPageBlockController::class, 'updateAccordionItem'])->name('update');
+            Route::delete('/{itemId}', [AdminPageBlockController::class, 'destroyAccordionItem'])->name('destroy');
+            Route::post('/reorder', [AdminPageBlockController::class, 'reorderAccordionItems'])->name('reorder');
+
+            Route::prefix('{itemId}/content')->name('content.')->group(function () {
+                Route::get('/create/{type}', [AdminPageBlockController::class, 'createItemContent'])->name('create');
+                Route::post('/', [AdminPageBlockController::class, 'storeItemContent'])->name('store');
+                Route::get('/{contentId}/edit', [AdminPageBlockController::class, 'editItemContent'])->name('edit');
+                Route::put('/{contentId}', [AdminPageBlockController::class, 'updateItemContent'])->name('update');
+                Route::delete('/{contentId}', [AdminPageBlockController::class, 'destroyItemContent'])->name('destroy');
+            });
+        });
     });
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
