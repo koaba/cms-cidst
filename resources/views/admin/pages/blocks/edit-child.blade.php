@@ -1,9 +1,9 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">
-        Modifier un bloc — Colonne {{ $columnIndex + 1 }} — {{ $page->title }}
+        Modifier un bloc — Colonne {{ $slotIndex + 1 }} — {{ $page->title }}
     </h1>
 
-    <form action="{{ route('admin.pages.blocks.columns.update', [$page, $parent->id, $columnIndex, $child->id]) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.pages.blocks.columns.update', [$page, $parent->id, $slotIndex, $child->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 

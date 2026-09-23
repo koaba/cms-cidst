@@ -103,20 +103,30 @@ class PageBlockController extends Controller
     {
         $block = $page->blocks()->whereNull('parent_id')->findOrFail($blockId);
 
-        // cascadeOnDelete() sur parent_id supprime bien les lignes enfants
-        // au niveau SQL, mais ne déclenche aucun événement Eloquent sur
-        // elles : sans ce nettoyage manuel, les médias (fichiers + lignes
-        // media/mediables) des blocs enfants resteraient orphelins.
-        foreach ($block->children as $child) {
-            $child->detachAndPruneOrphanMedia($child);
-        }
-
-        $block->detachAndPruneOrphanMedia($block);
+        $this->pruneMediaRecursively($block);
         $block->delete();
 
         return redirect()
             ->route('admin.pages.blocks.index', $page)
             ->with('success', 'Le bloc a été supprimé avec succès.');
+    }
+
+    /**
+     * cascadeOnDelete() sur parent_id supprime bien les lignes enfants au
+     * niveau SQL, à n'importe quelle profondeur, mais ne déclenche aucun
+     * événement Eloquent sur elles : sans ce nettoyage manuel récursif,
+     * les médias (fichiers + lignes media/mediables) des blocs enfants et
+     * petits-enfants resteraient orphelins. Descend jusqu'à la profondeur
+     * réelle du bloc concerné (1 niveau pour colonnes, 2 pour accordeon,
+     * plus si un futur type imbrique davantage).
+     */
+    private function pruneMediaRecursively(PageBlock $block): void
+    {
+        foreach ($block->children as $child) {
+            $this->pruneMediaRecursively($child);
+        }
+
+        $block->detachAndPruneOrphanMedia($block);
     }
 
     public function reorder(Request $request, Page $page)
@@ -139,38 +149,38 @@ class PageBlockController extends Controller
     // Gestion des blocs enfants (imbriqués dans une colonne)
     // -----------------------------------------------------------------
 
-    public function createChild(Page $page, int $blockId, int $columnIndex, string $type)
+    public function createChild(Page $page, int $blockId, int $slotIndex, string $type)
     {
         $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
 
         $this->ensureNestable($type);
-        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $this->ensureSlotIndexInRange($parent, $slotIndex);
 
         $pdfDocuments = $type === 'pdf'
             ? PdfDocument::orderBy('title')->get()
             : collect();
 
-        return view('admin.pages.blocks.create-child', compact('page', 'parent', 'columnIndex', 'type', 'pdfDocuments'));
+        return view('admin.pages.blocks.create-child', compact('page', 'parent', 'slotIndex', 'type', 'pdfDocuments'));
     }
 
-    public function storeChild(Request $request, Page $page, int $blockId, int $columnIndex)
+    public function storeChild(Request $request, Page $page, int $blockId, int $slotIndex)
     {
         $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
 
         $type = $request->input('type');
 
         $this->ensureNestable($type);
-        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $this->ensureSlotIndexInRange($parent, $slotIndex);
 
         $data = $this->validateForType($request, $type, isCreate: true);
         $data = $this->stripMediaFields($data);
 
         $child = $page->blocks()->create([
             'parent_id' => $parent->id,
-            'column_index' => $columnIndex,
+            'slot_index' => $slotIndex,
             'type' => $type,
             'data' => $data,
-            'order' => $parent->childrenByColumn($columnIndex)->max('order') + 1,
+            'order' => $parent->childrenBySlot($slotIndex)->max('order') + 1,
         ]);
 
         $this->handleMedia($request, $child, $type);
@@ -180,26 +190,26 @@ class PageBlockController extends Controller
             ->with('success', 'Le bloc a été ajouté à la colonne avec succès.');
     }
 
-    public function editChild(Page $page, int $blockId, int $columnIndex, int $childId)
+    public function editChild(Page $page, int $blockId, int $slotIndex, int $childId)
     {
         $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
-        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $this->ensureSlotIndexInRange($parent, $slotIndex);
 
-        $child = $parent->childrenByColumn($columnIndex)->findOrFail($childId);
+        $child = $parent->childrenBySlot($slotIndex)->findOrFail($childId);
 
         $pdfDocuments = $child->type === 'pdf'
             ? PdfDocument::orderBy('title')->get()
             : collect();
 
-        return view('admin.pages.blocks.edit-child', compact('page', 'parent', 'columnIndex', 'child', 'pdfDocuments'));
+        return view('admin.pages.blocks.edit-child', compact('page', 'parent', 'slotIndex', 'child', 'pdfDocuments'));
     }
 
-    public function updateChild(Request $request, Page $page, int $blockId, int $columnIndex, int $childId)
+    public function updateChild(Request $request, Page $page, int $blockId, int $slotIndex, int $childId)
     {
         $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
-        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $this->ensureSlotIndexInRange($parent, $slotIndex);
 
-        $child = $parent->childrenByColumn($columnIndex)->findOrFail($childId);
+        $child = $parent->childrenBySlot($slotIndex)->findOrFail($childId);
 
         $data = $this->validateForType($request, $child->type, isCreate: false);
         $data = $this->stripMediaFields($data);
@@ -213,12 +223,12 @@ class PageBlockController extends Controller
             ->with('success', 'Le bloc de la colonne a été modifié avec succès.');
     }
 
-    public function destroyChild(Page $page, int $blockId, int $columnIndex, int $childId)
+    public function destroyChild(Page $page, int $blockId, int $slotIndex, int $childId)
     {
         $parent = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->findOrFail($blockId);
-        $this->ensureColumnIndexInRange($parent, $columnIndex);
+        $this->ensureSlotIndexInRange($parent, $slotIndex);
 
-        $child = $parent->childrenByColumn($columnIndex)->findOrFail($childId);
+        $child = $parent->childrenBySlot($slotIndex)->findOrFail($childId);
 
         $child->detachAndPruneOrphanMedia($child);
         $child->delete();
@@ -226,6 +236,189 @@ class PageBlockController extends Controller
         return redirect()
             ->route('admin.pages.blocks.edit', [$page, $parent->id])
             ->with('success', 'Le bloc a été retiré de la colonne avec succès.');
+    }
+
+    // -----------------------------------------------------------------
+    // Gestion des items d'accordéon
+    // -----------------------------------------------------------------
+
+    private function ensureAccordionParent(Page $page, int $blockId): PageBlock
+    {
+        return $page->blocks()->whereNull('parent_id')->where('type', 'accordeon')->findOrFail($blockId);
+    }
+
+    private function findAccordionItem(PageBlock $parent, int $itemId): PageBlock
+    {
+        return $parent->children()->where('type', 'accordeon_item')->findOrFail($itemId);
+    }
+
+    public function storeAccordionItem(Request $request, Page $page, int $blockId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+
+        $data = $this->validateForType($request, 'accordeon_item', isCreate: true);
+
+        // Pas de borne figée comme column_count : le slot suivant est
+        // toujours "après le dernier item existant". Calculé côté serveur,
+        // jamais fourni par le client — aucun garde-fou de type
+        // ensureSlotIndexInRange() n'est donc nécessaire ici.
+        $existingMaxSlot = $parent->children()->where('type', 'accordeon_item')->max('slot_index');
+        $nextSlot = is_null($existingMaxSlot) ? 0 : $existingMaxSlot + 1;
+
+        $parent->children()->create([
+            'page_id' => $page->id,
+            'type' => 'accordeon_item',
+            'data' => $data,
+            'slot_index' => $nextSlot,
+            'order' => $nextSlot,
+        ]);
+
+        return redirect()
+            ->route('admin.pages.blocks.edit', [$page, $parent->id])
+            ->with('success', "Item ajouté à l'accordéon avec succès.");
+    }
+
+    public function editAccordionItem(Page $page, int $blockId, int $itemId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+
+        return view('admin.pages.blocks.edit-accordion-item', compact('page', 'parent', 'item'));
+    }
+
+    public function updateAccordionItem(Request $request, Page $page, int $blockId, int $itemId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+
+        $data = $this->validateForType($request, 'accordeon_item', isCreate: false);
+        $item->update(['data' => $data]);
+
+        return redirect()
+            ->route('admin.pages.blocks.items.edit', [$page, $parent->id, $item->id])
+            ->with('success', 'Item modifié avec succès.');
+    }
+
+    public function destroyAccordionItem(Page $page, int $blockId, int $itemId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+
+        // Un item peut avoir son propre contenu imbriqué (récursion niveau
+        // 2) : nettoyage média récursif indispensable, pas seulement sur
+        // l'item lui-même.
+        $this->pruneMediaRecursively($item);
+        $item->delete();
+
+        return redirect()
+            ->route('admin.pages.blocks.edit', [$page, $parent->id])
+            ->with('success', 'Item supprimé avec succès.');
+    }
+
+    public function reorderAccordionItems(Request $request, Page $page, int $blockId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+
+        $validated = $request->validate([
+            'order' => 'required|array',
+            'order.*' => 'integer|exists:page_blocks,id',
+        ]);
+
+        foreach ($validated['order'] as $index => $itemId) {
+            $parent->children()
+                ->where('type', 'accordeon_item')
+                ->where('id', $itemId)
+                ->update(['slot_index' => $index, 'order' => $index]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    // -----------------------------------------------------------------
+    // Gestion du contenu de chaque item d'accordéon (récursion niveau 2)
+    // -----------------------------------------------------------------
+
+    public function createItemContent(Page $page, int $blockId, int $itemId, string $type)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+
+        $this->ensureNestable($type);
+
+        $pdfDocuments = $type === 'pdf'
+            ? PdfDocument::orderBy('title')->get()
+            : collect();
+
+        return view('admin.pages.blocks.create-item-content', compact('page', 'parent', 'item', 'type', 'pdfDocuments'));
+    }
+
+    public function storeItemContent(Request $request, Page $page, int $blockId, int $itemId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+
+        $type = $request->input('type');
+        $this->ensureNestable($type);
+
+        $data = $this->validateForType($request, $type, isCreate: true);
+        $data = $this->stripMediaFields($data);
+
+        $content = $item->children()->create([
+            'page_id' => $page->id,
+            'type' => $type,
+            'data' => $data,
+            'order' => $item->children()->max('order') + 1,
+        ]);
+
+        $this->handleMedia($request, $content, $type);
+
+        return redirect()
+            ->route('admin.pages.blocks.items.edit', [$page, $parent->id, $item->id])
+            ->with('success', "Contenu ajouté à l'item avec succès.");
+    }
+
+    public function editItemContent(Page $page, int $blockId, int $itemId, int $contentId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+        $content = $item->children()->findOrFail($contentId);
+
+        $pdfDocuments = $content->type === 'pdf'
+            ? PdfDocument::orderBy('title')->get()
+            : collect();
+
+        return view('admin.pages.blocks.edit-item-content', compact('page', 'parent', 'item', 'content', 'pdfDocuments'));
+    }
+
+    public function updateItemContent(Request $request, Page $page, int $blockId, int $itemId, int $contentId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+        $content = $item->children()->findOrFail($contentId);
+
+        $data = $this->validateForType($request, $content->type, isCreate: false);
+        $data = $this->stripMediaFields($data);
+
+        $content->update(['data' => $data]);
+        $this->handleMedia($request, $content, $content->type);
+
+        return redirect()
+            ->route('admin.pages.blocks.items.edit', [$page, $parent->id, $item->id])
+            ->with('success', 'Contenu modifié avec succès.');
+    }
+
+    public function destroyItemContent(Page $page, int $blockId, int $itemId, int $contentId)
+    {
+        $parent = $this->ensureAccordionParent($page, $blockId);
+        $item = $this->findAccordionItem($parent, $itemId);
+        $content = $item->children()->findOrFail($contentId);
+
+        $this->pruneMediaRecursively($content);
+        $content->delete();
+
+        return redirect()
+            ->route('admin.pages.blocks.items.edit', [$page, $parent->id, $item->id])
+            ->with('success', "Contenu retiré de l'item avec succès.");
     }
 
     /**
@@ -243,18 +436,18 @@ class PageBlockController extends Controller
     }
 
     /**
-     * Vérifie que $columnIndex est bien compris entre 0 et
-     * column_count - 1 du parent. Sans ce garde-fou, une URL forgée
-     * (ex. .../columns/99/create/texte) créerait un enfant dans une
-     * colonne inexistante : enregistré en base mais jamais affiché
-     * (données fantômes, pas une faille de sécurité en soi, mais à
-     * bloquer proprement).
+     * Vérifie que $slotIndex est bien compris dans les slots valides du
+     * parent. Pour `colonnes`, la borne haute est column_count - 1. Sans
+     * ce garde-fou, une URL forgée (ex. .../columns/99/create/texte)
+     * créerait un enfant dans un slot inexistant : enregistré en base
+     * mais jamais affiché (données fantômes, pas une faille de sécurité
+     * en soi, mais à bloquer proprement).
      */
-    private function ensureColumnIndexInRange(PageBlock $parent, int $columnIndex): void
+    private function ensureSlotIndexInRange(PageBlock $parent, int $slotIndex): void
     {
-        $columnCount = (int) ($parent->data['column_count'] ?? 0);
+        $slotCount = (int) ($parent->data['column_count'] ?? 0);
 
-        if ($columnIndex < 0 || $columnIndex >= $columnCount) {
+        if ($slotIndex < 0 || $slotIndex >= $slotCount) {
             abort(404);
         }
     }
@@ -334,6 +527,18 @@ class PageBlockController extends Controller
                 // chaîne ("4") dans le JSON `data`.
                 ['column_count' => (int) $request->input('column_count')]
             ),
+            // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
+            // les items sont de vrais PageBlock enfants (type accordeon_item),
+            // pas des données JSON imbriquées (même logique que `colonnes`).
+            'accordeon' => $request->validate([
+                'title' => 'nullable|string|max:255',
+            ]),
+            // accordeon_item : l'en-tête cliquable de chaque item. Le
+            // contenu réel de l'item est composé de ses propres enfants
+            // PageBlock (récursion), pas stocké ici.
+            'accordeon_item' => $request->validate([
+                'title' => 'required|string|max:255',
+            ]),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
     }
@@ -458,7 +663,7 @@ class PageBlockController extends Controller
      * sont synchronisés via l'infrastructure MediaSyncService déjà utilisée
      * par le module Documents PDF classique.
      */
-       private function resolvePdfDocument(Request $request): int
+    private function resolvePdfDocument(Request $request): int
     {
         if ($request->input('pdf_source') === 'existing') {
             return (int) $request->input('pdf_document_id');

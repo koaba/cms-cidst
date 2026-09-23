@@ -1,4 +1,4 @@
-@php($childrenByColumn = $block->childrenGroupedByColumn())
+@php($childrenBySlot = $block->childrenGroupedBySlot())
 
 <div>
     @if(!empty($data['title']))
@@ -15,7 +15,7 @@
     <div id="colonnes-{{ $block->id }}" class="grid gap-6">
         @for($i = 0; $i < $data['column_count']; $i++)
             <div class="space-y-6">
-                @foreach($childrenByColumn->get($i, collect()) as $child)
+                @foreach($childrenBySlot->get($i, collect()) as $child)
                     @include('pages.blocks._' . $child->type, ['data' => $child->data, 'media' => $child->media, 'block' => $child])
                 @endforeach
             </div>

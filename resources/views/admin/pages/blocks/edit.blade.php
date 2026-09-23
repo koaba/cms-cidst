@@ -15,7 +15,7 @@
     </form>
 
     @if($block->type === 'colonnes')
-        @php($childrenByColumn = $block->childrenGroupedByColumn())
+        @php($childrenBySlot = $block->childrenGroupedBySlot())
         @php($nestableTypes = config('page_blocks.nestable_in_columns'))
 
         <div class="mt-8 border-t pt-6">
@@ -27,7 +27,7 @@
                         <p class="text-sm font-medium mb-2">Colonne {{ $i + 1 }}</p>
 
                         <ul class="space-y-2 mb-3">
-                            @forelse($childrenByColumn->get($i, collect()) as $child)
+                            @forelse($childrenBySlot->get($i, collect()) as $child)
                                 <li class="flex items-center justify-between bg-white border rounded p-2 text-sm">
                                     <span>{{ config('page_blocks.types')[$child->type] ?? $child->type }}</span>
                                     <span class="space-x-2">
@@ -44,9 +44,9 @@
                             @endforelse
                         </ul>
 
-                        <div class="flex flex-wrap gap-1">
+                                                <div class="flex flex-wrap gap-1">
                             @foreach($nestableTypes as $nestableType)
-                                <a href="{{ route('admin.pages.blocks.columns.create', [$page, $block->id, $i, $nestableType]) }}"
+                                <a href="{{ route('admin.pages.blocks.columns.create', [$page, $block->id, $i, $nestableType]) }}" 
                                    class="text-xs border rounded px-2 py-1 hover:bg-gray-100">
                                     + {{ config('page_blocks.types')[$nestableType] ?? $nestableType }}
                                 </a>
@@ -54,7 +54,43 @@
                         </div>
                     </div>
                 @endfor
-            </div>
+            </div> 
+        </div>
+    @endif
+
+    @if($block->type === 'accordeon')
+        <div class="mt-8 border-t pt-6">
+            <h2 class="text-lg font-semibold mb-4">Items de l'accordéon</h2>
+
+            <ul class="space-y-2 mb-4">
+                @forelse($block->children as $item)
+                    <li class="flex items-center justify-between bg-gray-50 border rounded p-3">
+                        <span class="text-sm font-medium">{{ $item->data['title'] }}</span>
+                        <span class="space-x-2 text-sm">
+                            <a href="{{ route('admin.pages.blocks.items.edit', [$page, $block->id, $item->id]) }}" class="text-blue-600 hover:underline">Modifier / Contenu</a>
+                            <form action="{{ route('admin.pages.blocks.items.destroy', [$page, $block->id, $item->id]) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cet item et tout son contenu ?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:underline">Supprimer</button>
+                            </form>
+                        </span>
+                    </li>
+                @empty
+                    <li class="text-sm text-gray-400 italic">Aucun item pour le moment</li>
+                @endforelse
+            </ul>
+
+            <form action="{{ route('admin.pages.blocks.items.store', [$page, $block->id]) }}" method="POST" class="flex items-end gap-2">
+                @csrf
+                <div class="flex-1">
+                    <label class="block text-sm font-medium mb-1">Titre du nouvel item</label>
+                    <input type="text" name="title" required class="w-full border rounded p-2 text-sm" placeholder="Ex. : Comment réinitialiser mon mot de passe ?">
+                    @error('title')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <button type="submit" class="text-sm border rounded px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap">+ Ajouter un item</button>
+            </form>
         </div>
     @endif
 </x-admin.layout>
