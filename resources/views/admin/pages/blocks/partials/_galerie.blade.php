@@ -1,12 +1,25 @@
 <div class="mb-4">
     <label class="block text-sm font-medium mb-1">Disposition</label>
-    <select name="layout" class="w-full border rounded p-2 text-sm">
+    <select name="layout" class="w-full border rounded p-2 text-sm" onchange="document.getElementById('galerie-autoplay-options').style.display = this.value === 'carousel' ? '' : 'none'">
         <option value="grid" @selected(($data['layout'] ?? 'grid') === 'grid')>Grille</option>
         <option value="carousel" @selected(($data['layout'] ?? '') === 'carousel')>Carrousel</option>
     </select>
     @error('layout')
         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
     @enderror
+</div>
+
+<div class="mb-4" id="galerie-autoplay-options" style="{{ ($data['layout'] ?? 'grid') === 'carousel' ? '' : 'display:none' }}">
+    <label class="flex items-center gap-2 text-sm mb-2">
+        <input type="checkbox" name="autoplay" value="1" @checked($data['autoplay'] ?? false)>
+        Défilement automatique
+    </label>
+    <label class="block text-sm font-medium mb-1">Intervalle entre chaque défilement (secondes)</label>
+    <input type="number" name="autoplay_interval" min="2" max="30" value="{{ $data['autoplay_interval'] ?? old('autoplay_interval', 4) }}" class="w-32 border rounded p-2 text-sm">
+    @error('autoplay_interval')
+        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+    @enderror
+    <p class="text-xs text-gray-500 mt-1">Un bouton pause sera toujours affiché aux visiteurs.</p>
 </div>
 
 @if(isset($block) && $block->media->isNotEmpty())
