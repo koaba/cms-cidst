@@ -29,3 +29,5 @@ Thumbs.db
 test_output*.txt
 
 *.bak
+
+debug_hero.txt
