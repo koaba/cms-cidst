@@ -472,6 +472,31 @@ class PageBlockController extends Controller
                 'style' => 'nullable|in:primaire,secondaire,outline',
                 'new_tab' => 'nullable|boolean',
             ]),
+            'banniere_hero' => array_merge(
+                $request->validate([
+                    'titre' => 'required|string|max:255',
+                    'sous_titre' => 'nullable|string|max:500',
+                    'bouton_texte' => 'nullable|string|max:100',
+                    'bouton_url' => 'nullable|required_with:bouton_texte|url|max:255',
+                    'overlay_opacity' => 'nullable|integer|min:0|max:100',
+                    'image' => [
+                        $isCreate ? 'required' : 'nullable',
+                        'required_if:delete_image,1',
+                        'image',
+                        'max:5120',
+                    ],
+                    'alt' => 'nullable|string|max:255',
+                    'delete_image' => 'nullable|boolean',
+                    'apply_watermark' => 'nullable|boolean',
+                ], [
+                    'image.required_if' => 'Impossible de retirer l\'image sans en fournir une nouvelle : la bannière hero doit toujours avoir une image de fond.',
+                ]),
+                // Laravel valide bien `integer` mais ne caste pas
+                // automatiquement : sans ce cast explicite, overlay_opacity
+                // serait stocké comme chaîne ("40") dans le JSON `data`,
+                // même piège que column_count plus haut.
+                ['overlay_opacity' => (int) $request->input('overlay_opacity', 40)]
+            ),
             'image' => $request->validate([
                 'image' => ($isCreate ? 'required' : 'nullable') . '|image|max:5120',
                 'alt' => 'nullable|string|max:255',
@@ -565,7 +590,7 @@ class PageBlockController extends Controller
 
     private function handleMedia(Request $request, PageBlock $block, string $type): void
     {
-        if ($type === 'image') {
+        if ($type === 'image' || $type === 'banniere_hero') {
             if ($request->boolean('delete_image')) {
                 $block->detachOwnedMedia($block->media()->pluck('media.id')->all());
             }
