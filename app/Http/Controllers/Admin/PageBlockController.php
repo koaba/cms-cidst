@@ -495,18 +495,28 @@ class PageBlockController extends Controller
                 'button_url' => 'nullable|string|max:255',
                 'button_new_tab' => 'nullable|boolean',
             ]),
-            'galerie' => $request->validate([
-                'layout' => 'required|in:grid,carousel',
-                'images' => ($isCreate ? 'required' : 'nullable') . '|array|min:1|max:20',
-                'images.*' => 'image|max:5120',
-                'images_alt' => 'nullable|array',
-                'images_alt.*' => 'nullable|string|max:255',
-                'images_caption' => 'nullable|array',
-                'images_caption.*' => 'nullable|string|max:255',
-                'delete_media' => 'nullable|array',
-                'delete_media.*' => 'integer',
-                'apply_watermark' => 'nullable|boolean',
-            ]),
+               'galerie' => array_merge(
+    $request->validate([
+        'layout' => 'required|in:grid,carousel',
+        'images' => ($isCreate ? 'required' : 'nullable') . '|array|min:1|max:20',
+        'images.*' => 'image|max:5120',
+        'images_alt' => 'nullable|array',
+        'images_alt.*' => 'nullable|string|max:255',
+        'images_caption' => 'nullable|array',
+        'images_caption.*' => 'nullable|string|max:255',
+        'delete_media' => 'nullable|array',
+        'delete_media.*' => 'integer',
+        'apply_watermark' => 'nullable|boolean',
+        'autoplay' => 'nullable|boolean',
+        'autoplay_interval' => 'nullable|integer|min:2|max:30',
+    ]),
+    // Meme piege que column_count/overlay_opacity plus haut : `integer`
+    // valide mais ne caste pas -- cast explicite indispensable.
+    [
+    'autoplay' => $request->boolean('autoplay'),
+    'autoplay_interval' => (int) $request->input('autoplay_interval', 4),
+]
+),
             'pdf' => $request->validate([
                 'title' => 'nullable|string|max:255',
                 'pdf_source' => 'required|in:existing,new',
