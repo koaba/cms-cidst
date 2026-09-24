@@ -8,14 +8,14 @@ class PageController extends Controller
 {
     public function index()
     {
-        $pages = Page::where('is_published', true)->latest()->paginate(9);
+        $pages = Page::publiclyVisible()->latest()->paginate(9);
 
         return view('public.pages.index', compact('pages'));
     }
 
     public function show(Page $page)
     {
-        if (! $page->is_published) {
+        if (! $page->isPubliclyVisible()) {
             abort(404);
         }
 
