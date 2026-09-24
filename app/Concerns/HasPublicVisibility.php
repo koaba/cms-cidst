@@ -31,6 +31,25 @@ trait HasPublicVisibility
         return $query;
     }
 
+    /**
+     * Équivalent du scope publiclyVisible(), mais pour une instance déjà
+     * chargée (ex. via route model binding) plutôt que pour une requête.
+     * Utile dans les méthodes show() où le modèle est résolu avant même
+     * qu'on sache s'il doit être visible publiquement.
+     */
+    public function isPubliclyVisible(): bool
+    {
+        if (! $this->is_published) {
+            return false;
+        }
+
+        if (! $this->supportsScheduledPublishing() || $this->published_at === null) {
+            return true;
+        }
+
+        return $this->published_at->lessThanOrEqualTo(now());
+    }
+
     protected function supportsScheduledPublishing(): bool
     {
         return in_array('published_at', $this->getFillable(), true);
