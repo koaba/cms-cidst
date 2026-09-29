@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Article;
+use App\Models\Page;
 use App\Models\SiteSetting;
+use App\Observers\SitemapCacheObserver;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -31,5 +34,8 @@ class AppServiceProvider extends ServiceProvider
         View::composer('components.layout', function ($view) {
             $view->with('siteSettings', SiteSetting::current());
         });
+
+        Page::observe(SitemapCacheObserver::class);
+        Article::observe(SitemapCacheObserver::class);
     }
 }
