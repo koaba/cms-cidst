@@ -26,6 +26,7 @@
 <meta property="og:url" content="{{ $seoCanonical }}">
 <meta property="og:type" content="{{ $seoOgType }}">
 <meta property="og:site_name" content="{{ config('app.name', 'CIDST') }}">
+<meta property="og:locale" content="fr_FR">
 @if($seoImage)
     <meta property="og:image" content="{{ $seoImage }}">
 @endif
