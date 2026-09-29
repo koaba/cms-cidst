@@ -13,8 +13,9 @@ return [
         'pdf' => 'Document PDF',
         'colonnes' => 'Colonnes',
         'accordeon' => 'Accordéon',
+        'banniere_hero' => 'Bannière Hero',
         // Types restants à implémenter :
-        // 'banniere_hero', 'chiffres_cles'
+        // 'chiffres_cles'
     ],
 
     /*
