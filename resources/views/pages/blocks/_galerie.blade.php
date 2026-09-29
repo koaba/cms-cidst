@@ -4,7 +4,7 @@
         $autoplay = (bool) ($data['autoplay'] ?? false);
         $interval = (int) ($data['autoplay_interval'] ?? 4);
     @endphp
-    <div class="relative my-6" id="{{ $carouselId }}" data-autoplay="{{ $autoplay ? '1' : '0' }}" data-interval="{{ $interval }}">
+    <div class="relative my-6" id="{{ $carouselId }}" data-interval="{{ $interval }}">
         <div class="carousel-track flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth" style="scrollbar-width: none;">
             @foreach($media as $item)
                 <figure class="snap-start shrink-0 w-72">
