@@ -22,4 +22,20 @@
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
 </script>
+@elseif($model instanceof \App\Models\Page)
+<script type="application/ld+json">
+{!! json_encode(array_filter([
+    '@context' => 'https://schema.org',
+    '@type' => 'WebPage',
+    'name' => $model->title,
+    'description' => \App\Services\SeoService::description($model),
+    'url' => $model->publicUrl(),
+    'dateModified' => optional($model->updated_at)->toIso8601String(),
+    'isPartOf' => [
+        '@type' => 'WebSite',
+        'name' => config('app.name', 'CIDST'),
+        'url' => url('/'),
+    ],
+]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
 @endif
