@@ -57,7 +57,7 @@ it('rejette un style de bouton invalide', function () {
     $response->assertSessionHasErrors('style');
 });
 
-it('CARACTERISATION: new_tab est valide mais pas caste en booleen (meme piege que autoplay avant son fix)', function () {
+it('caste new_tab en booleen (fix applique)', function () {
     $page = Page::factory()->create();
 
     $this->actingAs($this->admin)->post(
@@ -66,10 +66,17 @@ it('CARACTERISATION: new_tab est valide mais pas caste en booleen (meme piege qu
     );
 
     $block = $page->blocks()->whereNull('parent_id')->first();
+    expect($block->data['new_tab'])->toBeTrue();
+});
 
-    // Documente le comportement ACTUEL : stocke la chaine "1", pas true.
-    // Si ce test echoue apres un futur fix, mettre a jour l'assertion
-    // ET verifier que le rendu Blade cote public gere bien le nouveau type.
-    expect($block->data['new_tab'])->toBe('1');
-    expect($block->data['new_tab'])->not->toBeBool();
+it('caste new_tab a false quand la case n\'est pas cochee', function () {
+    $page = Page::factory()->create();
+
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'bouton', 'label' => 'Cliquez', 'url' => '/contact']
+    );
+
+    $block = $page->blocks()->whereNull('parent_id')->first();
+    expect($block->data['new_tab'])->toBeFalse();
 });
