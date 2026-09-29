@@ -5,7 +5,7 @@
         @csrf
         <input type="hidden" name="type" value="{{ $type }}">
 
-        @include('admin.pages.blocks.partials._' . $type)
+        @include('admin.pages.blocks.partials._' . $type, ['data' => []])
 
         <div class="mt-4 space-x-2">
             <button type="submit" class="text-sm border rounded px-3 py-2 bg-blue-600 text-white hover:bg-blue-700">Enregistrer</button>
