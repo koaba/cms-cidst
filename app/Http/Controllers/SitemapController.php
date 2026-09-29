@@ -14,6 +14,7 @@ class SitemapController extends Controller
         $urls = Cache::remember('sitemap.xml', 3600, function () {
             $articles = Article::publiclyVisible()->with('seo')->get()
                 ->reject(fn (Article $article) => $article->seo?->no_index)
+                ->toBase()
                 ->map(fn (Article $article) => [
                     'loc' => $article->publicUrl(),
                     'lastmod' => $article->updated_at->toAtomString(),
@@ -21,12 +22,13 @@ class SitemapController extends Controller
 
             $pages = Page::publiclyVisible()->with('seo')->get()
                 ->reject(fn (Page $page) => $page->seo?->no_index)
+                ->toBase()
                 ->map(fn (Page $page) => [
                     'loc' => $page->publicUrl(),
                     'lastmod' => $page->updated_at->toAtomString(),
                 ]);
 
-            return $articles->merge($pages);
+            return $articles->concat($pages)->values();
         });
 
         $xml = view('sitemap.index', ['urls' => $urls])->render();
