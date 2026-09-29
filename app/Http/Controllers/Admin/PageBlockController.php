@@ -6,19 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageBlock;
-use Illuminate\Http\Request;
-use App\Models\PdfDocument;
 use App\Models\PdfCategory;
+use App\Models\PdfDocument;
 use App\Services\MediaSyncService;
 use App\Services\WatermarkService;
+use Illuminate\Http\Request;
 
 class PageBlockController extends Controller
 {
     public function __construct(
         private MediaSyncService $mediaSync,
         private WatermarkService $watermarkService,
-    ) {
-    }
+    ) {}
 
     public function index(Page $page)
     {
@@ -466,14 +465,17 @@ class PageBlockController extends Controller
                 'content' => 'required|string',
                 'author' => 'nullable|string|max:255',
             ]),
-            'bouton' => $request->validate([
-                'label' => 'required|string|max:100',
-                'url' => 'required|string|max:255',
-                'style' => 'nullable|in:primaire,secondaire,outline',
-                'new_tab' => 'nullable|boolean',
-            ]),
+            'bouton' => array_merge(
+                $request->validate([
+                    'label' => 'required|string|max:100',
+                    'url' => 'required|string|max:255',
+                    'style' => 'nullable|in:primaire,secondaire,outline',
+                    'new_tab' => 'nullable|boolean',
+                ]),
+                ['new_tab' => $request->boolean('new_tab')]
+            ),
             'image' => $request->validate([
-                'image' => ($isCreate ? 'required' : 'nullable') . '|image|max:5120',
+                'image' => ($isCreate ? 'required' : 'nullable').'|image|max:5120',
                 'alt' => 'nullable|string|max:255',
                 'caption' => 'nullable|string|max:255',
                 'delete_image' => 'nullable|boolean',
@@ -483,47 +485,53 @@ class PageBlockController extends Controller
                 'title' => 'nullable|string|max:255',
                 'source_type' => 'required|in:upload,url',
                 'url' => 'required_if:source_type,url|nullable|string|max:255',
-                'video_file' => 'required_if:source_type,upload|nullable|file|mimes:mp4,webm|max:15360',
+                'video_file' => array_filter([
+                    $isCreate ? 'required_if:source_type,upload' : null,
+                    'nullable', 'file', 'mimes:mp4,webm', 'max:15360',
+                ]),
                 'delete_video' => 'nullable|boolean',
                 'apply_watermark' => 'nullable|boolean',
             ]),
-            'section_fond' => $request->validate([
-                'title' => 'nullable|string|max:255',
-                'text' => 'required|string',
-                'bg_color' => 'nullable|in:gray,blue,dark',
-                'button_label' => 'nullable|string|max:100',
-                'button_url' => 'nullable|string|max:255',
-                'button_new_tab' => 'nullable|boolean',
-            ]),
-               'galerie' => array_merge(
-    $request->validate([
-        'layout' => 'required|in:grid,carousel',
-        'images' => ($isCreate ? 'required' : 'nullable') . '|array|min:1|max:20',
-        'images.*' => 'image|max:5120',
-        'images_alt' => 'nullable|array',
-        'images_alt.*' => 'nullable|string|max:255',
-        'images_caption' => 'nullable|array',
-        'images_caption.*' => 'nullable|string|max:255',
-        'delete_media' => 'nullable|array',
-        'delete_media.*' => 'integer',
-        'apply_watermark' => 'nullable|boolean',
-        'autoplay' => 'nullable|boolean',
-        'autoplay_interval' => 'nullable|integer|min:2|max:30',
-    ]),
-    // Meme piege que column_count/overlay_opacity plus haut : `integer`
-    // valide mais ne caste pas -- cast explicite indispensable.
-    [
-    'autoplay' => $request->boolean('autoplay'),
-    'autoplay_interval' => (int) $request->input('autoplay_interval', 4),
-]
-),
+            'section_fond' => array_merge(
+                $request->validate([
+                    'title' => 'nullable|string|max:255',
+                    'text' => 'required|string',
+                    'bg_color' => 'nullable|in:gray,blue,dark',
+                    'button_label' => 'nullable|string|max:100',
+                    'button_url' => 'nullable|string|max:255',
+                    'button_new_tab' => 'nullable|boolean',
+                ]),
+                ['button_new_tab' => $request->boolean('button_new_tab')]
+            ),
+            'galerie' => array_merge(
+                $request->validate([
+                    'layout' => 'required|in:grid,carousel',
+                    'images' => ($isCreate ? 'required' : 'nullable').'|array|min:1|max:20',
+                    'images.*' => 'image|max:5120',
+                    'images_alt' => 'nullable|array',
+                    'images_alt.*' => 'nullable|string|max:255',
+                    'images_caption' => 'nullable|array',
+                    'images_caption.*' => 'nullable|string|max:255',
+                    'delete_media' => 'nullable|array',
+                    'delete_media.*' => 'integer',
+                    'apply_watermark' => 'nullable|boolean',
+                    'autoplay' => 'nullable|boolean',
+                    'autoplay_interval' => 'nullable|integer|min:2|max:30',
+                ]),
+                // Meme piege que column_count/overlay_opacity plus haut : `integer`
+                // valide mais ne caste pas -- cast explicite indispensable.
+                [
+                    'autoplay' => $request->boolean('autoplay'),
+                    'autoplay_interval' => (int) $request->input('autoplay_interval', 4),
+                ]
+            ),
             'pdf' => $request->validate([
                 'title' => 'nullable|string|max:255',
                 'pdf_source' => 'required|in:existing,new',
                 'pdf_document_id' => 'required_if:pdf_source,existing|nullable|exists:pdf_documents,id',
                 'pdf_title' => 'required_if:pdf_source,new|nullable|string|max:255',
-                'pdfs' => 'required_if:pdf_source,new|nullable|array|max:' . config('media.max_pdfs', 10),
-                'pdfs.*' => 'mimes:pdf|max:' . config('media.max_pdf_upload_kb', 10240),
+                'pdfs' => 'required_if:pdf_source,new|nullable|array|max:'.config('media.max_pdfs', 10),
+                'pdfs.*' => 'mimes:pdf|max:'.config('media.max_pdf_upload_kb', 10240),
                 'apply_watermark' => 'nullable|boolean',
             ]),
             'colonnes' => array_merge(

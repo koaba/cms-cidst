@@ -45,7 +45,7 @@ it('rejette une bg_color invalide', function () {
     $response->assertSessionHasErrors('bg_color');
 });
 
-it('CARACTERISATION: button_new_tab est valide mais pas caste en booleen', function () {
+it('caste button_new_tab en booleen (fix applique)', function () {
     $page = Page::factory()->create();
 
     $this->actingAs($this->admin)->post(
@@ -58,6 +58,5 @@ it('CARACTERISATION: button_new_tab est valide mais pas caste en booleen', funct
     );
 
     $block = $page->blocks()->whereNull('parent_id')->first();
-    expect($block->data['button_new_tab'])->toBe('1');
-    expect($block->data['button_new_tab'])->not->toBeBool();
+    expect($block->data['button_new_tab'])->toBeTrue();
 });
