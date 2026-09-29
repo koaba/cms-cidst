@@ -39,7 +39,7 @@ class SeoService
             return $manual;
         }
 
-        $content = $model->content ?? null;
+        $content = $model->content ?: self::textFromBlocks($model);
         if (!$content) {
             return null;
         }
@@ -90,6 +90,30 @@ class SeoService
     public static function ogType(Model $model): string
     {
         return $model instanceof \App\Models\Article ? 'article' : 'website';
+    }
+
+    /**
+     * Pour un modèle à blocs (Page), dérive le texte du premier bloc
+     * racine porteur de texte, quand `content` est vide.
+     */
+    protected static function textFromBlocks(Model $model): ?string
+    {
+        if (!method_exists($model, 'blocks')) {
+            return null;
+        }
+
+        foreach ($model->blocks->whereNull('parent_id') as $block) {
+            if (!in_array($block->type, ['texte', 'section_fond', 'citation'], true)) {
+                continue;
+            }
+
+            $text = $block->data['content'] ?? $block->data['text'] ?? null;
+            if ($text) {
+                return $text;
+            }
+        }
+
+        return null;
     }
 
     protected static function siteName(): string
