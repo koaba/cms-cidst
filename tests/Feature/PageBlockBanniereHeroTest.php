@@ -1,4 +1,5 @@
 <?php
+
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\User;
@@ -174,7 +175,42 @@ it('ne permet pas d imbriquer un hero dans une colonne', function () {
         ]
     );
 
-   $response->assertNotFound();
+    $response->assertNotFound();
     expect(Page::find($page->id)->blocks()->where('type', 'banniere_hero')->count())->toBe(0);
     expect(Media::count())->toBe(0);
+});
+
+it('conserve le bouton a la creation puis a la mise a jour', function () {
+    $page = Page::factory()->create();
+
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        [
+            'type' => 'banniere_hero',
+            'titre' => 'Titre',
+            'image' => UploadedFile::fake()->image('hero.jpg'),
+            'bouton_texte' => 'En savoir plus',
+            'bouton_url' => 'https://example.com',
+            'overlay_opacity' => 65,
+        ]
+    );
+
+    $block = $page->blocks()->whereNull('parent_id')->first();
+    expect($block->data['bouton_texte'])->toBe('En savoir plus');
+    expect($block->data['bouton_url'])->toBe('https://example.com');
+
+    $this->actingAs($this->admin)->put(
+        route('admin.pages.blocks.update', [$page, $block->id]),
+        [
+            'titre' => 'Titre modifie',
+            'bouton_texte' => 'En savoir plus',
+            'bouton_url' => 'https://example.com',
+            'overlay_opacity' => 65,
+        ]
+    );
+
+    $data = $block->fresh()->data;
+    expect($data['titre'])->toBe('Titre modifie');
+    expect($data['bouton_texte'])->toBe('En savoir plus');
+    expect($data['overlay_opacity'])->toBe(65);
 });
