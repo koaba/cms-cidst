@@ -125,3 +125,37 @@ it('CARACTERISATION: passer de upload a url sans delete_video laisse l\'ancien f
     expect($block->data['source_type'])->toBe('url');
     expect($block->media()->count())->toBe(1);
 });
+it('rejette le passage a upload sans fichier ni media existant', function () {
+    $page = Page::factory()->create();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'video', 'source_type' => 'url', 'url' => 'https://youtube.com/watch?v=abc']
+    );
+    $block = $page->blocks()->whereNull('parent_id')->first();
+    expect($block->media()->count())->toBe(0);
+
+    $response = $this->actingAs($this->admin)->put(
+        route('admin.pages.blocks.update', [$page, $block->id]),
+        ['source_type' => 'upload']
+    );
+
+    $response->assertSessionHasErrors('video_file');
+    expect($block->fresh()->data['source_type'])->toBe('url');
+});
+
+it('conserve la video existante quand on met a jour sans nouveau fichier', function () {
+    $page = Page::factory()->create();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'video', 'source_type' => 'upload', 'video_file' => UploadedFile::fake()->create('clip.mp4', 500, 'video/mp4')]
+    );
+    $block = $page->blocks()->whereNull('parent_id')->first();
+
+    $response = $this->actingAs($this->admin)->put(
+        route('admin.pages.blocks.update', [$page, $block->id]),
+        ['source_type' => 'upload', 'title' => 'Nouveau titre']
+    );
+
+    $response->assertSessionHasNoErrors();
+    expect($block->fresh()->media()->count())->toBe(1);
+});
