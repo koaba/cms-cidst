@@ -79,7 +79,7 @@ class PageBlockController extends Controller
     {
         $block = $page->blocks()->whereNull('parent_id')->findOrFail($blockId);
 
-        $data = $this->validateForType($request, $block->type, isCreate: false);
+        $data = $this->validateForType($request, $block->type, isCreate: false, block: $block);
         $data = $this->stripMediaFields($data);
 
         if ($block->type === 'colonnes') {
@@ -451,7 +451,7 @@ class PageBlockController extends Controller
         }
     }
 
-    private function validateForType(Request $request, string $type, bool $isCreate = false): array
+    private function validateForType(Request $request, string $type, bool $isCreate = false, ?PageBlock $block = null): array
     {
         return match ($type) {
             'texte' => $request->validate([
@@ -508,7 +508,7 @@ class PageBlockController extends Controller
                 'source_type' => 'required|in:upload,url',
                 'url' => 'required_if:source_type,url|nullable|string|max:255',
                 'video_file' => array_filter([
-                    $isCreate ? 'required_if:source_type,upload' : null,
+                    $isCreate || ! $block?->media()->exists() ? 'required_if:source_type,upload' : null,
                     'nullable', 'file', 'mimes:mp4,webm', 'max:15360',
                 ]),
                 'delete_video' => 'nullable|boolean',
