@@ -214,3 +214,22 @@ it('conserve le bouton a la creation puis a la mise a jour', function () {
     expect($data['bouton_texte'])->toBe('En savoir plus');
     expect($data['overlay_opacity'])->toBe(65);
 });
+
+it('refuse le formulaire hero dans une colonne mais accepte texte', function () {
+    $page = Page::factory()->create();
+    $parent = $page->blocks()->create([
+        'type' => 'colonnes',
+        'data' => ['column_count' => 2],
+        'order' => 0,
+    ]);
+
+    $hero = $this->actingAs($this->admin)
+        ->get(route('admin.pages.blocks.columns.create', [$page, $parent->id, 0, 'banniere_hero']))
+        ->status();
+    $texte = $this->actingAs($this->admin)
+        ->get(route('admin.pages.blocks.columns.create', [$page, $parent->id, 0, 'texte']))
+        ->status();
+
+    expect($hero)->toBe(404);
+    expect($texte)->toBe(200);
+});
