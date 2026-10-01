@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Blocks\Rules\VideoRules;
+use App\Contracts\BlockRules;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Page;
@@ -450,7 +452,15 @@ class PageBlockController extends Controller
             abort(404);
         }
     }
+    /**
+     * Applique une classe de règles : validation, puis fusion des casts.
+     */
+    private function validateWith(BlockRules $rules, Request $request, bool $isCreate, ?PageBlock $block): array
+    {
+        $validated = $request->validate($rules->rules($isCreate, $block), $rules->messages());
 
+        return array_merge($validated, $rules->casts($request));
+    }
     private function validateForType(Request $request, string $type, bool $isCreate = false, ?PageBlock $block = null): array
     {
         return match ($type) {
@@ -503,17 +513,7 @@ class PageBlockController extends Controller
                 'delete_image' => 'nullable|boolean',
                 'apply_watermark' => 'nullable|boolean',
             ]),
-            'video' => $request->validate([
-                'title' => 'nullable|string|max:255',
-                'source_type' => 'required|in:upload,url',
-                'url' => 'required_if:source_type,url|nullable|string|max:255',
-                'video_file' => array_filter([
-                    $isCreate || ! $block?->media()->exists() ? 'required_if:source_type,upload' : null,
-                    'nullable', 'file', 'mimes:mp4,webm', 'max:15360',
-                ]),
-                'delete_video' => 'nullable|boolean',
-                'apply_watermark' => 'nullable|boolean',
-            ]),
+            'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
             'section_fond' => array_merge(
                 $request->validate([
                     'title' => 'nullable|string|max:255',
