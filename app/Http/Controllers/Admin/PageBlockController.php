@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Blocks\Rules\BanniereHeroRules;
+use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ImageRules;
 use App\Blocks\Rules\TexteRules;
 use App\Blocks\Rules\VideoRules;
@@ -471,10 +472,7 @@ class PageBlockController extends Controller
             'separateur' => $request->validate([
                 'style' => 'nullable|in:fin,epais',
             ]),
-            'citation' => $request->validate([
-                'content' => 'required|string',
-                'author' => 'nullable|string|max:255',
-            ]),
+            'citation' => $this->validateWith(new CitationRules, $request, $isCreate, $block),
             'bouton' => array_merge(
                 $request->validate([
                     'label' => 'required|string|max:100',
