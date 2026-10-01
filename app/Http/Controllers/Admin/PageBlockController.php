@@ -632,7 +632,9 @@ class PageBlockController extends Controller
         }
 
         if ($type === 'video') {
-            if ($request->boolean('delete_video')) {
+            // Une source url n'utilise aucun fichier : un upload précédent
+            // serait inaccessible depuis l'interface (orphelin).
+            if ($request->boolean('delete_video') || ($block->data['source_type'] ?? null) === 'url') {
                 $block->detachOwnedMedia($block->media()->pluck('media.id')->all());
             }
 

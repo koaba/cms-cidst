@@ -107,7 +107,7 @@ it('FIX APPLIQUE: supprime une video uploadee sans renvoyer de fichier', functio
     expect($block->fresh()->media()->count())->toBe(0);
 });
 
-it('CARACTERISATION: passer de upload a url sans delete_video laisse l\'ancien fichier video attache', function () {
+it('detache la video uploadee quand on passe a une source url', function () {
     $page = Page::factory()->create();
     $this->actingAs($this->admin)->post(
         route('admin.pages.blocks.store', $page),
@@ -123,7 +123,7 @@ it('CARACTERISATION: passer de upload a url sans delete_video laisse l\'ancien f
 
     $block->refresh();
     expect($block->data['source_type'])->toBe('url');
-    expect($block->media()->count())->toBe(1);
+    expect($block->media()->count())->toBe(0);
 });
 it('rejette le passage a upload sans fichier ni media existant', function () {
     $page = Page::factory()->create();
