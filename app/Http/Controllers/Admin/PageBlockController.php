@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ImageRules;
+use App\Blocks\Rules\SeparateurRules;
 use App\Blocks\Rules\TexteRules;
 use App\Blocks\Rules\VideoRules;
 use App\Contracts\BlockRules;
@@ -469,9 +470,7 @@ class PageBlockController extends Controller
     {
         return match ($type) {
             'texte' => $this->validateWith(new TexteRules, $request, $isCreate, $block),
-            'separateur' => $request->validate([
-                'style' => 'nullable|in:fin,epais',
-            ]),
+            'separateur' => $this->validateWith(new SeparateurRules, $request, $isCreate, $block),
             'citation' => $this->validateWith(new CitationRules, $request, $isCreate, $block),
             'bouton' => array_merge(
                 $request->validate([
