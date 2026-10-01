@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\VideoRules;
 use App\Contracts\BlockRules;
 use App\Http\Controllers\Controller;
@@ -484,29 +485,8 @@ class PageBlockController extends Controller
                 ]),
                 ['new_tab' => $request->boolean('new_tab')]
             ),
-                        'banniere_hero' => array_merge(
-                $request->validate([
-                    'titre' => 'required|string|max:255',
-                    'sous_titre' => 'nullable|string|max:500',
-                    'bouton_texte' => 'nullable|string|max:100',
-                    'bouton_url' => 'nullable|required_with:bouton_texte|url|max:255',
-                    'overlay_opacity' => 'nullable|integer|min:0|max:100',
-                    'image' => [
-                        $isCreate ? 'required' : 'nullable',
-                        'required_if:delete_image,1',
-                        'image',
-                        'max:5120',
-                    ],
-                    'alt' => 'nullable|string|max:255',
-                    'delete_image' => 'nullable|boolean',
-                    'apply_watermark' => 'nullable|boolean',
-                ], [
-                    'image.required_if' => 'Impossible de retirer l\'image sans en fournir une nouvelle : la bannière hero doit toujours avoir une image de fond.',
-                ]),
-                // `integer` valide mais ne caste pas : cast explicite indispensable.
-                ['overlay_opacity' => (int) $request->input('overlay_opacity', 40)]
-            ),
-            'image' => $request->validate([
+                'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
+                'image' => $request->validate([
                 'image' => ($isCreate ? 'required' : 'nullable').'|image|max:5120',
                 'alt' => 'nullable|string|max:255',
                 'caption' => 'nullable|string|max:255',
