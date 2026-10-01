@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\ImageRules;
+use App\Blocks\Rules\TexteRules;
 use App\Blocks\Rules\VideoRules;
 use App\Contracts\BlockRules;
 use App\Http\Controllers\Controller;
@@ -466,10 +467,7 @@ class PageBlockController extends Controller
     private function validateForType(Request $request, string $type, bool $isCreate = false, ?PageBlock $block = null): array
     {
         return match ($type) {
-            'texte' => $request->validate([
-                'title' => 'nullable|string|max:255',
-                'content' => 'required|string',
-            ]),
+            'texte' => $this->validateWith(new TexteRules, $request, $isCreate, $block),
             'separateur' => $request->validate([
                 'style' => 'nullable|in:fin,epais',
             ]),
