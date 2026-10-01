@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Blocks\Rules\BanniereHeroRules;
+use App\Blocks\Rules\ImageRules;
 use App\Blocks\Rules\VideoRules;
 use App\Contracts\BlockRules;
 use App\Http\Controllers\Controller;
@@ -486,13 +487,7 @@ class PageBlockController extends Controller
                 ['new_tab' => $request->boolean('new_tab')]
             ),
                 'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
-                'image' => $request->validate([
-                'image' => ($isCreate ? 'required' : 'nullable').'|image|max:5120',
-                'alt' => 'nullable|string|max:255',
-                'caption' => 'nullable|string|max:255',
-                'delete_image' => 'nullable|boolean',
-                'apply_watermark' => 'nullable|boolean',
-            ]),
+                'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
             'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
             'section_fond' => array_merge(
                 $request->validate([
