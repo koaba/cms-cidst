@@ -130,6 +130,8 @@ it('refuse de retirer l image sans en fournir une nouvelle', function () {
     );
 
     $response->assertSessionHasErrors('image');
+        $message = session('errors')->first('image');
+    expect(str_contains($message, 'la bannière hero doit toujours avoir une image de fond'))->toBeTrue();
     expect($block->fresh()->media()->count())->toBe(1);
 });
 
