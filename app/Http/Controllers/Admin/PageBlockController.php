@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Blocks\Rules\BanniereHeroRules;
+use App\Blocks\Rules\AccordeonItemRules;
 use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ImageRules;
 use App\Blocks\Rules\SeparateurRules;
@@ -546,9 +547,7 @@ class PageBlockController extends Controller
             // accordeon_item : l'en-tête cliquable de chaque item. Le
             // contenu réel de l'item est composé de ses propres enfants
             // PageBlock (récursion), pas stocké ici.
-            'accordeon_item' => $request->validate([
-                'title' => 'required|string|max:255',
-            ]),
+            'accordeon_item' => $this->validateWith(new AccordeonItemRules, $request, $isCreate, $block),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
     }
