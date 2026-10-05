@@ -145,3 +145,14 @@ it('supprime un item d\'accordeon et nettoie recursivement le contenu (media inc
     expect(PageBlock::find($item->id))->toBeNull();
     expect(PageBlock::where('parent_id', $item->id)->count())->toBe(0);
 });
+it('rejette un titre d\'accordeon de plus de 255 caracteres', function () {
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'accordeon', 'title' => str_repeat('a', 256)]
+    );
+
+    $response->assertSessionHasErrors('title');
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(0);
+});

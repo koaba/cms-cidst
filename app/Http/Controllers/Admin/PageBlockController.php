@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Blocks\Rules\BanniereHeroRules;
+use App\Blocks\Rules\AccordeonItemRules;
+use App\Blocks\Rules\AccordeonRules;
+use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ImageRules;
+use App\Blocks\Rules\SeparateurRules;
+use App\Blocks\Rules\TexteRules;
 use App\Blocks\Rules\VideoRules;
 use App\Contracts\BlockRules;
 use App\Http\Controllers\Controller;
@@ -466,17 +471,9 @@ class PageBlockController extends Controller
     private function validateForType(Request $request, string $type, bool $isCreate = false, ?PageBlock $block = null): array
     {
         return match ($type) {
-            'texte' => $request->validate([
-                'title' => 'nullable|string|max:255',
-                'content' => 'required|string',
-            ]),
-            'separateur' => $request->validate([
-                'style' => 'nullable|in:fin,epais',
-            ]),
-            'citation' => $request->validate([
-                'content' => 'required|string',
-                'author' => 'nullable|string|max:255',
-            ]),
+            'texte' => $this->validateWith(new TexteRules, $request, $isCreate, $block),
+            'separateur' => $this->validateWith(new SeparateurRules, $request, $isCreate, $block),
+            'citation' => $this->validateWith(new CitationRules, $request, $isCreate, $block),
             'bouton' => array_merge(
                 $request->validate([
                     'label' => 'required|string|max:100',
@@ -545,15 +542,11 @@ class PageBlockController extends Controller
             // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
             // les items sont de vrais PageBlock enfants (type accordeon_item),
             // pas des données JSON imbriquées (même logique que `colonnes`).
-            'accordeon' => $request->validate([
-                'title' => 'nullable|string|max:255',
-            ]),
+            'accordeon' => $this->validateWith(new AccordeonRules, $request, $isCreate, $block),
             // accordeon_item : l'en-tête cliquable de chaque item. Le
             // contenu réel de l'item est composé de ses propres enfants
             // PageBlock (récursion), pas stocké ici.
-            'accordeon_item' => $request->validate([
-                'title' => 'required|string|max:255',
-            ]),
+            'accordeon_item' => $this->validateWith(new AccordeonItemRules, $request, $isCreate, $block),
             default => abort(404, "Type de bloc « {$type} » non implémenté."),
         };
     }
