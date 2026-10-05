@@ -7,6 +7,7 @@ use App\Blocks\Rules\AccordeonItemRules;
 use App\Blocks\Rules\AccordeonRules;
 use App\Blocks\Rules\BoutonRules;
 use App\Blocks\Rules\CitationRules;
+use App\Blocks\Rules\ColonnesRules;
 use App\Blocks\Rules\ImageRules;
 use App\Blocks\Rules\SectionFondRules;
 use App\Blocks\Rules\SeparateurRules;
@@ -512,17 +513,7 @@ class PageBlockController extends Controller
                 'pdfs.*' => 'mimes:pdf|max:'.config('media.max_pdf_upload_kb', 10240),
                 'apply_watermark' => 'nullable|boolean',
             ]),
-            'colonnes' => array_merge(
-                $request->validate([
-                    'title' => 'nullable|string|max:255',
-                    'column_count' => 'required|integer|min:2|max:6',
-                ]),
-                // Laravel valide correctement une chaîne numérique avec la
-                // règle `integer` mais ne la caste pas automatiquement :
-                // sans ce cast explicite, column_count serait stocké comme
-                // chaîne ("4") dans le JSON `data`.
-                ['column_count' => (int) $request->input('column_count')]
-            ),
+            'colonnes' => $this->validateWith(new ColonnesRules, $request, $isCreate, $block),
             // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
             // les items sont de vrais PageBlock enfants (type accordeon_item),
             // pas des données JSON imbriquées (même logique que `colonnes`).
