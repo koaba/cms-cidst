@@ -8,7 +8,9 @@ use App\Blocks\Rules\AccordeonRules;
 use App\Blocks\Rules\BoutonRules;
 use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ColonnesRules;
+use App\Blocks\Rules\GalerieRules;
 use App\Blocks\Rules\ImageRules;
+use App\Blocks\Rules\PdfRules;
 use App\Blocks\Rules\SectionFondRules;
 use App\Blocks\Rules\SeparateurRules;
 use App\Blocks\Rules\TexteRules;
@@ -482,37 +484,9 @@ class PageBlockController extends Controller
                 'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
             'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
             'section_fond' => $this->validateWith(new SectionFondRules, $request, $isCreate, $block),
-            'galerie' => array_merge(
-                $request->validate([
-                    'layout' => 'required|in:grid,carousel',
-                    'images' => ($isCreate ? 'required' : 'nullable').'|array|min:1|max:20',
-                    'images.*' => 'image|max:5120',
-                    'images_alt' => 'nullable|array',
-                    'images_alt.*' => 'nullable|string|max:255',
-                    'images_caption' => 'nullable|array',
-                    'images_caption.*' => 'nullable|string|max:255',
-                    'delete_media' => 'nullable|array',
-                    'delete_media.*' => 'integer',
-                    'apply_watermark' => 'nullable|boolean',
-                    'autoplay' => 'nullable|boolean',
-                    'autoplay_interval' => 'nullable|integer|min:2|max:30',
-                ]),
-                // Meme piege que column_count/overlay_opacity plus haut : `integer`
-                // valide mais ne caste pas -- cast explicite indispensable.
-                [
-                    'autoplay' => $request->boolean('autoplay'),
-                    'autoplay_interval' => (int) $request->input('autoplay_interval', 4),
-                ]
-            ),
-            'pdf' => $request->validate([
-                'title' => 'nullable|string|max:255',
-                'pdf_source' => 'required|in:existing,new',
-                'pdf_document_id' => 'required_if:pdf_source,existing|nullable|exists:pdf_documents,id',
-                'pdf_title' => 'required_if:pdf_source,new|nullable|string|max:255',
-                'pdfs' => 'required_if:pdf_source,new|nullable|array|max:'.config('media.max_pdfs', 10),
-                'pdfs.*' => 'mimes:pdf|max:'.config('media.max_pdf_upload_kb', 10240),
-                'apply_watermark' => 'nullable|boolean',
-            ]),
+                    'galerie' => $this->validateWith(new GalerieRules, $request, $isCreate, $block),
+        
+                        'pdf' => $this->validateWith(new PdfRules, $request, $isCreate, $block),
             'colonnes' => $this->validateWith(new ColonnesRules, $request, $isCreate, $block),
             // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
             // les items sont de vrais PageBlock enfants (type accordeon_item),
