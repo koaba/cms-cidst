@@ -28,6 +28,7 @@ class Category extends Model
     public function badgeColor(): string
     {
         $index = crc32($this->name) % count(self::BADGE_COLORS);
+
         return self::BADGE_COLORS[$index];
     }
 
@@ -58,7 +59,7 @@ class Category extends Model
             $counter = 1;
 
             while (static::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter;
+                $slug = $baseSlug.'-'.$counter;
                 $counter++;
             }
 

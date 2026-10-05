@@ -7,19 +7,20 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
     public function index()
     {
         $users = User::with('roles')->get();
+
         return view('admin.users.index', compact('users'));
     }
 
     public function create()
     {
         $roles = Role::pluck('name');
+
         return view('admin.users.create', compact('roles'));
     }
 
@@ -46,6 +47,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::pluck('name');
+
         return view('admin.users.edit', compact('user', 'roles'));
     }
 
@@ -53,7 +55,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'role' => 'required|exists:roles,name',
         ]);
 
@@ -85,7 +87,7 @@ class UserController extends Controller
         return back()->with('success', "Mot de passe réinitialisé pour {$user->name}.");
     }
 
-     public function destroy(User $user)
+    public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {
             return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');

@@ -6,19 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\Request;
 
-
 class MediaController extends Controller
 {
     private function search(Request $request)
     {
         $term = trim($request->query('q', ''));
 
-       return Media::query()
-    ->with('mediables')
-    ->when($term !== '', fn ($query) => $query->where('original_name', 'like', "%{$term}%"))
-    ->latest();
+        return Media::query()
+            ->with('mediables')
+            ->when($term !== '', fn ($query) => $query->where('original_name', 'like', "%{$term}%"))
+            ->latest();
     }
-   public function index(Request $request)
+
+    public function index(Request $request)
     {
         return view('admin.media.index', [
             'media' => $this->search($request)->paginate(24)->withQueryString(),

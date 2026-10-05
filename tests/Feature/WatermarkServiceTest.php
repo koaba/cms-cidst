@@ -2,6 +2,7 @@
 
 use App\Services\WatermarkService;
 use Illuminate\Support\Facades\Storage;
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 beforeEach(function () {
     Storage::fake('public');
@@ -63,7 +64,7 @@ it('retourne false si le logo de filigrane est introuvable', function () {
 });
 
 it('applique le filigrane sur un PDF et conserve le nombre de pages', function () {
-    $fixture = new \TCPDF();
+    $fixture = new TCPDF;
     $fixture->setPrintHeader(false);
     $fixture->setPrintFooter(false);
     $fixture->AddPage();
@@ -80,7 +81,7 @@ it('applique le filigrane sur un PDF et conserve le nombre de pages', function (
     $fullPath = Storage::disk('public')->path('test/doc.pdf');
 
     // Réouverture avec FPDI pour confirmer que le fichier reste un PDF valide et exploitable
-    $checker = new \setasign\Fpdi\Tcpdf\Fpdi();
+    $checker = new Fpdi;
     $pageCount = $checker->setSourceFile($fullPath);
     expect($pageCount)->toBe(1);
 
@@ -89,7 +90,7 @@ it('applique le filigrane sur un PDF et conserve le nombre de pages', function (
 });
 
 it('conserve le nombre de pages sur un PDF de plusieurs pages', function () {
-    $fixture = new \TCPDF();
+    $fixture = new TCPDF;
     $fixture->setPrintHeader(false);
     $fixture->setPrintFooter(false);
     $fixture->AddPage();
@@ -105,7 +106,7 @@ it('conserve le nombre de pages sur un PDF de plusieurs pages', function () {
     $result = app(WatermarkService::class)->watermarkPdf('test/multi.pdf');
     expect($result)->toBeTrue();
 
-    $checker = new \setasign\Fpdi\Tcpdf\Fpdi();
+    $checker = new Fpdi;
     $pageCount = $checker->setSourceFile(Storage::disk('public')->path('test/multi.pdf'));
     expect($pageCount)->toBe(3);
 });

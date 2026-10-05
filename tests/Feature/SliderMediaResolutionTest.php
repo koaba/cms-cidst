@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Media;
-use App\Models\Slider;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +12,7 @@ function actingAsAdminSliderFix(): User
     }
     $user = User::factory()->create();
     $user->assignRole('Super Admin');
+
     return $user;
 }
 

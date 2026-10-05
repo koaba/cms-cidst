@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Article;
 use App\Models\Category;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
@@ -36,7 +37,7 @@ it('refuse la modification d\'un article avec un ID de catégorie inexistant', f
     Role::create(['name' => 'Super Admin']);
     $user = User::factory()->create();
     $user->assignRole('Super Admin');
-    $article = \App\Models\Article::create([
+    $article = Article::create([
         'title' => 'Article existant',
         'slug' => 'article-existant',
         'content' => 'Contenu',

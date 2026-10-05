@@ -13,6 +13,7 @@ return new class extends Migration
             Schema::table('page_blocks', function (Blueprint $table) {
                 $table->index(['parent_id', 'slot_index']);
             });
+
             return;
         }
 

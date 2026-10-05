@@ -15,9 +15,9 @@ class DashboardController extends Controller
     {
         $stats = [
             'articles' => Article::where('is_published', true)->count(),
-            'pages'    => Page::where('is_published', true)->count(),
-            'sliders'  => Slider::count(),
-            'users'    => User::count(),
+            'pages' => Page::where('is_published', true)->count(),
+            'sliders' => Slider::count(),
+            'users' => User::count(),
             // Vues des 30 derniers jours, tous contenus confondus (actuellement
             // seul Article est tracké via HasPageViews, mais la requête reste
             // valable si d'autres modèles adoptent le trait plus tard).
@@ -66,15 +66,15 @@ class DashboardController extends Controller
 
         // Flux d'activité récente : derniers articles modifiés + derniers utilisateurs créés
         $recentArticles = Article::with('user')->latest('updated_at')->take(5)->get();
-        $recentUsers    = User::latest()->take(5)->get();
+        $recentUsers = User::latest()->take(5)->get();
 
-       return view('admin.dashboard', compact(
-    'stats',
-    'activiteMensuelle',
-    'activiteVues',
-    'topArticles',
-    'recentArticles',
-    'recentUsers'
-));
+        return view('admin.dashboard', compact(
+            'stats',
+            'activiteMensuelle',
+            'activiteVues',
+            'topArticles',
+            'recentArticles',
+            'recentUsers'
+        ));
     }
 }

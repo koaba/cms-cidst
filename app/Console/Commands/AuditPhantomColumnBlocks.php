@@ -31,17 +31,17 @@ class AuditPhantomColumnBlocks extends Command
                 ->where('mediable_id', $block->id)
                 ->exists();
 
-            $this->line('Enfants PageBlock réels : ' . ($hasRealChildren ? 'OUI' : 'non'));
-            $this->line('data.columns (legacy) : ' . ($legacyColumns ? json_encode($legacyColumns) : 'absent/vide'));
-            $this->line('Média attaché directement : ' . ($mediaLinked ? 'OUI — ne pas supprimer sans traiter' : 'non'));
+            $this->line('Enfants PageBlock réels : '.($hasRealChildren ? 'OUI' : 'non'));
+            $this->line('data.columns (legacy) : '.($legacyColumns ? json_encode($legacyColumns) : 'absent/vide'));
+            $this->line('Média attaché directement : '.($mediaLinked ? 'OUI — ne pas supprimer sans traiter' : 'non'));
 
-            $isEmpty = !$hasRealChildren && empty($legacyColumns) && !$mediaLinked;
+            $isEmpty = ! $hasRealChildren && empty($legacyColumns) && ! $mediaLinked;
 
             if ($isEmpty) {
                 $this->warn('→ Candidat sûr à la suppression (vide, sans enfant, sans média).');
                 if ($apply) {
                     $backupDir = storage_path('app/backups');
-                    if (!is_dir($backupDir)) {
+                    if (! is_dir($backupDir)) {
                         mkdir($backupDir, 0755, true);
                     }
 

@@ -14,20 +14,20 @@ class PopplerPdfThumbnailGenerator implements PdfThumbnailGeneratorInterface
 {
     public function __construct(
         private readonly string $pdftoppmBinary = 'pdftoppm'
-    ) {
-    }
+    ) {}
 
     public function generate(string $pdfPath, string $outputPath, int $width = 400): bool
     {
-        if (!is_file($pdfPath)) {
+        if (! is_file($pdfPath)) {
             Log::warning("PopplerPdfThumbnailGenerator : fichier PDF introuvable ({$pdfPath}), generation annulee.");
+
             return false;
         }
 
-        $isolatedTempDir = storage_path('app/tmp/pdfthumb_' . uniqid());
+        $isolatedTempDir = storage_path('app/tmp/pdfthumb_'.uniqid());
         mkdir($isolatedTempDir, 0755, true);
 
-        $tempPrefix = $isolatedTempDir . DIRECTORY_SEPARATOR . 'thumb';
+        $tempPrefix = $isolatedTempDir.DIRECTORY_SEPARATOR.'thumb';
 
         $process = new Process([
             $this->pdftoppmBinary,
@@ -46,35 +46,35 @@ class PopplerPdfThumbnailGenerator implements PdfThumbnailGeneratorInterface
         try {
             $process->run();
 
-            if (!$process->isSuccessful()) {
+            if (! $process->isSuccessful()) {
                 throw new ProcessFailedException($process);
             }
         } catch (\Throwable $e) {
-            Log::error("PopplerPdfThumbnailGenerator : echec de generation pour {$pdfPath}. " . $e->getMessage());
+            Log::error("PopplerPdfThumbnailGenerator : echec de generation pour {$pdfPath}. ".$e->getMessage());
             $this->cleanupTempDir($isolatedTempDir);
+
             return false;
         }
 
-        $matches = glob($tempPrefix . '-*.{png,PNG}', GLOB_BRACE);
+        $matches = glob($tempPrefix.'-*.{png,PNG}', GLOB_BRACE);
 
-if (empty($matches)) {
-    Log::error("PopplerPdfThumbnailGenerator : fichier attendu introuvable apres execution (motif {$tempPrefix}-*.png).");
-    $this->cleanupTempDir($isolatedTempDir);
-    return false;
-}
+        if (empty($matches)) {
+            Log::error("PopplerPdfThumbnailGenerator : fichier attendu introuvable apres execution (motif {$tempPrefix}-*.png).");
+            $this->cleanupTempDir($isolatedTempDir);
 
-$generated = $matches[0];
+            return false;
+        }
 
-       
+        $generated = $matches[0];
 
         $outputDir = dirname($outputPath);
-        if (!is_dir($outputDir)) {
+        if (! is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
 
         $success = rename($generated, $outputPath);
 
-        if (!$success) {
+        if (! $success) {
             Log::error("PopplerPdfThumbnailGenerator : impossible de deplacer {$generated} vers {$outputPath}.");
         }
 
@@ -83,13 +83,13 @@ $generated = $matches[0];
         return $success;
     }
 
-       private function cleanupTempDir(string $dir): void
+    private function cleanupTempDir(string $dir): void
     {
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             return;
         }
 
-        foreach (glob($dir . DIRECTORY_SEPARATOR . '*') as $file) {
+        foreach (glob($dir.DIRECTORY_SEPARATOR.'*') as $file) {
             @unlink($file);
         }
 

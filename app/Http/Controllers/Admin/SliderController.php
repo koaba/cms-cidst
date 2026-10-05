@@ -16,12 +16,14 @@ class SliderController extends Controller
     public function index()
     {
         $sliders = Slider::orderBy('order')->get();
+
         return view('admin.sliders.index', compact('sliders'));
     }
 
     public function create()
     {
         $remainingSlots = config('display.max_sliders') - Slider::count();
+
         return view('admin.sliders.create', compact('remainingSlots'));
     }
 
@@ -32,7 +34,7 @@ class SliderController extends Controller
         if (Slider::count() >= config('display.max_sliders')) {
             return back()
                 ->withInput()
-                ->withErrors(['image' => 'Le nombre maximum de sliders (' . config('display.max_sliders') . ') est déjà atteint. Supprimez-en un avant d\'en créer un nouveau.']);
+                ->withErrors(['image' => 'Le nombre maximum de sliders ('.config('display.max_sliders').') est déjà atteint. Supprimez-en un avant d\'en créer un nouveau.']);
         }
 
         [$path, $media] = $this->resolveImage($request);
@@ -104,7 +106,7 @@ class SliderController extends Controller
 
         $validator->after(function ($validator) use ($request, $isUpdate) {
             $hasNewImage = $request->hasFile('image') || $request->filled('existing_media_id');
-            if (!$isUpdate && !$hasNewImage) {
+            if (! $isUpdate && ! $hasNewImage) {
                 $validator->errors()->add('image', 'Une image est requise : uploadez un fichier ou choisissez-en une depuis la médiathèque.');
             }
         });

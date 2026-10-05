@@ -11,9 +11,10 @@ use Illuminate\Support\Str;
 
 class Page extends Model implements HasPublicUrl
 {
-    use HasFactory, HasSeo, HasPublicVisibility;
+    use HasFactory, HasPublicVisibility, HasSeo;
 
-  protected $fillable = ['title', 'slug', 'content', 'user_id', 'is_published', 'published_at'];
+    protected $fillable = ['title', 'slug', 'content', 'user_id', 'is_published', 'published_at'];
+
     protected $casts = ['is_published' => 'boolean', 'published_at' => 'date'];
 
     public function user()
@@ -46,7 +47,7 @@ class Page extends Model implements HasPublicUrl
             $slug = $baseSlug;
             $counter = 1;
             while (static::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter++;
+                $slug = $baseSlug.'-'.$counter++;
             }
             $page->slug = $slug;
         });

@@ -34,7 +34,7 @@ class TrackPageView
 
         // On ne compte que les pages effectivement servies avec succès
         // (pas les 404, pas les erreurs serveur).
-        if (!$response->isSuccessful()) {
+        if (! $response->isSuccessful()) {
             return $response;
         }
 
@@ -49,7 +49,7 @@ class TrackPageView
 
     private function recordView(Model $model, Request $request): void
     {
-        $ipHash = hash('sha256', $request->ip() . config('app.key'));
+        $ipHash = hash('sha256', $request->ip().config('app.key'));
 
         $alreadyViewed = PageView::query()
             ->where('viewable_type', $model->getMorphClass())

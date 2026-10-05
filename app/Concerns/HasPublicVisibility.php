@@ -24,7 +24,7 @@ trait HasPublicVisibility
         if ($this->supportsScheduledPublishing()) {
             $query->where(function ($q) {
                 $q->whereNull('published_at')
-                  ->orWhere('published_at', '<=', now());
+                    ->orWhere('published_at', '<=', now());
             });
         }
 

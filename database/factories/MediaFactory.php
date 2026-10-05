@@ -17,12 +17,12 @@ class MediaFactory extends Factory
      */
     public function definition(): array
     {
-        $filename = $this->faker->uuid() . '.jpg';
+        $filename = $this->faker->uuid().'.jpg';
 
         return [
-            'path' => 'articles/gallery/' . $filename,
+            'path' => 'articles/gallery/'.$filename,
             'thumbnail_path' => null,
-            'original_name' => $this->faker->word() . '.jpg',
+            'original_name' => $this->faker->word().'.jpg',
             'mime_type' => 'image/jpeg',
             'size' => $this->faker->numberBetween(50000, 2000000),
         ];

@@ -44,7 +44,7 @@ class PdfDocument extends Model
             $slug = $baseSlug;
             $counter = 1;
             while (static::where('slug', $slug)->exists()) {
-                $slug = $baseSlug . '-' . $counter++;
+                $slug = $baseSlug.'-'.$counter++;
             }
             $document->slug = $slug;
         });

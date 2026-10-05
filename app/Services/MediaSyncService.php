@@ -265,5 +265,4 @@ class MediaSyncService
             ? fn (string $path) => $this->watermarkService->watermarkPdf($path)
             : fn (string $path) => $this->watermarkService->watermarkImage($path);
     }
-
 }

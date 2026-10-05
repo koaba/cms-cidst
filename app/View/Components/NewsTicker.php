@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 class NewsTicker extends Component
 {
     public Collection $items;
+
     public string $direction;
 
     public function __construct()
@@ -22,7 +23,7 @@ class NewsTicker extends Component
             ->limit(config('display.max_ticker_articles'))
             ->get()
             ->map(fn (Article $article) => (object) [
-                'content'  => $article->title,
+                'content' => $article->title,
                 'link_url' => route('blog.show', $article),
             ]);
 
@@ -30,7 +31,7 @@ class NewsTicker extends Component
             ->orderBy('order')
             ->get()
             ->map(fn (NewsTickerModel $ticker) => (object) [
-                'content'  => $ticker->content,
+                'content' => $ticker->content,
                 'link_url' => $ticker->link_url,
             ]);
 

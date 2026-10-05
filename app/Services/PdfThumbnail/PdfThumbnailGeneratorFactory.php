@@ -14,7 +14,7 @@ class PdfThumbnailGeneratorFactory
         $driver = config('services.pdf_thumbnail.driver', 'poppler');
 
         return match ($driver) {
-            'imagick' => new ImagickPdfThumbnailGenerator(),
+            'imagick' => new ImagickPdfThumbnailGenerator,
             'poppler' => new PopplerPdfThumbnailGenerator(
                 config('services.pdf_thumbnail.poppler_binary', 'pdftoppm')
             ),
