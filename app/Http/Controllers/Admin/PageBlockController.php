@@ -8,6 +8,7 @@ use App\Blocks\Rules\AccordeonRules;
 use App\Blocks\Rules\BoutonRules;
 use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ImageRules;
+use App\Blocks\Rules\SectionFondRules;
 use App\Blocks\Rules\SeparateurRules;
 use App\Blocks\Rules\TexteRules;
 use App\Blocks\Rules\VideoRules;
@@ -479,17 +480,7 @@ class PageBlockController extends Controller
                 'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
                 'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
             'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
-            'section_fond' => array_merge(
-                $request->validate([
-                    'title' => 'nullable|string|max:255',
-                    'text' => 'required|string',
-                    'bg_color' => 'nullable|in:gray,blue,dark',
-                    'button_label' => 'nullable|string|max:100',
-                    'button_url' => 'nullable|string|max:255',
-                    'button_new_tab' => 'nullable|boolean',
-                ]),
-                ['button_new_tab' => $request->boolean('button_new_tab')]
-            ),
+            'section_fond' => $this->validateWith(new SectionFondRules, $request, $isCreate, $block),
             'galerie' => array_merge(
                 $request->validate([
                     'layout' => 'required|in:grid,carousel',
