@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\AccordeonItemRules;
+use App\Blocks\Rules\AccordeonRules;
 use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ImageRules;
 use App\Blocks\Rules\SeparateurRules;
@@ -541,9 +542,7 @@ class PageBlockController extends Controller
             // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
             // les items sont de vrais PageBlock enfants (type accordeon_item),
             // pas des données JSON imbriquées (même logique que `colonnes`).
-            'accordeon' => $request->validate([
-                'title' => 'nullable|string|max:255',
-            ]),
+            'accordeon' => $this->validateWith(new AccordeonRules, $request, $isCreate, $block),
             // accordeon_item : l'en-tête cliquable de chaque item. Le
             // contenu réel de l'item est composé de ses propres enfants
             // PageBlock (récursion), pas stocké ici.
