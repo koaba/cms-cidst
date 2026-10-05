@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\AccordeonItemRules;
 use App\Blocks\Rules\AccordeonRules;
+use App\Blocks\Rules\BoutonRules;
 use App\Blocks\Rules\CitationRules;
+use App\Blocks\Rules\ColonnesRules;
 use App\Blocks\Rules\ImageRules;
+use App\Blocks\Rules\SectionFondRules;
 use App\Blocks\Rules\SeparateurRules;
 use App\Blocks\Rules\TexteRules;
 use App\Blocks\Rules\VideoRules;
@@ -474,29 +477,11 @@ class PageBlockController extends Controller
             'texte' => $this->validateWith(new TexteRules, $request, $isCreate, $block),
             'separateur' => $this->validateWith(new SeparateurRules, $request, $isCreate, $block),
             'citation' => $this->validateWith(new CitationRules, $request, $isCreate, $block),
-            'bouton' => array_merge(
-                $request->validate([
-                    'label' => 'required|string|max:100',
-                    'url' => 'required|string|max:255',
-                    'style' => 'nullable|in:primaire,secondaire,outline',
-                    'new_tab' => 'nullable|boolean',
-                ]),
-                ['new_tab' => $request->boolean('new_tab')]
-            ),
+            'bouton' => $this->validateWith(new BoutonRules, $request, $isCreate, $block),
                 'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
                 'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
             'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
-            'section_fond' => array_merge(
-                $request->validate([
-                    'title' => 'nullable|string|max:255',
-                    'text' => 'required|string',
-                    'bg_color' => 'nullable|in:gray,blue,dark',
-                    'button_label' => 'nullable|string|max:100',
-                    'button_url' => 'nullable|string|max:255',
-                    'button_new_tab' => 'nullable|boolean',
-                ]),
-                ['button_new_tab' => $request->boolean('button_new_tab')]
-            ),
+            'section_fond' => $this->validateWith(new SectionFondRules, $request, $isCreate, $block),
             'galerie' => array_merge(
                 $request->validate([
                     'layout' => 'required|in:grid,carousel',
@@ -528,17 +513,7 @@ class PageBlockController extends Controller
                 'pdfs.*' => 'mimes:pdf|max:'.config('media.max_pdf_upload_kb', 10240),
                 'apply_watermark' => 'nullable|boolean',
             ]),
-            'colonnes' => array_merge(
-                $request->validate([
-                    'title' => 'nullable|string|max:255',
-                    'column_count' => 'required|integer|min:2|max:6',
-                ]),
-                // Laravel valide correctement une chaîne numérique avec la
-                // règle `integer` mais ne la caste pas automatiquement :
-                // sans ce cast explicite, column_count serait stocké comme
-                // chaîne ("4") dans le JSON `data`.
-                ['column_count' => (int) $request->input('column_count')]
-            ),
+            'colonnes' => $this->validateWith(new ColonnesRules, $request, $isCreate, $block),
             // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
             // les items sont de vrais PageBlock enfants (type accordeon_item),
             // pas des données JSON imbriquées (même logique que `colonnes`).
