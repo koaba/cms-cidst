@@ -10,6 +10,7 @@ use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ColonnesRules;
 use App\Blocks\Rules\GalerieRules;
 use App\Blocks\Rules\ImageRules;
+use App\Blocks\Rules\PdfRules;
 use App\Blocks\Rules\SectionFondRules;
 use App\Blocks\Rules\SeparateurRules;
 use App\Blocks\Rules\TexteRules;
@@ -484,16 +485,8 @@ class PageBlockController extends Controller
             'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
             'section_fond' => $this->validateWith(new SectionFondRules, $request, $isCreate, $block),
                     'galerie' => $this->validateWith(new GalerieRules, $request, $isCreate, $block),
-           
-            'pdf' => $request->validate([
-                'title' => 'nullable|string|max:255',
-                'pdf_source' => 'required|in:existing,new',
-                'pdf_document_id' => 'required_if:pdf_source,existing|nullable|exists:pdf_documents,id',
-                'pdf_title' => 'required_if:pdf_source,new|nullable|string|max:255',
-                'pdfs' => 'required_if:pdf_source,new|nullable|array|max:'.config('media.max_pdfs', 10),
-                'pdfs.*' => 'mimes:pdf|max:'.config('media.max_pdf_upload_kb', 10240),
-                'apply_watermark' => 'nullable|boolean',
-            ]),
+        
+                        'pdf' => $this->validateWith(new PdfRules, $request, $isCreate, $block),
             'colonnes' => $this->validateWith(new ColonnesRules, $request, $isCreate, $block),
             // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
             // les items sont de vrais PageBlock enfants (type accordeon_item),
