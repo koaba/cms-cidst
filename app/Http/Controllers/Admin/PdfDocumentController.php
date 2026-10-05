@@ -15,9 +15,7 @@ class PdfDocumentController extends Controller
 {
     use HasOrphanMediaCleanup;
 
-    public function __construct(private MediaSyncService $mediaSync)
-    {
-    }
+    public function __construct(private MediaSyncService $mediaSync) {}
 
     public function index()
     {
@@ -94,8 +92,8 @@ class PdfDocumentController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'pdf_category_id' => 'required|exists:pdf_categories,id',
-            'pdfs' => 'nullable|array|max:' . config('media.max_pdfs'),
-            'pdfs.*' => 'file|mimes:pdf|max:' . config('media.max_pdf_upload_kb'),
+            'pdfs' => 'nullable|array|max:'.config('media.max_pdfs'),
+            'pdfs.*' => 'file|mimes:pdf|max:'.config('media.max_pdf_upload_kb'),
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
             'delete_pdfs' => 'nullable|array',
@@ -115,7 +113,7 @@ class PdfDocumentController extends Controller
             $toDelete = count($request->input('delete_pdfs', []));
             $incoming = count($request->file('pdfs', [])) + count($request->input('existing_media', []));
             if (($currentCount - $toDelete + $incoming) > config('media.max_pdfs')) {
-                $validator->errors()->add('pdfs', 'Un document ne peut pas avoir plus de ' . config('media.max_pdfs') . ' fichiers PDF.');
+                $validator->errors()->add('pdfs', 'Un document ne peut pas avoir plus de '.config('media.max_pdfs').' fichiers PDF.');
             }
 
             if (! $document && $incoming === 0) {

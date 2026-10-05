@@ -10,6 +10,7 @@ use Illuminate\View\Component;
 class NewsSidebar extends Component
 {
     public Collection $articles;
+
     public ?string $facebookUrl;
 
     public function __construct()

@@ -11,7 +11,7 @@ class SliderFactory extends Factory
         return [
             'title' => $this->faker->sentence(4),
             'subtitle' => $this->faker->sentence(8),
-            'image' => 'sliders/' . $this->faker->uuid() . '.jpg',
+            'image' => 'sliders/'.$this->faker->uuid().'.jpg',
             'link_url' => $this->faker->url(),
             'order' => 0,
             'is_active' => true,

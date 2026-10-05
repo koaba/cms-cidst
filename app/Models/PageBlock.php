@@ -10,7 +10,7 @@ class PageBlock extends Model
 {
     use HasOrderedMediaCollection, HasOrphanMediaCleanup;
 
-       protected $fillable = ['page_id', 'parent_id', 'slot_index', 'type', 'data', 'order'];
+    protected $fillable = ['page_id', 'parent_id', 'slot_index', 'type', 'data', 'order'];
 
     protected $casts = [
         'data' => 'array',
@@ -37,7 +37,7 @@ class PageBlock extends Model
         return $this->children()->where('slot_index', $index);
     }
 
-        /**
+    /**
      * Charge tous les enfants (+ leurs médias) en une seule requête,
      * regroupés par slot. À utiliser dans les vues qui itèrent sur
      * plusieurs slots (colonnes, items d'accordéon, etc.), pour éviter

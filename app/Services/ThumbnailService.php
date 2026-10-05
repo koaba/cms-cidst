@@ -9,6 +9,7 @@ use Intervention\Image\ImageManager;
 class ThumbnailService
 {
     private const WIDTH = 400;
+
     private const HEIGHT = 225;
 
     /**
@@ -19,7 +20,7 @@ class ThumbnailService
     {
         $fullPath = Storage::disk('public')->path($originalPath);
 
-        if (!file_exists($fullPath)) {
+        if (! file_exists($fullPath)) {
             return null;
         }
 
@@ -47,6 +48,6 @@ class ThumbnailService
         $filename = pathinfo($originalPath, PATHINFO_FILENAME);
         $extension = pathinfo($originalPath, PATHINFO_EXTENSION);
 
-        return $directory . '/thumbnails/' . $filename . '.' . $extension;
+        return $directory.'/thumbnails/'.$filename.'.'.$extension;
     }
 }

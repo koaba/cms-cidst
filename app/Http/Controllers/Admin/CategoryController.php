@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Category;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
@@ -17,6 +18,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::withCount('articles')->latest()->paginate(10);
+
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -39,6 +41,7 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         $category->load('media');
+
         return view('admin.categories.edit', compact('category'));
     }
 
@@ -72,10 +75,10 @@ class CategoryController extends Controller
 
     private function validateCategory(Request $request, ?Category $category = null): array
     {
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'pdfs' => 'nullable|array|max:' . config('media.max_pdfs'),
-            'pdfs.*' => 'file|mimes:pdf|max:' . config('media.max_pdf_upload_kb'),
+            'pdfs' => 'nullable|array|max:'.config('media.max_pdfs'),
+            'pdfs.*' => 'file|mimes:pdf|max:'.config('media.max_pdf_upload_kb'),
             'existing_media' => 'nullable|array',
             'existing_media.*' => 'integer|exists:media,id',
             'delete_pdfs' => 'nullable|array',
@@ -94,7 +97,7 @@ class CategoryController extends Controller
             $toDelete = count($request->input('delete_pdfs', []));
             $incoming = count($request->file('pdfs', [])) + count($request->input('existing_media', []));
             if (($currentCount - $toDelete + $incoming) > config('media.max_pdfs')) {
-                $validator->errors()->add('pdfs', 'Une catégorie ne peut pas avoir plus de ' . config('media.max_pdfs') . ' documents PDF.');
+                $validator->errors()->add('pdfs', 'Une catégorie ne peut pas avoir plus de '.config('media.max_pdfs').' documents PDF.');
             }
         });
 

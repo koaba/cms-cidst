@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Page;
-use App\Models\Media;
-use App\Traits\HasOrphanMediaCleanup;
 use App\Concerns\SavesSeoMeta;
+use App\Http\Controllers\Controller;
+use App\Models\Media;
+use App\Models\Page;
+use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
 
 class PageController extends Controller

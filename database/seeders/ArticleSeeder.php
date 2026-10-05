@@ -13,8 +13,9 @@ class ArticleSeeder extends Seeder
     {
         $user = User::first();
 
-        if (!$user) {
+        if (! $user) {
             $this->command->error('Aucun utilisateur trouve - creez un compte avant de lancer ce seeder.');
+
             return;
         }
 

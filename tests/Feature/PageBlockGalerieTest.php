@@ -1,5 +1,6 @@
-﻿<?php
+<?php
 
+use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageBlock;
 use App\Models\User;
@@ -110,8 +111,8 @@ it('affiche sans erreur une page publique avec un bloc galerie carrousel autopla
     ]);
 
     foreach (['a.jpg', 'b.jpg'] as $i => $name) {
-        $media = \App\Models\Media::create([
-            'path' => 'pages/' . $name,
+        $media = Media::create([
+            'path' => 'pages/'.$name,
             'original_name' => $name,
             'mime_type' => 'image/jpeg',
             'size' => 1000,
@@ -123,5 +124,5 @@ it('affiche sans erreur une page publique avec un bloc galerie carrousel autopla
     $response = $this->get(route('pages.show', $page));
 
     $response->assertOk();
-    $response->assertSee('carousel-' . $block->id, false);
+    $response->assertSee('carousel-'.$block->id, false);
 });

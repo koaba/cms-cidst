@@ -17,6 +17,7 @@ class PruneUnusedMedia extends Command
 
         if ($unused->isEmpty()) {
             $this->info('Aucun média orphelin à supprimer.');
+
             return;
         }
 

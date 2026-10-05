@@ -13,7 +13,7 @@ class ForcePasswordChange
         if (
             auth()->check()
             && auth()->user()->must_change_password
-            && !$request->routeIs('logout', 'profile.edit', 'profile.update', 'password.update')
+            && ! $request->routeIs('logout', 'profile.edit', 'profile.update', 'password.update')
         ) {
             return redirect()->route('profile.edit')
                 ->with('warning', 'Veuillez changer votre mot de passe avant de continuer.');

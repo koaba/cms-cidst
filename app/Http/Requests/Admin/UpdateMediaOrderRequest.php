@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Article;
+use App\Models\Diaporama;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,7 +22,7 @@ class UpdateMediaOrderRequest extends FormRequest
             'mediable_id' => [
                 'required',
                 'integer',
-                'exists:' . $this->input('mediable_type') . 's,id'
+                'exists:'.$this->input('mediable_type').'s,id',
             ],
             'ordered_ids' => ['required', 'array', 'min:2'],
             'ordered_ids.*' => ['required', 'integer', 'exists:media,id'],
@@ -35,14 +38,14 @@ class UpdateMediaOrderRequest extends FormRequest
         ];
     }
 
-    public function resolveMediableModel(): \Illuminate\Database\Eloquent\Model
+    public function resolveMediableModel(): Model
     {
         $type = $this->input('mediable_type');
         $id = $this->input('mediable_id');
 
         $class = match ($type) {
-            'article' => \App\Models\Article::class,
-            'diaporama' => \App\Models\Diaporama::class,
+            'article' => Article::class,
+            'diaporama' => Diaporama::class,
             default => throw new \InvalidArgumentException("Type non supporté : {$type}"),
         };
 

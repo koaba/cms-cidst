@@ -1,14 +1,18 @@
 <?php
+
 namespace App\Models;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Route;
+
 use App\Traits\HasOrderedMediaCollection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Route;
+
 class Menu extends Model
 {
     use HasFactory, HasOrderedMediaCollection;
 
     protected $fillable = ['label', 'target', 'order', 'is_active', 'parent_id'];
+
     protected $casts = ['is_active' => 'boolean'];
 
     public function parent()
@@ -40,6 +44,7 @@ class Menu extends Model
             $ids[] = $child->id;
             $ids = array_merge($ids, $child->descendantIds());
         }
+
         return $ids;
     }
 
@@ -51,6 +56,7 @@ class Menu extends Model
             $depth++;
             $current = $current->parent;
         }
+
         return $depth;
     }
 
@@ -59,6 +65,7 @@ class Menu extends Model
         if (Route::has($this->target)) {
             return route($this->target);
         }
+
         return $this->target;
     }
 }

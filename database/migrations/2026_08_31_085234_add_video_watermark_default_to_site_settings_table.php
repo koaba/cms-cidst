@@ -1,4 +1,5 @@
 <?php
+
 // database/migrations/xxxx_xx_xx_xxxxxx_add_video_watermark_default_to_site_settings_table.php
 
 use Illuminate\Database\Migrations\Migration;

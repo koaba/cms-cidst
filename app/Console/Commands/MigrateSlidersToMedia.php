@@ -21,6 +21,7 @@ class MigrateSlidersToMedia extends Command
 
         if ($sliders->isEmpty()) {
             $this->info('Aucun slider avec une image à migrer.');
+
             return self::SUCCESS;
         }
 
@@ -39,18 +40,21 @@ class MigrateSlidersToMedia extends Command
             if ($slider->media()->exists()) {
                 $this->line("Slider #{$slider->id} ({$slider->title}) : déjà migré, ignoré.");
                 $skipped++;
+
                 continue;
             }
 
             if (! Storage::disk('public')->exists($slider->image)) {
                 $this->error("Slider #{$slider->id} ({$slider->title}) : fichier introuvable sur le disque ({$slider->image}), ignoré.");
                 $skipped++;
+
                 continue;
             }
 
             if ($dryRun) {
                 $this->line("Slider #{$slider->id} ({$slider->title}) : serait migré ({$slider->image}).");
                 $migrated++;
+
                 continue;
             }
 

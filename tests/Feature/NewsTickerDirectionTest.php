@@ -6,14 +6,14 @@ use App\View\Components\NewsTicker as NewsTickerComponent;
 use Spatie\Permission\Models\Role;
 
 it('utilise horizontal par defaut', function () {
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
     expect($component->direction)->toBe('horizontal');
 });
 
 it('utilise la direction configuree dans les reglages du site', function () {
     SiteSetting::current()->update(['news_ticker_direction' => 'vertical']);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
     expect($component->direction)->toBe('vertical');
 });
 

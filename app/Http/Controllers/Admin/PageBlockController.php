@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\AccordeonItemRules;
 use App\Blocks\Rules\AccordeonRules;
+use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\BoutonRules;
 use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ColonnesRules;
@@ -464,6 +464,7 @@ class PageBlockController extends Controller
             abort(404);
         }
     }
+
     /**
      * Applique une classe de règles : validation, puis fusion des casts.
      */
@@ -473,6 +474,7 @@ class PageBlockController extends Controller
 
         return array_merge($validated, $rules->casts($request));
     }
+
     private function validateForType(Request $request, string $type, bool $isCreate = false, ?PageBlock $block = null): array
     {
         return match ($type) {
@@ -480,13 +482,13 @@ class PageBlockController extends Controller
             'separateur' => $this->validateWith(new SeparateurRules, $request, $isCreate, $block),
             'citation' => $this->validateWith(new CitationRules, $request, $isCreate, $block),
             'bouton' => $this->validateWith(new BoutonRules, $request, $isCreate, $block),
-                'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
-                'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
+            'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
+            'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
             'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
             'section_fond' => $this->validateWith(new SectionFondRules, $request, $isCreate, $block),
-                    'galerie' => $this->validateWith(new GalerieRules, $request, $isCreate, $block),
-        
-                        'pdf' => $this->validateWith(new PdfRules, $request, $isCreate, $block),
+            'galerie' => $this->validateWith(new GalerieRules, $request, $isCreate, $block),
+
+            'pdf' => $this->validateWith(new PdfRules, $request, $isCreate, $block),
             'colonnes' => $this->validateWith(new ColonnesRules, $request, $isCreate, $block),
             // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
             // les items sont de vrais PageBlock enfants (type accordeon_item),

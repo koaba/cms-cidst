@@ -15,6 +15,7 @@ function actingAsAdminPdfDoc(): User
     }
     $user = User::factory()->create();
     $user->assignRole('Super Admin');
+
     return $user;
 }
 

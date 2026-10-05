@@ -40,7 +40,7 @@ class WatermarkService
 
         try {
             $manager = ImageManager::usingDriver(Driver::class);
-                      $image = $manager->decode($fullPath);
+            $image = $manager->decode($fullPath);
             $logo = $manager->decode($logoFullPath);
 
             $targetWidth = max((int) round($image->width() * (config('watermark.size_percent', 10) / 100)), 1);
@@ -53,7 +53,7 @@ class WatermarkService
                 x: $marginPx,
                 y: $marginPx,
                 alignment: $this->mapImageAlignment(config('watermark.position', 'br')),
-              transparency: ((int) config('watermark.opacity', 15)) / 100
+                transparency: ((int) config('watermark.opacity', 15)) / 100
             );
 
             $image->save($fullPath);

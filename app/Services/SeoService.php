@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\HasPublicUrl;
+use App\Models\Article;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -28,7 +29,7 @@ class SeoService
         $modelTitle = $model->title ?? null;
 
         return $modelTitle
-            ? $modelTitle . ' — ' . self::siteName()
+            ? $modelTitle.' — '.self::siteName()
             : self::siteName();
     }
 
@@ -40,7 +41,7 @@ class SeoService
         }
 
         $content = $model->content ?: self::textFromBlocks($model);
-        if (!$content) {
+        if (! $content) {
             return null;
         }
 
@@ -54,7 +55,7 @@ class SeoService
             return Storage::disk('public')->url($manual);
         }
 
-        if (!empty($model->image)) {
+        if (! empty($model->image)) {
             return Storage::disk('public')->url($model->image);
         }
 
@@ -89,7 +90,7 @@ class SeoService
 
     public static function ogType(Model $model): string
     {
-        return $model instanceof \App\Models\Article ? 'article' : 'website';
+        return $model instanceof Article ? 'article' : 'website';
     }
 
     /**
@@ -98,12 +99,12 @@ class SeoService
      */
     protected static function textFromBlocks(Model $model): ?string
     {
-        if (!method_exists($model, 'blocks')) {
+        if (! method_exists($model, 'blocks')) {
             return null;
         }
 
         foreach ($model->blocks->whereNull('parent_id') as $block) {
-            if (!in_array($block->type, ['texte', 'section_fond', 'citation'], true)) {
+            if (! in_array($block->type, ['texte', 'section_fond', 'citation'], true)) {
                 continue;
             }
 

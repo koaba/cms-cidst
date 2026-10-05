@@ -11,7 +11,7 @@ it('inclut les articles publiés et récents dans le bandeau', function () {
         'published_at' => now()->subDays(2),
     ]);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
 
     expect($component->items->pluck('content'))->toContain('Article récent');
 });
@@ -23,7 +23,7 @@ it('exclut les articles non publiés', function () {
         'published_at' => now()->subDays(2),
     ]);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
 
     expect($component->items->pluck('content'))->not->toContain('Article brouillon');
 });
@@ -35,7 +35,7 @@ it('exclut les articles publiés il y a plus de 30 jours', function () {
         'published_at' => now()->subDays(45),
     ]);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
 
     expect($component->items->pluck('content'))->not->toContain('Article périmé');
 });
@@ -46,7 +46,7 @@ it('limite à 5 le nombre d\'articles récents injectés', function () {
         'published_at' => now()->subDays(1),
     ]);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
 
     $articlesCount = $component->items
         ->filter(fn ($item) => str_contains($item->link_url ?? '', '/blog/'))
@@ -67,7 +67,7 @@ it('place les articles récents avant les tickers manuels', function () {
         'is_active' => true,
     ]);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
 
     $positionArticle = $component->items->search(fn ($item) => $item->content === 'Article en tête');
     $positionTicker = $component->items->search(fn ($item) => $item->content === 'Ticker manuel');
@@ -81,7 +81,7 @@ it('inclut les tickers manuels actifs', function () {
         'is_active' => true,
     ]);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
 
     expect($component->items->pluck('content'))->toContain('Ticker actif');
 });
@@ -92,7 +92,7 @@ it('exclut les tickers manuels inactifs', function () {
         'is_active' => false,
     ]);
 
-    $component = new NewsTickerComponent();
+    $component = new NewsTickerComponent;
 
     expect($component->items->pluck('content'))->not->toContain('Ticker inactif');
 });

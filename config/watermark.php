@@ -5,7 +5,7 @@ return [
     'logo_path' => 'watermark/logo-cidst.png',
 
     // Opacité du filigrane en pourcentage (0-100)
-   'opacity' => 25,
+    'opacity' => 25,
 
     // Taille du filigrane en pourcentage de la largeur du support (image ou page PDF)
     'size_percent' => 7,

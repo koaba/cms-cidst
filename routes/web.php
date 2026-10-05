@@ -1,24 +1,27 @@
 <?php
 
-use App\Http\Controllers\Admin\MediaController as AdminMediaController;
-use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
-use App\Http\Controllers\Admin\PageController as AdminPageController;
-use App\Http\Controllers\Admin\PageBlockController as AdminPageBlockController;
-use App\Http\Controllers\SliderController;
-use App\Http\Controllers\Admin\SliderController as AdminSliderController;
-use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController;
-use App\Http\Controllers\Admin\MenuController as AdminMenuController;
-use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\PdfDocumentController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MediaController as AdminMediaController;
+use App\Http\Controllers\Admin\MediaOrderController;
+use App\Http\Controllers\Admin\MenuController as AdminMenuController;
+use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController;
+use App\Http\Controllers\Admin\PageBlockController as AdminPageBlockController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PdfCategoryController as AdminPdfCategoryController;
 use App\Http\Controllers\Admin\PdfDocumentController as AdminPdfDocumentController;
+use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\SliderController as AdminSliderController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\PdfDocumentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\SliderController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,7 +38,7 @@ Route::get('/documents', [PdfDocumentController::class, 'index'])->name('documen
 Route::get('/documents/categorie/{pdfCategory:slug}', [PdfDocumentController::class, 'byCategory'])->name('documents.category');
 Route::get('/documents/{pdfDocument:slug}', [PdfDocumentController::class, 'show'])->name('documents.show');
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
-Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -88,7 +91,7 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
     Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');
     Route::get('admin/media/picker', [AdminMediaController::class, 'picker'])->name('admin.media.picker');
-    Route::post('admin/media/reorder', [\App\Http\Controllers\Admin\MediaOrderController::class, 'update'])->name('admin.media.reorder');
+    Route::post('admin/media/reorder', [MediaOrderController::class, 'update'])->name('admin.media.reorder');
 });
 
 // Accès restreint : Super Admin uniquement (structure du site, réglages)
@@ -99,8 +102,8 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/pdf-documents', AdminPdfDocumentController::class)->names('admin.pdf-documents');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
-    Route::resource('admin/users', \App\Http\Controllers\Admin\UserController::class)->names('admin.users');
-    Route::patch('admin/users/{user}/reset-password', [\App\Http\Controllers\Admin\UserController::class, 'resetPassword'])
+    Route::resource('admin/users', UserController::class)->names('admin.users');
+    Route::patch('admin/users/{user}/reset-password', [UserController::class, 'resetPassword'])
         ->name('admin.users.reset-password');
 });
 

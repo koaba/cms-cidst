@@ -2,10 +2,12 @@
 
 namespace App\Concerns;
 
+use App\Models\SeoMeta;
+
 trait HasSeo
 {
     public function seo()
     {
-        return $this->morphOne(\App\Models\SeoMeta::class, 'seoable');
+        return $this->morphOne(SeoMeta::class, 'seoable');
     }
 }

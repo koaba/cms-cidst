@@ -35,12 +35,12 @@ trait HasOrderedMediaCollection
 
     /**
      * @param  Closure(string $path): void|null  $beforeCreate  Hook optionnel exécuté sur le
-     *         fichier déjà stocké, avant la création du Media (ex: filigrane). Le hook travaille
-     *         en place sur le disque 'public' ; la taille est recalculée après son exécution pour
-     *         refléter le fichier final (un filigrane peut changer la taille du fichier).
+     *                                                          fichier déjà stocké, avant la création du Media (ex: filigrane). Le hook travaille
+     *                                                          en place sur le disque 'public' ; la taille est recalculée après son exécution pour
+     *                                                          refléter le fichier final (un filigrane peut changer la taille du fichier).
      * @param  array  $thumbnails  Tableau optionnel de miniatures alignées par nom de fichier
-     *         original, au format [['name' => string, 'thumbnail' => string|null dataURL base64], ...].
-     *         Utilisé notamment pour les miniatures PDF générées côté navigateur (pdf.js).
+     *                             original, au format [['name' => string, 'thumbnail' => string|null dataURL base64], ...].
+     *                             Utilisé notamment pour les miniatures PDF générées côté navigateur (pdf.js).
      *
      * Sécurité : le mime_type stocké est détecté depuis le CONTENU RÉEL du fichier
      * (via finfo, à travers Symfony UploadedFile::getMimeType()), jamais depuis le
