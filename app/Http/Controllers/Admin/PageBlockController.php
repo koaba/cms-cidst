@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Blocks\Rules\BanniereHeroRules;
 use App\Blocks\Rules\AccordeonItemRules;
 use App\Blocks\Rules\AccordeonRules;
+use App\Blocks\Rules\BoutonRules;
 use App\Blocks\Rules\CitationRules;
 use App\Blocks\Rules\ImageRules;
 use App\Blocks\Rules\SeparateurRules;
@@ -474,15 +475,7 @@ class PageBlockController extends Controller
             'texte' => $this->validateWith(new TexteRules, $request, $isCreate, $block),
             'separateur' => $this->validateWith(new SeparateurRules, $request, $isCreate, $block),
             'citation' => $this->validateWith(new CitationRules, $request, $isCreate, $block),
-            'bouton' => array_merge(
-                $request->validate([
-                    'label' => 'required|string|max:100',
-                    'url' => 'required|string|max:255',
-                    'style' => 'nullable|in:primaire,secondaire,outline',
-                    'new_tab' => 'nullable|boolean',
-                ]),
-                ['new_tab' => $request->boolean('new_tab')]
-            ),
+            'bouton' => $this->validateWith(new BoutonRules, $request, $isCreate, $block),
                 'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
                 'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
             'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
