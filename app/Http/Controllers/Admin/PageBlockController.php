@@ -2,19 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Blocks\Rules\AccordeonItemRules;
-use App\Blocks\Rules\AccordeonRules;
-use App\Blocks\Rules\BanniereHeroRules;
-use App\Blocks\Rules\BoutonRules;
-use App\Blocks\Rules\CitationRules;
-use App\Blocks\Rules\ColonnesRules;
-use App\Blocks\Rules\GalerieRules;
-use App\Blocks\Rules\ImageRules;
-use App\Blocks\Rules\PdfRules;
-use App\Blocks\Rules\SectionFondRules;
-use App\Blocks\Rules\SeparateurRules;
-use App\Blocks\Rules\TexteRules;
-use App\Blocks\Rules\VideoRules;
+use App\Blocks\BlockRegistry;
 use App\Contracts\BlockRules;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
@@ -477,29 +465,7 @@ class PageBlockController extends Controller
 
     private function validateForType(Request $request, string $type, bool $isCreate = false, ?PageBlock $block = null): array
     {
-        return match ($type) {
-            'texte' => $this->validateWith(new TexteRules, $request, $isCreate, $block),
-            'separateur' => $this->validateWith(new SeparateurRules, $request, $isCreate, $block),
-            'citation' => $this->validateWith(new CitationRules, $request, $isCreate, $block),
-            'bouton' => $this->validateWith(new BoutonRules, $request, $isCreate, $block),
-            'banniere_hero' => $this->validateWith(new BanniereHeroRules, $request, $isCreate, $block),
-            'image' => $this->validateWith(new ImageRules, $request, $isCreate, $block),
-            'video' => $this->validateWith(new VideoRules, $request, $isCreate, $block),
-            'section_fond' => $this->validateWith(new SectionFondRules, $request, $isCreate, $block),
-            'galerie' => $this->validateWith(new GalerieRules, $request, $isCreate, $block),
-
-            'pdf' => $this->validateWith(new PdfRules, $request, $isCreate, $block),
-            'colonnes' => $this->validateWith(new ColonnesRules, $request, $isCreate, $block),
-            // Le bloc accordeon lui-même ne stocke qu'un titre optionnel :
-            // les items sont de vrais PageBlock enfants (type accordeon_item),
-            // pas des données JSON imbriquées (même logique que `colonnes`).
-            'accordeon' => $this->validateWith(new AccordeonRules, $request, $isCreate, $block),
-            // accordeon_item : l'en-tête cliquable de chaque item. Le
-            // contenu réel de l'item est composé de ses propres enfants
-            // PageBlock (récursion), pas stocké ici.
-            'accordeon_item' => $this->validateWith(new AccordeonItemRules, $request, $isCreate, $block),
-            default => abort(404, "Type de bloc « {$type} » non implémenté."),
-        };
+        return $this->validateWith(BlockRegistry::rulesFor($type), $request, $isCreate, $block);
     }
 
     /**
