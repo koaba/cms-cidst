@@ -409,7 +409,7 @@ class PageBlockController extends Controller
         $item = $this->findAccordionItem($parent, $itemId);
         $content = $item->children()->findOrFail($contentId);
 
-        $data = $this->validateForType($request, $content->type, isCreate: false);
+        $data = $this->validateForType($request, $content->type, isCreate: false, block: $content);
         $data = $this->stripMediaFields($data);
 
         $content->update(['data' => $data]);
