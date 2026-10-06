@@ -159,3 +159,25 @@ it('conserve la video existante quand on met a jour sans nouveau fichier', funct
     $response->assertSessionHasNoErrors();
     expect($block->fresh()->media()->count())->toBe(1);
 });
+it('conserve la video existante d\'un enfant de colonne quand on met a jour sans nouveau fichier', function () {
+    $page = Page::factory()->create();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'colonnes', 'column_count' => '3']
+    );
+    $parent = $page->blocks()->whereNull('parent_id')->first();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.columns.store', [$page, $parent->id, 1]),
+        ['type' => 'video', 'source_type' => 'upload', 'video_file' => UploadedFile::fake()->create('clip.mp4', 500, 'video/mp4')]
+    );
+    $child = $parent->childrenBySlot(1)->first();
+    expect($child->media()->count())->toBe(1);
+
+    $response = $this->actingAs($this->admin)->put(
+        route('admin.pages.blocks.columns.update', [$page, $parent->id, 1, $child->id]),
+        ['source_type' => 'upload', 'title' => 'Nouveau titre']
+    );
+
+    $response->assertSessionHasNoErrors();
+    expect($child->fresh()->media()->count())->toBe(1);
+});

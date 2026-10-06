@@ -224,7 +224,7 @@ class PageBlockController extends Controller
 
         $child = $parent->childrenBySlot($slotIndex)->findOrFail($childId);
 
-        $data = $this->validateForType($request, $child->type, isCreate: false);
+        $data = $this->validateForType($request, $child->type, isCreate: false, block: $child);
         $data = $this->stripMediaFields($data);
 
         $child->update(['data' => $data]);
