@@ -105,3 +105,81 @@ it('rejette un nouveau document pdf sans fichier', function () {
 
     $response->assertSessionHasErrors('pdfs');
 });
+it('rejette un nouveau document pdf avec plus de fichiers que le maximum', function () {
+    config(['media.max_pdfs' => 2]);
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        [
+            'type' => 'pdf',
+            'pdf_source' => 'new',
+            'pdf_title' => 'Trop de fichiers',
+            'pdfs' => [
+                UploadedFile::fake()->create('a.pdf', 100, 'application/pdf'),
+                UploadedFile::fake()->create('b.pdf', 100, 'application/pdf'),
+                UploadedFile::fake()->create('c.pdf', 100, 'application/pdf'),
+            ],
+        ]
+    );
+
+    $response->assertSessionHasErrors('pdfs');
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(0);
+});
+
+it('accepte un nouveau document pdf avec exactement le maximum de fichiers', function () {
+    config(['media.max_pdfs' => 2]);
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        [
+            'type' => 'pdf',
+            'pdf_source' => 'new',
+            'pdf_title' => 'A la limite',
+            'pdfs' => [
+                UploadedFile::fake()->create('a.pdf', 100, 'application/pdf'),
+                UploadedFile::fake()->create('b.pdf', 100, 'application/pdf'),
+            ],
+        ]
+    );
+
+    $response->assertSessionHasNoErrors();
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(1);
+});
+
+it('rejette un pdf plus lourd que la taille maximale', function () {
+    config(['media.max_pdf_upload_kb' => 200]);
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        [
+            'type' => 'pdf',
+            'pdf_source' => 'new',
+            'pdf_title' => 'Trop lourd',
+            'pdfs' => [UploadedFile::fake()->create('gros.pdf', 300, 'application/pdf')],
+        ]
+    );
+
+    $response->assertSessionHasErrors('pdfs.0');
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(0);
+});
+
+it('accepte un pdf exactement a la taille maximale', function () {
+    config(['media.max_pdf_upload_kb' => 200]);
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        [
+            'type' => 'pdf',
+            'pdf_source' => 'new',
+            'pdf_title' => 'Taille limite',
+            'pdfs' => [UploadedFile::fake()->create('limite.pdf', 200, 'application/pdf')],
+        ]
+    );
+
+    $response->assertSessionHasNoErrors();
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(1);
+});

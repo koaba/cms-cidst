@@ -126,3 +126,56 @@ it('affiche sans erreur une page publique avec un bloc galerie carrousel autopla
     $response->assertOk();
     $response->assertSee('carousel-'.$block->id, false);
 });
+it('rejette un bloc galerie sans images a la creation', function () {
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'galerie', 'layout' => 'grid']
+    );
+
+    $response->assertSessionHasErrors('images');
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(0);
+});
+
+it('rejette un bloc galerie sans layout', function () {
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'galerie', 'images' => [UploadedFile::fake()->image('photo1.jpg')]]
+    );
+
+    $response->assertSessionHasErrors('layout');
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(0);
+});
+
+it('rejette un bloc galerie avec un layout invalide', function () {
+    $page = Page::factory()->create();
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'galerie', 'layout' => 'mosaique', 'images' => [UploadedFile::fake()->image('photo1.jpg')]]
+    );
+
+    $response->assertSessionHasErrors('layout');
+    expect($page->blocks()->whereNull('parent_id')->count())->toBe(0);
+});
+
+it('accepte la mise a jour d\'une galerie sans renvoyer d\'images', function () {
+    $page = Page::factory()->create();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'galerie', 'layout' => 'grid', 'images' => [UploadedFile::fake()->image('photo1.jpg')]]
+    );
+    $block = $page->blocks()->whereNull('parent_id')->first();
+
+    $response = $this->actingAs($this->admin)->put(
+        route('admin.pages.blocks.update', [$page, $block->id]),
+        ['layout' => 'carousel']
+    );
+
+    $response->assertSessionHasNoErrors();
+    expect($block->fresh()->data['layout'])->toBe('carousel');
+    expect($block->fresh()->media()->count())->toBe(1);
+});
