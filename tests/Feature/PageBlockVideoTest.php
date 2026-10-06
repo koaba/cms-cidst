@@ -159,3 +159,52 @@ it('conserve la video existante quand on met a jour sans nouveau fichier', funct
     $response->assertSessionHasNoErrors();
     expect($block->fresh()->media()->count())->toBe(1);
 });
+it('conserve la video existante d\'un enfant de colonne quand on met a jour sans nouveau fichier', function () {
+    $page = Page::factory()->create();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'colonnes', 'column_count' => '3']
+    );
+    $parent = $page->blocks()->whereNull('parent_id')->first();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.columns.store', [$page, $parent->id, 1]),
+        ['type' => 'video', 'source_type' => 'upload', 'video_file' => UploadedFile::fake()->create('clip.mp4', 500, 'video/mp4')]
+    );
+    $child = $parent->childrenBySlot(1)->first();
+    expect($child->media()->count())->toBe(1);
+
+    $response = $this->actingAs($this->admin)->put(
+        route('admin.pages.blocks.columns.update', [$page, $parent->id, 1, $child->id]),
+        ['source_type' => 'upload', 'title' => 'Nouveau titre']
+    );
+
+    $response->assertSessionHasNoErrors();
+    expect($child->fresh()->media()->count())->toBe(1);
+});
+it('conserve la video existante d\'un contenu d\'accordeon quand on met a jour sans nouveau fichier', function () {
+    $page = Page::factory()->create();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.store', $page),
+        ['type' => 'accordeon']
+    );
+    $parent = $page->blocks()->whereNull('parent_id')->first();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.items.store', [$page, $parent->id]),
+        ['title' => 'Item 1']
+    );
+    $item = $parent->children()->where('type', 'accordeon_item')->first();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.items.content.store', [$page, $parent->id, $item->id]),
+        ['type' => 'video', 'source_type' => 'upload', 'video_file' => UploadedFile::fake()->create('clip.mp4', 500, 'video/mp4')]
+    );
+    $content = $item->children()->first();
+    expect($content->media()->count())->toBe(1);
+
+    $response = $this->actingAs($this->admin)->put(
+        route('admin.pages.blocks.items.content.update', [$page, $parent->id, $item->id, $content->id]),
+        ['source_type' => 'upload', 'title' => 'Nouveau titre']
+    );
+
+    $response->assertSessionHasNoErrors();
+    expect($content->fresh()->media()->count())->toBe(1);
+});
