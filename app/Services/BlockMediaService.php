@@ -10,8 +10,8 @@ use App\Models\PdfCategory;
 use App\Models\PdfDocument;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 
 class BlockMediaService
 {
@@ -125,6 +125,7 @@ class BlockMediaService
             'type' => $type,
         ] + $dimensions + $extra);
     }
+
     /**
      * @return array{width: int, height: int}|array{}
      */
