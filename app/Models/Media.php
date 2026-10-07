@@ -13,10 +13,12 @@ class Media extends Model
 
     protected $table = 'media';
 
-    protected $fillable = ['path', 'thumbnail_path', 'original_name', 'mime_type', 'size', 'type', 'source_type', 'url', 'apply_watermark'];
+    protected $fillable = ['path', 'thumbnail_path', 'original_name', 'mime_type', 'size', 'type', 'source_type', 'url', 'apply_watermark', 'width', 'height'];
 
     protected $casts = [
         'apply_watermark' => 'boolean',
+        'width' => 'integer',
+        'height' => 'integer',
     ];
 
     public function mediables()

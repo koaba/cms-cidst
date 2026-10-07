@@ -10,6 +10,7 @@ use App\Models\PdfCategory;
 use App\Models\PdfDocument;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
 
 class BlockMediaService
@@ -114,13 +115,24 @@ class BlockMediaService
             $this->watermarkService->watermarkImage($path);
         }
 
+        $dimensions = $type === 'image' ? $this->imageDimensions($path) : [];
+
         return Media::create([
             'path' => $path,
             'original_name' => $file->getClientOriginalName(),
             'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
             'size' => $file->getSize(),
             'type' => $type,
-        ] + $extra);
+        ] + $dimensions + $extra);
+    }
+    /**
+     * @return array{width: int, height: int}|array{}
+     */
+    private function imageDimensions(string $path): array
+    {
+        $size = rescue(fn () => getimagesize(Storage::disk('public')->path($path)), false, false);
+
+        return $size ? ['width' => $size[0], 'height' => $size[1]] : [];
     }
 
     /**
