@@ -9,7 +9,7 @@
                 @if ($article->image)
                     <img src="{{ Storage::url($article->image) }}"
                     alt="{{ $article->title }}"
-                    class="w-11 h-11 object-cover rounded flex-shrink-0">
+                    loading="lazy" decoding="async" class="w-11 h-11 object-cover rounded flex-shrink-0">
                 @else
     <div class="w-11 h-11 bg-cidst-bg rounded flex-shrink-0"></div>
 @endif

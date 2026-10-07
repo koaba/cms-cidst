@@ -16,7 +16,7 @@
             @if ($article->image)
                 <img src="{{ Storage::url($article->image) }}"
                      alt="{{ $article->title }}"
-                     class="w-full aspect-video object-cover">
+                     loading="lazy" decoding="async" class="w-full aspect-video object-cover">
             @else
                 <div class="w-full aspect-video bg-cidst-bg flex items-center justify-center text-cidst-muted text-sm">
                     Aucune image

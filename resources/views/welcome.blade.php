@@ -114,7 +114,7 @@
                                 src="{{ Storage::url($slider->image) }}"
                                 alt="{{ $slider->title }}"
                                 class="w-full h-full object-cover"
-                                loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                loading="{{ $index === 0 ? 'eager' : 'lazy' }}" fetchpriority="{{ $index === 0 ? 'high' : 'auto' }}"
                             >
 
                             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-6">

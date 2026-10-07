@@ -12,7 +12,7 @@
     </script>
     <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}"
          onclick="openLightbox('featured', 0)"
-         class="w-full max-h-[500px] object-cover rounded mb-6 cursor-pointer">
+         fetchpriority="high" decoding="async" class="w-full max-h-[500px] object-cover rounded mb-6 cursor-pointer">
 @endif
     @if ($article->categories->isNotEmpty())
         <div class="flex flex-wrap gap-1 mb-6">
@@ -45,7 +45,7 @@
             @foreach ($galleryImages as $media)
                 <img src="{{ Storage::url($media->path) }}"
                      alt="{{ $article->title }} - image {{ $loop->iteration }}"
-                     class="w-full max-w-md flex-shrink-0 snap-center aspect-video object-cover rounded cursor-pointer"
+                     loading="lazy" decoding="async" class="w-full max-w-md flex-shrink-0 snap-center aspect-video object-cover rounded cursor-pointer"
                      onclick="openLightbox('gallery', {{ $loop->index }})">
             @endforeach
         </div>
@@ -54,7 +54,7 @@
             @foreach ($galleryImages as $media)
                 <img src="{{ Storage::url($media->path) }}"
                      alt="{{ $article->title }} - image {{ $loop->iteration }}"
-                     class="w-full aspect-square object-cover rounded cursor-pointer"
+                     loading="lazy" decoding="async" class="w-full aspect-square object-cover rounded cursor-pointer"
                      onclick="openLightbox('gallery', {{ $loop->index }})">
             @endforeach
         </div>
@@ -71,7 +71,7 @@
                     @if ($pdf->thumbnail_path)
                         <img src="{{ $pdf->thumbnail_url }}"
                              alt="Aperçu du document {{ $pdf->original_name }}"
-                             class="w-24 h-32 object-cover rounded border group-hover:opacity-80 transition">
+                             loading="lazy" decoding="async" class="w-24 h-32 object-cover rounded border group-hover:opacity-80 transition">
                     @else
                         <div class="w-24 h-32 flex items-center justify-center bg-cidst-red/5 rounded border text-3xl group-hover:opacity-80 transition">📄</div>
                     @endif
@@ -99,7 +99,7 @@
         data-current-index="0">
                             <img src="{{ $diaporama->media->first()->thumbnail_url }}"
          alt="{{ $diaporama->title ?? $article->title }}"
-         class="diaporama-auto-img w-full h-full object-cover transition-opacity duration-500">
+         loading="lazy" decoding="async" class="diaporama-auto-img w-full h-full object-cover transition-opacity duration-500">
                             @if ($diaporama->media->count() > 1)
                                 <div class="absolute inset-0 flex items-end justify-center pb-3 gap-1.5 pointer-events-none">
                                     @foreach ($diaporama->media as $media)
@@ -152,7 +152,7 @@
                                 @if ($video->youtube_thumbnail)
                                     <img src="{{ $video->youtube_thumbnail }}"
                                          alt="{{ $video->title ?? $article->title }}"
-                                         class="w-full h-full object-cover">
+                                         loading="lazy" decoding="async" class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full bg-cidst-ink/90"></div>
                                 @endif

@@ -43,7 +43,7 @@
                    class="flex flex-col h-full bg-cidst-surface border border-cidst-border rounded overflow-hidden hover:shadow-lg transition-shadow p-4">
                     @if ($firstPdf && $firstPdf->thumbnail_path)
                         <img src="{{ Storage::url($firstPdf->thumbnail_path) }}"
-                             class="w-full h-32 object-cover rounded border border-cidst-border mb-3"
+                             loading="lazy" decoding="async" class="w-full h-32 object-cover rounded border border-cidst-border mb-3"
                              alt="{{ $document->title }}">
                     @else
                         <div class="w-full h-32 flex items-center justify-center bg-cidst-red/5 rounded border border-cidst-border mb-3 text-3xl">

@@ -25,7 +25,7 @@
                        class="flex flex-col items-center bg-cidst-surface border border-cidst-border rounded p-3 hover:shadow-lg transition-shadow">
                         @if ($pdf->thumbnail_path)
                             <img src="{{ Storage::url($pdf->thumbnail_path) }}"
-                                 class="w-full h-32 object-cover rounded border border-cidst-border mb-2"
+                                 loading="lazy" decoding="async" class="w-full h-32 object-cover rounded border border-cidst-border mb-2"
                                  alt="{{ $pdf->original_name ?? basename($pdf->path) }}">
                         @else
                             <div class="w-full h-32 flex items-center justify-center bg-cidst-red/5 rounded border border-cidst-border mb-2 text-3xl">
