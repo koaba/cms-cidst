@@ -32,7 +32,7 @@ return [
     /*
      * Types autorisés à l'intérieur d'une colonne du bloc `colonnes`.
      * Ajouter un type ici suffit à le rendre disponible dans les colonnes,
-     * tant qu'il a déjà son `case` dans PageBlockController::validateForType().
+     * tant qu'il est enregistré dans BlockRegistry (BlockRegistry::types()).
      * `colonnes` ne doit jamais y figurer (pas d'imbrication de colonnes
      * dans des colonnes). `diaporama`/`slider`, une fois implémentés,
      * resteront volontairement exclus (décision produit : bloc pleine largeur).
