@@ -27,3 +27,12 @@ it('leve une 404 pour un type inconnu', function () {
         expect($e->getStatusCode())->toBe(404);
     }
 });
+
+it('enregistre chaque type de nestable_in_columns', function () {
+    $nestable = config('page_blocks.nestable_in_columns');
+
+    expect($nestable)->not->toBeEmpty()
+        ->and(array_diff($nestable, BlockRegistry::types()))->toBe([])
+        ->and(array_diff($nestable, array_keys(config('page_blocks.types'))))->toBe([])
+        ->and(array_intersect($nestable, ['colonnes', 'accordeon_item']))->toBe([]);
+});
