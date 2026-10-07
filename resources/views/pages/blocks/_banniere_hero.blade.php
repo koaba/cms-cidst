@@ -7,7 +7,7 @@
         <img
             src="{{ Storage::url($media->first()->path) }}"
             alt="{{ $data['alt'] ?? '' }}"
-            class="absolute inset-0 w-full h-full object-cover"
+            fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover"
         >
         <div class="absolute inset-0 bg-black" style="opacity: {{ $opacite }}"></div>
     @endif

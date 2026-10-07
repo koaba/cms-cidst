@@ -27,7 +27,7 @@
                 @if ($page->media->isNotEmpty())
                     <img src="{{ Storage::url($page->media->first()->path) }}"
                          alt="{{ $page->title }}"
-                         class="w-full {{ $imageAspectClass }} object-cover">
+                         loading="lazy" decoding="async" class="w-full {{ $imageAspectClass }} object-cover">
                 @else
                     <div class="w-full {{ $imageAspectClass }} bg-cidst-bg flex items-center justify-center text-cidst-muted text-sm">
                         Aucune image

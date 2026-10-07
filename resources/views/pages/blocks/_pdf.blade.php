@@ -27,7 +27,7 @@
                         <img
                             src="{{ Storage::url($pdf->thumbnail_path) }}"
                             alt="Miniature de {{ $pdf->original_name ?? $pdfDocument->title }}"
-                            class="w-full h-40 object-cover bg-gray-100"
+                            loading="lazy" decoding="async" class="w-full h-40 object-cover bg-gray-100"
                         >
                     @else
                         <div class="w-full h-40 flex items-center justify-center bg-gray-100 text-gray-400">

@@ -4,9 +4,9 @@
             {{-- Logo --}}
             <a href="/" class="flex items-center gap-3">
                 @if($settings->logo_path)
-                    <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo" class="h-12 w-auto">
+                    <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo" loading="eager" class="h-12 w-auto">
                 @else
-                    <img src="{{ asset('images/logo-cidst.png') }}" alt="Logo" class="h-12 w-auto">
+                    <img src="{{ asset('images/logo-cidst.png') }}" alt="Logo" loading="eager" class="h-12 w-auto">
                 @endif
             </a>
             {{-- Menu desktop --}}
