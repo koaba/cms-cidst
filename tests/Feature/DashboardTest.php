@@ -46,3 +46,14 @@ it('refuse l\'accès au dashboard à un utilisateur sans rôle autorisé', funct
 
     $response->assertForbidden();
 });
+
+it('affiche la section mediatheque sur le tableau de bord', function () {
+    Role::create(['name' => 'Super Admin']);
+    $admin = User::factory()->create();
+    $admin->assignRole('Super Admin');
+
+    $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+    $response->assertOk();
+    $response->assertSee('Poids total');
+});
