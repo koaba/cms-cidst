@@ -28,7 +28,9 @@ class SitemapController extends Controller
                     'lastmod' => $page->updated_at->toAtomString(),
                 ]);
 
-            return $articles->concat($pages)->values();
+            $home = collect([['loc' => url('/'), 'lastmod' => null]]);
+
+            return $home->concat($articles)->concat($pages)->values();
         });
 
         $xml = view('sitemap.index', ['urls' => $urls])->render();

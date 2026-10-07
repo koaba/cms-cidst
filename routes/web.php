@@ -18,6 +18,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PdfDocumentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SliderController;
@@ -39,6 +40,7 @@ Route::get('/documents/categorie/{pdfCategory:slug}', [PdfDocumentController::cl
 Route::get('/documents/{pdfDocument:slug}', [PdfDocumentController::class, 'show'])->name('documents.show');
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
