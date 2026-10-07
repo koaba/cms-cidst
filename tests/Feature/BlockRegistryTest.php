@@ -36,3 +36,17 @@ it('enregistre chaque type de nestable_in_columns', function () {
         ->and(array_diff($nestable, array_keys(config('page_blocks.types'))))->toBe([])
         ->and(array_intersect($nestable, ['colonnes', 'accordeon_item']))->toBe([]);
 });
+
+it('fournit une vue admin et une vue publique pour chaque type', function () {
+    $missing = [];
+
+    foreach (array_keys(config('page_blocks.types')) as $type) {
+        foreach (['admin.pages.blocks.partials._', 'pages.blocks._'] as $prefix) {
+            if (! view()->exists($prefix.$type)) {
+                $missing[] = $prefix.$type;
+            }
+        }
+    }
+
+    expect($missing)->toBe([]);
+});
