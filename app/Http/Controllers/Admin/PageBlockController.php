@@ -47,7 +47,7 @@ class PageBlockController extends Controller
         }
 
         $data = $this->validateForType($request, $type, isCreate: true);
-        $data = $this->blockMedia->stripMediaFields($data);
+        $data = $this->blockMedia->stripMediaFields($data, $type);
 
         $block = $page->blocks()->create([
             'type' => $type,
@@ -78,7 +78,7 @@ class PageBlockController extends Controller
         $block = $page->blocks()->whereNull('parent_id')->findOrFail($blockId);
 
         $data = $this->validateForType($request, $block->type, isCreate: false, block: $block);
-        $data = $this->blockMedia->stripMediaFields($data);
+        $data = $this->blockMedia->stripMediaFields($data, $block->type);
 
         if ($block->type === 'colonnes') {
             // column_count est figé après création : le changer casserait
@@ -170,7 +170,7 @@ class PageBlockController extends Controller
         $this->ensureSlotIndexInRange($parent, $slotIndex);
 
         $data = $this->validateForType($request, $type, isCreate: true);
-        $data = $this->blockMedia->stripMediaFields($data);
+        $data = $this->blockMedia->stripMediaFields($data, $type);
 
         $child = $page->blocks()->create([
             'parent_id' => $parent->id,
@@ -209,7 +209,7 @@ class PageBlockController extends Controller
         $child = $parent->childrenBySlot($slotIndex)->findOrFail($childId);
 
         $data = $this->validateForType($request, $child->type, isCreate: false, block: $child);
-        $data = $this->blockMedia->stripMediaFields($data);
+        $data = $this->blockMedia->stripMediaFields($data, $child->type);
 
         $child->update(['data' => $data]);
 
@@ -358,7 +358,7 @@ class PageBlockController extends Controller
         $this->ensureNestable($type);
 
         $data = $this->validateForType($request, $type, isCreate: true);
-        $data = $this->blockMedia->stripMediaFields($data);
+        $data = $this->blockMedia->stripMediaFields($data, $type);
 
         $content = $item->children()->create([
             'page_id' => $page->id,
@@ -394,7 +394,7 @@ class PageBlockController extends Controller
         $content = $item->children()->findOrFail($contentId);
 
         $data = $this->validateForType($request, $content->type, isCreate: false, block: $content);
-        $data = $this->blockMedia->stripMediaFields($data);
+        $data = $this->blockMedia->stripMediaFields($data, $content->type);
 
         $content->update(['data' => $data]);
         $this->blockMedia->handle($request, $content, $content->type);

@@ -3,10 +3,11 @@
 namespace App\Blocks\Rules;
 
 use App\Contracts\BlockRules;
+use App\Contracts\DeclaresMediaFields;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
 
-class BanniereHeroRules implements BlockRules
+class BanniereHeroRules implements BlockRules, DeclaresMediaFields
 {
     public function rules(bool $isCreate, ?PageBlock $block = null): array
     {
@@ -39,5 +40,10 @@ class BanniereHeroRules implements BlockRules
     {
         // `integer` valide mais ne caste pas : cast explicite indispensable.
         return ['overlay_opacity' => (int) $request->input('overlay_opacity', 40)];
+    }
+
+    public function mediaFields(): array
+    {
+        return ['image', 'delete_image', 'apply_watermark'];
     }
 }
