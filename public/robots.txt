@@ -1,8 +1,0 @@
-User-agent: *
-Disallow: /admin
-Disallow: /profile
-Disallow: /login
-Disallow: /register
-Disallow: /dashboard
-
-Sitemap: http://laravel-academy.test/sitemap.xml
