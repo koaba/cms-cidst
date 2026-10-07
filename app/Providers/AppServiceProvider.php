@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Article;
 use App\Models\Page;
+use App\Models\SeoMeta;
 use App\Models\SiteSetting;
 use App\Observers\SitemapCacheObserver;
 use Illuminate\Support\Facades\View;
@@ -37,5 +38,6 @@ class AppServiceProvider extends ServiceProvider
 
         Page::observe(SitemapCacheObserver::class);
         Article::observe(SitemapCacheObserver::class);
+        SeoMeta::observe(SitemapCacheObserver::class);
     }
 }

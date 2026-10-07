@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Page;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 
@@ -28,4 +29,17 @@ it("sert robots.txt dynamiquement avec l'URL du sitemap", function () {
 
 it("n'a aucun robots.txt statique qui masquerait la route", function () {
     expect(public_path('robots.txt'))->not->toBeFile();
+});
+
+it('retire du sitemap une page dont no_index est bascule seul', function () {
+    Cache::forget('sitemap.xml');
+
+    $page = Page::factory()->create();
+    $page->seo()->updateOrCreate([], ['no_index' => false]);
+
+    $this->get('/sitemap.xml')->assertOk()->assertSee($page->publicUrl(), false);
+
+    $page->seo->update(['no_index' => true]);
+
+    $this->get('/sitemap.xml')->assertOk()->assertDontSee($page->publicUrl(), false);
 });
