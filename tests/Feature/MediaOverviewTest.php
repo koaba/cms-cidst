@@ -84,15 +84,19 @@ it('signale les images sans texte alternatif, bloc image et galerie confondus', 
     $heroSansMedia = overviewBlock('banniere_hero', ['alt' => null]);
     $galerieA = overviewMedia();
     $galerieB = overviewMedia();
+    $sansAlt2 = overviewMedia();
+    $galerieC = overviewMedia();
 
     overviewBlock('image', ['alt' => null])->media()->attach($sansAlt->id, ['order' => 0]);
     overviewBlock('image', ['alt' => 'Logo'])->media()->attach($avecAlt->id, ['order' => 0]);
+    overviewBlock('image', ['alt' => ''])->media()->attach($sansAlt2->id, ['order' => 0]);
 
     $galerie = overviewBlock('galerie');
     $galerie->media()->attach($galerieA->id, ['order' => 0, 'alt' => null]);
     $galerie->media()->attach($galerieB->id, ['order' => 1, 'alt' => 'Texte']);
+    $galerie->media()->attach($galerieC->id, ['order' => 2, 'alt' => null]);
 
-    expect(app(MediaOverviewService::class)->overview()['alerts']['missing_alt'])->toBe(2);
+    expect(app(MediaOverviewService::class)->overview()['alerts']['missing_alt'])->toBe(4);
 });
 
 it('liste les six derniers médias, le plus récent en premier', function () {
