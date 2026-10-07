@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Blocks\BlockRegistry;
+use App\Contracts\DeclaresMediaFields;
 use App\Models\Media;
 use App\Models\PageBlock;
 use App\Models\PdfCategory;
 use App\Models\PdfDocument;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 
 class BlockMediaService
 {
@@ -16,17 +19,11 @@ class BlockMediaService
         private WatermarkService $watermarkService,
     ) {}
 
-    public function stripMediaFields(array $data): array
+    public function stripMediaFields(array $data, string $type): array
     {
-        unset(
-            $data['image'], $data['delete_image'],
-            $data['video_file'], $data['delete_video'],
-            $data['images'], $data['images_alt'], $data['images_caption'], $data['delete_media'],
-            $data['pdf_source'], $data['pdf_document_id'], $data['pdf_title'], $data['pdfs'],
-            $data['apply_watermark'],
-        );
+        $rules = BlockRegistry::rulesFor($type);
 
-        return $data;
+        return Arr::except($data, $rules instanceof DeclaresMediaFields ? $rules->mediaFields() : []);
     }
 
     public function handle(Request $request, PageBlock $block, string $type): void

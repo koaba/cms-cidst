@@ -3,10 +3,11 @@
 namespace App\Blocks\Rules;
 
 use App\Contracts\BlockRules;
+use App\Contracts\DeclaresMediaFields;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
 
-class VideoRules implements BlockRules
+class VideoRules implements BlockRules, DeclaresMediaFields
 {
     public function rules(bool $isCreate, ?PageBlock $block = null): array
     {
@@ -33,5 +34,10 @@ class VideoRules implements BlockRules
     public function casts(Request $request): array
     {
         return [];
+    }
+
+    public function mediaFields(): array
+    {
+        return ['video_file', 'delete_video', 'apply_watermark'];
     }
 }

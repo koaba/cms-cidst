@@ -3,10 +3,11 @@
 namespace App\Blocks\Rules;
 
 use App\Contracts\BlockRules;
+use App\Contracts\DeclaresMediaFields;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
 
-class GalerieRules implements BlockRules
+class GalerieRules implements BlockRules, DeclaresMediaFields
 {
     public function rules(bool $isCreate, ?PageBlock $block = null): array
     {
@@ -38,5 +39,10 @@ class GalerieRules implements BlockRules
             'autoplay' => $request->boolean('autoplay'),
             'autoplay_interval' => (int) $request->input('autoplay_interval', 4),
         ];
+    }
+
+    public function mediaFields(): array
+    {
+        return ['images', 'images_alt', 'images_caption', 'delete_media', 'apply_watermark'];
     }
 }

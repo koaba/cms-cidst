@@ -3,10 +3,11 @@
 namespace App\Blocks\Rules;
 
 use App\Contracts\BlockRules;
+use App\Contracts\DeclaresMediaFields;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
 
-class ImageRules implements BlockRules
+class ImageRules implements BlockRules, DeclaresMediaFields
 {
     public function rules(bool $isCreate, ?PageBlock $block = null): array
     {
@@ -27,5 +28,10 @@ class ImageRules implements BlockRules
     public function casts(Request $request): array
     {
         return [];
+    }
+
+    public function mediaFields(): array
+    {
+        return ['image', 'delete_image', 'apply_watermark'];
     }
 }

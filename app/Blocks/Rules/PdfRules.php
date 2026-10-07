@@ -3,10 +3,11 @@
 namespace App\Blocks\Rules;
 
 use App\Contracts\BlockRules;
+use App\Contracts\DeclaresMediaFields;
 use App\Models\PageBlock;
 use Illuminate\Http\Request;
 
-class PdfRules implements BlockRules
+class PdfRules implements BlockRules, DeclaresMediaFields
 {
     public function rules(bool $isCreate, ?PageBlock $block = null): array
     {
@@ -29,5 +30,10 @@ class PdfRules implements BlockRules
     public function casts(Request $request): array
     {
         return [];
+    }
+
+    public function mediaFields(): array
+    {
+        return ['pdf_source', 'pdf_document_id', 'pdf_title', 'pdfs', 'apply_watermark'];
     }
 }
