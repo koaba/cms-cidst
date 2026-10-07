@@ -8,10 +8,11 @@ use App\Models\Page;
 use App\Models\PageView;
 use App\Models\Slider;
 use App\Models\User;
+use App\Services\MediaOverviewService;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(MediaOverviewService $mediaOverview)
     {
         $stats = [
             'articles' => Article::where('is_published', true)->count(),
@@ -68,13 +69,16 @@ class DashboardController extends Controller
         $recentArticles = Article::with('user')->latest('updated_at')->take(5)->get();
         $recentUsers = User::latest()->take(5)->get();
 
+        $media = $mediaOverview->overview();
+
         return view('admin.dashboard', compact(
             'stats',
             'activiteMensuelle',
             'activiteVues',
             'topArticles',
             'recentArticles',
-            'recentUsers'
+            'recentUsers',
+            'media'
         ));
     }
 }

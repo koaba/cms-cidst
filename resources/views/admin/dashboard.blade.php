@@ -1,4 +1,4 @@
-﻿<x-admin.layout>
+<x-admin.layout>
     <h1 class="text-2xl font-bold mb-6">Tableau de bord</h1>
 
     {{-- Cartes de statistiques : composant natif daisyUI, zéro CSS custom --}}
@@ -24,6 +24,8 @@
             <div class="stat-value text-primary">{{ $stats['views_30d'] }}</div>
         </div>
     </div>
+
+    <x-admin.media-overview :overview="$media" />
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {{-- Graphique d'activité --}}
