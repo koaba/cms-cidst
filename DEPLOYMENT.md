@@ -41,6 +41,8 @@ Ce fichier liste les actions critiques de sécurité et de configuration à effe
 ## 🟠 Important — configuration serveur
 
 - [ ] Base de données de production configurée (pas la base locale de dev)
+- [ ] `php artisan migrate --force` (inclut les colonnes `width` et `height` de `media`)
+- [ ] `php artisan media:backfill-dimensions` après la migration : renseigne les dimensions des images existantes (idempotente, `--dry-run` pour simuler)
 - [ ] `php artisan config:cache` / `route:cache` / `view:cache` pour les perfs
 - [ ] Permissions fichiers correctes (`storage/`, `bootstrap/cache/`)
 - [ ] `npm run build` exécuté (assets compilés, pas de `npm run dev`)
