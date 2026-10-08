@@ -34,3 +34,5 @@ test_output*.txt
 /routes_*.json
 /junit_debug.xml
 /sitemap_*.txt
+/CIDST-PASSATION-TECHNIQUE.md
+/PASSATION.md
