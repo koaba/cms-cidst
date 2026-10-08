@@ -20,7 +20,7 @@ Extensions confirmées actives : `mysqli`, `pdo_mysql` (déjà activées par dé
 ## Stack
 
 - PHP : 8.3.30 (ZTS, Visual C++ 2019 x64)
-- Laravel : v13.19.0
+- Laravel : ^13.8 (version exacte dans `composer.lock`, v13.35.0 au 08/10/2026)
 - MySQL : via Laragon, base `laravel_academy`
 - Node/npm : Vite + Tailwind
 
