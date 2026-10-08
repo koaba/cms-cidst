@@ -11,7 +11,6 @@ use App\Models\PdfDocument;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Storage;
 
 class BlockMediaService
 {
@@ -115,7 +114,7 @@ class BlockMediaService
             $this->watermarkService->watermarkImage($path);
         }
 
-        $dimensions = $type === 'image' ? $this->imageDimensions($path) : [];
+        $dimensions = $type === 'image' ? MediaDimensionsReader::read($path) : [];
 
         return Media::create([
             'path' => $path,
@@ -124,16 +123,6 @@ class BlockMediaService
             'size' => $file->getSize(),
             'type' => $type,
         ] + $dimensions + $extra);
-    }
-
-    /**
-     * @return array{width: int, height: int}|array{}
-     */
-    private function imageDimensions(string $path): array
-    {
-        $size = rescue(fn () => getimagesize(Storage::disk('public')->path($path)), false, false);
-
-        return $size ? ['width' => $size[0], 'height' => $size[1]] : [];
     }
 
     /**
