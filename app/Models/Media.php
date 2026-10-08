@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Jobs\GenerateMediaThumbnail;
+use App\Jobs\GenerateMediaVariants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -106,6 +107,7 @@ class Media extends Model
         static::created(function (Media $media) {
             if ($media->type === 'image' && $media->mime_type && str_starts_with($media->mime_type, 'image/')) {
                 GenerateMediaThumbnail::dispatch($media);
+                GenerateMediaVariants::dispatch($media);
             }
         });
 
