@@ -114,13 +114,15 @@ class BlockMediaService
             $this->watermarkService->watermarkImage($path);
         }
 
+        $dimensions = $type === 'image' ? MediaDimensionsReader::read($path) : [];
+
         return Media::create([
             'path' => $path,
             'original_name' => $file->getClientOriginalName(),
             'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
             'size' => $file->getSize(),
             'type' => $type,
-        ] + $extra);
+        ] + $dimensions + $extra);
     }
 
     /**
