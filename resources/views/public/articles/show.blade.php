@@ -147,7 +147,7 @@
                                 </button>
                             @endif
                         @else
-                            <div cla ss="video-facade relative w-full h-full cursor-pointer group"
+                            <div class="video-facade relative w-full h-full cursor-pointer group"
                                  data-embed-url="{{ $video->embed_url }}">
                                 @if ($video->youtube_thumbnail)
                                     <img src="{{ $video->youtube_thumbnail }}"
