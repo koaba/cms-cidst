@@ -29,10 +29,7 @@ Ce fichier liste les actions critiques de sécurité et de configuration à effe
   (valeur non reproduite ici). À changer pour de vrais mots de passe forts avant
   l'ouverture publique du site.
 
-- [ ] **Mettre à jour `guzzlehttp/guzzle` vers >=7.15.1**
-  4 avis de sécurité medium détectés le 21/07/2026 via `composer audit`, liés aux
-  redirections/cookies HTTP. Vérifier via `composer audit` avant la mise en prod
-  qu'aucune autre dépendance n'a de vulnérabilité connue.
+- [ ] **`composer audit` sans avis de sécurité** juste avant la mise en production. Au 08/10/2026 : aucun avis (laravel/framework 13.35.0, league/commonmark 2.10.3, guzzlehttp/guzzle 8.2.0). Paquet abandonné connu : `setasign/fpdi-tcpdf`, sans remplaçant suggéré, à traiter au backlog. La commande renvoie le code 1 à cause de ce paquet : utiliser `composer audit --abandoned=report` pour que seules les failles fassent échouer.
 
 - [ ] **`.env` jamais commité dans Git**
   Vérifier `.gitignore`, et que `.env.example` ne contient aucune vraie valeur
