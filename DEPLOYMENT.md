@@ -26,7 +26,7 @@ Ce fichier liste les actions critiques de sécurité et de configuration à effe
 - [ ] **Vérifier les mots de passe des comptes existants**
   Les comptes `admin@academy.local` et `user@academy.local` ont été réinitialisés
   manuellement via Tinker pendant le dev avec des mots de passe simples
-  (`nouveauMotDePasse123`). À changer pour de vrais mots de passe forts avant
+  (valeur non reproduite ici). À changer pour de vrais mots de passe forts avant
   l'ouverture publique du site.
 
 - [ ] **Mettre à jour `guzzlehttp/guzzle` vers >=7.15.1**
