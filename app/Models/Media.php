@@ -13,12 +13,13 @@ class Media extends Model
 
     protected $table = 'media';
 
-    protected $fillable = ['path', 'thumbnail_path', 'original_name', 'mime_type', 'size', 'type', 'source_type', 'url', 'apply_watermark', 'width', 'height'];
+    protected $fillable = ['path', 'thumbnail_path', 'original_name', 'mime_type', 'size', 'type', 'source_type', 'url', 'apply_watermark', 'width', 'height', 'variants'];
 
     protected $casts = [
         'apply_watermark' => 'boolean',
         'width' => 'integer',
         'height' => 'integer',
+        'variants' => 'array',
     ];
 
     public function mediables()
@@ -114,6 +115,9 @@ class Media extends Model
             }
             if ($media->thumbnail_path) {
                 Storage::disk('public')->delete($media->thumbnail_path);
+            }
+            foreach ($media->variants ?? [] as $variantPath) {
+                Storage::disk('public')->delete($variantPath);
             }
         });
     }
