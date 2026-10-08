@@ -41,6 +41,12 @@ Ce fichier liste les actions critiques de sécurité et de configuration à effe
 ## 🟠 Important — configuration serveur
 
 - [ ] Base de données de production configurée (pas la base locale de dev)
+- [ ] PHP ^8.3 sur le serveur (`php -v`), puis `composer check-platform-reqs` : la commande échoue si une version ou une extension manque. Ne pas viser une version plus ancienne : le projet n'est validé que sur PHP 8.3.
+- [ ] Extension PHP `gd` (Intervention : miniatures et filigrane), en plus de celles exigées par Laravel et par `pdo_mysql`
+- [ ] Binaire Poppler `pdftoppm` installé (paquet `poppler-utils` sous Debian ou Ubuntu). Sans lui, les miniatures PDF échouent sans erreur visible : seul `laravel.log` le signale. Chemin personnalisable avec `PDF_THUMBNAIL_POPPLER_BINARY`.
+- [ ] File d'attente : `QUEUE_CONNECTION` vaut `database` par défaut. Lancer un worker supervisé (Supervisor ou systemd) avec `php artisan queue:work`, et `php artisan queue:restart` à chaque déploiement. Sans worker, les miniatures ne sont jamais générées.
+- [ ] `php artisan migrate --force` (inclut les colonnes `width` et `height` de `media`)
+- [ ] `php artisan media:backfill-dimensions` après la migration : renseigne les dimensions des images existantes (idempotente, `--dry-run` pour simuler)
 - [ ] `php artisan config:cache` / `route:cache` / `view:cache` pour les perfs
 - [ ] Permissions fichiers correctes (`storage/`, `bootstrap/cache/`)
 - [ ] `npm run build` exécuté (assets compilés, pas de `npm run dev`)

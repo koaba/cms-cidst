@@ -27,3 +27,10 @@ Homestead.yaml
 Thumbs.db
 
 test_output*.txt
+/storage/framework/tmp/
+/tmp_*.ps1
+/tmp_*.php
+/debug_hero.txt
+/routes_*.json
+/junit_debug.xml
+/sitemap_*.txt
