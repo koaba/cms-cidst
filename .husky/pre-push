@@ -1,0 +1,14 @@
+echo "Pest complet avant push..."
+ROOT="$(pwd -W 2>/dev/null || pwd)"
+export TEMP="$ROOT/storage/framework/tmp"
+export TMP="$TEMP"
+mkdir -p "$TEMP"
+
+if ! php vendor/bin/pest --compact; then
+    echo ""
+    echo "Push bloque : des tests echouent. Corrige-les avant de pousser."
+    exit 1
+fi
+
+echo "Tous les tests passent."
+exit 0
