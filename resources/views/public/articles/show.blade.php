@@ -43,19 +43,13 @@
     @if ($article->gallery_display === 'slideshow')
         <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2">
             @foreach ($galleryImages as $media)
-                <img src="{{ Storage::url($media->path) }}"
-                     alt="{{ $article->title }} - image {{ $loop->iteration }}"
-                     loading="lazy" decoding="async" class="w-full max-w-md flex-shrink-0 snap-center aspect-video object-cover rounded cursor-pointer"
-                     onclick="openLightbox('gallery', {{ $loop->index }})">
+                <x-media-img :media="$media" :alt="$article->title.' - image '.$loop->iteration" sizes="(min-width: 448px) 448px, 100vw" :onclick="'openLightbox(\'gallery\', '.$loop->index.')'" class="w-full max-w-md flex-shrink-0 snap-center aspect-video object-cover rounded cursor-pointer" />
             @endforeach
         </div>
     @else
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             @foreach ($galleryImages as $media)
-                <img src="{{ Storage::url($media->path) }}"
-                     alt="{{ $article->title }} - image {{ $loop->iteration }}"
-                     loading="lazy" decoding="async" class="w-full aspect-square object-cover rounded cursor-pointer"
-                     onclick="openLightbox('gallery', {{ $loop->index }})">
+                <x-media-img :media="$media" :alt="$article->title.' - image '.$loop->iteration" sizes="(min-width: 640px) 33vw, 50vw" :onclick="'openLightbox(\'gallery\', '.$loop->index.')'" class="w-full aspect-square object-cover rounded cursor-pointer" />
             @endforeach
         </div>
     @endif

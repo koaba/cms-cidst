@@ -68,3 +68,11 @@ it('priorise l\'image : fetchpriority high et jamais loading', function () {
         ->toContain('fetchpriority="high"')
         ->not->toContain('loading=');
 });
+
+it('transmet les attributs supplementaires a la balise img', function () {
+    $media = Media::factory()->make(['path' => 'a/photo.jpg']);
+
+    expect(renderMediaImg($media, 'onclick="agrandir(2)" data-id="9"'))
+        ->toContain('onclick="agrandir(2)"')
+        ->toContain('data-id="9"');
+});
