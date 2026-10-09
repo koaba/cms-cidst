@@ -49,3 +49,9 @@ it('retourne un tableau vide si l\'image est plus etroite que la plus petite var
 
     expect((new ImageVariantService)->generate('media/mini.jpg'))->toBe([]);
 });
+it('genere les trois variantes pour une grande image', function () {
+    Storage::fake('public');
+    fakeJpeg('media/grande.jpg', 1500, 900);
+
+    expect(array_keys((new ImageVariantService)->generate('media/grande.jpg')))->toBe([480, 768, 1280]);
+});
