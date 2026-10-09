@@ -1,7 +1,7 @@
 <x-layout :seo="$page">
     <h1 class="text-3xl font-bold mb-4">{{ $page->title }}</h1>
     @if($page->media->isNotEmpty())
-        <img src="{{ Storage::url($page->media->first()->path) }}" fetchpriority="high" decoding="async" class="w-full max-w-2xl mb-4 rounded">
+        <x-media-img :media="$page->media->first()" :alt="$page->title" :priority="true" sizes="(min-width: 672px) 672px, 100vw" class="w-full max-w-2xl mb-4 rounded" />
     @endif
 
      @if($page->blocks->whereNull('parent_id')->isNotEmpty())
