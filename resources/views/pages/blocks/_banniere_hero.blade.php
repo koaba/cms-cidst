@@ -4,11 +4,7 @@
 @endphp
 <section class="relative w-full min-h-[480px] flex items-center justify-center text-center overflow-hidden {{ $aUneImage ? '' : 'bg-gray-800' }}">
     @if($aUneImage)
-        <img
-            src="{{ Storage::url($media->first()->path) }}"
-            alt="{{ $data['alt'] ?? '' }}"
-            fetchpriority="high" decoding="async" class="absolute inset-0 w-full h-full object-cover"
-        >
+        <x-media-img :media="$media->first()" :alt="$data['alt'] ?? ''" sizes="100vw" :priority="true" class="absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 bg-black" style="opacity: {{ $opacite }}"></div>
     @endif
 

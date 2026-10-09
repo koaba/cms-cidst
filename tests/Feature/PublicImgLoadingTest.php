@@ -41,10 +41,10 @@ it('impose loading ou fetchpriority sur chaque img publique', function () {
     expect($fautives)->toBe([]);
 });
 
-it('priorise le hero : fetchpriority high et jamais lazy', function () {
-    $hero = collect(publicImgTags())->first(fn ($t) => $t[0] === '_banniere_hero.blade.php');
+it('priorise le hero : x-media-img en priorite et jamais lazy', function () {
+    $hero = file_get_contents(resource_path('views/pages/blocks/_banniere_hero.blade.php'));
 
-    expect($hero)->not->toBeNull()
-        ->and($hero[1])->toContain('fetchpriority="high"')
-        ->and($hero[1])->not->toContain('loading=');
+    expect($hero)->toContain('<x-media-img')
+        ->and($hero)->toContain(':priority="true"')
+        ->and($hero)->not->toContain('loading=');
 });
