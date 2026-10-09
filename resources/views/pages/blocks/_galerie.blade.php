@@ -8,7 +8,7 @@
         <div class="carousel-track flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth" style="scrollbar-width: none;">
             @foreach($media as $item)
                 <figure class="snap-start shrink-0 w-72">
-                    <img src="{{ $item->display_url }}" alt="{{ $item->pivot->alt ?? '' }}" loading="lazy" class="w-full h-48 object-cover rounded-lg">
+                    <x-media-img :media="$item" :alt="$item->pivot->alt ?? ''" sizes="288px" class="w-full h-48 object-cover rounded-lg" />
                     @if($item->pivot->caption)
                         <figcaption class="text-sm text-gray-500 mt-1">{{ $item->pivot->caption }}</figcaption>
                     @endif
@@ -89,7 +89,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 my-6">
         @foreach($media as $item)
             <figure>
-                <img src="{{ $item->display_url }}" alt="{{ $item->pivot->alt ?? '' }}" loading="lazy" class="w-full h-40 object-cover rounded-lg">
+                <x-media-img :media="$item" :alt="$item->pivot->alt ?? ''" sizes="(min-width: 768px) 33vw, 50vw" class="w-full h-40 object-cover rounded-lg" />
                 @if($item->pivot->caption)
                     <figcaption class="text-sm text-gray-500 mt-1">{{ $item->pivot->caption }}</figcaption>
                 @endif
