@@ -36,3 +36,16 @@ it('retourne un tableau vide si le fichier est absent', function () {
 
     expect((new ImageVariantService)->generate('media/absent.jpg'))->toBe([]);
 });
+it('ignore la variante dont la largeur egale celle de l\'original', function () {
+    Storage::fake('public');
+    fakeJpeg('media/etroite.jpg', 768, 400);
+
+    expect(array_keys((new ImageVariantService)->generate('media/etroite.jpg')))->toBe([480]);
+});
+
+it('retourne un tableau vide si l\'image est plus etroite que la plus petite variante', function () {
+    Storage::fake('public');
+    fakeJpeg('media/mini.jpg', 300, 200);
+
+    expect((new ImageVariantService)->generate('media/mini.jpg'))->toBe([]);
+});
