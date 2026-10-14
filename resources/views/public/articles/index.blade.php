@@ -14,9 +14,13 @@
         <a href="{{ route('blog.show', $article) }}"
            class="flex flex-col h-full bg-cidst-surface border border-cidst-border rounded overflow-hidden hover:shadow-lg transition-shadow">
             @if ($article->image)
-                <img src="{{ Storage::url($article->image) }}"
+                @if ($article->coverMedia)
+<x-media-img :media="$article->coverMedia" :alt="$article->title" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" class="w-full aspect-video object-cover" />
+@else
+<img src="{{ Storage::url($article->image) }}"
                      alt="{{ $article->title }}"
                      loading="lazy" decoding="async" class="w-full aspect-video object-cover">
+@endif
             @else
                 <div class="w-full aspect-video bg-cidst-bg flex items-center justify-center text-cidst-muted text-sm">
                     Aucune image
