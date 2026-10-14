@@ -1,17 +1,8 @@
 @props(['media', 'alt' => '', 'sizes' => '100vw', 'priority' => false, 'class' => ''])
 
 @php
-    $disk = Storage::disk('public');
     $original = $media->display_url;
-    $candidates = collect($media->variants ?? [])
-        ->sortKeys()
-        ->map(fn ($path, $width) => $disk->url($path).' '.$width.'w');
-
-    if ($candidates->isNotEmpty() && $media->width) {
-        $candidates->push($original.' '.$media->width.'w');
-    }
-
-    $srcset = $candidates->implode(', ');
+    $srcset = $media->srcset;
     $hasDimensions = $media->width && $media->height;
     $extra = $attributes->toHtml();
 @endphp

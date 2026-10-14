@@ -100,6 +100,21 @@ class Media extends Model
         return $this->url;
     }
 
+    public function getSrcsetAttribute(): string
+    {
+        $disk = Storage::disk('public');
+
+        $candidates = collect($this->variants ?? [])
+            ->sortKeys()
+            ->map(fn ($path, $width) => $disk->url($path).' '.$width.'w');
+
+        if ($candidates->isNotEmpty() && $this->width) {
+            $candidates->push($this->display_url.' '.$this->width.'w');
+        }
+
+        return $candidates->implode(', ');
+    }
+
     protected static function boot()
     {
         parent::boot();
