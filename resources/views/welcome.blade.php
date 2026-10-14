@@ -90,7 +90,7 @@
 
     <section class="py-16 border-t border-cidst-border">
         @php
-            $homeSliders = \App\Models\Slider::where('is_active', true)
+            $homeSliders = \App\Models\Slider::with('media')
                 ->orderBy('order')
                 ->take(5)
                 ->get();
@@ -110,12 +110,24 @@
                                 <a href="{{ $slider->link_url }}" class="block w-full h-full">
                             @endif
 
-                            <img
-                                src="{{ Storage::url($slider->image) }}"
-                                alt="{{ $slider->title }}"
-                                class="w-full h-full object-cover"
-                                loading="{{ $index === 0 ? 'eager' : 'lazy' }}" fetchpriority="{{ $index === 0 ? 'high' : 'auto' }}"
-                            >
+                          @php $sliderMedia = $slider->media->first(); @endphp
+@if($sliderMedia)
+    <x-media-img
+        :media="$sliderMedia"
+        :alt="$slider->title"
+        :priority="$index === 0"
+        sizes="100vw"
+        class="w-full h-full object-cover"
+    />
+                            @else
+                                <img
+                                    src="{{ Storage::url($slider->image) }}"
+                                    alt="{{ $slider->title }}"
+                                    class="w-full h-full object-cover"
+                                    decoding="async"
+                                    @if($index === 0) fetchpriority="high" @else loading="lazy" @endif
+                                >
+                            @endif
 
                             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-6">
                                 <h3 class="font-display text-white text-lg font-semibold">{{ $slider->title }}</h3>
