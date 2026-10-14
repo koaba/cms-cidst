@@ -10,9 +10,13 @@
             'alt' => $article->title,
         ]], JSON_HEX_TAG | JSON_HEX_AMP) !!}
     </script>
-    <img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}"
+    @if ($article->coverMedia)
+<x-media-img :media="$article->coverMedia" :alt="$article->title" :priority="true" sizes="(min-width: 768px) 768px, 100vw" onclick="openLightbox('featured', 0)" class="w-full aspect-video max-h-[500px] object-cover rounded mb-6 cursor-pointer" />
+@else
+<img src="{{ Storage::url($article->image) }}" alt="{{ $article->title }}"
          onclick="openLightbox('featured', 0)"
          fetchpriority="high" decoding="async" class="w-full aspect-video max-h-[500px] object-cover rounded mb-6 cursor-pointer">
+@endif
     @endif
     @if ($article->categories->isNotEmpty())
         <div class="flex flex-wrap gap-1 mb-6">

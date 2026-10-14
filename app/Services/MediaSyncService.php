@@ -63,6 +63,26 @@ class MediaSyncService
         return $path;
     }
 
+    /**
+     * Cree le Media de couverture (dimensions lues apres filigrane) et remplace l'ancien.
+     */
+    public function syncCoverMedia(Request $request, Article $article, string $path): void
+    {
+        $disk = Storage::disk('public');
+        $old = $article->coverMedia;
+
+        $media = Media::create([
+            'path' => $path,
+            'original_name' => $request->file('image')->getClientOriginalName(),
+            'mime_type' => $disk->mimeType($path) ?: 'application/octet-stream',
+            'size' => $disk->size($path),
+            'type' => 'image',
+        ] + MediaDimensionsReader::read($path));
+
+        $article->coverMedia()->associate($media)->save();
+        $old?->delete();
+    }
+
     /* ------------------------------------------------------------------ */
     /*  Galerie simple (Article) */
     /* ------------------------------------------------------------------ */

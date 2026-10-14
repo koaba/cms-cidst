@@ -47,6 +47,12 @@ class Article extends Model implements HasPublicUrl
             ->orderByPivot('order');
     }
 
+    /** Image a la une (hors galerie media()), voir colonne cover_media_id. */
+    public function coverMedia()
+    {
+        return $this->belongsTo(Media::class, 'cover_media_id');
+    }
+
     public function diaporamas()
     {
         return $this->morphMany(Diaporama::class, 'diaporamable')->orderBy('order');

@@ -14,7 +14,7 @@ class ArticleController extends Controller
     {
         $articles = Article::where('is_published', true)
             ->where('published_at', '<=', now())
-            ->with(['categories', 'user'])
+            ->with(['categories', 'user', 'coverMedia'])
             ->orderByDesc('published_at')
             ->paginate(9);
 
@@ -37,7 +37,7 @@ class ArticleController extends Controller
         $articles = $category->articles()
             ->where('is_published', true)
             ->where('published_at', '<=', now())
-            ->with(['categories', 'user'])
+            ->with(['categories', 'user', 'coverMedia'])
             ->orderByDesc('published_at')
             ->paginate(9);
 
