@@ -91,9 +91,7 @@
         class="diaporama-auto group relative w-full max-w-2xl h-64 sm:h-80 overflow-hidden rounded-lg border border-cidst-border block"
         data-diaporama="{{ $diaporama->id }}"
         data-current-index="0">
-                            <img src="{{ $diaporama->media->first()->thumbnail_url }}"
-         alt="{{ $diaporama->title ?? $article->title }}"
-         loading="lazy" decoding="async" class="diaporama-auto-img w-full h-full object-cover transition-opacity duration-500">
+                            <x-media-img :media="$diaporama->media->first()" :alt="$diaporama->title ?? $article->title" sizes="(min-width: 672px) 672px, 100vw" class="diaporama-auto-img w-full h-full object-cover transition-opacity duration-500" />
                             @if ($diaporama->media->count() > 1)
                                 <div class="absolute inset-0 flex items-end justify-center pb-3 gap-1.5 pointer-events-none">
                                     @foreach ($diaporama->media as $media)
@@ -108,6 +106,7 @@
     {!! json_encode($diaporama->media->map(fn ($m) => [
     'url' => Storage::url($m->path),
     'thumbnail_url' => $m->thumbnail_url,
+    'srcset' => $m->srcset,
     'alt' => $diaporama->title ?? $article->title,
 ]), JSON_HEX_TAG | JSON_HEX_AMP) !!}
 </script>
@@ -249,7 +248,8 @@
 
     img.style.opacity = '0';
     setTimeout(() => {
-        img.src = items[index].thumbnail_url;
+        img.srcset = items[index].srcset || '';
+        img.src = items[index].url;
         img.style.opacity = '1';
     }, 300);
 
