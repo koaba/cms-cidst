@@ -1,8 +1,15 @@
-echo "Pest complet avant push..."
+echo "Verification avant push (Pint puis Pest)..."
 ROOT="$(pwd -W 2>/dev/null || pwd)"
 export TEMP="$ROOT/storage/framework/tmp"
 export TMP="$TEMP"
 mkdir -p "$TEMP"
+
+echo "Pint (style)..."
+if ! php vendor/bin/pint --test; then
+    echo ""
+    echo "Push bloque : erreurs de style. Lance vendor/bin/pint puis commite la correction."
+    exit 1
+fi
 
 if ! php vendor/bin/pest --compact; then
     echo ""
