@@ -7,9 +7,13 @@
             @foreach ($articles as $article)
                 <a href="{{ route('blog.show', $article) }}" class="flex gap-2 items-center group">
                 @if ($article->image)
-                    <img src="{{ Storage::url($article->image) }}"
+                    @if ($article->coverMedia)
+<x-media-img :media="$article->coverMedia" :alt="$article->title" sizes="44px" class="w-11 h-11 object-cover rounded flex-shrink-0" />
+@else
+<img src="{{ Storage::url($article->image) }}"
                     alt="{{ $article->title }}"
                     loading="lazy" decoding="async" class="w-11 h-11 object-cover rounded flex-shrink-0">
+@endif
                 @else
     <div class="w-11 h-11 bg-cidst-bg rounded flex-shrink-0"></div>
 @endif
