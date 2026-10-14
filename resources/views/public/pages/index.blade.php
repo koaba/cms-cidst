@@ -12,6 +12,12 @@
         'large' => 'aspect-[21/9]',
         default => 'aspect-video',
     };
+
+    $imageSizes = match ((int) $settings->pages_grid_columns) {
+        3 => '(min-width: 640px) 33vw, 100vw',
+        4 => '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw',
+        default => '(min-width: 640px) 50vw, 100vw',
+    };
 @endphp
 
 <x-layout>
@@ -25,9 +31,7 @@
             <a href="{{ route('pages.show', $page) }}"
                class="flex flex-col h-full bg-cidst-surface border border-cidst-border rounded overflow-hidden hover:shadow-lg transition-shadow">
                 @if ($page->media->isNotEmpty())
-                    <img src="{{ Storage::url($page->media->first()->path) }}"
-                         alt="{{ $page->title }}"
-                         loading="lazy" decoding="async" class="w-full {{ $imageAspectClass }} object-cover">
+                    <x-media-img :media="$page->media->first()" :alt="$page->title" :sizes="$imageSizes" :class="'w-full '.$imageAspectClass.' object-cover'" />
                 @else
                     <div class="w-full {{ $imageAspectClass }} bg-cidst-bg flex items-center justify-center text-cidst-muted text-sm">
                         Aucune image
