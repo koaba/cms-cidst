@@ -46,6 +46,9 @@ class ArticleController extends Controller
             }
 
             $article = Article::create($validated);
+            if ($path) {
+                $this->mediaSync->syncCoverMedia($request, $article, $path);
+            }
             $this->saveSeo($article, $validated);
             $article->categories()->sync($validated['categories'] ?? []);
 
@@ -85,6 +88,9 @@ class ArticleController extends Controller
             }
 
             $article->update($validated);
+            if ($path) {
+                $this->mediaSync->syncCoverMedia($request, $article, $path);
+            }
             $this->saveSeo($article, $validated);
             $article->categories()->sync($validated['categories'] ?? []);
 
@@ -119,6 +125,8 @@ class ArticleController extends Controller
             if ($article->image) {
                 Storage::disk('public')->delete($article->image);
             }
+
+            $article->coverMedia?->delete();
 
             $article->delete();
         });
