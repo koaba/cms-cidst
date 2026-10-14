@@ -19,6 +19,7 @@ class NewsSidebar extends Component
             ->where('published_at', '<=', now())
             ->orderByDesc('published_at')
             ->limit(config('display.max_sidebar_articles'))
+            ->with('coverMedia')
             ->get();
         $this->facebookUrl = SiteSetting::current()->facebook_url;
     }
