@@ -23,9 +23,9 @@ function expectedRawImgCounts(): array
         // Image d'article stockee hors table media (migration a prevoir).
         'components/news-sidebar.blade.php' => 1,
         'public/articles/index.blade.php' => 1,
-        // show : image d'article (13), miniature PDF (66), miniature diaporama (94),
-        // miniature YouTube externe (147), lightbox rempli en JavaScript (174).
-        'public/articles/show.blade.php' => 5,
+        // show : image d'article (13), miniature PDF (66),
+        // miniature YouTube externe (146), lightbox rempli en JavaScript (173).
+        'public/articles/show.blade.php' => 4,
         // Miniatures de PDF deja reduites, taille fixe.
         'pages/blocks/_pdf.blade.php' => 1,
         'public/pdf-documents/index.blade.php' => 1,
