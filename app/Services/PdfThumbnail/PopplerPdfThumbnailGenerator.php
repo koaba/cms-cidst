@@ -18,6 +18,17 @@ class PopplerPdfThumbnailGenerator implements PdfThumbnailGeneratorInterface
 
     public function generate(string $pdfPath, string $outputPath, int $width = 400): bool
     {
+        try {
+            return $this->doGenerate($pdfPath, $outputPath, $width);
+        } catch (\Throwable $e) {
+            Log::error('PopplerPdfThumbnailGenerator : miniature impossible ('.$e->getMessage().').');
+
+            return false;
+        }
+    }
+
+    private function doGenerate(string $pdfPath, string $outputPath, int $width): bool
+    {
         if (! is_file($pdfPath)) {
             Log::warning("PopplerPdfThumbnailGenerator : fichier PDF introuvable ({$pdfPath}), generation annulee.");
 
