@@ -2,7 +2,7 @@
 
 namespace App\Services\PdfThumbnail;
 
-use InvalidArgumentException;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Instancie le bon driver de generation de miniature PDF selon la config.
@@ -18,9 +18,15 @@ class PdfThumbnailGeneratorFactory
             'poppler' => new PopplerPdfThumbnailGenerator(
                 config('services.pdf_thumbnail.poppler_binary', 'pdftoppm')
             ),
-            default => throw new InvalidArgumentException(
-                "PdfThumbnailGeneratorFactory : driver \"{$driver}\" inconnu. Valeurs acceptees : \"imagick\", \"poppler\"."
-            ),
+            'none' => new NullPdfThumbnailGenerator,
+            default => self::fallback($driver),
         };
+    }
+
+    private static function fallback(mixed $driver): PdfThumbnailGeneratorInterface
+    {
+        Log::warning('PdfThumbnailGeneratorFactory : driver "'.(is_scalar($driver) ? $driver : gettype($driver)).'" inconnu, miniature serveur desactivee. Valeurs acceptees : "imagick", "poppler", "none".');
+
+        return new NullPdfThumbnailGenerator;
     }
 }
