@@ -89,12 +89,6 @@
     </section>
 
     <section class="py-16 border-t border-cidst-border">
-        @php
-            $homeSliders = \App\Models\Slider::with('media')
-                ->orderBy('order')
-                ->take(5)
-                ->get();
-        @endphp
 
         @if($homeSliders->isNotEmpty())
             <p class="font-mono text-xs text-cidst-muted mb-8">// Actualités en images</p>
@@ -159,7 +153,7 @@
         @endif
     </section>
 
-@if(isset($homeSliders) && $homeSliders->count() > 1)
+@if($homeSliders->count() > 1)
         <script>
             (function () {
                 const container = document.getElementById('home-slider');
