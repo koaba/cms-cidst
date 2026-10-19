@@ -18,3 +18,12 @@ it("fournit les sliders de l'accueil depuis le controleur, limites a 5 et ordonn
 it('ne requete plus les sliders depuis la vue', function () {
     expect(file_get_contents(resource_path('views/welcome.blade.php')))->not->toContain('Slider::');
 });
+
+it("n'affiche pas sur l'accueil un slider desactive", function () {
+    Slider::create(['title' => 'Actif', 'image' => 'sliders/actif.jpg', 'order' => 0, 'is_active' => true]);
+    Slider::create(['title' => 'Inactif', 'image' => 'sliders/inactif.jpg', 'order' => 1, 'is_active' => false]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertViewHas('homeSliders', fn ($sliders) => $sliders->pluck('title')->all() === ['Actif']);
+});
