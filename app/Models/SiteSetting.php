@@ -48,8 +48,23 @@ class SiteSetting extends Model
         return preg_match('/^#[0-9A-Fa-f]{6}$/', $value ?? '') ? $value : '#FFFFFF';
     }
 
+    private const CACHE_KEY = 'site-settings.current';
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => app()->forgetInstance(self::CACHE_KEY));
+        static::deleted(fn () => app()->forgetInstance(self::CACHE_KEY));
+    }
+
     public static function current(): self
     {
-        return static::first() ?? static::create([]);
+        if (app()->bound(self::CACHE_KEY)) {
+            return app(self::CACHE_KEY);
+        }
+
+        $settings = static::first() ?? static::create([]);
+        app()->instance(self::CACHE_KEY, $settings);
+
+        return $settings;
     }
 }
