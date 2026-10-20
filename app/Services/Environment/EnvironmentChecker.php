@@ -40,6 +40,7 @@ class EnvironmentChecker
             $this->pdfThumbnail(),
             $this->memoryLimit(),
             $this->executionTime(),
+            $this->appUrl(),
         ];
     }
 
@@ -120,6 +121,28 @@ class EnvironmentChecker
         return $seconds === 0 || $seconds >= self::MIN_EXECUTION_SECONDS
             ? $this->result('max_execution_time', 'ok', "max_execution_time = {$seconds}")
             : $this->result('max_execution_time', 'warning', "max_execution_time = {$seconds} s : ".self::MIN_EXECUTION_SECONDS.' s minimum recommande.');
+    }
+
+    private function appUrl(): array
+    {
+        if (($this->probe['app_env'] ?? null) !== 'production') {
+            return $this->result('app_url', 'ok', 'APP_URL non controlee hors production.');
+        }
+
+        $url = trim((string) ($this->probe['app_url'] ?? ''));
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        $host = strtolower(trim((string) parse_url($url, PHP_URL_HOST), '[]'));
+
+        $suspect = $url === ''
+            || $scheme !== 'https'
+            || $host === ''
+            || $host === 'localhost'
+            || filter_var($host, FILTER_VALIDATE_IP) !== false
+            || preg_match('/\.(localhost|test|local)$/', $host) === 1;
+
+        return $suspect
+            ? $this->result('app_url', 'warning', "APP_URL = {$url} : en production, une URL https avec un vrai nom de domaine est attendue (sinon og:image, sitemap et robots.txt sont faux).")
+            : $this->result('app_url', 'ok', "APP_URL = {$url}");
     }
 
     private function toBytes(string $value): int

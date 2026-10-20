@@ -109,3 +109,23 @@ it('accepte PHP exactement a la version minimale', function () {
 it('accepte une memory_limit de exactement 128M', function () {
     expect(envLevels(['memory_limit' => '128M']))->toHaveKey('memory_limit', 'ok');
 });
+
+it('accepte une APP_URL correcte en production', function () {
+    expect(envLevels(['app_env' => 'production', 'app_url' => 'https://www.exemple.mg']))->toHaveKey('app_url', 'ok');
+});
+
+it('ne controle pas APP_URL hors production', function () {
+    expect(envLevels(['app_env' => 'local', 'app_url' => 'http://laravel-academy.test']))->toHaveKey('app_url', 'ok');
+});
+
+it('avertit quand APP_URL est inadaptee en production', function (string $url) {
+    expect(envLevels(['app_env' => 'production', 'app_url' => $url]))->toHaveKey('app_url', 'warning');
+})->with([
+    'vide' => '',
+    'http' => 'http://www.exemple.mg',
+    'localhost' => 'https://localhost',
+    'test' => 'https://laravel-academy.test',
+    'ip' => 'https://192.168.1.10',
+    'local' => 'https://site.local',
+    'sous-domaine localhost' => 'https://app.localhost',
+]);

@@ -29,6 +29,8 @@ class EnvironmentProbe
             'database_ok' => $this->databaseOk(),
             'pdftoppm' => ! in_array('proc_open', $disabled, true) && $this->pdftoppmAvailable(),
             'imagick' => extension_loaded('imagick'),
+            'app_url' => (string) config('app.url'),
+            'app_env' => (string) config('app.env'),
         ];
     }
 

@@ -35,3 +35,11 @@ it('renvoie la version reelle de PHP et un booleen pour WebP', function () {
     expect($collected['php_version'])->toBe(PHP_VERSION)
         ->and($collected['gd_webp'])->toBeBool();
 });
+
+it('expose APP_URL et APP_ENV de la configuration', function () {
+    $collected = (new EnvironmentProbe)->collect();
+
+    expect($collected)
+        ->toHaveKey('app_url', (string) config('app.url'))
+        ->toHaveKey('app_env', (string) config('app.env'));
+});
