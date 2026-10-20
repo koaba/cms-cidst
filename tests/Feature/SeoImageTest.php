@@ -70,3 +70,21 @@ it('renvoie null sans aucun media', function () {
 
     expect(SeoService::image($article->fresh()))->toBeNull();
 });
+it('prefere l image og manuelle a la couverture, a la colonne image et a la galerie', function () {
+    $article = Article::factory()->create(['image' => 'articles/ancienne.jpg']);
+    $cover = Media::factory()->create(['path' => 'articles/cover.jpg']);
+    $article->coverMedia()->associate($cover)->save();
+    seoGalleryMedia($article, 'articles/gallery/a.jpg', 'image/jpeg', 0);
+    $article->seo()->create(['og_image' => 'seo/manuelle.jpg']);
+
+    expect(SeoService::image($article->fresh()))->toBe(seoUrl('seo/manuelle.jpg'));
+});
+
+it('ignore une og_image manuelle vide', function () {
+    $article = Article::factory()->create();
+    $cover = Media::factory()->create(['path' => 'articles/cover.jpg']);
+    $article->coverMedia()->associate($cover)->save();
+    $article->seo()->create(['og_image' => null]);
+
+    expect(SeoService::image($article->fresh()))->toBe(seoUrl('articles/cover.jpg'));
+});
