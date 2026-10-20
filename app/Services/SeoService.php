@@ -55,12 +55,16 @@ class SeoService
             return Storage::disk('public')->url($manual);
         }
 
+        if ($model instanceof Article && $model->coverMedia) {
+            return Storage::disk('public')->url($model->coverMedia->path);
+        }
+
         if (! empty($model->image)) {
             return Storage::disk('public')->url($model->image);
         }
 
         if (method_exists($model, 'media')) {
-            $firstMedia = $model->media()->first();
+            $firstMedia = $model->media()->where('media.mime_type', 'like', 'image/%')->first();
             if ($firstMedia) {
                 return Storage::disk('public')->url($firstMedia->path);
             }
