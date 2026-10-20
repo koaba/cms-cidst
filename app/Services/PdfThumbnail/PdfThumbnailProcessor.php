@@ -2,6 +2,7 @@
 
 namespace App\Services\PdfThumbnail;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -27,11 +28,17 @@ class PdfThumbnailProcessor
             $disk = Storage::disk('public');
             $thumbnailPath = $storagePath.'/thumbnails/'.pathinfo($path, PATHINFO_FILENAME).'.jpg';
 
-            $success = PdfThumbnailGeneratorFactory::make()->generate(
-                $disk->path($path),
-                $disk->path($thumbnailPath),
-                400
-            );
+            try {
+                $success = PdfThumbnailGeneratorFactory::make()->generate(
+                    $disk->path($path),
+                    $disk->path($thumbnailPath),
+                    400
+                );
+            } catch (\Throwable $e) {
+                Log::warning('PdfThumbnailProcessor : miniature serveur ignoree ('.$e->getMessage().').');
+
+                return null;
+            }
 
             return $success ? $thumbnailPath : null;
         };
