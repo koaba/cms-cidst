@@ -79,3 +79,33 @@ it('accepte une memory_limit illimitee', function () {
 it('avertit quand max_execution_time est inferieur a 30 s', function () {
     expect(envLevels(['max_execution_time' => 10]))->toHaveKey('max_execution_time', 'warning');
 });
+
+it('accepte pdo_sqlite comme seul pilote de base de donnees', function () {
+    $base = envProbe()['extensions'];
+    $sansMysql = array_values(array_diff($base, ['pdo_mysql'])) + [999 => 'pdo_sqlite'];
+
+    expect(envLevels(['extensions' => $sansMysql]))->toHaveKey('extensions', 'ok');
+});
+
+it('refuse l\'absence de tout pilote de base de donnees', function () {
+    $base = envProbe()['extensions'];
+    $sansPilote = array_values(array_diff($base, ['pdo_mysql', 'pdo_sqlite']));
+
+    expect(envLevels(['extensions' => $sansPilote]))->toHaveKey('extensions', 'error');
+});
+
+it('accepte max_execution_time a 0 (illimite)', function () {
+    expect(envLevels(['max_execution_time' => 0]))->toHaveKey('max_execution_time', 'ok');
+});
+
+it('accepte max_execution_time a exactement 30 s', function () {
+    expect(envLevels(['max_execution_time' => 30]))->toHaveKey('max_execution_time', 'ok');
+});
+
+it('accepte PHP exactement a la version minimale', function () {
+    expect(envLevels(['php_version' => '8.3.0']))->toHaveKey('php_version', 'ok');
+});
+
+it('accepte une memory_limit de exactement 128M', function () {
+    expect(envLevels(['memory_limit' => '128M']))->toHaveKey('memory_limit', 'ok');
+});
