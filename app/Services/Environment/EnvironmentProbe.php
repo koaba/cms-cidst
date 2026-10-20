@@ -13,7 +13,7 @@ class EnvironmentProbe
 {
     public function collect(): array
     {
-        $disabled = array_values(array_filter(array_map('trim', explode(',', (string) ini_get('disable_functions')))));
+        $disabled = $this->disabledFunctions();
 
         return [
             'php_version' => PHP_VERSION,
@@ -30,6 +30,14 @@ class EnvironmentProbe
             'pdftoppm' => ! in_array('proc_open', $disabled, true) && $this->pdftoppmAvailable(),
             'imagick' => extension_loaded('imagick'),
         ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function disabledFunctions(): array
+    {
+        return array_values(array_filter(array_map('trim', explode(',', (string) ini_get('disable_functions')))));
     }
 
     private function gdWebp(): bool
