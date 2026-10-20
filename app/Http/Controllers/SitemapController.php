@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
 {
+    public const CACHE_KEY = 'sitemap.xml';
+
     public function index(): Response
     {
-        $urls = Cache::remember('sitemap.xml', 3600, function () {
+        $urls = Cache::remember(self::CACHE_KEY, 3600, function () {
             $articles = Article::publiclyVisible()->with('seo')->get()
                 ->reject(fn (Article $article) => $article->seo?->no_index)
                 ->toBase()

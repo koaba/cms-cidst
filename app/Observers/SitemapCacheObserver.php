@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Http\Controllers\SitemapController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
@@ -12,11 +13,11 @@ class SitemapCacheObserver
 {
     public function saved(Model $model): void
     {
-        Cache::forget('sitemap.xml');
+        Cache::forget(SitemapController::CACHE_KEY);
     }
 
     public function deleted(Model $model): void
     {
-        Cache::forget('sitemap.xml');
+        Cache::forget(SitemapController::CACHE_KEY);
     }
 }
