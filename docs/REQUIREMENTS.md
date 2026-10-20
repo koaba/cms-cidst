@@ -38,12 +38,14 @@ Limite connue : la commande lit le `php.ini` de la ligne de commande. Sur un heb
 | `proc_open` desactive, ou ni `pdftoppm` ni Imagick | Pas de miniature PDF cote serveur. La miniature generee par le navigateur (pdf.js) reste utilisee. Un envoi de PDF n'echoue jamais pour cette raison. |
 | Pilote `PDF_THUMBNAIL_DRIVER` inconnu | Journalise un avertissement et desactive la miniature serveur (comme `none`). |
 | Image de moins de 480 px de large | Pas de variante, l'image d'origine est servie. |
+| APP_URL vide, en http, en localhost, en .test ou .local, ou en adresse IP, avec APP_ENV=production | Avertissement de app:check-environment. Les URL de og:image, du sitemap, de robots.txt et du canonical sont fausses. Le site fonctionne. |
 
 Valeurs de `PDF_THUMBNAIL_DRIVER` : `poppler` (defaut), `imagick`, `none`.
 
 ## Production
 
 - `APP_ENV=production` et `APP_DEBUG=false`.
+- `APP_URL` en https avec le vrai nom de domaine (le controle app:check-environment ne la verifie qu'avec `APP_ENV=production`).
 - `APP_KEY` generee une seule fois et conservee hors du serveur. Ne jamais lancer `key:generate` sur un site en service.
 - Construire les assets (`npm run build`) avant l'envoi : un hebergement partage n'a en general pas Node.
 - Installer avec `composer install --no-dev --optimize-autoloader`.
