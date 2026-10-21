@@ -29,7 +29,7 @@ it('marque la section courante comme active dans la barre latérale', function (
     $response = $this->actingAs($admin)->get(route('admin.pages.index'));
 
     $response->assertOk();
-    $response->assertSeeInOrder(['Pages', 'bg-gray-700']);
+    $response->assertSeeInOrder(['bg-admin-hover text-white block', 'Pages']);
 });
 
 it('refuse l\'accès à la barre latérale à un utilisateur sans le rôle Super Admin', function () {

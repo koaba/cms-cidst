@@ -22,6 +22,12 @@ export default {
                 mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
             },
             colors: {
+                admin: {
+                    bg: 'var(--admin-bg)',
+                    nav: 'var(--admin-nav)',
+                    hover: 'var(--admin-hover)',
+                    text: 'var(--admin-text)',
+                },
                 cidst: {
                     red: 'var(--color-primary, #C41E2A)',
                     ink: 'var(--color-secondary, #17181A)',

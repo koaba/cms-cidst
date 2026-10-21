@@ -7,10 +7,10 @@
     <title>Admin - {{ $title ?? 'Dashboard' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100">
-    <nav class="bg-gray-800 text-white p-4 flex justify-between items-center gap-4 sticky top-0 z-50">
+<body class="bg-admin-bg">
+    <nav class="bg-admin-nav text-white p-4 flex justify-between items-center gap-4 sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <button id="admin-sidebar-toggle" class="md:hidden p-2 -ml-2 rounded hover:bg-gray-700" aria-label="Ouvrir le menu">
+            <button id="admin-sidebar-toggle" class="md:hidden p-2 -ml-2 rounded hover:bg-admin-hover" aria-label="Ouvrir le menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
