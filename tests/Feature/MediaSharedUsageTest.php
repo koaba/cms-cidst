@@ -93,3 +93,26 @@ it('conserve l ancienne couverture remplacee si un slider l utilise encore', fun
     expect(Media::find($old->id))->not->toBeNull();
     Storage::disk('public')->assertExists('articles/old.jpg');
 });
+
+it('conserve le media et son fichier quand l article supprime etait sa couverture et qu un slider l utilise encore', function () {
+    UploadedFile::fake()->image('cover-shared.jpg', 600, 300)->storeAs('articles', 'cover-shared.jpg', 'public');
+
+    $media = Media::create([
+        'path' => 'articles/cover-shared.jpg',
+        'original_name' => 'cover-shared.jpg',
+        'mime_type' => 'image/jpeg',
+        'size' => 1000,
+        'type' => 'image',
+    ]);
+
+    $article = Article::factory()->create(['image' => 'articles/cover-shared.jpg']);
+    $article->coverMedia()->associate($media)->save();
+
+    $slider = Slider::create(['title' => 'S', 'image' => $media->path, 'order' => 0, 'is_active' => true]);
+    $slider->media()->attach($media->id, ['order' => 0]);
+
+    $this->actingAs($this->admin)->delete(route('admin.articles.destroy', $article))->assertSessionHasNoErrors();
+
+    expect(Media::find($media->id))->not->toBeNull();
+    Storage::disk('public')->assertExists('articles/cover-shared.jpg');
+});

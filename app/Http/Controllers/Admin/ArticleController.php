@@ -8,6 +8,8 @@ use App\Http\Requests\Admin\StoreArticleRequest;
 use App\Http\Requests\Admin\UpdateArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Media;
+use App\Services\MediaOverviewService;
 use App\Services\MediaSyncService;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Support\Facades\DB;
@@ -122,13 +124,18 @@ class ArticleController extends Controller
                 $video->delete();
             }
 
-            if ($article->image) {
-                Storage::disk('public')->delete($article->image);
-            }
-
-            $article->coverMedia?->delete();
+            $image = $article->image;
+            $cover = $article->coverMedia;
 
             $article->delete();
+
+            if ($cover && ! app(MediaOverviewService::class)->isInUse($cover)) {
+                $cover->delete();
+            }
+
+            if ($image && ! Media::query()->where('path', $image)->exists()) {
+                Storage::disk('public')->delete($image);
+            }
         });
 
         return redirect()->route('admin.articles.index')->with('success', 'Article supprimé avec succès.');
