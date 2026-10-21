@@ -1,5 +1,14 @@
 <x-admin.layout>
-    <h1 class="text-2xl font-bold mb-6">Tableau de bord</h1>
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h1 class="text-2xl font-bold">Tableau de bord</h1>
+        <nav class="join" aria-label="Période">
+            @foreach (\App\Services\Dashboard\DashboardPeriod::options() as $key => $label)
+                <a href="{{ route('admin.dashboard', ['period' => $key]) }}"
+                   class="join-item btn btn-sm {{ $period->key === $key ? 'btn-neutral' : 'btn-ghost bg-base-100' }}"
+                   @if ($period->key === $key) aria-current="page" @endif>{{ $label }}</a>
+            @endforeach
+        </nav>
+    </div>
 
     {{-- Cartes de statistiques : composant natif daisyUI, zéro CSS custom --}}
     <div class="stats shadow w-full mb-8 flex-wrap">
@@ -20,8 +29,17 @@
             <div class="stat-value text-primary">{{ $stats['users'] }}</div>
         </div>
         <div class="stat">
-            <div class="stat-title">Vues (30 derniers jours)</div>
-            <div class="stat-value text-primary">{{ $stats['views_30d'] }}</div>
+            <div class="stat-title">Vues ({{ $period->label() }})</div>
+            <div class="stat-value text-primary">{{ $stats['views_period'] }}</div>
+            @php $variation = $stats['views_variation']; @endphp
+            @if ($period->isGlobal())
+            @elseif ($variation === null)
+                <div class="stat-desc" data-variation="new">nouveau</div>
+            @else
+                <div class="stat-desc {{ $variation >= 0 ? 'text-success' : 'text-error' }}" data-variation="{{ $variation >= 0 ? 'up' : 'down' }}">
+                    {{ $variation >= 0 ? '+' : '' }}{{ $variation }} % vs période précédente
+                </div>
+            @endif
         </div>
     </div>
 
@@ -73,7 +91,7 @@
         {{-- Graphique des vues --}}
         <div class="card bg-base-100 shadow lg:col-span-2">
             <div class="card-body">
-                <h2 class="card-title">Vues du blog — 30 derniers jours</h2>
+                <h2 class="card-title">Vues du blog — {{ $period->label() }}</h2>
                 <canvas id="viewsChart" height="90"></canvas>
             </div>
         </div>
@@ -81,7 +99,7 @@
         {{-- Top 5 articles les plus vus --}}
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <h2 class="card-title">Top 5 articles (30j)</h2>
+                <h2 class="card-title">Top 5 articles ({{ $period->label() }})</h2>
                 @if ($topArticles->isEmpty() || $topArticles->sum('page_views_count') === 0)
                     <p class="text-sm opacity-60 mt-2">Aucune vue enregistrée pour l'instant.</p>
                 @else
