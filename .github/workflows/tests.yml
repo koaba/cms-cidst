@@ -27,6 +27,9 @@ jobs:
           extensions: gd, pdo_sqlite, mbstring, fileinfo, intl, exif
           coverage: none
 
+      - name: Installer Poppler (miniatures PDF)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
       - name: Installer les dependances
         run: composer install --no-interaction --prefer-dist
 
