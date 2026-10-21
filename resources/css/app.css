@@ -2,6 +2,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --admin-bg: #f3f4f6;
+    --admin-nav: #1f2937;
+    --admin-hover: #374151;
+    --admin-text: #d1d5db;
+}
 @keyframes marquee {
     0% { transform: translateX(100%); }
     100% { transform: translateX(-100%); }
