@@ -80,7 +80,9 @@ class MediaSyncService
         ] + MediaDimensionsReader::read($path));
 
         $article->coverMedia()->associate($media)->save();
-        $old?->delete();
+        if ($old && ! app(MediaOverviewService::class)->isInUse($old)) {
+            $old->delete();
+        }
     }
 
     /* ------------------------------------------------------------------ */

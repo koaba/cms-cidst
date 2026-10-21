@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Services\MediaOverviewService;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,7 +22,7 @@ trait HasOrphanMediaCleanup
         $model->media()->detach();
 
         foreach ($mediaItems as $media) {
-            if ($media->mediables()->count() === 0) {
+            if (! app(MediaOverviewService::class)->isInUse($media)) {
                 $media->delete();
             }
         }

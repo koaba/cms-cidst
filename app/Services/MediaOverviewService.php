@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Article;
 use App\Models\Media;
 use App\Models\PageBlock;
+use App\Models\SeoMeta;
 
 /**
  * Vue d'ensemble de la médiathèque pour le tableau de bord admin.
@@ -105,6 +107,29 @@ class MediaOverviewService
                 ];
             })
             ->all();
+    }
+
+    /**
+     * Regle unique « media utilise » : pivot mediables, couverture d'article,
+     * colonne articles.image ou seo_metas.og_image (chemins compares a media.path).
+     * Requetes exists() simples, portables, arret a la premiere condition vraie.
+     */
+    public function isInUse(Media $media): bool
+    {
+        if ($media->mediables()->exists()) {
+            return true;
+        }
+
+        if (Article::query()->where('cover_media_id', $media->id)->exists()) {
+            return true;
+        }
+
+        if ($media->path === null || $media->path === '') {
+            return false;
+        }
+
+        return Article::query()->where('image', $media->path)->exists()
+            || SeoMeta::query()->where('og_image', $media->path)->exists();
     }
 
     private function heavyImages(): int

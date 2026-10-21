@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Models\Media;
+use App\Services\MediaOverviewService;
 use Closure;
 use Illuminate\Support\Facades\Storage;
 
@@ -106,7 +107,7 @@ trait HasOrderedMediaCollection
         foreach (array_intersect($mediaIds, $ownedIds) as $mediaId) {
             $this->media()->detach($mediaId);
             $media = Media::find($mediaId);
-            if ($media && $media->mediables()->count() === 0) {
+            if ($media && ! app(MediaOverviewService::class)->isInUse($media)) {
                 $media->delete();
             }
         }
