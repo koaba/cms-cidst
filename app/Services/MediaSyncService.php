@@ -50,7 +50,7 @@ class MediaSyncService
             return null;
         }
 
-        if ($article && $article->image) {
+        if ($article && $article->image && ! Media::query()->where('path', $article->image)->exists()) {
             Storage::disk('public')->delete($article->image);
         }
 

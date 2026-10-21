@@ -91,4 +91,5 @@ it('conserve l ancienne couverture remplacee si un slider l utilise encore', fun
     ])->assertSessionHasNoErrors();
 
     expect(Media::find($old->id))->not->toBeNull();
+    Storage::disk('public')->assertExists('articles/old.jpg');
 });
