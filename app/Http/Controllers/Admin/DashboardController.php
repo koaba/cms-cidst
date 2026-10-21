@@ -8,12 +8,21 @@ use App\Models\Page;
 use App\Models\PageView;
 use App\Models\Slider;
 use App\Models\User;
+use App\Services\Dashboard\DashboardPeriod;
 use App\Services\MediaOverviewService;
+use Carbon\CarbonImmutable;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(MediaOverviewService $mediaOverview)
+    public function index(Request $request, MediaOverviewService $mediaOverview)
     {
+        $requested = $request->query('period');
+        $firstView = $requested === 'all' && PageView::query()->exists() ? CarbonImmutable::parse(PageView::query()->min('viewed_at')) : null;
+        $period = DashboardPeriod::from(is_string($requested) ? $requested : null, $firstView);
+        $viewsPeriod = PageView::where('viewed_at', '>=', $period->start())->count();
+        $viewsPrevious = $period->isGlobal() ? 0 : PageView::whereBetween('viewed_at', [$period->previousStart(), $period->start()->subSecond()])->count();
+
         $stats = [
             'articles' => Article::where('is_published', true)->count(),
             'pages' => Page::where('is_published', true)->count(),
@@ -23,6 +32,9 @@ class DashboardController extends Controller
             // seul Article est tracké via HasPageViews, mais la requête reste
             // valable si d'autres modèles adoptent le trait plus tard).
             'views_30d' => PageView::where('viewed_at', '>=', now()->subDays(30))->count(),
+            'views_period' => $viewsPeriod,
+            'views_previous' => $viewsPrevious,
+            'views_variation' => DashboardPeriod::variation($viewsPeriod, $viewsPrevious),
         ];
 
         // Articles publiés par mois, sur les 6 derniers mois — pour le graphique.
@@ -45,21 +57,20 @@ class DashboardController extends Controller
         // Vues par jour, sur les 30 derniers jours — même principe : on
         // construit tous les jours nous-mêmes pour éviter les trous silencieux
         // dans le graphique les jours sans aucune vue.
-        $days = collect(range(29, 0))->map(fn ($i) => now()->subDays($i)->format('Y-m-d'));
 
-        $vuesParJour = PageView::where('viewed_at', '>=', now()->subDays(30)->startOfDay())
+        $vuesParJour = PageView::where('viewed_at', '>=', $period->start())
             ->get(['viewed_at'])
-            ->groupBy(fn (PageView $view) => $view->viewed_at->format('Y-m-d'))
+            ->groupBy(fn (PageView $view) => $view->viewed_at->format($period->format()))
             ->map->count();
 
-        $activiteVues = $days->mapWithKeys(fn ($jour) => [
-            $jour => $vuesParJour->get($jour, 0),
+        $activiteVues = collect($period->labels())->mapWithKeys(fn ($zero, $cle) => [
+            $cle => $vuesParJour->get($cle, 0),
         ]);
 
         // Top 5 des articles les plus consultés sur les 30 derniers jours.
         $topArticles = Article::query()
-            ->withCount(['pageViews' => function ($query) {
-                $query->where('viewed_at', '>=', now()->subDays(30));
+            ->withCount(['pageViews' => function ($query) use ($period) {
+                $query->where('viewed_at', '>=', $period->start());
             }])
             ->orderByDesc('page_views_count')
             ->take(5)
@@ -78,7 +89,8 @@ class DashboardController extends Controller
             'topArticles',
             'recentArticles',
             'recentUsers',
-            'media'
+            'media',
+            'period'
         ));
     }
 }

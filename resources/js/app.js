@@ -35,7 +35,7 @@ if (viewsCanvas && window.dashboardViews) {
                 borderColor: '#C41E2A',
                 backgroundColor: 'rgba(196, 30, 42, 0.1)',
                 fill: true,
-                tension: 0.3,
+                tension: 0,
             }],
         },
         options: {
