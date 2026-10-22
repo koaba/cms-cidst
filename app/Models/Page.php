@@ -34,6 +34,16 @@ class Page extends Model implements HasPublicUrl
         return $this->hasMany(PageBlock::class)->orderBy('order');
     }
 
+    /** draft, scheduled ou published, calcule depuis is_published et published_at. */
+    public function getStatusAttribute(): string
+    {
+        if (! $this->is_published) {
+            return 'draft';
+        }
+
+        return $this->isPubliclyVisible() ? 'published' : 'scheduled';
+    }
+
     public function publicUrl(): string
     {
         return route('pages.show', $this);
