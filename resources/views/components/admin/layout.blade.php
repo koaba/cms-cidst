@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin - {{ $title ?? 'Dashboard' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-theme-style />
 </head>
 <body class="bg-admin-bg">
     <nav class="bg-admin-nav text-white p-4 flex justify-between items-center gap-4 sticky top-0 z-50">
