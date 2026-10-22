@@ -15,7 +15,7 @@ class Page extends Model implements HasPublicUrl
 
     protected $fillable = ['title', 'slug', 'content', 'user_id', 'is_published', 'published_at'];
 
-    protected $casts = ['is_published' => 'boolean', 'published_at' => 'date'];
+    protected $casts = ['is_published' => 'boolean', 'published_at' => 'datetime'];
 
     public function user()
     {
