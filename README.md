@@ -119,7 +119,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 ### Thème et design
 
 - Tailwind lit `cidst-red` / `cidst-ink` via `var(--color-primary, #C41E2A)` et `var(--color-secondary, #17181A)`. Aujourd'hui rien ne définit ces variables : le repli hexadécimal est toujours utilisé.
-- Chantier en cours : un bloc `:root` généré depuis `SiteSetting` (`--p`, `--pc`, `--s`, `--sc`, `--color-primary-rgb`…) injecté dans les layouts public et admin, puis alignement de `tailwind.config.js`.
+- Thème injecté par `<x-theme-style />` (layouts public et admin, après `@vite`) : `html:root{--p;--pc;--a;--ac;--s;--sc;--n;--nc;--color-primary-rgb;--color-secondary-rgb}`, généré par `ThemeStyleBuilder` depuis `getRawOriginal()` de `SiteSetting` (valeur invalide : repli sur `#C41E2A` / `#17181A`). Ne pas utiliser les accesseurs `primary_color` / `secondary_color` (`#000000` / `#FFFFFF` si invalide, figés par `SiteSettingColorTest`). Tailwind : `cidst.red` et `cidst.ink` lisent `rgb(var(--color-primary-rgb) / <alpha-value>)`.
 - Défauts en base : `#E80000` / `#1A1A1A`, différents de ceux du thème DaisyUI (`#C41E2A` / `#17181A`). Décision recommandée : migration qui ne remplace que les lignes encore à l'ancien défaut.
 - Variables admin : 4 variables `--admin-*` dans `app.css`.
 - Règle de chaque lot design : mobile-first, paliers Tailwind par défaut, vérification à 360, 768, 1024, 1440 et 1920 px.
@@ -161,7 +161,7 @@ Le terminal Laragon est Bash/MinGW (`grep`, slashs `/`), alors que celui de VS C
 | `composer dump-autoload` silencieux : lancé depuis `C:\laragon\www` au lieu du dossier du projet, la classe reste introuvable | Vérifier le dossier courant, `cd C:\laragon\www\laravel-academy`, puis `composer dump-autoload -o` et contrôler le classmap |
 | Git « dubious ownership » dans le terminal Laragon | `git config --global --add safe.directory C:/laragon/www/laravel-academy` (une seule fois) |
 | `migrate:rollback --step=N` annule par ordre chronologique, pas par nom | Annuler un cran à la fois, `migrate:status` après chaque étape, réappliquer ce qui doit rester, supprimer les fichiers orphelins puis `migrate` |
-| `sf_proc_00.out.lock` (Permission denied) : `artisan test` plante, les miniatures PDF (Poppler) échouent sans erreur | `$env:TEMP = "$PWD\storage\framework\tmp"; $env:TMP = $env:TEMP; New-Item -ItemType Directory -Force $env:TEMP \| Out-Null` puis `./vendor/bin/pest`. Valable pour la session du terminal. Cause racine non identifiée. |
+| `sf_proc_00.out.lock` (Permission denied) : `artisan test` plante, les miniatures PDF (Poppler) échouent sans erreur | `$env:TEMP = "$PWD\storage\framework\tmp"; $env:TMP = $env:TEMP; New-Item -ItemType Directory -Force $env:TEMP \| Out-Null` puis `./vendor/bin/pest`. Valable pour la session du terminal. Cause racine non identifiée (hypothèse : verrou sur le dossier temporaire). Explique aussi les échecs dispersés sur les variantes d'images (`ImageVariantService`, `GenerateMediaVariants`) et sur `MediaSharedUsageTest` (ligne 94). |
 | Accents déformés dans cmd.exe (« créé » devient « crÃ©Ã© ») : faux problème d'encodage | `chcp 65001` avant de diagnostiquer |
 | `findstr` et `type` peu fiables pour juger l'encodage ou le contenu d'un fichier | `Select-String` ou une vérification hex via Tinker |
 | PowerShell 5 : `Select-String` n'a pas `-Recurse` ; lecture sans `-Encoding UTF8` affiche « Ã© » ; `@(@("a","b"))` aplatit ; pas de `String.Replace` à 3 arguments | `Get-ChildItem -Recurse \| Select-String …`, toujours `-Encoding UTF8` |
