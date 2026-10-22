@@ -19,7 +19,16 @@
             @foreach($pages as $page)
                 <tr class="border-b">
                     <td class="p-2">{{ $page->title }}</td>
-                    <td class="p-2">{{ $page->is_published ? 'Publiée' : 'Brouillon' }}</td>
+                    <td class="p-2">
+                        @php
+                            [$badgeClass, $badgeLabel] = match ($page->status) {
+                                "published" => ["badge-success", "Publi\u{E9}e"],
+                                "scheduled" => ["badge-warning", "Programm\u{E9}e"],
+                                default => ["badge-ghost", "Brouillon"],
+                            };
+                        @endphp
+                        <span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                    </td>
                     <td class="p-2 space-x-2">
                         <a href="{{ route('admin.pages.edit', $page) }}" class="text-blue-600">Modifier</a>
                         <a href="{{ route('admin.pages.blocks.index', $page) }}" class="text-purple-600">Blocs</a>
