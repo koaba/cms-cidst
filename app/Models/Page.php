@@ -15,7 +15,7 @@ class Page extends Model implements HasPublicUrl
 
     protected $fillable = ['title', 'slug', 'content', 'user_id', 'is_published', 'published_at'];
 
-    protected $casts = ['is_published' => 'boolean', 'published_at' => 'date'];
+    protected $casts = ['is_published' => 'boolean', 'published_at' => 'datetime'];
 
     public function user()
     {
@@ -32,6 +32,16 @@ class Page extends Model implements HasPublicUrl
     public function blocks()
     {
         return $this->hasMany(PageBlock::class)->orderBy('order');
+    }
+
+    /** draft, scheduled ou published, calcule depuis is_published et published_at. */
+    public function getStatusAttribute(): string
+    {
+        if (! $this->is_published) {
+            return 'draft';
+        }
+
+        return $this->isPubliclyVisible() ? 'published' : 'scheduled';
     }
 
     public function publicUrl(): string

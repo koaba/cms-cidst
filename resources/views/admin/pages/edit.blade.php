@@ -13,7 +13,7 @@
         </div>
         <div>
             <label class="block font-semibold">Date de publication</label>
-            <input type="date" name="published_at" value="{{ old('published_at', $page->published_at?->format('Y-m-d')) }}" class="border w-full p-2 rounded" required>
+            <input type="datetime-local" name="published_at" value="{{ old('published_at', $page->published_at?->format('Y-m-d\TH:i')) }}" class="border w-full p-2 rounded" required>
             @error('published_at') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         @if($page->media->isNotEmpty())
