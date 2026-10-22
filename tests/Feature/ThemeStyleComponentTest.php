@@ -62,3 +62,19 @@ it('place le bloc du theme dans le head', function () {
         ->and($style)->toBeGreaterThan($head)
         ->and($style)->toBeLessThan($end);
 });
+
+it('choisit un contraste lisible pour --pc cote admin', function (string $primary, string $side) {
+    themeSetColors($primary, '#17181A');
+
+    $response = $this->actingAs(adminUser())->get(route('admin.dashboard'));
+    preg_match('/--pc:([0-9.]+)%/', $response->getContent(), $m);
+
+    expect($m)->not->toBeEmpty();
+
+    $l = (float) $m[1];
+
+    expect($side === 'dark' ? $l < 50 : $l > 50)->toBeTrue();
+})->with([
+    'primary claire' => ['#FFD700', 'dark'],
+    'primary sombre' => ['#17181A', 'light'],
+]);
