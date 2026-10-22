@@ -8,6 +8,8 @@
     --admin-nav: #1f2937;
     --admin-hover: #374151;
     --admin-text: #d1d5db;
+    --color-primary-rgb: 196 30 42;
+    --color-secondary-rgb: 23 24 26;
 }
 @keyframes marquee {
     0% { transform: translateX(100%); }

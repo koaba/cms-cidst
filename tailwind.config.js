@@ -29,8 +29,8 @@ export default {
                     text: 'var(--admin-text)',
                 },
                 cidst: {
-                    red: 'var(--color-primary, #C41E2A)',
-                    ink: 'var(--color-secondary, #17181A)',
+                    red: 'rgb(var(--color-primary-rgb) / <alpha-value>)',
+                    ink: 'rgb(var(--color-secondary-rgb) / <alpha-value>)',
                     surface: '#FFFFFF',
                     bg: '#F1F2F4',
                     border: '#D8DADE',
