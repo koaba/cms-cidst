@@ -1,6 +1,7 @@
 <x-admin.layout>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 class="text-2xl font-bold">Tableau de bord</h1>
+        @role('Super Admin')
         <nav class="join" aria-label="Période">
             @foreach (\App\Services\Dashboard\DashboardPeriod::options() as $key => $label)
                 <a href="{{ route('admin.dashboard', ['period' => $key]) }}"
@@ -8,8 +9,15 @@
                    @if ($period->key === $key) aria-current="page" @endif>{{ $label }}</a>
             @endforeach
         </nav>
+        @endrole
     </div>
 
+    <div class="flex flex-wrap gap-3 mb-8">
+        <a href="{{ route('admin.articles.create') }}" class="btn btn-primary btn-sm">Nouvel article</a>
+        <a href="{{ route('admin.pages.create') }}" class="btn btn-outline btn-sm">Nouvelle page</a>
+        <a href="{{ route('admin.media.index') }}" class="btn btn-outline btn-sm">M&eacute;diath&egrave;que</a>
+    </div>
+    @role('Super Admin')
     {{-- Cartes de statistiques : composant natif daisyUI, zéro CSS custom --}}
     <div class="stats shadow w-full mb-8 flex-wrap">
         <div class="stat">
@@ -44,8 +52,10 @@
     </div>
 
     <x-admin.media-overview :overview="$media" />
+    @endrole
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        @role('Super Admin')
         {{-- Graphique d'activité --}}
         <div class="card bg-base-100 shadow lg:col-span-2">
             <div class="card-body">
@@ -54,6 +64,7 @@
             </div>
         </div>
 
+        @endrole
         {{-- Flux d'activité récente --}}
         <div class="card bg-base-100 shadow">
             <div class="card-body">
@@ -64,7 +75,7 @@
                             <span class="font-medium">{{ $article->title }}</span>
                             <span class="block text-xs opacity-60">
                                 modifié le {{ $article->updated_at->format('d/m/Y H:i') }}
-                                @if ($article->user)
+                                @if ($article->relationLoaded('user') && $article->user)
                                     par {{ $article->user->name }}
                                 @endif
                             </span>
@@ -72,7 +83,7 @@
                     @endforeach
                 </ul>
 
-                @if ($recentUsers->isNotEmpty())
+                @if (isset($recentUsers) && $recentUsers->isNotEmpty())
                     <div class="divider"></div>
                     <h3 class="font-medium text-sm mb-2">Derniers utilisateurs</h3>
                     <ul class="space-y-2">
@@ -87,6 +98,7 @@
         </div>
     </div>
 
+    @role('Super Admin')
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Graphique des vues --}}
         <div class="card bg-base-100 shadow lg:col-span-2">
@@ -122,4 +134,5 @@
             window.dashboardViews = @json($activiteVues);
         </script>
     @endpush
+    @endrole
 </x-admin.layout>
