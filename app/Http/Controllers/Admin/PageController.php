@@ -8,6 +8,7 @@ use App\Models\Media;
 use App\Models\Page;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
@@ -31,6 +32,7 @@ class PageController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'published_at' => 'required|date',
+            'slug' => $this->slugRules(),
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_published' => 'nullable|boolean',
             'seo' => 'nullable|array',
@@ -62,6 +64,15 @@ class PageController extends Controller
             ->with('success', 'La page a été créée avec succès.');
     }
 
+    private function slugRules(?Page $page = null): array
+    {
+        return [
+            'nullable', 'string', 'max:255',
+            'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+            Rule::unique('pages', 'slug')->ignore($page?->id),
+        ];
+    }
+
     public function show(Page $page)
     {
         return view('admin.pages.show', compact('page'));
@@ -78,6 +89,7 @@ class PageController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'published_at' => 'required|date',
+            'slug' => $this->slugRules($page),
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_published' => 'nullable|boolean',
             'seo' => 'nullable|array',
@@ -87,6 +99,10 @@ class PageController extends Controller
 
         $pageData = collect($validated)->except(['image', 'seo'])->toArray();
         $pageData['is_published'] = $request->boolean('is_published');
+
+        if (blank($pageData['slug'] ?? null)) {
+            unset($pageData['slug']);
+        }
 
         $page->update($pageData);
         $this->saveSeo($page, $validated);

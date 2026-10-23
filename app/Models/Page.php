@@ -53,7 +53,7 @@ class Page extends Model implements HasPublicUrl
     {
         parent::boot();
         static::creating(function ($page) {
-            $baseSlug = Str::slug($page->title);
+            $baseSlug = Str::slug($page->slug ?: $page->title);
             $slug = $baseSlug;
             $counter = 1;
             while (static::where('slug', $slug)->exists()) {

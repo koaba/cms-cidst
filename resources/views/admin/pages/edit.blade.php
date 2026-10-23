@@ -8,6 +8,12 @@
             @error('title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
+            <label class="block font-semibold">Slug (URL)</label>
+            <input type="text" name="slug" value="{{ old('slug', $page->slug) }}" class="border w-full p-2 rounded">
+            <p class="text-gray-500 text-sm">Modifier le slug change l&rsquo;adresse de la page ; les anciens liens ne sont pas redirig&eacute;s.</p>
+            @error('slug') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
+        <div>
             <label class="block font-semibold">Contenu</label>
             <textarea name="content" rows="10" class="border w-full p-2 rounded" required>{{ old('content', $page->content) }}</textarea>            @error('content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>

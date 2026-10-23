@@ -9,6 +9,12 @@
             <input type="text" name="title" value="{{ old('title') }}" class="border w-full p-2 rounded" required>
             @error('title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
+        <div>
+            <label class="block font-semibold">Slug (URL)</label>
+            <input type="text" name="slug" value="{{ old('slug') }}" class="border w-full p-2 rounded">
+            <p class="text-gray-500 text-sm">Laisser vide pour le g&eacute;n&eacute;rer depuis le titre.</p>
+            @error('slug') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
 
        <div>
             <label class="block font-semibold">Contenu</label>
