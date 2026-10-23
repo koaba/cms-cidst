@@ -69,3 +69,16 @@ function adminUser(): User
 
     return $user;
 }
+
+/**
+ * Authentifie un utilisateur au role "Publication" (acces restreint) pour les tests Feature.
+ */
+function publicationUser(): User
+{
+    Role::firstOrCreate(['name' => 'Publication', 'guard_name' => 'web']);
+
+    $user = User::factory()->create();
+    $user->assignRole('Publication');
+
+    return $user;
+}

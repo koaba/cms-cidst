@@ -1,17 +1,6 @@
 <?php
 
 use App\Models\User;
-use Spatie\Permission\Models\Role;
-
-function publicationUser(): User
-{
-    Role::firstOrCreate(['name' => 'Publication', 'guard_name' => 'web']);
-
-    $user = User::factory()->create();
-    $user->assignRole('Publication');
-
-    return $user;
-}
 
 it('masque les statistiques a un utilisateur Publication', function () {
     User::factory()->create(['name' => 'Zorglub Visible']);
