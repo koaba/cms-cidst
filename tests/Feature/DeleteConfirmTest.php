@@ -1,13 +1,6 @@
 <?php
 
 use App\Models\Article;
-use App\Models\SiteSetting;
-use Illuminate\Support\Facades\Hash;
-
-function setDeleteCode(string $code): void
-{
-    SiteSetting::current()->forceFill(['delete_code_hash' => Hash::make($code)])->save();
-}
 
 it('refuse la suppression sans code a Publication', function () {
     setDeleteCode('4242');
