@@ -31,6 +31,8 @@ class SiteSetting extends Model
         'diaporama_watermark_default_enabled',
     ];
 
+    protected $hidden = ['delete_code_hash'];
+
     protected $casts = [
         'video_watermark_default_enabled' => 'boolean',
         'image_watermark_default_enabled' => 'boolean',
