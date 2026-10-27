@@ -11,6 +11,7 @@ $navItems = [
     ['label' => 'News Ticker', 'route' => 'admin.news-tickers.index', 'active' => 'admin.news-tickers.*'],
     ['label' => 'Menus', 'route' => 'admin.menus.index', 'active' => 'admin.menus.*', 'roles' => ['Super Admin']],
     ['label' => 'Réglages', 'route' => 'admin.settings.edit', 'active' => 'admin.settings.*', 'roles' => ['Super Admin']],
+    ['label' => 'Messages', 'route' => 'admin.messages.index', 'active' => 'admin.messages.*', 'roles' => ['Super Admin']],
     ['label' => 'Utilisateurs', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'roles' => ['Super Admin']],
 ];
 @endphp

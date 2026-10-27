@@ -1,0 +1,1 @@
+<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;border-top:4px solid #C41E2A;padding:24px;color:#17181A"><h1 style="font-size:18px;margin:0 0 12px">Nouveau message de contact</h1><p style="margin:0">Un nouveau message vous attend dans l'administration.</p></div>
