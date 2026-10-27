@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\ConfirmDeleteCode;
 use App\Http\Middleware\ForcePasswordChange;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TrackPageView;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => CheckRole::class,
             'force.password.change' => ForcePasswordChange::class,
             'track.view' => TrackPageView::class,
+            'confirm.delete' => ConfirmDeleteCode::class,
         ]);
         $middleware->web(append: [
             SecurityHeaders::class,

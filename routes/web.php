@@ -53,8 +53,8 @@ Route::middleware('auth')->group(function () {
 // Accès partagé : Super Admin ET Publication (contenu éditorial)
 Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
-    Route::resource('admin/pages', AdminPageController::class)->names('admin.pages');
+    Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles')->middlewareFor('destroy', 'confirm.delete');
+    Route::resource('admin/pages', AdminPageController::class)->names('admin.pages')->middlewareFor('destroy', 'confirm.delete');
     Route::prefix('admin/pages/{page}/blocks')->name('admin.pages.blocks.')->group(function () {
         Route::get('/', [AdminPageBlockController::class, 'index'])->name('index');
         Route::get('/create/{type}', [AdminPageBlockController::class, 'create'])->name('create');
