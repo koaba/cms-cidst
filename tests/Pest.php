@@ -49,7 +49,9 @@ function something()
     // ..
 }
 
+use App\Models\SiteSetting;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 /**
@@ -68,4 +70,25 @@ function adminUser(): User
     $user->assignRole('Super Admin');
 
     return $user;
+}
+
+/**
+ * Authentifie un utilisateur au role "Publication" (acces restreint) pour les tests Feature.
+ */
+function publicationUser(): User
+{
+    Role::firstOrCreate(['name' => 'Publication', 'guard_name' => 'web']);
+
+    $user = User::factory()->create();
+    $user->assignRole('Publication');
+
+    return $user;
+}
+
+/**
+ * Definit le code de suppression (hache) dans les reglages du site.
+ */
+function setDeleteCode(string $code): void
+{
+    SiteSetting::current()->forceFill(['delete_code_hash' => Hash::make($code)])->save();
 }

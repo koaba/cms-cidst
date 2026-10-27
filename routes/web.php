@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AccordionItemController as AdminAccordionItemCont
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ColumnChildBlockController as AdminColumnChildBlockController;
+use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MediaOrderController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PdfDocumentController;
@@ -41,6 +43,8 @@ Route::get('/documents', [PdfDocumentController::class, 'index'])->name('documen
 Route::get('/documents/categorie/{pdfCategory:slug}', [PdfDocumentController::class, 'byCategory'])->name('documents.category');
 Route::get('/documents/{pdfDocument:slug}', [PdfDocumentController::class, 'show'])->name('documents.show');
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
+Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/dashboard', function () {
@@ -56,8 +60,8 @@ Route::middleware('auth')->group(function () {
 // Accès partagé : Super Admin ET Publication (contenu éditorial)
 Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles');
-    Route::resource('admin/pages', AdminPageController::class)->names('admin.pages');
+    Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles')->middlewareFor('destroy', 'confirm.delete');
+    Route::resource('admin/pages', AdminPageController::class)->names('admin.pages')->middlewareFor('destroy', 'confirm.delete');
     Route::prefix('admin/pages/{page}/blocks')->name('admin.pages.blocks.')->group(function () {
         Route::get('/', [AdminPageBlockController::class, 'index'])->name('index');
         Route::get('/create/{type}', [AdminPageBlockController::class, 'create'])->name('create');
@@ -106,6 +110,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/pdf-documents', AdminPdfDocumentController::class)->names('admin.pdf-documents');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
+    Route::resource('admin/messages', AdminContactMessageController::class)->only(['index', 'show'])->names('admin.messages');
     Route::resource('admin/users', UserController::class)->names('admin.users');
     Route::patch('admin/users/{user}/reset-password', [UserController::class, 'resetPassword'])
         ->name('admin.users.reset-password');

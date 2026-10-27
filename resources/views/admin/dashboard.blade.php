@@ -17,6 +17,28 @@
         <a href="{{ route('admin.pages.create') }}" class="btn btn-outline btn-sm">Nouvelle page</a>
         <a href="{{ route('admin.media.index') }}" class="btn btn-outline btn-sm">M&eacute;diath&egrave;que</a>
     </div>
+    <section id="a-traiter" class="mb-8" aria-labelledby="todo-title">
+        <h2 id="todo-title" class="text-lg font-semibold mb-3">&Agrave; traiter</h2>
+        <div class="stats shadow w-full flex-wrap">
+            <div class="stat" data-todo="drafts" data-count="{{ $todo['drafts'] }}">
+                <div class="stat-title">Brouillons</div>
+                <div class="stat-value text-primary">{{ $todo['drafts'] }}</div>
+                <div class="stat-desc"><a href="{{ route('admin.articles.index') }}" class="link link-hover">Voir les articles</a></div>
+            </div>
+            <div class="stat" data-todo="scheduled" data-count="{{ $todo['scheduled'] }}">
+                <div class="stat-title">Pages programm&eacute;es</div>
+                <div class="stat-value text-primary">{{ $todo['scheduled'] }}</div>
+                <div class="stat-desc"><a href="{{ route('admin.pages.index') }}" class="link link-hover">Voir les pages</a></div>
+            </div>
+            @isset($todo['messages'])
+            <div class="stat" data-todo="messages" data-count="{{ $todo['messages'] }}">
+                <div class="stat-title">Messages non lus</div>
+                <div class="stat-value text-primary">{{ $todo['messages'] }}</div>
+                <div class="stat-desc"><a href="{{ route('admin.messages.index') }}" class="link link-hover">Lire les messages</a></div>
+            </div>
+            @endisset
+        </div>
+    </section>
     @role('Super Admin')
     {{-- Cartes de statistiques : composant natif daisyUI, zéro CSS custom --}}
     <div class="stats shadow w-full mb-8 flex-wrap">

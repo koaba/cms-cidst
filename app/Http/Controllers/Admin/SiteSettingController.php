@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class SiteSettingController extends Controller
@@ -40,6 +41,7 @@ class SiteSettingController extends Controller
             'image_watermark_default_enabled' => 'nullable|boolean',
             'pdf_watermark_default_enabled' => 'nullable|boolean',
             'diaporama_watermark_default_enabled' => 'nullable|boolean',
+            'delete_code' => 'nullable|string|min:4|max:50',
 
         ]);
 
@@ -52,7 +54,10 @@ class SiteSettingController extends Controller
             $validated['logo_path'] = $request->file('logo')->store('logos', 'public');
         }
 
-        unset($validated['logo']);
+        unset($validated['logo'], $validated['delete_code']);
+        if (filled($request->input('delete_code'))) {
+            $settings->forceFill(['delete_code_hash' => Hash::make($request->input('delete_code'))]);
+        }
         $validated['video_watermark_default_enabled'] = $request->boolean('video_watermark_default_enabled');
         $validated['image_watermark_default_enabled'] = $request->boolean('image_watermark_default_enabled');
         $validated['pdf_watermark_default_enabled'] = $request->boolean('pdf_watermark_default_enabled');
