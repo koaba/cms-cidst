@@ -10,6 +10,7 @@
         </div>
     @endif
 
+    @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
     <table class="w-full bg-white shadow rounded">
         <thead>
             <tr class="text-left border-b">
@@ -29,9 +30,10 @@
                     </td>
                     <td class="p-3 flex gap-2">
                         <a href="{{ route('admin.articles.edit', $article) }}" class="text-blue-600">Modifier</a>
-                        <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" onsubmit="return confirm('Supprimer cet article ?')">
+                        <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" onsubmit="return confirm('Supprimer cet article ?') && (!this.delete_code || !!(this.delete_code.value = prompt('Code de suppression') || ''))">
                             @csrf
                             @method('DELETE')
+                            @unless (auth()->user()->hasRole('Super Admin'))<input type="hidden" name="delete_code">@endunless
                             <button type="submit" class="text-red-600">Supprimer</button>
                         </form>
                     </td>

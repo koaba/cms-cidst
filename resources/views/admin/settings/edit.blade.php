@@ -196,7 +196,8 @@
               class="w-full border rounded p-2">{{ old('pdf_documents_content', $settings->pdf_documents_content) }}</textarea>
     @error('pdf_documents_content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
-        <div class="flex items-center gap-3">
+        <div><label class="block font-medium mb-1">Code de suppression</label><input type="password" name="delete_code" autocomplete="new-password" minlength="4" maxlength="50" class="w-full border rounded p-2"><p class="text-sm opacity-70">Laisser vide pour ne pas changer. Demand&eacute; aux utilisateurs Publication pour supprimer.</p>@error('delete_code') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror</div>
+<div class="flex items-center gap-3">
             <x-admin.button type="submit">Enregistrer</x-admin.button>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>
         </div>
