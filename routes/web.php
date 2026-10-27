@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\AccordionItemContentController as AdminAccordionItemContentController;
+use App\Http\Controllers\Admin\AccordionItemController as AdminAccordionItemController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\ColumnChildBlockController as AdminColumnChildBlockController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MediaOrderController;
@@ -65,26 +68,26 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
         Route::post('/reorder', [AdminPageBlockController::class, 'reorder'])->name('reorder');
 
         Route::prefix('{blockId}/columns/{slotIndex}')->name('columns.')->group(function () {
-            Route::get('/create/{type}', [AdminPageBlockController::class, 'createChild'])->name('create');
-            Route::post('/', [AdminPageBlockController::class, 'storeChild'])->name('store');
-            Route::get('/{childId}/edit', [AdminPageBlockController::class, 'editChild'])->name('edit');
-            Route::put('/{childId}', [AdminPageBlockController::class, 'updateChild'])->name('update');
-            Route::delete('/{childId}', [AdminPageBlockController::class, 'destroyChild'])->name('destroy');
+            Route::get('/create/{type}', [AdminColumnChildBlockController::class, 'create'])->name('create');
+            Route::post('/', [AdminColumnChildBlockController::class, 'store'])->name('store');
+            Route::get('/{childId}/edit', [AdminColumnChildBlockController::class, 'edit'])->name('edit');
+            Route::put('/{childId}', [AdminColumnChildBlockController::class, 'update'])->name('update');
+            Route::delete('/{childId}', [AdminColumnChildBlockController::class, 'destroy'])->name('destroy');
         });
 
         Route::prefix('{blockId}/items')->name('items.')->group(function () {
-            Route::post('/', [AdminPageBlockController::class, 'storeAccordionItem'])->name('store');
-            Route::get('/{itemId}/edit', [AdminPageBlockController::class, 'editAccordionItem'])->name('edit');
-            Route::put('/{itemId}', [AdminPageBlockController::class, 'updateAccordionItem'])->name('update');
-            Route::delete('/{itemId}', [AdminPageBlockController::class, 'destroyAccordionItem'])->name('destroy');
-            Route::post('/reorder', [AdminPageBlockController::class, 'reorderAccordionItems'])->name('reorder');
+            Route::post('/', [AdminAccordionItemController::class, 'store'])->name('store');
+            Route::get('/{itemId}/edit', [AdminAccordionItemController::class, 'edit'])->name('edit');
+            Route::put('/{itemId}', [AdminAccordionItemController::class, 'update'])->name('update');
+            Route::delete('/{itemId}', [AdminAccordionItemController::class, 'destroy'])->name('destroy');
+            Route::post('/reorder', [AdminAccordionItemController::class, 'reorder'])->name('reorder');
 
             Route::prefix('{itemId}/content')->name('content.')->group(function () {
-                Route::get('/create/{type}', [AdminPageBlockController::class, 'createItemContent'])->name('create');
-                Route::post('/', [AdminPageBlockController::class, 'storeItemContent'])->name('store');
-                Route::get('/{contentId}/edit', [AdminPageBlockController::class, 'editItemContent'])->name('edit');
-                Route::put('/{contentId}', [AdminPageBlockController::class, 'updateItemContent'])->name('update');
-                Route::delete('/{contentId}', [AdminPageBlockController::class, 'destroyItemContent'])->name('destroy');
+                Route::get('/create/{type}', [AdminAccordionItemContentController::class, 'create'])->name('create');
+                Route::post('/', [AdminAccordionItemContentController::class, 'store'])->name('store');
+                Route::get('/{contentId}/edit', [AdminAccordionItemContentController::class, 'edit'])->name('edit');
+                Route::put('/{contentId}', [AdminAccordionItemContentController::class, 'update'])->name('update');
+                Route::delete('/{contentId}', [AdminAccordionItemContentController::class, 'destroy'])->name('destroy');
             });
         });
     });
