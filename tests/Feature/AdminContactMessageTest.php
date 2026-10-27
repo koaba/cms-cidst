@@ -35,3 +35,8 @@ it('refuse la lecture a Publication sans la marquer lue', function () {
     $this->actingAs(publicationUser())->get('/admin/messages/'.$m->id)->assertForbidden();
     expect($m->fresh()->read_at)->toBeNull();
 });
+
+it('affiche l entree Messages dans la sidebar du Super Admin seulement', function () {
+    $this->actingAs(adminUser())->get('/admin')->assertOk()->assertSee(route('admin.messages.index'), false);
+    $this->actingAs(publicationUser())->get('/admin')->assertOk()->assertDontSee(route('admin.messages.index'), false);
+});

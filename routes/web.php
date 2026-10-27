@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MediaOrderController;
@@ -106,6 +107,7 @@ Route::middleware(['auth', 'role:Super Admin'])->group(function () {
     Route::resource('admin/pdf-documents', AdminPdfDocumentController::class)->names('admin.pdf-documents');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
+    Route::resource('admin/messages', AdminContactMessageController::class)->only(['index', 'show'])->names('admin.messages');
     Route::resource('admin/users', UserController::class)->names('admin.users');
     Route::patch('admin/users/{user}/reset-password', [UserController::class, 'resetPassword'])
         ->name('admin.users.reset-password');
