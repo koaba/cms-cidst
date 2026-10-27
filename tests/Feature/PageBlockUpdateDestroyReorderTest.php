@@ -44,23 +44,48 @@ it('rejette un reorder avec un id de bloc inexistant', function () {
     $response->assertSessionHasErrors('order.0');
 });
 
-it('CARACTERISATION: reorder ne verifie pas que les blocs appartiennent bien a la page cible', function () {
-    // La requete filtre par page_id ET id dans la boucle update(), donc un
-    // id d'un bloc d'une AUTRE page est simplement ignore silencieusement
-    // (aucune ligne affectee), pas une faille de securite en soi, mais pas
-    // d'erreur renvoyee non plus si l'ordre demande ne peut pas etre applique.
+it('rejette un reorder avec l\'id d\'un bloc d\'une autre page', function () {
     $pageA = Page::factory()->create();
     $pageB = Page::factory()->create();
+    $this->actingAs($this->admin)->post(route('admin.pages.blocks.store', $pageA), ['type' => 'texte', 'content' => 'A1']);
     $this->actingAs($this->admin)->post(route('admin.pages.blocks.store', $pageB), ['type' => 'texte', 'content' => 'Bloc de B']);
+    $blockA = $pageA->blocks()->whereNull('parent_id')->first();
     $blockOfB = $pageB->blocks()->whereNull('parent_id')->first();
+    $orderA = $blockA->order;
+    $orderB = $blockOfB->order;
 
     $response = $this->actingAs($this->admin)->post(
         route('admin.pages.blocks.reorder', $pageA),
-        ['order' => [$blockOfB->id]]
+        ['order' => [$blockOfB->id, $blockA->id]]
     );
 
-    $response->assertJson(['success' => true]);
-    expect($blockOfB->fresh()->order)->not->toBe(0);
+    $response->assertSessionHasErrors('order');
+    expect($blockA->fresh()->order)->toBe($orderA);
+    expect($blockOfB->fresh()->order)->toBe($orderB);
+});
+
+it('rejette un reorder avec l\'id d\'un bloc enfant de la meme page', function () {
+    $page = Page::factory()->create();
+    $this->actingAs($this->admin)->post(route('admin.pages.blocks.store', $page), ['type' => 'texte', 'content' => 'Racine']);
+    $this->actingAs($this->admin)->post(route('admin.pages.blocks.store', $page), ['type' => 'colonnes', 'column_count' => '2']);
+    $texte = $page->blocks()->whereNull('parent_id')->where('type', 'texte')->first();
+    $colonnes = $page->blocks()->whereNull('parent_id')->where('type', 'colonnes')->first();
+    $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.columns.store', [$page, $colonnes->id, 0]),
+        ['type' => 'texte', 'content' => 'Enfant']
+    );
+    $child = $colonnes->childrenBySlot(0)->first();
+    $orderTexte = $texte->order;
+    $orderChild = $child->order;
+
+    $response = $this->actingAs($this->admin)->post(
+        route('admin.pages.blocks.reorder', $page),
+        ['order' => [$child->id, $texte->id]]
+    );
+
+    $response->assertSessionHasErrors('order');
+    expect($texte->fresh()->order)->toBe($orderTexte);
+    expect($child->fresh()->order)->toBe($orderChild);
 });
 
 // -----------------------------------------------------------------

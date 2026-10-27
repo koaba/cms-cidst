@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\Concerns\ManagesBlocks;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
-use App\Models\PageBlock;
 use App\Services\BlockMediaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 /** Blocs de premier niveau d'une page. */
 class PageBlockController extends Controller
@@ -87,10 +87,15 @@ class PageBlockController extends Controller
 
     public function reorder(Request $request, Page $page)
     {
-        foreach ($this->orderedIds($request) as $index => $blockId) {
-            PageBlock::where('id', $blockId)
-                ->where('page_id', $page->id)
-                ->update(['order' => $index]);
+        $ids = $this->orderedIds($request);
+
+        $found = $page->blocks()->whereNull('parent_id')->whereIn('id', $ids)->count();
+        if ($found !== count(array_unique($ids))) {
+            throw ValidationException::withMessages(['order' => 'Un ou plusieurs blocs ne sont pas des blocs racine de cette page.']);
+        }
+
+        foreach ($ids as $index => $blockId) {
+            $page->blocks()->whereNull('parent_id')->where('id', $blockId)->update(['order' => $index]);
         }
 
         return response()->json(['success' => true]);
