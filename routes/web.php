@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PdfDocumentController;
@@ -38,6 +39,8 @@ Route::get('/documents', [PdfDocumentController::class, 'index'])->name('documen
 Route::get('/documents/categorie/{pdfCategory:slug}', [PdfDocumentController::class, 'byCategory'])->name('documents.category');
 Route::get('/documents/{pdfDocument:slug}', [PdfDocumentController::class, 'show'])->name('documents.show');
 Route::get('/sliders', [SliderController::class, 'index'])->name('sliders.index');
+Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::get('/dashboard', function () {

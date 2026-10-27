@@ -39,3 +39,7 @@ it('garde le message si l alerte echoue', function () {
     $this->post('/contact', contactPayload())->assertRedirect();
     expect(ContactMessage::count())->toBe(1);
 });
+
+it('affiche le formulaire de contact', function () {
+    $this->get('/contact')->assertOk()->assertSee('name="website"', false)->assertSee('Contact');
+});
