@@ -112,10 +112,10 @@ it('applique les casts du type (banniere_hero)', function () {
     expect($hero->fresh()->data['overlay_opacity'])->toBe(55);
 });
 
-it('refuse de creer une banniere_hero sans image (limite de la v1)', function () {
+it('refuse de creer une banniere_hero sans image', function () {
     builderSave($this, $this->page, [
         ['type' => 'banniere_hero', 'data' => ['titre' => 'Sans image']],
-    ])->assertUnprocessable()->assertJsonValidationErrors('blocks.0.data.image');
+    ])->assertUnprocessable()->assertJsonValidationErrors('blocks.0.media_id');
 
     expect($this->page->blocks()->count())->toBe(0);
 });

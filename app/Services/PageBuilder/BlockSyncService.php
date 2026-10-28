@@ -3,11 +3,14 @@
 namespace App\Services\PageBuilder;
 
 use App\Blocks\BlockRegistry;
+use App\Contracts\DeclaresMediaFields;
+use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageBlock;
 use App\Services\BlockMediaService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -24,7 +27,10 @@ use Illuminate\Validation\ValidationException;
 class BlockSyncService
 {
     /** Types que le builder sait editer. Tous sont des blocs feuilles (sans enfants). */
-    public const EDITABLE_TYPES = ['texte', 'banniere_hero', 'bouton', 'citation', 'separateur'];
+    public const EDITABLE_TYPES = ['texte', 'banniere_hero', 'image', 'bouton', 'citation', 'separateur'];
+
+    /** Types a image unique : l'image est choisie dans la mediatheque (media_id). */
+    public const MEDIA_TYPES = ['banniere_hero', 'image'];
 
     public function __construct(private BlockMediaService $blockMedia) {}
 
@@ -102,6 +108,7 @@ class BlockSyncService
                 'block' => $block,
                 'type' => $type,
                 'data' => $this->validatedData($i, $type, $item['data'] ?? [], $block),
+                'media_id' => $this->validatedMediaId($i, $type, $item['media_id'] ?? null, $block),
             ];
         }
 
@@ -111,7 +118,8 @@ class BlockSyncService
     private function validatedData(int $index, string $type, array $input, ?PageBlock $block): array
     {
         $rules = BlockRegistry::rulesFor($type);
-        $validator = Validator::make($input, $rules->rules($block === null, $block), $rules->messages());
+        $mediaFields = $rules instanceof DeclaresMediaFields ? $rules->mediaFields() : [];
+        $validator = Validator::make($input, Arr::except($rules->rules($block === null, $block), $mediaFields), $rules->messages());
 
         if ($validator->fails()) {
             $errors = [];
@@ -125,6 +133,33 @@ class BlockSyncService
         $data = array_merge($validator->validated(), $rules->casts(Request::create('/', 'POST', $input)));
 
         return $this->blockMedia->stripMediaFields($data, $type);
+    }
+
+    /**
+     * media_id : image choisie dans la mediatheque (types a image unique).
+     * Obligatoire a la creation ; absent ensuite = l'image actuelle est conservee.
+     */
+    private function validatedMediaId(int $index, string $type, mixed $mediaId, ?PageBlock $block): ?int
+    {
+        if (! in_array($type, self::MEDIA_TYPES, true)) {
+            return null;
+        }
+
+        if ($mediaId === null || $mediaId === '') {
+            if ($block === null) {
+                throw ValidationException::withMessages(["blocks.$index.media_id" => 'Choisissez une image dans la mediatheque.']);
+            }
+
+            return null;
+        }
+
+        $isImage = Media::query()->whereKey((int) $mediaId)->where('mime_type', 'like', 'image/%')->exists();
+
+        if (! $isImage) {
+            throw ValidationException::withMessages(["blocks.$index.media_id" => 'Image introuvable : choisissez une image de la mediatheque.']);
+        }
+
+        return (int) $mediaId;
     }
 
     private function apply(Page $page, array $plan, Collection $roots): void
@@ -141,9 +176,11 @@ class BlockSyncService
 
             if ($entry['block']) {
                 $entry['block']->update($attributes);
+                $this->attachChosenMedia($entry['block'], $entry['media_id'] ?? null);
                 $keptIds[] = $entry['block']->id;
             } else {
-                $page->blocks()->create($attributes + ['type' => $entry['type']]);
+                $created = $page->blocks()->create($attributes + ['type' => $entry['type']]);
+                $this->attachChosenMedia($created, $entry['media_id'] ?? null);
             }
         }
 
@@ -161,6 +198,13 @@ class BlockSyncService
             } else {
                 $block->update(['order' => $order++]);
             }
+        }
+    }
+
+    private function attachChosenMedia(PageBlock $block, ?int $mediaId): void
+    {
+        if ($mediaId !== null) {
+            $this->blockMedia->attachExisting($block, $mediaId);
         }
     }
 

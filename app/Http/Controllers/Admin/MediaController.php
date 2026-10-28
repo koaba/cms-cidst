@@ -34,6 +34,7 @@ class MediaController extends Controller
                 'id' => $item->id,
                 'url' => $item->thumbnail_url,
                 'name' => $item->original_name,
+                'mime' => $item->mime_type,
             ]);
 
         return response()->json($media);

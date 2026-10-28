@@ -16,6 +16,8 @@
         </p>
     </noscript>
 
+    <x-admin.media-picker />
+
     <template id="page-builder-template">
         <div x-data="pageBuilder" data-config="{{ json_encode($builder) }}"
              x-on:keydown.window.ctrl.s.prevent="save()" x-on:keydown.window.meta.s.prevent="save()">
@@ -114,6 +116,21 @@
                             </template>
 
                             <p x-show="!current.locked && types[current.type]?.note" class="rounded-lg bg-cidst-bg p-2 text-xs text-cidst-muted" x-text="types[current.type]?.note"></p>
+
+                            <template x-if="!current.locked && types[current.type]?.media">
+                                <div class="space-y-2">
+                                    <span class="block text-sm font-medium text-cidst-ink">Image <span class="text-cidst-red">*</span></span>
+                                    <template x-if="current.media">
+                                        <img x-bind:src="current.media.url" x-bind:alt="current.media.name"
+                                             class="h-32 w-full rounded-lg border border-cidst-border object-cover">
+                                    </template>
+                                    <p x-show="!current.media" class="rounded-lg border-2 border-dashed border-cidst-border p-4 text-center text-sm text-cidst-muted">Aucune image choisie.</p>
+                                    <button type="button"
+                                            class="rounded-lg border border-cidst-border px-3 py-2 text-sm font-medium text-cidst-ink hover:border-cidst-red hover:text-cidst-red focus:outline-none focus:ring-2 focus:ring-cidst-red/40"
+                                            x-on:click="pickImage()" x-text="current.media ? 'Changer' : 'Choisir une image'"></button>
+                                    <p x-show="fieldError('media_id')" class="text-xs font-medium text-red-600" x-text="fieldError('media_id')"></p>
+                                </div>
+                            </template>
 
                             <template x-for="field in fields" x-bind:key="current.uid + ':' + field.key">
                                 <div class="space-y-1">
