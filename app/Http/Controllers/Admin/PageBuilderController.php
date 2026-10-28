@@ -21,6 +21,7 @@ class PageBuilderController extends Controller
         $blocks = $page->blocks()
             ->whereNull('parent_id')
             ->withCount('children')
+            ->with('media')
             ->orderBy('order')
             ->get()
             ->map(function (PageBlock $block) use ($page, $labels) {
@@ -35,7 +36,7 @@ class PageBuilderController extends Controller
 
                 // Un bloc verrouille n'expose jamais ses donnees au builder.
                 return $base + ($editable
-                    ? ['data' => $block->data ?? []]
+                    ? ['data' => $block->data ?? []] + $this->mediaPayload($block)
                     : [
                         'childrenCount' => $block->children_count,
                         'editUrl' => route('admin.pages.blocks.edit', [$page, $block->id]),
@@ -56,6 +57,22 @@ class PageBuilderController extends Controller
                 'blocks' => $blocks,
             ],
         ]);
+    }
+
+    /** Image actuelle des blocs a image unique (null si aucune). Aucune cle pour les autres types. */
+    private function mediaPayload(PageBlock $block): array
+    {
+        if (! in_array($block->type, BlockSyncService::MEDIA_TYPES, true)) {
+            return [];
+        }
+
+        $media = $block->media->first();
+
+        return ['media' => $media ? [
+            'id' => $media->id,
+            'url' => $media->thumbnail_url,
+            'name' => $media->original_name,
+        ] : null];
     }
 
     public function save(Request $request, Page $page, BlockSyncService $sync): JsonResponse

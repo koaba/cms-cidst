@@ -10,7 +10,7 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 export function buildPayload(blocks) {
     return blocks.map((block) => (block.locked
         ? { id: block.id, type: block.type }
-        : { id: block.id ?? undefined, type: block.type, data: block.data }));
+        : { id: block.id ?? undefined, type: block.type, data: block.data, media_id: block.mediaId ?? undefined }));
 }
 
 /**
@@ -73,6 +73,8 @@ export function pageBuilder() {
                 locked: raw.locked,
                 editUrl: raw.editUrl ?? null,
                 childrenCount: raw.childrenCount ?? 0,
+                media: raw.media ?? null,
+                mediaId: null,
                 data: raw.locked ? {} : { ...clone(this.types[raw.type]?.defaults ?? {}), ...(raw.data ?? {}) },
             };
         },
@@ -105,6 +107,7 @@ export function pageBuilder() {
             switch (block.type) {
                 case 'texte': return clip(data.title || data.content);
                 case 'banniere_hero': return clip(data.titre);
+                case 'image': return clip(data.alt || block.media?.name);
                 case 'bouton': return clip(data.label);
                 case 'citation': return clip(data.content);
                 case 'separateur': return data.style === 'epais' ? 'Trait épais' : 'Trait fin';
@@ -113,6 +116,27 @@ export function pageBuilder() {
         },
 
         select(uid) { this.selectedUid = uid; },
+
+        pickImage() {
+            const block = this.current;
+            if (!block || !window.MediaPicker) return;
+
+            window.MediaPicker.open({
+                mode: 'single',
+                onConfirm: ([item]) => {
+                    if (!item) return;
+
+                    if (item.mime && !item.mime.startsWith('image/')) {
+                        this.setStatus('Ce fichier n\u2019est pas une image.', 'error');
+                        return;
+                    }
+
+                    block.media = { id: item.id, url: item.url, name: item.name };
+                    block.mediaId = item.id;
+                    this.markDirty();
+                },
+            });
+        },
         close() { this.selectedUid = null; },
 
         markDirty() {
@@ -143,6 +167,8 @@ export function pageBuilder() {
                 locked: false,
                 editUrl: null,
                 childrenCount: 0,
+                media: null,
+                mediaId: null,
                 data: clone(definition.defaults),
             };
 
@@ -267,7 +293,7 @@ export function pageBuilder() {
                 return;
             }
 
-            saved.forEach((item, index) => { this.blocks[index].id = item.id; });
+            saved.forEach((item, index) => { this.blocks[index].id = item.id; this.blocks[index].mediaId = null; });
             this.setStatus('Enregistré.', 'ok');
         },
     };
