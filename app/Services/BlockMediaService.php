@@ -11,6 +11,7 @@ use App\Models\PdfDocument;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 
 class BlockMediaService
 {
@@ -35,6 +36,32 @@ class BlockMediaService
             'pdf' => $this->handlePdf($request, $block),
             default => null,
         };
+    }
+
+    /**
+     * Rattache un media existant de la mediatheque a un bloc a image unique
+     * (image, banniere_hero) et remplace l'ancien. Tout est valide avant la
+     * moindre ecriture. L'ancien media n'est supprime que s'il n'est plus
+     * utilise nulle part (meme regle que detachOwnedMedia).
+     */
+    public function attachExisting(PageBlock $block, int $mediaId): void
+    {
+        $media = Media::findOrFail($mediaId);
+
+        if (! str_starts_with((string) $media->mime_type, 'image/')) {
+            throw new InvalidArgumentException('Seule une image peut etre rattachee a ce bloc.');
+        }
+
+        $previousIds = $block->media()->pluck('media.id')
+            ->map(fn ($id) => (int) $id)
+            ->reject(fn (int $id) => $id === $media->id)
+            ->all();
+
+        // Rattacher avant de detacher : un media deja en place ne doit jamais
+        // passer par la suppression d'orphelin.
+        $block->media()->syncWithoutDetaching([$media->id => ['order' => 0]]);
+
+        $block->detachOwnedMedia($previousIds);
     }
 
     private function handleSingleImage(Request $request, PageBlock $block): void
