@@ -39,7 +39,9 @@ class BanniereHeroRules implements BlockRules, DeclaresMediaFields
     public function casts(Request $request): array
     {
         // `integer` valide mais ne caste pas : cast explicite indispensable.
-        return ['overlay_opacity' => (int) $request->input('overlay_opacity', 40)];
+        $opacity = $request->input('overlay_opacity');
+
+        return ['overlay_opacity' => $opacity === null || $opacity === '' ? 40 : (int) $opacity];
     }
 
     public function mediaFields(): array
