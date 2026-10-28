@@ -96,6 +96,7 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
             });
         });
     });
+    Route::get('admin/pages/{page}/builder', [AdminPageBuilderController::class, 'show'])->name('admin.pages.builder.show');
     Route::post('admin/pages/{page}/builder', [AdminPageBuilderController::class, 'save'])->name('admin.pages.builder.save');
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');

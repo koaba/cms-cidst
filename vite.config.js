@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/js/admin/media-reorder.js',
                 'resources/js/admin/file-dropzone.js',
                 'resources/js/admin/page-blocks-reorder.js',
+                'resources/js/admin/page-builder.js',
             ],
             refresh: true,
         }),
