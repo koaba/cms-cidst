@@ -1,6 +1,7 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Blocs de contenu — {{ $page->title }}</h1>
 
+    <a href="{{ route('admin.pages.builder.show', $page) }}" class="text-sm font-medium text-cidst-red hover:underline md:float-right">Ouvrir le Page Builder &rarr;</a>
     <a href="{{ route('admin.pages.edit', $page) }}" class="text-sm text-gray-500">&larr; Retour à la page</a>
 
     @if(session('success'))
