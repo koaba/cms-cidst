@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MediaOrderController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\NewsTickerController as AdminNewsTickerController;
 use App\Http\Controllers\Admin\PageBlockController as AdminPageBlockController;
+use App\Http\Controllers\Admin\PageBuilderController as AdminPageBuilderController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PdfCategoryController as AdminPdfCategoryController;
 use App\Http\Controllers\Admin\PdfDocumentController as AdminPdfDocumentController;
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
             });
         });
     });
+    Route::post('admin/pages/{page}/builder', [AdminPageBuilderController::class, 'save'])->name('admin.pages.builder.save');
     Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
     Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
     Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');
