@@ -24,8 +24,8 @@ final class BlockFieldCatalog
             ],
         ],
         'banniere_hero' => [
-            'creatable' => false,
-            'note' => 'L\'image de fond se modifie dans l\'éditeur classique.',
+            'creatable' => true,
+            'media' => true,
             'defaults' => [
                 'titre' => '', 'sous_titre' => '', 'bouton_texte' => '', 'bouton_url' => '',
                 'overlay_opacity' => 40, 'alt' => '',
@@ -37,6 +37,15 @@ final class BlockFieldCatalog
                 ['key' => 'bouton_url', 'type' => 'text', 'label' => 'Lien du bouton', 'help' => 'URL complète, par exemple https://exemple.org/contact'],
                 ['key' => 'overlay_opacity', 'type' => 'number', 'label' => 'Opacité du voile (%)', 'min' => 0, 'max' => 100],
                 ['key' => 'alt', 'type' => 'text', 'label' => 'Texte alternatif de l\'image', 'max' => 255, 'help' => 'Décrit l\'image pour les lecteurs d\'écran et le référencement.'],
+            ],
+        ],
+        'image' => [
+            'creatable' => true,
+            'media' => true,
+            'defaults' => ['alt' => '', 'caption' => ''],
+            'fields' => [
+                ['key' => 'alt', 'type' => 'text', 'label' => 'Texte alternatif', 'max' => 255, 'help' => "D\u{00E9}crit l'image pour les lecteurs d'\u{00E9}cran et le r\u{00E9}f\u{00E9}rencement."],
+                ['key' => 'caption', 'type' => 'text', 'label' => "L\u{00E9}gende", 'max' => 255],
             ],
         ],
         'bouton' => [

@@ -66,6 +66,7 @@ class PageBuilderController extends Controller
             'blocks.*.id' => ['nullable', 'integer'],
             'blocks.*.type' => ['required', 'string'],
             'blocks.*.data' => ['nullable', 'array'],
+            'blocks.*.media_id' => ['nullable', 'integer'],
         ]);
 
         return response()->json([
