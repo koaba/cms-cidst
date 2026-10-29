@@ -147,7 +147,7 @@ class BlockSyncService
      */
     private function validatedMediaId(int $index, string $type, mixed $mediaId, ?PageBlock $block): ?int
     {
-        if (! in_array($type, self::MEDIA_TYPES, true)) {
+        if (! in_array($type, self::mediaTypes(), true)) {
             return null;
         }
 
@@ -219,7 +219,7 @@ class BlockSyncService
     {
         $state = $page->blocks()
             ->whereNull('parent_id')
-            ->whereIn('type', self::EDITABLE_TYPES)
+            ->whereIn('type', self::editableTypes())
             ->with('media')
             ->orderBy('order')
             ->orderBy('id')
@@ -266,6 +266,6 @@ class BlockSyncService
 
     private function isEditable(string $type): bool
     {
-        return in_array($type, self::EDITABLE_TYPES, true);
+        return in_array($type, self::editableTypes(), true);
     }
 }
