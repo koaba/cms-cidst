@@ -49,11 +49,14 @@ export function pageBuilder() {
         dragIndex: null,
         paletteType: null,
         seq: 0,
+        version: null,
+        stale: false,
 
         init() {
             const config = JSON.parse(this.$root.dataset.config);
             this.types = config.types;
             this.saveUrl = config.saveUrl;
+            this.version = config.version ?? null;
             this.blocks = config.blocks.map((raw) => this.hydrate(raw));
 
             window.addEventListener('beforeunload', (event) => {
@@ -138,6 +141,11 @@ export function pageBuilder() {
             });
         },
         close() { this.selectedUid = null; },
+
+        reload() {
+            this.dirty = false;
+            window.location.reload();
+        },
 
         markDirty() {
             this.dirty = true;
@@ -256,7 +264,7 @@ export function pageBuilder() {
                         Accept: 'application/json',
                         'X-CSRF-TOKEN': csrfToken(),
                     },
-                    body: JSON.stringify({ blocks: buildPayload(this.blocks) }),
+                    body: JSON.stringify({ blocks: buildPayload(this.blocks), version: this.version }),
                 });
                 const body = await response.json().catch(() => ({}));
 
@@ -265,6 +273,9 @@ export function pageBuilder() {
                     const first = Object.keys(this.errors).find((key) => key !== '_global');
                     if (first) this.selectedUid = first;
                     this.setStatus(this.errors._global?.[0] ?? 'Certains blocs sont invalides. Rien n\'a été enregistré.', 'error');
+                } else if (response.status === 409) {
+                    this.stale = true;
+                    this.setStatus('Cette page a \u00e9t\u00e9 modifi\u00e9e ailleurs. Rien n\u2019a \u00e9t\u00e9 enregistr\u00e9 : rechargez pour obtenir la derni\u00e8re version.', 'error');
                 } else if (response.status === 419) {
                     this.setStatus('Session expirée : rechargez la page (vos modifications ne sont pas enregistrées).', 'error');
                 } else if (response.status === 403) {
@@ -272,6 +283,8 @@ export function pageBuilder() {
                 } else if (!response.ok) {
                     this.setStatus(`Erreur ${response.status} : rien n'a été enregistré.`, 'error');
                 } else {
+                    this.version = body.version ?? this.version;
+                    this.stale = false;
                     this.applySaved(body.blocks ?? []);
                 }
             } catch {

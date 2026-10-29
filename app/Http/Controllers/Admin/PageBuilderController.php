@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Models\PageBlock;
 use App\Services\PageBuilder\BlockFieldCatalog;
 use App\Services\PageBuilder\BlockSyncService;
+use App\Services\PageBuilder\StaleBuilderException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ use Illuminate\Http\Request;
 /** Page Builder : seconde interface d'edition des blocs racine d'une page. */
 class PageBuilderController extends Controller
 {
-    public function show(Page $page): View
+    public function show(Page $page, BlockSyncService $sync): View
     {
         $labels = config('page_blocks.types');
 
@@ -55,6 +56,7 @@ class PageBuilderController extends Controller
                 'classicUrl' => route('admin.pages.blocks.index', $page),
                 'types' => $types,
                 'blocks' => $blocks,
+                'version' => $sync->version($page),
             ],
         ]);
     }
@@ -84,11 +86,19 @@ class PageBuilderController extends Controller
             'blocks.*.type' => ['required', 'string'],
             'blocks.*.data' => ['nullable', 'array'],
             'blocks.*.media_id' => ['nullable', 'integer'],
+            'version' => ['nullable', 'string'],
         ]);
+
+        try {
+            $blocks = $sync->sync($page, $payload['blocks'], $payload['version'] ?? null);
+        } catch (StaleBuilderException $e) {
+            return response()->json(['success' => false, 'code' => 'stale', 'message' => $e->getMessage()], 409);
+        }
 
         return response()->json([
             'success' => true,
-            'blocks' => $sync->sync($page, $payload['blocks']),
+            'blocks' => $blocks,
+            'version' => $sync->version($page),
         ]);
     }
 }
