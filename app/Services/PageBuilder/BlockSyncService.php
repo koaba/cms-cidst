@@ -252,6 +252,18 @@ class BlockSyncService
         return $value;
     }
 
+    /** Types editables : cles du catalogue (source unique). */
+    public static function editableTypes(): array
+    {
+        return array_keys(BlockFieldCatalog::all());
+    }
+
+    /** Types a image unique : entrees du catalogue marquees media. */
+    public static function mediaTypes(): array
+    {
+        return array_keys(array_filter(BlockFieldCatalog::all(), fn (array $definition) => $definition['media'] ?? false));
+    }
+
     private function isEditable(string $type): bool
     {
         return in_array($type, self::EDITABLE_TYPES, true);
