@@ -38,9 +38,15 @@ class BlockSyncService
      * @param  list<array{id?: int|null, type: string, data?: array|null}>  $items  blocs dans l'ordre voulu
      * @return list<array{id: int, type: string, order: int}> blocs racine apres sauvegarde
      */
-    public function sync(Page $page, array $items): array
+    public function sync(Page $page, array $items, ?string $expectedVersion = null): array
     {
-        return DB::transaction(function () use ($page, $items) {
+        return DB::transaction(function () use ($page, $items, $expectedVersion) {
+            Page::query()->whereKey($page->getKey())->lockForUpdate()->first();
+
+            if ($expectedVersion !== null && ! hash_equals($this->version($page), $expectedVersion)) {
+                throw new StaleBuilderException;
+            }
+
             $roots = $page->blocks()->whereNull('parent_id')->orderBy('order')->get()->keyBy('id');
 
             $this->assertIdsAreRootBlocksOfPage($items, $roots);
@@ -206,6 +212,44 @@ class BlockSyncService
         if ($mediaId !== null) {
             $this->blockMedia->attachExisting($block, $mediaId);
         }
+    }
+
+    /** Empreinte de l'etat des blocs racine editables (detecte une sauvegarde depuis un builder perime). */
+    public function version(Page $page): string
+    {
+        $state = $page->blocks()
+            ->whereNull('parent_id')
+            ->whereIn('type', self::EDITABLE_TYPES)
+            ->with('media')
+            ->orderBy('order')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (PageBlock $block) => [
+                $block->id,
+                $block->type,
+                $block->order,
+                $this->canonical($block->data ?? []),
+                $block->media->pluck('id')->all(),
+            ])
+            ->all();
+
+        return sha1(json_encode($state, JSON_THROW_ON_ERROR));
+    }
+
+    /** Trie les cles des tableaux associatifs : l'ordre des cles JSON ne doit pas changer l'empreinte. */
+    private function canonical(mixed $value): mixed
+    {
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        $value = array_map(fn ($item) => $this->canonical($item), $value);
+
+        if (! array_is_list($value)) {
+            ksort($value);
+        }
+
+        return $value;
     }
 
     private function isEditable(string $type): bool
