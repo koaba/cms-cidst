@@ -6,7 +6,9 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/public.css',
                 'resources/js/app.js',
+                'resources/js/admin/dashboard.js',
                 'resources/js/admin/article-form.js',
                 'resources/js/admin/pdf-thumbnail.js',
                 'resources/js/admin/media-reorder.js',

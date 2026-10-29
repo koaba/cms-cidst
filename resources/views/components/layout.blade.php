@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.seo-meta', ['model' => $seo ?? null, 'title' => $title ?? null])
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite('resources/css/public.css')
     <x-theme-style />
 </head>
 <body>
