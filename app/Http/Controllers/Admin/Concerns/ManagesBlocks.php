@@ -96,7 +96,7 @@ trait ManagesBlocks
     {
         $data = $this->blockData($request, $block->type, false, $block);
 
-         foreach ($locked as $key) {
+        foreach ($locked as $key) {
             $data[$key] = $block->data[$key];
         }
 
