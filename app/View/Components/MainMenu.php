@@ -15,13 +15,7 @@ class MainMenu extends Component
 
     public function __construct()
     {
-        $this->items = Menu::whereNull('parent_id')
-            ->where('is_active', true)
-            ->with(['children' => function ($query) {
-                $query->where('is_active', true)->orderBy('order');
-            }])
-            ->orderBy('order')
-            ->get();
+        $this->items = Menu::activeTree();
         $this->settings = SiteSetting::current();
     }
 
