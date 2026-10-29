@@ -26,7 +26,7 @@ class PageBuilderController extends Controller
             ->orderBy('order')
             ->get()
             ->map(function (PageBlock $block) use ($page, $labels) {
-                $editable = in_array($block->type, BlockSyncService::EDITABLE_TYPES, true);
+                $editable = in_array($block->type, BlockSyncService::editableTypes(), true);
 
                 $base = [
                     'id' => $block->id,
@@ -64,7 +64,7 @@ class PageBuilderController extends Controller
     /** Image actuelle des blocs a image unique (null si aucune). Aucune cle pour les autres types. */
     private function mediaPayload(PageBlock $block): array
     {
-        if (! in_array($block->type, BlockSyncService::MEDIA_TYPES, true)) {
+        if (! in_array($block->type, BlockSyncService::mediaTypes(), true)) {
             return [];
         }
 
