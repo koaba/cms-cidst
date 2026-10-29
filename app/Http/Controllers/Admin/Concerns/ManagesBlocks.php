@@ -96,8 +96,13 @@ trait ManagesBlocks
     {
         $data = $this->blockData($request, $block->type, false, $block);
 
-        foreach ($locked as $key) {
+         foreach ($locked as $key) {
             $data[$key] = $block->data[$key];
+        }
+
+        // Le classique ne connait pas data.design (pose par le builder) : on le conserve.
+        if (! array_key_exists('design', $data) && isset($block->data['design'])) {
+            $data['design'] = $block->data['design'];
         }
 
         $block->update(['data' => $data]);
