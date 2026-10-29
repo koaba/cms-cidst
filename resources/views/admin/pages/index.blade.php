@@ -32,7 +32,7 @@
                     </td>
                     <td class="p-2 space-x-2">
                         <a href="{{ route('admin.pages.edit', $page) }}" class="text-blue-600">Modifier</a>
-                        <a href="{{ route('admin.pages.blocks.index', $page) }}" class="text-purple-600">Blocs</a>
+                        <a href="{{ route('admin.pages.builder.show', $page) }}" class="text-purple-600">Builder</a>
                         <form action="{{ route('admin.pages.destroy', $page) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
                             @unless (auth()->user()->hasRole('Super Admin'))<input type="hidden" name="delete_code">@endunless
