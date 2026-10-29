@@ -1,7 +1,7 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Blocs de contenu — {{ $page->title }}</h1>
 
-    <a href="{{ route('admin.pages.builder.show', $page) }}" class="text-sm font-medium text-cidst-red hover:underline md:float-right">Ouvrir le Page Builder &rarr;</a>
+    <a href="{{ route('admin.pages.builder.show', $page) }}" class="group inline-flex w-full items-center justify-center gap-2 rounded-lg bg-cidst-red px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-cidst-red/90 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-cidst-red/40 focus:ring-offset-2 md:float-right md:w-auto">Ouvrir le Page Builder <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">&rarr;</span></a>
     <a href="{{ route('admin.pages.edit', $page) }}" class="text-sm text-gray-500">&larr; Retour à la page</a>
 
     @if(session('success'))
