@@ -19,19 +19,13 @@ use Illuminate\Validation\ValidationException;
  * Synchronise les blocs racine d'une page avec la liste envoyee par le
  * Page Builder : creation, modification, reordonnancement, suppression.
  *
- * Regle de securite : liste blanche. Un type absent de EDITABLE_TYPES
+ * Regle de securite : liste blanche. Un type absent du catalogue de champs
  * (colonnes, accordeon, galerie... et tout type futur) n'est jamais
  * modifie ni supprime ici : seul son ordre change. Rien n'est ecrit
  * tant que tous les blocs du payload ne sont pas valides.
  */
 class BlockSyncService
 {
-    /** Types que le builder sait editer. Tous sont des blocs feuilles (sans enfants). */
-    public const EDITABLE_TYPES = ['texte', 'banniere_hero', 'image', 'bouton', 'citation', 'separateur'];
-
-    /** Types a image unique : l'image est choisie dans la mediatheque (media_id). */
-    public const MEDIA_TYPES = ['banniere_hero', 'image'];
-
     public function __construct(private BlockMediaService $blockMedia) {}
 
     /**
