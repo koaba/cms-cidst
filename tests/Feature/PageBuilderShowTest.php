@@ -73,7 +73,7 @@ it('decrit les types editables, et indique ceux qui portent une image', function
     $this->actingAs($this->admin)
         ->get(route('admin.pages.builder.show', $this->page))
         ->assertViewHas('builder', function (array $builder) {
-            expect(array_keys($builder['types']))->toEqualCanonicalizing(BlockSyncService::EDITABLE_TYPES);
+            expect(array_keys($builder['types']))->toEqualCanonicalizing(BlockSyncService::editableTypes());
             expect($builder['types']['texte']['creatable'])->toBeTrue();
             expect($builder['types']['banniere_hero']['creatable'])->toBeTrue();
             expect($builder['types']['image']['media'])->toBeTrue();
