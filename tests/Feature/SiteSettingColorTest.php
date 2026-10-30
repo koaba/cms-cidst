@@ -37,9 +37,9 @@ it('revient à la couleur par défaut quand une valeur invalide est stockée dir
     Role::create(['name' => 'Super Admin']);
     $admin = User::factory()->create();
     $admin->assignRole('Super Admin');
-    SiteSetting::current()->forceFill(['primary_color' => 'javascript:alert(1)'])->saveQuietly();
+    SiteSetting::current()->forceFill(['primary_color' => 'red;}a{'])->saveQuietly();
     $response = $this->actingAs($admin)->get(route('admin.settings.edit'));
     $response->assertOk();
-    $response->assertDontSee('javascript:alert', false);
+    $response->assertDontSee('red;}a{', false);
     $response->assertSee('#000000', false);
 });
