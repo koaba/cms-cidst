@@ -64,7 +64,9 @@ class SeoService
         }
 
         if (method_exists($model, 'media')) {
-            $firstMedia = $model->media()->where('media.mime_type', 'like', 'image/%')->first();
+            $firstMedia = $model->relationLoaded('media')
+                ? $model->media->first(fn ($media) => str_starts_with((string) $media->mime_type, 'image/'))
+                : $model->media()->where('media.mime_type', 'like', 'image/%')->first();
             if ($firstMedia) {
                 return Storage::disk('public')->url($firstMedia->path);
             }

@@ -46,7 +46,11 @@ class PageBlock extends Model
      */
     public function childrenGroupedBySlot()
     {
-        return $this->children()->with('media')->get()->groupBy('slot_index');
+        $children = $this->relationLoaded('children')
+            ? $this->children->loadMissing('media')
+            : $this->children()->with('media')->get();
+
+        return $children->groupBy('slot_index');
     }
 
     public function media()
