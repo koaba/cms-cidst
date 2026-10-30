@@ -9,11 +9,14 @@ it('decrit exactement les types editables', function () {
     expect(array_keys(BlockFieldCatalog::all()))->toEqualCanonicalizing(BlockSyncService::editableTypes());
 });
 
-it('a les memes cles de champs que les regles de validation (hors media)', function (string $type) {
+it('a les memes cles de champs que les regles de validation (hors media et design)', function (string $type) {
     $rules = BlockRegistry::rulesFor($type);
     $media = $rules instanceof DeclaresMediaFields ? $rules->mediaFields() : [];
 
-    $ruleKeys = array_values(array_diff(array_keys($rules->rules(false)), $media));
+    $ruleKeys = array_values(array_filter(
+        array_diff(array_keys($rules->rules(false)), $media),
+        fn (string $key) => $key !== 'design' && ! str_starts_with($key, 'design.'),
+    ));
     $fieldKeys = array_column(BlockFieldCatalog::for($type)['fields'], 'key');
 
     expect($fieldKeys)->toEqualCanonicalizing($ruleKeys);
