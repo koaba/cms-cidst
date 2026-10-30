@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Media;
 use App\Models\PageBlock;
 use App\Models\SeoMeta;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Vue d'ensemble de la médiathèque pour le tableau de bord admin.
@@ -144,8 +145,9 @@ class MediaOverviewService
     /**
      * Le texte alternatif vit à deux endroits : dans le JSON `data` du bloc
      * (image, banniere_hero) et dans le pivot `mediables.alt` (galerie).
-     * Calculé en PHP : un `alt` vide est stocké en JSON null, que les
-     * requêtes JSON SQL distinguent mal d'une clé absente.
+     * Blocs simples : calculés en PHP, car un `alt` vide est stocké en JSON
+     * null, que les requêtes JSON SQL distinguent mal d'une clé absente.
+     * Galeries : un COUNT SQL sur le pivot, `alt` blanc = NULL, vide ou espaces.
      */
     private function missingAlt(): int
     {
@@ -156,13 +158,15 @@ class MediaOverviewService
             ->filter(fn (PageBlock $block) => blank($block->data['alt'] ?? null))
             ->count();
 
-        $gallery = PageBlock::query()
-            ->where('type', 'galerie')
-            ->with('media')
-            ->get()
-            ->sum(fn (PageBlock $block) => $block->media
-                ->filter(fn (Media $media) => blank($media->pivot->alt))
-                ->count());
+        $gallery = DB::table('mediables')
+            ->join('page_blocks', function ($join) {
+                $join->on('page_blocks.id', '=', 'mediables.mediable_id')
+                    ->where('mediables.mediable_type', '=', PageBlock::class);
+            })
+            ->join('media', 'media.id', '=', 'mediables.media_id')
+            ->where('page_blocks.type', 'galerie')
+            ->whereRaw("TRIM(COALESCE(mediables.alt, '')) = ''")
+            ->count();
 
         return $single + $gallery;
     }

@@ -8,6 +8,7 @@ use App\Models\PageView;
 use App\Models\Slider;
 use App\Models\User;
 use App\Services\MediaOverviewService;
+use App\Support\SqlDate;
 use Carbon\CarbonImmutable;
 
 /**
@@ -45,16 +46,18 @@ class DashboardStatsService
         $articlesParMois = Article::where('is_published', true)
             ->whereNotNull('published_at')
             ->where('published_at', '>=', now()->subMonths(6)->startOfMonth())
-            ->get(['published_at'])
-            ->groupBy(fn (Article $article) => $article->published_at->format('Y-m'))
-            ->map->count();
+            ->selectRaw(SqlDate::bucket('published_at', 'Y-m').' as bucket, COUNT(*) as total')
+            ->groupBy('bucket')
+            ->pluck('total', 'bucket')
+            ->map(fn ($total) => (int) $total);
         $activiteMensuelle = $months->mapWithKeys(fn ($mois) => [$mois => $articlesParMois->get($mois, 0)]);
 
         // Vues sur la periode : toutes les cles sont construites pour eviter les trous.
         $vuesParJour = PageView::where('viewed_at', '>=', $period->start())
-            ->get(['viewed_at'])
-            ->groupBy(fn (PageView $view) => $view->viewed_at->format($period->format()))
-            ->map->count();
+            ->selectRaw(SqlDate::bucket('viewed_at', $period->format()).' as bucket, COUNT(*) as total')
+            ->groupBy('bucket')
+            ->pluck('total', 'bucket')
+            ->map(fn ($total) => (int) $total);
         $activiteVues = collect($period->labels())->mapWithKeys(fn ($zero, $cle) => [$cle => $vuesParJour->get($cle, 0)]);
 
         $topArticles = Article::query()

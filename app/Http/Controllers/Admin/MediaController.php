@@ -20,8 +20,11 @@ class MediaController extends Controller
 
     public function index(Request $request)
     {
+        $media = $this->search($request)->paginate(24)->withQueryString();
+        Media::preloadUsages($media->getCollection());
+
         return view('admin.media.index', [
-            'media' => $this->search($request)->paginate(24)->withQueryString(),
+            'media' => $media,
             'search' => trim($request->query('q', '')),
         ]);
     }

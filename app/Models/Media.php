@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Jobs\GenerateMediaThumbnail;
 use App\Jobs\GenerateMediaVariants;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -28,22 +29,68 @@ class Media extends Model
         return $this->hasMany(Mediable::class);
     }
 
+    /** Usages calcules par preloadUsages() ; null tant qu'aucun prechargement n'a eu lieu. */
+    protected ?array $preloadedUsages = null;
+
     public function usages(): array
     {
+        if ($this->preloadedUsages !== null) {
+            return $this->preloadedUsages;
+        }
+
         return $this->mediables
             ->map(function ($pivot) {
                 $model = class_exists($pivot->mediable_type)
                     ? $pivot->mediable_type::find($pivot->mediable_id)
                     : null;
 
-                return $model ? [
-                    'type' => class_basename($pivot->mediable_type),
-                    'title' => $model->title ?? $model->name ?? $model->label ?? '(sans titre)',
-                ] : null;
+                return self::usageOf($pivot->mediable_type, $model);
             })
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * Calcule les usages de toute une collection en une requete par type de
+     * contenu lie (au lieu d'un find() par pivot). usages() renvoie ensuite
+     * le resultat precharge.
+     *
+     * @param  iterable<Media>  $media
+     */
+    public static function preloadUsages(iterable $media): void
+    {
+        $media = EloquentCollection::make($media)->loadMissing('mediables');
+        $pivots = $media->flatMap->mediables;
+
+        $models = [];
+        foreach ($pivots->groupBy('mediable_type') as $type => $group) {
+            if (! class_exists($type) || ! is_subclass_of($type, Model::class)) {
+                continue;
+            }
+
+            $instance = new $type;
+            $models[$type] = $type::query()
+                ->whereIn($instance->getKeyName(), $group->pluck('mediable_id')->unique()->all())
+                ->get()
+                ->keyBy(fn (Model $model) => $model->getKey());
+        }
+
+        foreach ($media as $item) {
+            $item->preloadedUsages = $item->mediables
+                ->map(fn ($pivot) => self::usageOf($pivot->mediable_type, $models[$pivot->mediable_type][$pivot->mediable_id] ?? null))
+                ->filter()
+                ->values()
+                ->all();
+        }
+    }
+
+    private static function usageOf(string $type, ?Model $model): ?array
+    {
+        return $model ? [
+            'type' => class_basename($type),
+            'title' => $model->title ?? $model->name ?? $model->label ?? '(sans titre)',
+        ] : null;
     }
 
     public function getThumbnailUrlAttribute(): string
