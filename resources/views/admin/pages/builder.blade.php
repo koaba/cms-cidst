@@ -177,6 +177,32 @@
                                     <p x-show="fieldError(field.key)" class="text-xs font-medium text-red-600" x-text="fieldError(field.key)"></p>
                                 </div>
                             </template>
+
+                            {{-- Apparence : options stockees dans data.design (jamais data.style) --}}
+                            <template x-if="designFields.length > 0">
+                                <fieldset class="space-y-3 rounded-lg border border-cidst-border p-3">
+                                    <legend class="px-1 text-xs font-semibold uppercase tracking-wide text-cidst-muted">Apparence</legend>
+
+                                    <template x-for="field in designFields" x-bind:key="current.uid + ':design:' + field.key">
+                                        <div class="space-y-1">
+                                            <label class="block text-sm font-medium text-cidst-ink" x-bind:for="'design-' + field.key" x-text="field.label"></label>
+
+                                            <select x-bind:id="'design-' + field.key"
+                                                    class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-red focus:ring-cidst-red"
+                                                    x-bind:class="fieldError('design.' + field.key) ? 'border-red-500' : ''"
+                                                    x-on:change="setDesign(field.key, $event.target.value)">
+                                                <template x-for="option in field.options" x-bind:key="'option:' + option.value">
+                                                    <option x-bind:value="option.value"
+                                                            x-bind:selected="option.value === designValue(field.key)"
+                                                            x-text="option.label"></option>
+                                                </template>
+                                            </select>
+
+                                            <p x-show="fieldError('design.' + field.key)" class="text-xs font-medium text-red-600" x-text="fieldError('design.' + field.key)"></p>
+                                        </div>
+                                    </template>
+                                </fieldset>
+                            </template>
                         </div>
                     </template>
                 </aside>
