@@ -1,7 +1,7 @@
 @if($model instanceof \App\Models\Article)
 <script type="application/ld+json">
 {!! json_encode([
-    '@context' => 'https://schema.org',
+    '@@context' => 'https://schema.org',
     '@type' => 'NewsArticle',
     'headline' => $model->title,
     'description' => \App\Services\SeoService::description($model),
@@ -25,7 +25,7 @@
 @elseif($model instanceof \App\Models\Page)
 <script type="application/ld+json">
 {!! json_encode(array_filter([
-    '@context' => 'https://schema.org',
+    '@@context' => 'https://schema.org',
     '@type' => 'WebPage',
     'name' => $model->title,
     'description' => \App\Services\SeoService::description($model),
