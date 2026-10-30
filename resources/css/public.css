@@ -1,6 +1,6 @@
-@config '../../tailwind.public.config.js';
 @import './fonts.css';
 @import './shared.css';
+@config '../../tailwind.public.config.js';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

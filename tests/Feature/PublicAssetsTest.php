@@ -68,3 +68,20 @@ it('les vues publiques n utilisent plus de classes DaisyUI', function () {
 
     expect($contact)->not->toMatch('/class="[^"]*\b(btn|alert|alert-success|btn-primary)\b/');
 });
+it('public.css place les @import avant @config et @tailwind', function () {
+    $css = assetSource('resources/css/public.css');
+
+    $lastImport = strrpos($css, '@import');
+    $config = strpos($css, '@config');
+    $tailwind = strpos($css, '@tailwind');
+
+    expect($lastImport)->not->toBeFalse()
+        ->and($config)->not->toBeFalse()
+        ->and($tailwind)->not->toBeFalse()
+        ->and($lastImport)->toBeLessThan($config)
+        ->and($config)->toBeLessThan($tailwind);
+
+    expect($css)
+        ->toContain("@import './fonts.css';")
+        ->toContain("@import './shared.css';");
+});
