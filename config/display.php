@@ -12,4 +12,8 @@ return [
     'max_ticker_articles' => 5,
     'ticker_recent_days' => 30,
 
+    // Duree (secondes) du cache du layout public. L'invalidation par observers est
+    // immediate ; ce delai ne sert qu'aux changements dus au temps (articles programmes).
+    'layout_cache_ttl' => 300,
+
 ];

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class SiteSetting extends Model
 {
@@ -54,8 +55,8 @@ class SiteSetting extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => app()->forgetInstance(self::CACHE_KEY));
-        static::deleted(fn () => app()->forgetInstance(self::CACHE_KEY));
+        static::saved(fn () => self::forgetCurrent());
+        static::deleted(fn () => self::forgetCurrent());
     }
 
     public static function current(): self
@@ -64,9 +65,16 @@ class SiteSetting extends Model
             return app(self::CACHE_KEY);
         }
 
-        $settings = static::first() ?? static::create([]);
+        // Cache inter-requetes (invalide a chaque sauvegarde) + memo pour la requete en cours.
+        $settings = Cache::rememberForever(self::CACHE_KEY, fn () => static::first() ?? static::create([]));
         app()->instance(self::CACHE_KEY, $settings);
 
         return $settings;
+    }
+
+    private static function forgetCurrent(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+        app()->forgetInstance(self::CACHE_KEY);
     }
 }

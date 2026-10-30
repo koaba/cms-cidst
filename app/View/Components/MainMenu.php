@@ -2,8 +2,8 @@
 
 namespace App\View\Components;
 
-use App\Models\Menu;
 use App\Models\SiteSetting;
+use App\Support\PublicLayout;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -15,7 +15,7 @@ class MainMenu extends Component
 
     public function __construct()
     {
-        $this->items = Menu::activeTree();
+        $this->items = app(PublicLayout::class)->menu();
         $this->settings = SiteSetting::current();
     }
 
