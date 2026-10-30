@@ -2,8 +2,8 @@
 
 namespace App\View\Components;
 
-use App\Models\Menu;
 use App\Models\SiteSetting;
+use App\Support\PublicLayout;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -15,13 +15,7 @@ class MainMenu extends Component
 
     public function __construct()
     {
-        $this->items = Menu::whereNull('parent_id')
-            ->where('is_active', true)
-            ->with(['children' => function ($query) {
-                $query->where('is_active', true)->orderBy('order');
-            }])
-            ->orderBy('order')
-            ->get();
+        $this->items = app(PublicLayout::class)->menu();
         $this->settings = SiteSetting::current();
     }
 

@@ -1,0 +1,22 @@
+:root {
+    --admin-bg: #f3f4f6;
+    --admin-nav: #1f2937;
+    --admin-hover: #374151;
+    --admin-text: #d1d5db;
+    --color-primary-rgb: 196 30 42;
+    --color-secondary-rgb: 23 24 26;
+}
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.animate-marquee {
+    animation: marquee 20s linear infinite;
+}
+@keyframes marquee-vertical {
+    0% { transform: translateY(100%); }
+    100% { transform: translateY(-100%); }
+}
+.animate-marquee-vertical {
+    animation: marquee-vertical 20s linear infinite;
+}

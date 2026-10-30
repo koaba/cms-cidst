@@ -11,7 +11,10 @@
 --}}
 
 @php
-    $pdfDocument = \App\Models\PdfDocument::with('pdfs')->find($data['pdf_document_id'] ?? null);
+    // $pdfDocuments est precharge par PageController ; repli sur une requete si le bloc est rendu ailleurs.
+    $pdfDocument = isset($pdfDocuments)
+        ? $pdfDocuments->get($data['pdf_document_id'] ?? null)
+        : \App\Models\PdfDocument::with('pdfs')->find($data['pdf_document_id'] ?? null);
 @endphp
 
 @if($pdfDocument)

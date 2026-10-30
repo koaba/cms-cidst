@@ -155,6 +155,7 @@
             window.dashboardActivity = @json($activiteMensuelle);
             window.dashboardViews = @json($activiteVues);
         </script>
+        @vite('resources/js/admin/dashboard.js')
     @endpush
     @endrole
 </x-admin.layout>

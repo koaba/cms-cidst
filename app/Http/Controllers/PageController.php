@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Support\PublicPageCache;
 
 class PageController extends Controller
 {
@@ -19,6 +20,8 @@ class PageController extends Controller
             abort(404);
         }
 
-        return view('public.pages.show', compact('page'));
+        $pdfDocuments = PublicPageCache::hydrate($page);
+
+        return view('public.pages.show', compact('page', 'pdfDocuments'));
     }
 }

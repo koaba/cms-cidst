@@ -2,7 +2,7 @@
     <div class="max-w-xl mx-auto">
         <h1 class="text-3xl font-display font-bold mb-6 text-cidst-ink">Contact</h1>
         @if (session('success'))
-            <div class="alert alert-success mb-6">Message envoy&eacute;.</div>
+            <div class="mb-6 rounded border border-green-300 bg-green-50 px-4 py-3 text-green-800">Message envoy&eacute;.</div>
         @endif
         <form method="POST" action="{{ route('contact.store') }}" class="space-y-4">
             @csrf
@@ -28,7 +28,7 @@
                 <textarea id="message" name="message" rows="6" required class="w-full border border-cidst-border rounded p-2">{{ old('message') }}</textarea>
                 @error('message') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
-            <button type="submit" class="btn btn-primary text-white">Envoyer</button>
+            <button type="submit" class="inline-flex items-center rounded bg-cidst-red px-5 py-2 font-medium text-white hover:opacity-90">Envoyer</button>
         </form>
     </div>
 </x-layout>
