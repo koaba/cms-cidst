@@ -8,6 +8,7 @@ use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageBlock;
 use App\Services\BlockMediaService;
+use App\Support\PublicPageCache;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -34,7 +35,7 @@ class BlockSyncService
      */
     public function sync(Page $page, array $items, ?string $expectedVersion = null): array
     {
-        return DB::transaction(function () use ($page, $items, $expectedVersion) {
+        $blocks = DB::transaction(function () use ($page, $items, $expectedVersion) {
             Page::query()->whereKey($page->getKey())->lockForUpdate()->first();
 
             if ($expectedVersion !== null && ! hash_equals($this->version($page), $expectedVersion)) {
@@ -50,6 +51,12 @@ class BlockSyncService
 
             return $page->blocks()->whereNull('parent_id')->orderBy('order')->get(['id', 'type', 'order'])->toArray();
         });
+
+        // Apres le commit (les observers de PageBlock tournent avant) : evite qu'une requete
+        // concurrente remette en cache l'ancien contenu entre l'invalidation et le commit.
+        PublicPageCache::forgetAll();
+
+        return $blocks;
     }
 
     /** Refuse (sans rien ecrire) tout id hors des blocs racine de la page, ou en double. */

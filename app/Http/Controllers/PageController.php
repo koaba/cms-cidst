@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
-use App\Models\PdfDocument;
+use App\Support\PublicPageCache;
 
 class PageController extends Controller
 {
@@ -20,12 +20,7 @@ class PageController extends Controller
             abort(404);
         }
 
-        $page->loadBlockTree();
-
-        $pdfDocuments = PdfDocument::with('pdfs')
-            ->whereIn('id', $page->blocks->where('type', 'pdf')->pluck('data.pdf_document_id')->filter()->unique())
-            ->get()
-            ->keyBy('id');
+        $pdfDocuments = PublicPageCache::hydrate($page);
 
         return view('public.pages.show', compact('page', 'pdfDocuments'));
     }
