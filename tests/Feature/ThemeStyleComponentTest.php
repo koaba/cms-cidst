@@ -42,12 +42,12 @@ it('injecte les variables du theme dans l administration', function () {
 });
 
 it('retombe sur les defauts du theme quand la valeur stockee est invalide', function () {
-    themeSetColors('javascript:alert(1)', '#17181A');
+    themeSetColors('red;}a{', '#17181A');
 
     $html = $this->get('/')->getContent();
 
     expect($html)->toContain('--color-primary-rgb:196 30 42;')
-        ->and($html)->not->toContain('javascript:alert');
+        ->and($html)->not->toContain('red;}a{');
 });
 
 it('place le bloc du theme dans le head', function () {

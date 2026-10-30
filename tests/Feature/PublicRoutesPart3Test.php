@@ -27,14 +27,14 @@ it('affiche la page de recherche sans parametre', function () {
 
 it('trouve un article publie correspondant a la recherche', function () {
     Article::factory()->create([
-        'title' => 'ConfÈrence exceptionnelle sur le climat',
+        'title' => 'Conf√©rence exceptionnelle sur le climat',
         'is_published' => true,
     ]);
 
     $response = $this->get(route('search', ['q' => 'climat']));
 
     $response->assertOk();
-    $response->assertSee('ConfÈrence exceptionnelle sur le climat');
+    $response->assertSee('Conf√©rence exceptionnelle sur le climat');
 });
 
 it('ne trouve pas un article non publie correspondant a la recherche', function () {
@@ -51,14 +51,14 @@ it('ne trouve pas un article non publie correspondant a la recherche', function 
 
 it('trouve une page publiee correspondant a la recherche', function () {
     Page::factory()->create([
-        'title' => 'Mentions lÈgales complËtes',
+        'title' => 'Mentions l√©gales compl√®tes',
         'is_published' => true,
     ]);
 
     $response = $this->get(route('search', ['q' => 'mentions']));
 
     $response->assertOk();
-    $response->assertSee('Mentions lÈgales complËtes');
+    $response->assertSee('Mentions l√©gales compl√®tes');
 });
 
 it('rejette une recherche trop longue', function () {
