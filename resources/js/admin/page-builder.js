@@ -35,6 +35,29 @@ export function mapErrors(errors, uids) {
     return out;
 }
 
+/**
+ * Applique une option d'apparence sur data.design.
+ * Une valeur vide retire la cle, et design disparait quand il devient vide :
+ * le serveur remplace data.design en bloc a chaque sauvegarde.
+ */
+export function applyDesign(data, key, value) {
+    const design = { ...(data.design ?? {}) };
+
+    if (value === '' || value === null || value === undefined) {
+        delete design[key];
+    } else {
+        design[key] = value;
+    }
+
+    if (Object.keys(design).length === 0) {
+        delete data.design;
+    } else {
+        data.design = design;
+    }
+
+    return data;
+}
+
 export function pageBuilder() {
     return {
         types: {},
@@ -94,6 +117,18 @@ export function pageBuilder() {
 
         get fields() {
             return this.current && !this.current.locked ? (this.types[this.current.type]?.fields ?? []) : [];
+        },
+
+        get designFields() {
+            return this.current && !this.current.locked ? (this.types[this.current.type]?.design?.fields ?? []) : [];
+        },
+
+        designValue(key) {
+            return this.current?.data.design?.[key] ?? '';
+        },
+
+        setDesign(key, value) {
+            if (this.current) applyDesign(this.current.data, key, value);
         },
 
         summary(block) {

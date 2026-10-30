@@ -11,6 +11,10 @@ use InvalidArgumentException;
  * decrit que l'affichage. Un test de coherence impose que les cles des champs
  * soient celles des regles (hors champs media), pour eviter toute derive.
  * Les cles sont celles deja stockees dans page_blocks.data.
+ *
+ * Les options d'apparence vivent dans la section facultative `design`, decrite
+ * a part de `fields` et `defaults` : elles sont stockees dans data.design
+ * (jamais dans data.style) et absentes tant que l'utilisateur n'en choisit pas.
  */
 final class BlockFieldCatalog
 {
@@ -21,6 +25,16 @@ final class BlockFieldCatalog
             'fields' => [
                 ['key' => 'title', 'type' => 'text', 'label' => 'Titre', 'max' => 255],
                 ['key' => 'content', 'type' => 'textarea', 'label' => 'Contenu', 'required' => true],
+            ],
+            'design' => [
+                'fields' => [
+                    ['key' => 'align', 'type' => 'select', 'label' => 'Alignement du texte', 'options' => [
+                        ['value' => '', 'label' => 'Par défaut'],
+                        ['value' => 'left', 'label' => 'Gauche'],
+                        ['value' => 'center', 'label' => 'Centré'],
+                        ['value' => 'right', 'label' => 'Droite'],
+                    ]],
+                ],
             ],
         ],
         'banniere_hero' => [
@@ -82,13 +96,13 @@ final class BlockFieldCatalog
         ],
     ];
 
-    /** @return array<string, array{creatable: bool, defaults: array, fields: list<array>, note?: string}> */
+    /** @return array<string, array{creatable: bool, defaults: array, fields: list<array>, design?: array{fields: list<array>}, note?: string}> */
     public static function all(): array
     {
         return self::DEFINITIONS;
     }
 
-    /** @return array{creatable: bool, defaults: array, fields: list<array>, note?: string} */
+    /** @return array{creatable: bool, defaults: array, fields: list<array>, design?: array{fields: list<array>}, note?: string} */
     public static function for(string $type): array
     {
         return self::DEFINITIONS[$type]
