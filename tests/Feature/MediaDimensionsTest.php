@@ -2,6 +2,7 @@
 
 use App\Models\Media;
 use App\Services\BlockMediaService;
+use App\Services\WatermarkService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -38,4 +39,23 @@ it('ne leve pas d\'exception pour une image illisible', function () {
 
     expect($media->fresh()->width)->toBeNull()
         ->and($media->fresh()->height)->toBeNull();
+});
+
+it('lit la taille et les dimensions apres le filigrane', function () {
+    $this->mock(WatermarkService::class, function ($mock) {
+        $mock->shouldReceive('watermarkImage')->once()->andReturnUsing(function (string $path) {
+            $final = UploadedFile::fake()->image('w.jpg', 40, 30);
+            Storage::disk('public')->put($path, file_get_contents($final->getPathname()));
+
+            return true;
+        });
+    });
+
+    $service = app(BlockMediaService::class);
+    $media = (new ReflectionMethod($service, 'storeMedia'))
+        ->invoke($service, UploadedFile::fake()->image('a.jpg', 120, 80), 'image', [], true);
+
+    expect($media->fresh()->width)->toBe(40)
+        ->and($media->fresh()->height)->toBe(30)
+        ->and($media->fresh()->size)->toBe(Storage::disk('public')->size($media->path));
 });

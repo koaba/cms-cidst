@@ -18,6 +18,7 @@ class BlockMediaService
     public function __construct(
         private MediaSyncService $mediaSync,
         private WatermarkService $watermarkService,
+        private MediaUploader $uploader,
     ) {}
 
     public function stripMediaFields(array $data, string $type): array
@@ -135,21 +136,19 @@ class BlockMediaService
 
     private function storeMedia(UploadedFile $file, string $type, array $extra = [], bool $watermark = false): Media
     {
-        $path = $file->store('pages', 'public');
+        return $this->uploader->fromUpload(
+            $file,
+            'pages',
+            ['type' => $type] + $extra,
+            function (string $path) use ($type, $watermark): array {
+                if ($watermark) {
+                    $this->watermarkService->watermarkImage($path);
+                }
 
-        if ($watermark) {
-            $this->watermarkService->watermarkImage($path);
-        }
-
-        $dimensions = $type === 'image' ? MediaDimensionsReader::read($path) : [];
-
-        return Media::create([
-            'path' => $path,
-            'original_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
-            'size' => $file->getSize(),
-            'type' => $type,
-        ] + $dimensions + $extra);
+                // Dimensions lues apres le filigrane, sur le fichier final.
+                return $type === 'image' ? MediaDimensionsReader::read($path) : [];
+            },
+        );
     }
 
     /**
