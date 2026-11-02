@@ -1,6 +1,3 @@
 {
-    "preset": "laravel",
-    "exclude": [
-        "scripts/diagnostics"
-    ]
+    "preset": "laravel"
 }
