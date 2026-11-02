@@ -85,17 +85,15 @@ it('complete le Media avec le tableau retourne par le hook, sans remplacer le ch
 
 it('supprime le fichier stocke et relance l exception si le hook echoue', function () {
     $stored = null;
+    $hook = function (string $path) use (&$stored) {
+        $stored = $path;
+        throw new LogicException('echec du hook');
+    };
 
-    expect(fn () => app(MediaUploader::class)->fromUpload(
-        UploadedFile::fake()->image('a.jpg'),
-        'pages',
-        [],
-        function (string $path) use (&$stored) {
-            $stored = $path;
-            throw new LogicException('echec du hook');
-        },
-    ))->toThrow(LogicException::class, 'echec du hook');
+    expect(fn () => app(MediaUploader::class)->fromUpload(UploadedFile::fake()->image('a.jpg'), 'pages', [], $hook))
+        ->toThrow(LogicException::class, 'echec du hook');
 
-    expect(Media::count())->toBe(0);
-    Storage::disk('public')->assertMissing($stored);
+    expect($stored)->not->toBeNull()
+        ->and(Media::count())->toBe(0)
+        ->and(Storage::disk('public')->allFiles())->toBe([]);
 });
