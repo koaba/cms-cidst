@@ -1,19 +1,21 @@
 <?php
 
-test('l\'écran d\'inscription peut s\'afficher', function () {
-    $response = $this->get('/register');
+use App\Models\User;
 
-    $response->assertStatus(200);
+test('l\'ecran d\'inscription publique n\'existe plus', function () {
+    $this->get('/register')->assertNotFound();
 });
 
-test('de nouveaux utilisateurs peuvent s\'inscrire', function () {
-    $response = $this->post('/register', [
+test('l\'inscription publique est fermee et ne cree aucun utilisateur', function () {
+    $avant = User::count();
+
+    $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-    ]);
+    ])->assertNotFound();
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    expect(User::count())->toBe($avant);
+    $this->assertGuest();
 });
