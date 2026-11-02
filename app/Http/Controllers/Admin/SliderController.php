@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Slider;
+use App\Services\MediaUploader;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Validator;
 class SliderController extends Controller
 {
     use HasOrphanMediaCleanup;
+
+    public function __construct(private readonly MediaUploader $uploader) {}
 
     public function index()
     {
@@ -121,15 +124,7 @@ class SliderController extends Controller
     private function resolveImage(Request $request): array
     {
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $path = $file->store('sliders', 'public');
-
-            $media = Media::create([
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ]);
+            $media = $this->uploader->fromUpload($request->file('image'), 'sliders');
 
             return [$media->path, $media];
         }

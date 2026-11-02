@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Concerns\SavesSeoMeta;
 use App\Http\Controllers\Controller;
-use App\Models\Media;
 use App\Models\Page;
+use App\Services\MediaUploader;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -13,6 +13,8 @@ use Illuminate\Validation\Rule;
 class PageController extends Controller
 {
     use HasOrphanMediaCleanup, SavesSeoMeta;
+
+    public function __construct(private readonly MediaUploader $uploader) {}
 
     public function index()
     {
@@ -48,14 +50,7 @@ class PageController extends Controller
         $this->saveSeo($page, $validated);
 
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $path = $file->store('pages', 'public');
-            $media = Media::create([
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ]);
+            $media = $this->uploader->fromUpload($request->file('image'), 'pages');
             $page->media()->attach($media->id, ['order' => 0]);
         }
 
@@ -110,14 +105,7 @@ class PageController extends Controller
         if ($request->hasFile('image')) {
             $this->detachAndPruneOrphanMedia($page);
 
-            $file = $request->file('image');
-            $path = $file->store('pages', 'public');
-            $media = Media::create([
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
-                'size' => $file->getSize(),
-            ]);
+            $media = $this->uploader->fromUpload($request->file('image'), 'pages');
             $page->media()->attach($media->id, ['order' => 0]);
         }
 
