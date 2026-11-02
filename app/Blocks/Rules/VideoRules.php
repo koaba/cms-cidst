@@ -5,6 +5,7 @@ namespace App\Blocks\Rules;
 use App\Contracts\BlockRules;
 use App\Contracts\DeclaresMediaFields;
 use App\Models\PageBlock;
+use App\Rules\SupportedVideoUrl;
 use Illuminate\Http\Request;
 
 class VideoRules implements BlockRules, DeclaresMediaFields
@@ -14,7 +15,7 @@ class VideoRules implements BlockRules, DeclaresMediaFields
         return [
             'title' => 'nullable|string|max:255',
             'source_type' => 'required|in:upload,url',
-            'url' => 'required_if:source_type,url|nullable|string|max:255',
+            'url' => ['required_if:source_type,url', 'nullable', 'string', 'max:255', new SupportedVideoUrl],
             'video_file' => array_filter([
                 // Fichier requis à la création, ou en mise à jour si le
                 // bloc n'a aucun média vidéo (sinon bloc upload vide).

@@ -38,12 +38,12 @@ it('cree un bloc video via url externe', function () {
 
     $this->actingAs($this->admin)->post(
         route('admin.pages.blocks.store', $page),
-        ['type' => 'video', 'source_type' => 'url', 'url' => 'https://youtube.com/watch?v=abc']
+        ['type' => 'video', 'source_type' => 'url', 'url' => 'https://youtube.com/watch?v=abcdefghijk']
     );
 
     $block = $page->blocks()->whereNull('parent_id')->first();
     expect($block->data['source_type'])->toBe('url');
-    expect($block->data['url'])->toBe('https://youtube.com/watch?v=abc');
+    expect($block->data['url'])->toBe('https://youtube.com/watch?v=abcdefghijk');
     expect($block->media()->count())->toBe(0);
 });
 
@@ -118,7 +118,7 @@ it('detache la video uploadee quand on passe a une source url', function () {
 
     $this->actingAs($this->admin)->put(
         route('admin.pages.blocks.update', [$page, $block->id]),
-        ['source_type' => 'url', 'url' => 'https://youtube.com/watch?v=abc']
+        ['source_type' => 'url', 'url' => 'https://youtube.com/watch?v=abcdefghijk']
     );
 
     $block->refresh();
@@ -129,7 +129,7 @@ it('rejette le passage a upload sans fichier ni media existant', function () {
     $page = Page::factory()->create();
     $this->actingAs($this->admin)->post(
         route('admin.pages.blocks.store', $page),
-        ['type' => 'video', 'source_type' => 'url', 'url' => 'https://youtube.com/watch?v=abc']
+        ['type' => 'video', 'source_type' => 'url', 'url' => 'https://youtube.com/watch?v=abcdefghijk']
     );
     $block = $page->blocks()->whereNull('parent_id')->first();
     expect($block->media()->count())->toBe(0);
