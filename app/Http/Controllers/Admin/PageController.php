@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Concerns\SavesSeoMeta;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StorePageRequest;
+use App\Http\Requests\Admin\UpdatePageRequest;
 use App\Models\Page;
 use App\Services\MediaUploader;
 use App\Traits\HasOrphanMediaCleanup;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
@@ -28,19 +28,9 @@ class PageController extends Controller
         return view('admin.pages.create');
     }
 
-    public function store(Request $request)
+    public function store(StorePageRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'published_at' => 'required|date',
-            'slug' => $this->slugRules(),
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'is_published' => 'nullable|boolean',
-            'seo' => 'nullable|array',
-            'seo.meta_title' => 'nullable|string|max:60',
-            'seo.meta_description' => 'nullable|string|max:320',
-        ]);
+        $validated = $request->validated();
 
         $pageData = collect($validated)->except(['image', 'seo'])->toArray();
         $pageData['user_id'] = auth()->id();
@@ -59,15 +49,6 @@ class PageController extends Controller
             ->with('success', 'La page a été créée avec succès.');
     }
 
-    private function slugRules(?Page $page = null): array
-    {
-        return [
-            'nullable', 'string', 'max:255',
-            'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
-            Rule::unique('pages', 'slug')->ignore($page?->id),
-        ];
-    }
-
     public function show(Page $page)
     {
         return view('admin.pages.show', compact('page'));
@@ -78,19 +59,9 @@ class PageController extends Controller
         return view('admin.pages.edit', compact('page'));
     }
 
-    public function update(Request $request, Page $page)
+    public function update(UpdatePageRequest $request, Page $page)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'published_at' => 'required|date',
-            'slug' => $this->slugRules($page),
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'is_published' => 'nullable|boolean',
-            'seo' => 'nullable|array',
-            'seo.meta_title' => 'nullable|string|max:60',
-            'seo.meta_description' => 'nullable|string|max:320',
-        ]);
+        $validated = $request->validated();
 
         $pageData = collect($validated)->except(['image', 'seo'])->toArray();
         $pageData['is_published'] = $request->boolean('is_published');
