@@ -41,3 +41,59 @@ it('ne laisse pas les attributs supplementaires remplacer le chemin ni le nom', 
     expect($media->path)->toStartWith('pages/')
         ->and($media->original_name)->toBe('vrai.jpg');
 });
+
+it('execute le hook sur le fichier stocke avant la creation du Media', function () {
+    $received = null;
+
+    $media = app(MediaUploader::class)->fromUpload(
+        UploadedFile::fake()->image('a.jpg'),
+        'pages',
+        [],
+        function (string $path) use (&$received) {
+            $received = $path;
+            expect(Media::count())->toBe(0);
+            Storage::disk('public')->assertExists($path);
+        },
+    );
+
+    expect($received)->toBe($media->path);
+});
+
+it('relit la taille du fichier apres le hook', function () {
+    $media = app(MediaUploader::class)->fromUpload(
+        UploadedFile::fake()->image('a.jpg'),
+        'pages',
+        [],
+        fn (string $path) => Storage::disk('public')->put($path, str_repeat('x', 12345)),
+    );
+
+    expect($media->size)->toBe(12345);
+});
+
+it('complete le Media avec le tableau retourne par le hook, sans remplacer le chemin', function () {
+    $media = app(MediaUploader::class)->fromUpload(
+        UploadedFile::fake()->image('a.jpg'),
+        'pages',
+        ['type' => 'image'],
+        fn (string $path) => ['width' => 7, 'height' => 5, 'path' => 'ailleurs/faux.jpg'],
+    );
+
+    expect($media->width)->toBe(7)
+        ->and($media->height)->toBe(5)
+        ->and($media->path)->toStartWith('pages/');
+});
+
+it('supprime le fichier stocke et relance l exception si le hook echoue', function () {
+    $stored = null;
+    $hook = function (string $path) use (&$stored) {
+        $stored = $path;
+        throw new LogicException('echec du hook');
+    };
+
+    expect(fn () => app(MediaUploader::class)->fromUpload(UploadedFile::fake()->image('a.jpg'), 'pages', [], $hook))
+        ->toThrow(LogicException::class, 'echec du hook');
+
+    expect($stored)->not->toBeNull()
+        ->and(Media::count())->toBe(0)
+        ->and(Storage::disk('public')->allFiles())->toBe([]);
+});
