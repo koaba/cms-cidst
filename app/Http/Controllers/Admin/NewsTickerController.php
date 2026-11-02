@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\NewsTickerRequest;
 use App\Models\NewsTicker;
-use Illuminate\Http\Request;
 
 class NewsTickerController extends Controller
 {
@@ -20,14 +20,9 @@ class NewsTickerController extends Controller
         return view('admin.news-tickers.create');
     }
 
-    public function store(Request $request)
+    public function store(NewsTickerRequest $request)
     {
-        $validated = $request->validate([
-            'content' => 'required|string|max:255',
-            'link_url' => 'nullable|string|max:255',
-            'order' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['is_active'] = $request->boolean('is_active');
         $validated['order'] = $validated['order'] ?? 0;
@@ -42,14 +37,9 @@ class NewsTickerController extends Controller
         return view('admin.news-tickers.edit', compact('newsTicker'));
     }
 
-    public function update(Request $request, NewsTicker $newsTicker)
+    public function update(NewsTickerRequest $request, NewsTicker $newsTicker)
     {
-        $validated = $request->validate([
-            'content' => 'required|string|max:255',
-            'link_url' => 'nullable|string|max:255',
-            'order' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['is_active'] = $request->boolean('is_active');
         $validated['order'] = $validated['order'] ?? 0;

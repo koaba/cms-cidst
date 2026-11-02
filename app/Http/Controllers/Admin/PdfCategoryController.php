@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PdfCategoryRequest;
 use App\Models\PdfCategory;
-use Illuminate\Http\Request;
 
 class PdfCategoryController extends Controller
 {
@@ -20,11 +20,9 @@ class PdfCategoryController extends Controller
         return view('admin.pdf-categories.create');
     }
 
-    public function store(Request $request)
+    public function store(PdfCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $validated = $request->validated();
 
         PdfCategory::create($validated);
 
@@ -38,11 +36,9 @@ class PdfCategoryController extends Controller
         return view('admin.pdf-categories.edit', ['category' => $pdfCategory]);
     }
 
-    public function update(Request $request, PdfCategory $pdfCategory)
+    public function update(PdfCategoryRequest $request, PdfCategory $pdfCategory)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+        $validated = $request->validated();
 
         $pdfCategory->update($validated);
 
