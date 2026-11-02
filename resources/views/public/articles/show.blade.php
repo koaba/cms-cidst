@@ -271,6 +271,10 @@
 
             document.querySelectorAll('.video-facade').forEach((facade) => {
                 facade.addEventListener('click', () => {
+                    if (! facade.dataset.embedUrl) {
+                        return;
+                    }
+
                     const iframe = document.createElement('iframe');
                     iframe.src = facade.dataset.embedUrl + '?autoplay=1';
                     iframe.className = 'w-full h-full';

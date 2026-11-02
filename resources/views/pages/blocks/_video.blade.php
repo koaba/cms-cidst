@@ -1,25 +1,5 @@
 @php
-    $embedUrl = null;
-    if (!empty($data['url'])) {
-        $rawUrl = $data['url'];
-
-        // youtu.be/XXXX
-        if (preg_match('#youtu\.be/([A-Za-z0-9_-]+)#', $rawUrl, $m)) {
-            $embedUrl = 'https://www.youtube.com/embed/' . $m[1];
-        }
-        // youtube.com/shorts/XXXX
-        elseif (preg_match('#youtube\.com/shorts/([A-Za-z0-9_-]+)#', $rawUrl, $m)) {
-            $embedUrl = 'https://www.youtube.com/embed/' . $m[1];
-        }
-        // youtube.com/watch?v=XXXX
-        elseif (preg_match('#youtube\.com/watch\?v=([A-Za-z0-9_-]+)#', $rawUrl, $m)) {
-            $embedUrl = 'https://www.youtube.com/embed/' . $m[1];
-        }
-        // déjà au format embed, ou vimeo, ou autre : on laisse tel quel
-        else {
-            $embedUrl = $rawUrl;
-        }
-    }
+    $embedUrl = \App\Support\VideoEmbed::embedUrl($data['url'] ?? null);
 @endphp
 
 <div class="my-4">
