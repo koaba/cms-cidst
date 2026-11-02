@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Jobs\GenerateMediaThumbnail;
 use App\Jobs\GenerateMediaVariants;
+use App\Support\VideoEmbed;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -104,28 +105,18 @@ class Media extends Model
 
     public function getEmbedUrlAttribute(): ?string
     {
-        if ($this->type !== 'video' || $this->source_type !== 'external' || ! $this->url) {
+        if ($this->type !== 'video' || $this->source_type !== 'external') {
             return null;
         }
 
-        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/', $this->url, $m)) {
-            return 'https://www.youtube.com/embed/'.$m[1];
-        }
-
-        if (preg_match('/vimeo\.com\/(\d+)/', $this->url, $m)) {
-            return 'https://player.vimeo.com/video/'.$m[1];
-        }
-
-        return $this->url;
+        return VideoEmbed::embedUrl($this->url);
     }
 
     public function getYoutubeThumbnailAttribute(): ?string
     {
-        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/', $this->url ?? '', $m)) {
-            return "https://img.youtube.com/vi/{$m[1]}/hqdefault.jpg";
-        }
+        $id = VideoEmbed::youtubeId($this->url);
 
-        return null;
+        return $id ? "https://img.youtube.com/vi/{$id}/hqdefault.jpg" : null;
     }
 
     public function getTitleAttribute(): ?string
