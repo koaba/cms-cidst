@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\GenerateMediaVariants;
+use App\Jobs\ProcessMediaImage;
 use App\Models\Media;
 use Illuminate\Support\Facades\Queue;
 
@@ -15,7 +15,7 @@ it('dispatche le job uniquement pour les images sans variantes', function () {
 
     $this->artisan('media:backfill-variants')->assertSuccessful();
 
-    Queue::assertPushed(GenerateMediaVariants::class, 1);
+    Queue::assertPushed(ProcessMediaImage::class, 1);
 });
 
 it('ne dispatche rien en simulation', function () {
