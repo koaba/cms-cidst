@@ -48,6 +48,13 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        if ($user->isLastSuperAdmin()) {
+            return back()->withErrors(
+                ['password' => 'Vous etes le dernier Super Admin : creez ou promouvez un autre Super Admin avant de supprimer ce compte.'],
+                'userDeletion'
+            );
+        }
+
         Auth::logout();
 
         $user->delete();
