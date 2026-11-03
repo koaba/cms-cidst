@@ -60,6 +60,12 @@ class UserController extends Controller
             'role' => ['required', Rule::exists((new Role)->getTable(), 'name')],
         ]);
 
+        if ($validated['role'] !== 'Super Admin' && $user->isLastSuperAdmin()) {
+            return back()
+                ->withInput()
+                ->withErrors(['role' => 'Impossible de retirer le role Super Admin au dernier Super Admin.']);
+        }
+
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],

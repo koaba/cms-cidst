@@ -31,4 +31,14 @@ class User extends Authenticatable
             'must_change_password' => 'boolean',
         ];
     }
+
+    /**
+     * Vrai si cet utilisateur est Super Admin et qu'aucun autre compte ne l'est :
+     * le supprimer ou lui retirer ce role laisserait le site sans administrateur.
+     */
+    public function isLastSuperAdmin(): bool
+    {
+        return $this->hasRole('Super Admin')
+            && ! static::role('Super Admin')->whereKeyNot($this->getKey())->exists();
+    }
 }
