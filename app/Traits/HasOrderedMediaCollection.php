@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\Media;
 use App\Services\MediaOverviewService;
+use App\Services\MediaUploader;
 use Closure;
 use Illuminate\Support\Facades\Storage;
 
@@ -56,46 +57,35 @@ trait HasOrderedMediaCollection
     {
         $order = $this->media()->count();
         $thumbnailsByName = collect($thumbnails)->keyBy('name');
+        $uploader = app(MediaUploader::class);
 
         foreach ($files as $file) {
-            $path = $file->store($storagePath, 'public');
-            $size = $file->getSize();
+            $media = $uploader->fromUpload(
+                $file,
+                $storagePath,
+                [],
+                function (string $path) use ($file, $storagePath, $beforeCreate, $thumbnailsByName, $thumbnailGenerator): array {
+                    if ($beforeCreate !== null) {
+                        $beforeCreate($path);
+                    }
 
-            // Détection du type réel depuis le contenu du fichier (finfo),
-            // jamais depuis la déclaration du client (falsifiable).
-            $realMimeType = $file->getMimeType() ?? $file->getClientMimeType();
+                    $thumbnailPath = null;
+                    $thumbnailData = $thumbnailsByName->get($file->getClientOriginalName())['thumbnail'] ?? null;
+                    if ($thumbnailData && preg_match('/^data:image\/(\w+);base64,(.+)$/', $thumbnailData, $matches)) {
+                        $thumbnailPath = $storagePath.'/thumbnails/'.uniqid('pdf_', true).'.'.$matches[1];
+                        Storage::disk('public')->put($thumbnailPath, base64_decode($matches[2]));
+                    }
 
-            if ($beforeCreate !== null) {
-                $beforeCreate($path);
-                $size = Storage::disk('public')->size($path);
-            }
+                    // Si un generateur serveur est fourni (ex: miniature PDF apres filigrane),
+                    // il prend le pas sur la miniature client (pdf.js), generee AVANT filigrane
+                    // et donc jamais fiable pour un document filigrane.
+                    if ($thumbnailGenerator !== null) {
+                        $thumbnailPath = $thumbnailGenerator($path) ?? $thumbnailPath;
+                    }
 
-            $thumbnailPath = null;
-            $thumbnailData = $thumbnailsByName->get($file->getClientOriginalName())['thumbnail'] ?? null;
-            if ($thumbnailData && preg_match('/^data:image\/(\w+);base64,(.+)$/', $thumbnailData, $matches)) {
-                $extension = $matches[1];
-                $binaryData = base64_decode($matches[2]);
-                $thumbnailPath = $storagePath.'/thumbnails/'.uniqid('pdf_', true).'.'.$extension;
-                Storage::disk('public')->put($thumbnailPath, $binaryData);
-            }
-
-            // Si un générateur serveur est fourni (ex: miniature PDF après filigrane),
-            // il prend le pas sur la miniature client (pdf.js), générée AVANT filigrane
-            // et donc jamais fiable pour un document filigrané.
-            if ($thumbnailGenerator !== null) {
-                $serverThumbnail = $thumbnailGenerator($path);
-                if ($serverThumbnail !== null) {
-                    $thumbnailPath = $serverThumbnail;
-                }
-            }
-
-            $media = Media::create([
-                'original_name' => $file->getClientOriginalName(),
-                'path' => $path,
-                'thumbnail_path' => $thumbnailPath,
-                'mime_type' => $realMimeType,
-                'size' => $size,
-            ]);
+                    return ['thumbnail_path' => $thumbnailPath];
+                },
+            );
 
             $this->media()->attach($media->id, ['order' => $order++]);
         }
