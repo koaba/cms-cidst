@@ -1,7 +1,6 @@
 <?php
 
-use App\Jobs\GenerateMediaThumbnail;
-use App\Jobs\GenerateMediaVariants;
+use App\Jobs\ProcessMediaImage;
 use App\Models\Article;
 use App\Models\Media;
 use App\Models\Mediable;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
-    Bus::fake([GenerateMediaThumbnail::class, GenerateMediaVariants::class]);
+    Bus::fake([ProcessMediaImage::class]);
     // Milieu de mois : evite les effets de bord de fin ou de debut de mois.
     $this->travelTo(now()->startOfMonth()->addDays(14)->setTime(12, 0));
 });

@@ -1,13 +1,13 @@
 <?php
 
-use App\Jobs\GenerateMediaThumbnail;
+use App\Jobs\ProcessMediaImage;
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageBlock;
 use App\Services\MediaOverviewService;
 use Illuminate\Support\Facades\Bus;
 
-beforeEach(fn () => Bus::fake([GenerateMediaThumbnail::class]));
+beforeEach(fn () => Bus::fake([ProcessMediaImage::class]));
 
 function overviewMedia(array $attributes = []): Media
 {

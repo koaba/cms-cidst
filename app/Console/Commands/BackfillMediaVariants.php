@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\GenerateMediaVariants;
+use App\Jobs\ProcessMediaImage;
 use App\Models\Media;
 use Illuminate\Console\Command;
 
@@ -22,7 +22,7 @@ class BackfillMediaVariants extends Command
             ->chunkById(100, function ($medias) use ($dryRun, &$queued) {
                 foreach ($medias as $media) {
                     if (! $dryRun) {
-                        GenerateMediaVariants::dispatch($media);
+                        ProcessMediaImage::dispatch($media);
                     }
 
                     $queued++;
