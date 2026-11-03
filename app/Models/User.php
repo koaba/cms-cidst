@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -38,7 +39,7 @@ class User extends Authenticatable
      */
     public function isLastSuperAdmin(): bool
     {
-        return $this->hasRole('Super Admin')
-            && ! static::role('Super Admin')->whereKeyNot($this->getKey())->exists();
+        return $this->hasRole(UserRole::SuperAdmin)
+            && ! static::role(UserRole::SuperAdmin)->whereKeyNot($this->getKey())->exists();
     }
 }

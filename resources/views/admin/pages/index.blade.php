@@ -35,7 +35,7 @@
                         <a href="{{ route('admin.pages.builder.show', $page) }}" class="text-purple-600">Builder</a>
                         <form action="{{ route('admin.pages.destroy', $page) }}" method="POST" class="inline">
                             @csrf @method('DELETE')
-                            @unless (auth()->user()->hasRole('Super Admin'))<input type="hidden" name="delete_code">@endunless
+                            @unless (auth()->user()->hasRole(\App\Enums\UserRole::SuperAdmin))<input type="hidden" name="delete_code">@endunless
                             <button class="text-red-600" onclick="return confirm('Supprimer ?') && (!this.form.delete_code || !!(this.form.delete_code.value = prompt('Code de suppression') || ''))">Supprimer</button>
                         </form>
                     </td>

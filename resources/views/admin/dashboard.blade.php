@@ -1,7 +1,7 @@
 <x-admin.layout>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 class="text-2xl font-bold">Tableau de bord</h1>
-        @role('Super Admin')
+        @role(\App\Enums\UserRole::SuperAdmin)
         <nav class="join" aria-label="Période">
             @foreach (\App\Services\Dashboard\DashboardPeriod::options() as $key => $label)
                 <a href="{{ route('admin.dashboard', ['period' => $key]) }}"
@@ -39,7 +39,7 @@
             @endisset
         </div>
     </section>
-    @role('Super Admin')
+    @role(\App\Enums\UserRole::SuperAdmin)
     {{-- Cartes de statistiques : composant natif daisyUI, zéro CSS custom --}}
     <div class="stats shadow w-full mb-8 flex-wrap">
         <div class="stat">
@@ -77,7 +77,7 @@
     @endrole
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        @role('Super Admin')
+        @role(\App\Enums\UserRole::SuperAdmin)
         {{-- Graphique d'activité --}}
         <div class="card bg-base-100 shadow lg:col-span-2">
             <div class="card-body">
@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    @role('Super Admin')
+    @role(\App\Enums\UserRole::SuperAdmin)
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Graphique des vues --}}
         <div class="card bg-base-100 shadow lg:col-span-2">

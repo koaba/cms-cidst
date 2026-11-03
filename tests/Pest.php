@@ -49,6 +49,7 @@ function something()
     // ..
 }
 
+use App\Enums\UserRole;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -64,10 +65,10 @@ use Spatie\Permission\Models\Role;
  */
 function adminUser(): User
 {
-    Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
+    Role::firstOrCreate(['name' => UserRole::SuperAdmin->value, 'guard_name' => 'web']);
 
     $user = User::factory()->create();
-    $user->assignRole('Super Admin');
+    $user->assignRole(UserRole::SuperAdmin);
 
     return $user;
 }
@@ -77,10 +78,10 @@ function adminUser(): User
  */
 function publicationUser(): User
 {
-    Role::firstOrCreate(['name' => 'Publication', 'guard_name' => 'web']);
+    Role::firstOrCreate(['name' => UserRole::Publication->value, 'guard_name' => 'web']);
 
     $user = User::factory()->create();
-    $user->assignRole('Publication');
+    $user->assignRole(UserRole::Publication);
 
     return $user;
 }

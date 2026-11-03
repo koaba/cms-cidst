@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use App\Models\SiteSetting;
 use Closure;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class ConfirmDeleteCode
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()?->hasRole('Super Admin')) {
+        if ($request->user()?->hasRole(UserRole::SuperAdmin)) {
             return $next($request);
         }
 
