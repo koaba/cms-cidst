@@ -44,3 +44,28 @@ jobs:
 
       - name: Tests (Pest)
         run: php vendor/bin/pest --compact
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Front (Vite)
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installer les dependances npm
+        run: npm ci
+
+      - name: Build (un avertissement est un defaut)
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
+          if grep -qi "warn" build.log; then
+            echo "::error::Le build Vite a emis un avertissement"
+            exit 1
+          fi
