@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout :seo-page="isset($category) ? 'blog_category' : 'blog'" :seo-replace="['name' => $category->name ?? '']">
   <h1 class="text-3xl font-display font-bold mb-6 text-cidst-ink">
       @isset($category)
           Articles dans : {{ $category->name }}

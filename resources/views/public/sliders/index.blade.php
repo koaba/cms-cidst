@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout seo-page="sliders">
     <div class="grid gap-6 p-6">
         @foreach($sliders as $slider)
             <div class="relative rounded-lg overflow-hidden shadow-md">

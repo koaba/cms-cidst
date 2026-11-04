@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout :seo-page="isset($pdfCategory) ? 'documents_category' : 'documents'" :seo-replace="['name' => $pdfCategory->name ?? '']">
     @if (!isset($pdfCategory) && ($settings->pdf_documents_title || $settings->pdf_documents_content))
         <div class="mb-6">
             @if ($settings->pdf_documents_title)

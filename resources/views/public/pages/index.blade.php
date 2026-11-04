@@ -20,7 +20,7 @@
     };
 @endphp
 
-<x-layout>
+<x-layout seo-page="pages">
     <h1 class="text-3xl font-display font-bold mb-6 text-cidst-ink">Pages</h1>
 
     @if ($pages->isEmpty())

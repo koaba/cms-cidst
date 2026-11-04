@@ -1,4 +1,4 @@
-<x-layout>
+<x-layout seo-page="search">
     <div class="max-w-4xl mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold text-cidst-red mb-6">Résultats de recherche</h1>
 
