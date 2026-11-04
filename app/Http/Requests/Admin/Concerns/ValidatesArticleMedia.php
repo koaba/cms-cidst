@@ -17,6 +17,8 @@ use Illuminate\Validation\Rule;
  */
 trait ValidatesArticleMedia
 {
+    use ValidatesSeoFields;
+
     /**
      * @param  ?Article  $article  null en création, l'article existant en édition.
      */
@@ -32,9 +34,7 @@ trait ValidatesArticleMedia
             'apply_watermark_cover_image' => 'nullable|boolean',
             'categories' => 'nullable|array',
             'categories.*' => 'integer|exists:categories,id',
-            'seo' => 'nullable|array',
-            'seo.meta_title' => 'nullable|string|max:60',
-            'seo.meta_description' => 'nullable|string|max:320',
+            ...$this->seoRules(),
 
             // Galerie simple
             'images' => 'nullable|array',

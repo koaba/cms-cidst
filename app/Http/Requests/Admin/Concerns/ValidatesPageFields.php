@@ -13,6 +13,8 @@ use Illuminate\Validation\Rule;
  */
 trait ValidatesPageFields
 {
+    use ValidatesSeoFields;
+
     /**
      * @param  ?Page  $page  null en creation, la page existante en edition.
      */
@@ -29,9 +31,7 @@ trait ValidatesPageFields
             ],
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'is_published' => 'nullable|boolean',
-            'seo' => 'nullable|array',
-            'seo.meta_title' => 'nullable|string|max:60',
-            'seo.meta_description' => 'nullable|string|max:320',
+            ...$this->seoRules(),
         ];
     }
 }
