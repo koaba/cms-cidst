@@ -33,7 +33,7 @@
                         <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" onsubmit="return confirm('Supprimer cet article ?') && (!this.delete_code || !!(this.delete_code.value = prompt('Code de suppression') || ''))">
                             @csrf
                             @method('DELETE')
-                            @unless (auth()->user()->hasRole('Super Admin'))<input type="hidden" name="delete_code">@endunless
+                            @unless (auth()->user()->hasRole(\App\Enums\UserRole::SuperAdmin))<input type="hidden" name="delete_code">@endunless
                             <button type="submit" class="text-red-600">Supprimer</button>
                         </form>
                     </td>

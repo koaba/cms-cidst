@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -60,7 +61,7 @@ class UserController extends Controller
             'role' => ['required', Rule::exists((new Role)->getTable(), 'name')],
         ]);
 
-        if ($validated['role'] !== 'Super Admin' && $user->isLastSuperAdmin()) {
+        if ($validated['role'] !== UserRole::SuperAdmin->value && $user->isLastSuperAdmin()) {
             return back()
                 ->withInput()
                 ->withErrors(['role' => 'Impossible de retirer le role Super Admin au dernier Super Admin.']);

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -24,10 +25,10 @@ class PublicationRoleSeeder extends Seeder
 
         Permission::firstOrCreate(['name' => 'settings.manage']);
 
-        $publication = Role::firstOrCreate(['name' => 'Publication']);
+        $publication = Role::firstOrCreate(['name' => UserRole::Publication->value]);
         $publication->syncPermissions($permissions);
 
-        $superAdmin = Role::where('name', 'Super Admin')->first();
+        $superAdmin = Role::where('name', UserRole::SuperAdmin->value)->first();
         if ($superAdmin) {
             $superAdmin->syncPermissions(Permission::all());
         }

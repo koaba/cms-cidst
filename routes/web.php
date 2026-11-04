@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Admin\AccordionItemContentController as AdminAccordionItemContentController;
 use App\Http\Controllers\Admin\AccordionItemController as AdminAccordionItemController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
@@ -59,7 +60,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Accès partagé : Super Admin ET Publication (contenu éditorial)
-Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
+Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin, UserRole::Publication)])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles')->middlewareFor('destroy', 'confirm.delete');
     Route::resource('admin/pages', AdminPageController::class)->names('admin.pages')->middlewareFor('destroy', 'confirm.delete');
@@ -106,7 +107,7 @@ Route::middleware(['auth', 'role:Super Admin|Publication'])->group(function () {
 });
 
 // Accès restreint : Super Admin uniquement (structure du site, réglages)
-Route::middleware(['auth', 'role:Super Admin'])->group(function () {
+Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin)])->group(function () {
     Route::resource('admin/menus', AdminMenuController::class)->names('admin.menus');
     Route::resource('admin/categories', AdminCategoryController::class)->names('admin.categories');
     Route::resource('admin/pdf-categories', AdminPdfCategoryController::class)->names('admin.pdf-categories');

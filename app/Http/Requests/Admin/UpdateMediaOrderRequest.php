@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\UserRole;
 use App\Models\Article;
 use App\Models\Diaporama;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class UpdateMediaOrderRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->user()->hasRole('Super Admin|Publication');
+        return auth()->user()->hasAnyRole(UserRole::SuperAdmin, UserRole::Publication);
     }
 
     public function rules(): array
