@@ -101,6 +101,10 @@ class UserController extends Controller
             return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
         }
 
+        if ($user->ownsContent()) {
+            return back()->with('error', 'Ce compte est auteur d\'articles ou de pages : reaffectez ou supprimez son contenu avant de le supprimer.');
+        }
+
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'Utilisateur supprimé.');
