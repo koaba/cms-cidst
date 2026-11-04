@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * de fréquentation du dashboard admin.
  *
  * Dédoublonnage : une seule vue comptée par IP (hashée) et par contenu, sur
- * une fenêtre d'1 heure â€” évite qu'un rechargement de page ou une navigation
+ * une fenêtre d'1 heure : évite qu'un rechargement de page ou une navigation
  * aller-retour ne gonfle artificiellement les statistiques.
  *
  * Vie privée : l'IP n'est jamais stockée en clair, uniquement son hash SHA-256
