@@ -55,6 +55,13 @@ class ProfileController extends Controller
             );
         }
 
+        if ($user->ownsContent()) {
+            return back()->withErrors(
+                ['password' => 'Votre compte est auteur d\'articles ou de pages : contactez un administrateur avant de le supprimer.'],
+                'userDeletion'
+            );
+        }
+
         Auth::logout();
 
         $user->delete();
