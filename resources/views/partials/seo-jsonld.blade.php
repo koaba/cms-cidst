@@ -1,6 +1,6 @@
 @if($model instanceof \App\Models\Article)
 <script type="application/ld+json">
-{!! json_encode([
+{!! \App\Services\SeoService::jsonLd([
     '@@context' => 'https://schema.org',
     '@type' => 'NewsArticle',
     'headline' => $model->title,
@@ -20,11 +20,11 @@
         '@type' => 'WebPage',
         '@id' => $model->publicUrl(),
     ],
-], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+]) !!}
 </script>
 @elseif($model instanceof \App\Models\Page)
 <script type="application/ld+json">
-{!! json_encode(array_filter([
+{!! \App\Services\SeoService::jsonLd(array_filter([
     '@@context' => 'https://schema.org',
     '@type' => 'WebPage',
     'name' => $model->title,
@@ -36,6 +36,6 @@
         'name' => config('app.name', 'CIDST'),
         'url' => url('/'),
     ],
-]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+])) !!}
 </script>
 @endif

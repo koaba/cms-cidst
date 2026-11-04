@@ -100,6 +100,20 @@ class SeoService
     }
 
     /**
+     * Encode des données JSON-LD pour un bloc <script> : < > et & sont
+     * échappés pour qu'une valeur saisie (titre...) ne puisse jamais
+     * refermer la balise.
+     */
+    public static function jsonLd(array $data): string
+    {
+        return json_encode(
+            $data,
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP
+                | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR
+        );
+    }
+
+    /**
      * Pour un modèle à blocs (Page), dérive le texte du premier bloc
      * racine porteur de texte, quand `content` est vide.
      */
