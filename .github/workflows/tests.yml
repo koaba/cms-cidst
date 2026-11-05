@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -28,7 +32,15 @@ jobs:
           coverage: none
 
       - name: Installer Poppler (miniatures PDF)
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+        run: |
+          for attempt in 1 2 3; do
+            if sudo apt-get update && sudo apt-get install -y poppler-utils; then
+              exit 0
+            fi
+            echo "apt-get a echoue (tentative $attempt sur 3)"
+            sleep 15
+          done
+          exit 1
 
       - name: Installer les dependances
         run: composer install --no-interaction --prefer-dist
@@ -41,6 +53,10 @@ jobs:
       - name: Style (Pint)
         if: matrix.php == '8.3'
         run: php vendor/bin/pint --test
+
+      - name: Audit des dependances
+        if: matrix.php == '8.3'
+        run: composer audit --abandoned=report
 
       - name: Tests (Pest)
         run: php vendor/bin/pest --compact
@@ -74,7 +90,15 @@ jobs:
           coverage: none
 
       - name: Installer Poppler (miniatures PDF)
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+        run: |
+          for attempt in 1 2 3; do
+            if sudo apt-get update && sudo apt-get install -y poppler-utils; then
+              exit 0
+            fi
+            echo "apt-get a echoue (tentative $attempt sur 3)"
+            sleep 15
+          done
+          exit 1
 
       - name: Installer les dependances
         run: composer install --no-interaction --prefer-dist
