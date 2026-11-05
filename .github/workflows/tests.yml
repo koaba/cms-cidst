@@ -45,6 +45,55 @@ jobs:
       - name: Tests (Pest)
         run: php vendor/bin/pest --compact
 
+  tests-mysql:
+    runs-on: ubuntu-latest
+    name: MySQL 8.4 (PHP 8.3)
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_DATABASE: cms_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -psecret"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: gd, pdo_mysql, mbstring, fileinfo, intl, exif
+          coverage: none
+
+      - name: Installer Poppler (miniatures PDF)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Installer les dependances
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Preparer l'environnement de test
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Tests (Pest sur MySQL)
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: cms_test
+          DB_USERNAME: root
+          DB_PASSWORD: secret
+        run: php vendor/bin/pest --compact
+
   frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 10
