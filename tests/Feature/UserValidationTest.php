@@ -52,3 +52,17 @@ it('ignore un mot de passe envoye a la modification', function () {
 
     expect(Hash::check('ancien-mot-de-passe', $user->fresh()->password))->toBeTrue();
 });
+
+it('refuse un nouveau mot de passe trop court a la reinitialisation', function (?string $password) {
+    $target = publicationUser();
+    $oldHash = $target->password;
+
+    $this->actingAs($this->admin)
+        ->patch(route('admin.users.reset-password', $target), ['new_password' => $password])
+        ->assertSessionHasErrors('new_password');
+
+    expect($target->fresh()->password)->toBe($oldHash);
+})->with([
+    'absent' => [null],
+    '7 caracteres' => ['1234567'],
+]);
