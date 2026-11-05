@@ -43,7 +43,7 @@ class SiteSettingController extends Controller
             'image_watermark_default_enabled' => 'nullable|boolean',
             'pdf_watermark_default_enabled' => 'nullable|boolean',
             'diaporama_watermark_default_enabled' => 'nullable|boolean',
-            'delete_code' => 'nullable|string|min:4|max:50',
+            'delete_code' => 'nullable|string|min:8|max:50',
 
         ]);
 
