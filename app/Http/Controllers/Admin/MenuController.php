@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MenuRequest;
 use App\Models\Menu;
 use App\Traits\HasOrphanMediaCleanup;
-use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
@@ -28,11 +28,9 @@ class MenuController extends Controller
         return view('admin.menus.create', compact('parents'));
     }
 
-    public function store(Request $request)
+    public function store(MenuRequest $request)
     {
-        $validated = $this->validateMenu($request);
-
-        Menu::create($this->extractMenuData($validated, $request));
+        Menu::create($request->menuData());
 
         return redirect()->route('admin.menus.index')->with('success', 'Menu créé.');
     }
@@ -45,18 +43,18 @@ class MenuController extends Controller
         return view('admin.menus.edit', compact('menu', 'parents'));
     }
 
-    public function update(Request $request, Menu $menu)
+    public function update(MenuRequest $request, Menu $menu)
     {
-        $validated = $this->validateMenu($request, $menu);
+        $data = $request->menuData();
 
         $excludedIds = array_merge([$menu->id], $menu->descendantIds());
-        if (isset($validated['parent_id']) && in_array($validated['parent_id'], $excludedIds)) {
+        if (isset($data['parent_id']) && in_array($data['parent_id'], $excludedIds)) {
             return back()
                 ->withErrors(['parent_id' => 'Un menu ne peut pas être son propre parent ou descendant.'])
                 ->withInput();
         }
 
-        $menu->update($this->extractMenuData($validated, $request));
+        $menu->update($data);
 
         return redirect()->route('admin.menus.index')->with('success', 'Menu mis à jour.');
     }
@@ -79,31 +77,6 @@ class MenuController extends Controller
     }
 
     /* ------------------------------------------------------------------ */
-
-    private function validateMenu(Request $request, ?Menu $menu = null): array
-    {
-        return $request->validate([
-            'label' => 'required|string|max:255',
-            'target' => 'required|string|max:255',
-            'order' => 'nullable|integer',
-            'is_active' => 'nullable|boolean',
-            'parent_id' => 'nullable|exists:menus,id',
-        ]);
-    }
-
-    /**
-     * Isole les champs propres au modele Menu.
-     */
-    private function extractMenuData(array $validated, Request $request): array
-    {
-        return [
-            'label' => $validated['label'],
-            'target' => $validated['target'],
-            'order' => $validated['order'] ?? 0,
-            'is_active' => $request->boolean('is_active'),
-            'parent_id' => $validated['parent_id'] ?? null,
-        ];
-    }
 
     private function availableParents(array $excludedIds = [])
     {
