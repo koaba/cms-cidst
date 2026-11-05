@@ -99,8 +99,8 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin, UserRole::
     });
     Route::get('admin/pages/{page}/builder', [AdminPageBuilderController::class, 'show'])->name('admin.pages.builder.show');
     Route::post('admin/pages/{page}/builder', [AdminPageBuilderController::class, 'save'])->name('admin.pages.builder.save');
-    Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders');
-    Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers');
+    Route::resource('admin/sliders', AdminSliderController::class)->names('admin.sliders')->middlewareFor('destroy', 'confirm.delete');
+    Route::resource('admin/news-tickers', AdminNewsTickerController::class)->names('admin.news-tickers')->middlewareFor('destroy', 'confirm.delete');
     Route::get('admin/media', [AdminMediaController::class, 'index'])->name('admin.media.index');
     Route::get('admin/media/picker', [AdminMediaController::class, 'picker'])->name('admin.media.picker');
     Route::post('admin/media/reorder', [MediaOrderController::class, 'update'])->name('admin.media.reorder');
