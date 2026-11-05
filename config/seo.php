@@ -14,7 +14,7 @@ return [
     'pages' => [
         'home' => [
             'title' => "CIDST - Centre d'Information et de Documentation Scientifique et Technique",
-            'description' => "Le CIDST réunit actualités, publications et documents de référence en information scientifique et technique.",
+            'description' => 'Le CIDST réunit actualités, publications et documents de référence en information scientifique et technique.',
         ],
         'blog' => [
             'title' => 'Blog — :site',
