@@ -57,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
 
         Page::observe(SitemapCacheObserver::class);
         Article::observe(SitemapCacheObserver::class);
+        PdfDocument::observe(SitemapCacheObserver::class);
         SeoMeta::observe(SitemapCacheObserver::class);
     }
 }
