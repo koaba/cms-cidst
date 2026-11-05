@@ -7,6 +7,7 @@ use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class SiteSettingController extends Controller
 {
@@ -31,6 +32,7 @@ class SiteSettingController extends Controller
             'cta_secondary_target' => 'nullable|string|max:255',
             'primary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'secondary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'theme' => ['nullable', Rule::in(array_keys(config('themes.themes')))],
             'news_ticker_direction' => 'nullable|in:horizontal,vertical',
             'pages_grid_columns' => 'nullable|in:2,3,4',
             'pages_image_size' => 'nullable|in:small,medium,large',
@@ -55,6 +57,9 @@ class SiteSettingController extends Controller
         }
 
         unset($validated['logo'], $validated['delete_code']);
+        if (blank($validated['theme'] ?? null)) {
+            unset($validated['theme']);
+        }
         if (filled($request->input('delete_code'))) {
             $settings->forceFill(['delete_code_hash' => Hash::make($request->input('delete_code'))]);
         }

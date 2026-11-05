@@ -22,6 +22,27 @@
             @error('logo') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 
+        <fieldset>
+            <legend class="block font-medium mb-1">Thème du site</legend>
+            <div class="space-y-2">
+                @foreach (config('themes.themes') as $key => $theme)
+                    <label class="flex items-center gap-3 border rounded p-3 cursor-pointer">
+                        <input type="radio" name="theme" value="{{ $key }}" @checked(old('theme', $settings->theme ?? config('themes.default')) === $key)>
+                        <span class="font-medium">{{ $theme['label'] }}</span>
+                        @isset($theme['palette'])
+                            <span class="flex gap-1 ml-auto" aria-hidden="true">
+                                @foreach (['primary', 'secondary', 'accent'] as $role)
+                                    <span class="w-5 h-5 rounded-full border" style="background: {{ $theme['palette'][$role] }}"></span>
+                                @endforeach
+                            </span>
+                        @endisset
+                    </label>
+                @endforeach
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Les couleurs ci-dessous ne s'appliquent qu'au thème CIDST ; un autre thème impose sa propre palette.</p>
+            @error('theme') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </fieldset>
+
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label class="block font-medium mb-1">Couleur principale</label>
