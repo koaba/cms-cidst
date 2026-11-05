@@ -7,6 +7,7 @@
     @if(session('success'))
         <div class="alert alert-success mb-4">{{ session('success') }}</div>
     @endif
+    @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
 
     <table class="w-full border-collapse">
         <thead>
@@ -31,12 +32,9 @@
                 </td>
                 <td class="p-2 flex gap-2">
                     <a href="{{ route('admin.news-tickers.edit', $item) }}" class="text-blue-600">Modifier</a>
-                    <form action="{{ route('admin.news-tickers.destroy', $item) }}" method="POST"
-                          onsubmit="return confirm('Supprimer cette actualité ?')">
-                        @csrf
-                        @method('DELETE')
+                    <x-delete-form :action="route('admin.news-tickers.destroy', $item)" message="Supprimer cette actualité ?">
                         <button type="submit" class="text-red-600">Supprimer</button>
-                    </form>
+                    </x-delete-form>
                 </td>
             </tr>
             @empty

@@ -10,6 +10,7 @@
     @if(session('success'))
         <p class="text-green-600 mt-2">{{ session('success') }}</p>
     @endif
+    @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
     <table class="w-full mt-4 border-collapse">
         <thead>
             <tr class="border-b">
@@ -29,10 +30,9 @@
                     <td class="p-2">{{ $slider->is_active ? 'Actif' : 'Inactif' }}</td>
                     <td class="p-2 space-x-2">
                         <a href="{{ route('admin.sliders.edit', $slider) }}" class="text-blue-600">Modifier</a>
-                        <form action="{{ route('admin.sliders.destroy', $slider) }}" method="POST" class="inline">
-                            @csrf @method('DELETE')
-                            <button class="text-red-600" onclick="return confirm('Supprimer ?')">Supprimer</button>
-                        </form>
+                        <x-delete-form :action="route('admin.sliders.destroy', $slider)" message="Supprimer ce slider ?">
+                            <button type="submit" class="text-red-600">Supprimer</button>
+                        </x-delete-form>
                     </td>
                 </tr>
             @endforeach
