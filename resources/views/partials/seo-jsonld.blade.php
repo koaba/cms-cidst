@@ -1,41 +1,5 @@
-@if($model instanceof \App\Models\Article)
+@foreach(\App\Services\SeoService::structuredData($model ?? null, $seoPage ?? null) as $seoBlock)
 <script type="application/ld+json">
-{!! \App\Services\SeoService::jsonLd([
-    '@@context' => 'https://schema.org',
-    '@type' => 'NewsArticle',
-    'headline' => $model->title,
-    'description' => \App\Services\SeoService::description($model),
-    'image' => array_filter([\App\Services\SeoService::image($model)]),
-    'datePublished' => optional($model->published_at)->toIso8601String(),
-    'dateModified' => optional($model->updated_at)->toIso8601String(),
-    'author' => [
-        '@type' => 'Organization',
-        'name' => config('app.name', 'CIDST'),
-    ],
-    'publisher' => [
-        '@type' => 'Organization',
-        'name' => config('app.name', 'CIDST'),
-    ],
-    'mainEntityOfPage' => [
-        '@type' => 'WebPage',
-        '@id' => $model->publicUrl(),
-    ],
-]) !!}
+{!! \App\Services\SeoService::jsonLd($seoBlock) !!}
 </script>
-@elseif($model instanceof \App\Models\Page)
-<script type="application/ld+json">
-{!! \App\Services\SeoService::jsonLd(array_filter([
-    '@@context' => 'https://schema.org',
-    '@type' => 'WebPage',
-    'name' => $model->title,
-    'description' => \App\Services\SeoService::description($model),
-    'url' => $model->publicUrl(),
-    'dateModified' => optional($model->updated_at)->toIso8601String(),
-    'isPartOf' => [
-        '@type' => 'WebSite',
-        'name' => config('app.name', 'CIDST'),
-        'url' => url('/'),
-    ],
-])) !!}
-</script>
-@endif
+@endforeach

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Contracts\HasPublicUrl;
 use App\Models\Article;
+use App\Models\Page;
+use App\Models\SiteSetting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -132,6 +134,123 @@ class SeoService
         $page = request()->integer('page', 1);
 
         return $page > 1 ? url()->current().'?page='.$page : url()->current();
+    }
+
+    /**
+     * URL absolue du logo du site (reglages), ou null s'il n'y en a pas.
+     */
+    public static function logoUrl(): ?string
+    {
+        $path = SiteSetting::current()->logo_path;
+
+        return $path ? asset('storage/'.$path) : null;
+    }
+
+    /**
+     * Blocs JSON-LD d'une page : article et page (avec fil d'Ariane), ou
+     * Organization + WebSite pour l'accueil. Le premier bloc est l'entite principale.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function structuredData(?Model $model, ?string $seoPage): array
+    {
+        return match (true) {
+            $model instanceof Article => [self::articleData($model), self::breadcrumbData($model)],
+            $model instanceof Page => [self::pageData($model), self::breadcrumbData($model)],
+            $seoPage === 'home' => [self::siteData()],
+            default => [],
+        };
+    }
+
+    private static function organization(): array
+    {
+        return array_filter([
+            '@type' => 'Organization',
+            'name' => self::siteName(),
+            'url' => url('/'),
+            'logo' => self::logoUrl(),
+        ]);
+    }
+
+    private static function articleData(Article $article): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'NewsArticle',
+            'headline' => $article->title,
+            'description' => self::description($article),
+            'image' => array_filter([self::image($article)]),
+            'datePublished' => optional($article->published_at)->toIso8601String(),
+            'dateModified' => optional($article->updated_at)->toIso8601String(),
+            'author' => self::organization(),
+            'publisher' => self::organization(),
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $article->publicUrl(),
+            ],
+        ];
+    }
+
+    private static function pageData(Page $page): array
+    {
+        return array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => $page->title,
+            'description' => self::description($page),
+            'url' => $page->publicUrl(),
+            'dateModified' => optional($page->updated_at)->toIso8601String(),
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                'name' => self::siteName(),
+                'url' => url('/'),
+            ],
+        ]);
+    }
+
+    private static function siteData(): array
+    {
+        $organizationId = url('/').'#organization';
+
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                ['@id' => $organizationId] + self::organization(),
+                [
+                    '@type' => 'WebSite',
+                    '@id' => url('/').'#website',
+                    'url' => url('/'),
+                    'name' => self::siteName(),
+                    'inLanguage' => 'fr',
+                    'publisher' => ['@id' => $organizationId],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Fil d'Ariane : Accueil > (Blog >) titre. Libelles dans config/seo.php.
+     */
+    private static function breadcrumbData(Article|Page $model): array
+    {
+        $trail = [[config('seo.breadcrumbs.home'), url('/')]];
+
+        if ($model instanceof Article) {
+            $trail[] = [config('seo.breadcrumbs.blog'), route('blog.index')];
+        }
+
+        $trail[] = [$model->title, $model->publicUrl()];
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => array_map(fn (array $step, int $index) => [
+                '@type' => 'ListItem',
+                'position' => $index + 1,
+                'name' => $step[0],
+                'item' => $step[1],
+            ], $trail, array_keys($trail)),
+        ];
     }
 
     /**

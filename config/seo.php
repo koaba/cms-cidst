@@ -11,6 +11,11 @@
 */
 
 return [
+    'breadcrumbs' => [
+        'home' => 'Accueil',
+        'blog' => 'Blog',
+    ],
+
     'pages' => [
         'home' => [
             'title' => "CIDST - Centre d'Information et de Documentation Scientifique et Technique",
