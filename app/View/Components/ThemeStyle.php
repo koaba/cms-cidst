@@ -18,6 +18,7 @@ class ThemeStyle extends Component
         $this->css = $builder->css(
             $settings->getRawOriginal('primary_color'),
             $settings->getRawOriginal('secondary_color'),
+            $settings->getRawOriginal('theme'),
         );
     }
 

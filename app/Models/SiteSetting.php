@@ -21,6 +21,7 @@ class SiteSetting extends Model
         'cta_secondary_target',
         'primary_color',
         'secondary_color',
+        'theme',
         'news_ticker_direction',
         'pages_grid_columns',
         'pages_image_size',
