@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ResetUserPasswordRequest;
 use App\Http\Requests\Admin\UserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -68,18 +68,14 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Utilisateur mis à jour.');
     }
 
-    public function resetPassword(Request $request, User $user)
+    public function resetPassword(ResetUserPasswordRequest $request, User $user)
     {
         if ($user->id === auth()->id()) {
             return back()->with('error', 'Utilisez votre page de profil pour changer votre propre mot de passe.');
         }
 
-        $validated = $request->validate([
-            'new_password' => 'required|string|min:8',
-        ]);
-
         $user->update([
-            'password' => Hash::make($validated['new_password']),
+            'password' => Hash::make($request->validated('new_password')),
             'must_change_password' => true,
         ]);
 
