@@ -30,12 +30,9 @@
                     </td>
                     <td class="p-3 flex gap-2">
                         <a href="{{ route('admin.articles.edit', $article) }}" class="text-blue-600">Modifier</a>
-                        <form method="POST" action="{{ route('admin.articles.destroy', $article) }}" onsubmit="return confirm('Supprimer cet article ?') && (!this.delete_code || !!(this.delete_code.value = prompt('Code de suppression') || ''))">
-                            @csrf
-                            @method('DELETE')
-                            @unless (auth()->user()->hasRole(\App\Enums\UserRole::SuperAdmin))<input type="hidden" name="delete_code">@endunless
+                        <x-delete-form :action="route('admin.articles.destroy', $article)" message="Supprimer cet article ?">
                             <button type="submit" class="text-red-600">Supprimer</button>
-                        </form>
+                        </x-delete-form>
                     </td>
                 </tr>
             @endforeach
