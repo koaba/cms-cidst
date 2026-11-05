@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SaveBuilderRequest;
 use App\Models\Page;
 use App\Models\PageBlock;
 use App\Services\PageBuilder\BlockFieldCatalog;
@@ -10,7 +11,6 @@ use App\Services\PageBuilder\BlockSyncService;
 use App\Services\PageBuilder\StaleBuilderException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /** Page Builder : seconde interface d'edition des blocs racine d'une page. */
 class PageBuilderController extends Controller
@@ -77,17 +77,9 @@ class PageBuilderController extends Controller
         ] : null];
     }
 
-    public function save(Request $request, Page $page, BlockSyncService $sync): JsonResponse
+    public function save(SaveBuilderRequest $request, Page $page, BlockSyncService $sync): JsonResponse
     {
-        $payload = $request->validate([
-            'blocks' => ['present', 'array', 'max:200'],
-            'blocks.*' => ['array'],
-            'blocks.*.id' => ['nullable', 'integer'],
-            'blocks.*.type' => ['required', 'string'],
-            'blocks.*.data' => ['nullable', 'array'],
-            'blocks.*.media_id' => ['nullable', 'integer'],
-            'version' => ['nullable', 'string'],
-        ]);
+        $payload = $request->validated();
 
         try {
             $blocks = $sync->sync($page, $payload['blocks'], $payload['version'] ?? null);
