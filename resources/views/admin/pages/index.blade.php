@@ -33,11 +33,9 @@
                     <td class="p-2 space-x-2">
                         <a href="{{ route('admin.pages.edit', $page) }}" class="text-blue-600">Modifier</a>
                         <a href="{{ route('admin.pages.builder.show', $page) }}" class="text-purple-600">Builder</a>
-                        <form action="{{ route('admin.pages.destroy', $page) }}" method="POST" class="inline">
-                            @csrf @method('DELETE')
-                            @unless (auth()->user()->hasRole(\App\Enums\UserRole::SuperAdmin))<input type="hidden" name="delete_code">@endunless
-                            <button class="text-red-600" onclick="return confirm('Supprimer ?') && (!this.form.delete_code || !!(this.form.delete_code.value = prompt('Code de suppression') || ''))">Supprimer</button>
-                        </form>
+                        <x-delete-form :action="route('admin.pages.destroy', $page)" message="Supprimer cette page ?">
+                            <button type="submit" class="text-red-600">Supprimer</button>
+                        </x-delete-form>
                     </td>
                 </tr>
             @endforeach
