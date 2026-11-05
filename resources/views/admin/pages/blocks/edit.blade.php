@@ -1,5 +1,6 @@
 <x-admin.layout>
     <h1 class="text-2xl font-bold mb-4">Modifier un bloc — {{ $page->title }}</h1>
+    @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
 
     <form action="{{ route('admin.pages.blocks.update', [$page, $block->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -32,11 +33,9 @@
                                     <span>{{ config('page_blocks.types')[$child->type] ?? $child->type }}</span>
                                     <span class="space-x-2">
                                         <a href="{{ route('admin.pages.blocks.columns.edit', [$page, $block->id, $i, $child->id]) }}" class="text-blue-600 hover:underline">Modifier</a>
-                                        <form action="{{ route('admin.pages.blocks.columns.destroy', [$page, $block->id, $i, $child->id]) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce bloc de la colonne ?');">
-                                            @csrf
-                                            @method('DELETE')
+                                        <x-delete-form :action="route('admin.pages.blocks.columns.destroy', [$page, $block->id, $i, $child->id])" message="Supprimer ce bloc de la colonne ?">
                                             <button type="submit" class="text-red-600 hover:underline">Supprimer</button>
-                                        </form>
+                                        </x-delete-form>
                                     </span>
                                 </li>
                             @empty
@@ -68,11 +67,9 @@
                         <span class="text-sm font-medium">{{ $item->data['title'] }}</span>
                         <span class="space-x-2 text-sm">
                             <a href="{{ route('admin.pages.blocks.items.edit', [$page, $block->id, $item->id]) }}" class="text-blue-600 hover:underline">Modifier / Contenu</a>
-                            <form action="{{ route('admin.pages.blocks.items.destroy', [$page, $block->id, $item->id]) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cet item et tout son contenu ?');">
-                                @csrf
-                                @method('DELETE')
+                            <x-delete-form :action="route('admin.pages.blocks.items.destroy', [$page, $block->id, $item->id])" message="Supprimer cet item et tout son contenu ?">
                                 <button type="submit" class="text-red-600 hover:underline">Supprimer</button>
-                            </form>
+                            </x-delete-form>
                         </span>
                     </li>
                 @empty

@@ -7,6 +7,7 @@
     @if(session('success'))
         <p class="text-green-600 mt-2">{{ session('success') }}</p>
     @endif
+    @error('delete_code')<div class="alert alert-error mt-2">{{ $message }}</div>@enderror
 
     <div class="mt-4 mb-6">
         <label for="add-block-type" class="text-sm font-medium mr-2">Ajouter un bloc :</label>
@@ -35,10 +36,9 @@
                 </div>
                 <div class="space-x-2">
                     <a href="{{ route('admin.pages.blocks.edit', [$page, $block->id]) }}" class="text-blue-600 text-sm">Modifier</a>
-                    <form action="{{ route('admin.pages.blocks.destroy', [$page, $block->id]) }}" method="POST" class="inline">
-                        @csrf @method('DELETE')
-                        <button class="text-red-600 text-sm" onclick="return confirm('Supprimer ce bloc ?')">Supprimer</button>
-                    </form>
+                    <x-delete-form :action="route('admin.pages.blocks.destroy', [$page, $block->id])" message="Supprimer ce bloc ?">
+                        <button type="submit" class="text-red-600 text-sm">Supprimer</button>
+                    </x-delete-form>
                 </div>
             </div>
         @empty

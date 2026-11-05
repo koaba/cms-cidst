@@ -70,7 +70,7 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin, UserRole::
         Route::post('/', [AdminPageBlockController::class, 'store'])->name('store');
         Route::get('/{blockId}/edit', [AdminPageBlockController::class, 'edit'])->name('edit');
         Route::put('/{blockId}', [AdminPageBlockController::class, 'update'])->name('update');
-        Route::delete('/{blockId}', [AdminPageBlockController::class, 'destroy'])->name('destroy');
+        Route::delete('/{blockId}', [AdminPageBlockController::class, 'destroy'])->name('destroy')->middleware('confirm.delete');
         Route::post('/reorder', [AdminPageBlockController::class, 'reorder'])->name('reorder');
 
         Route::prefix('{blockId}/columns/{slotIndex}')->name('columns.')->group(function () {
@@ -78,14 +78,14 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin, UserRole::
             Route::post('/', [AdminColumnChildBlockController::class, 'store'])->name('store');
             Route::get('/{childId}/edit', [AdminColumnChildBlockController::class, 'edit'])->name('edit');
             Route::put('/{childId}', [AdminColumnChildBlockController::class, 'update'])->name('update');
-            Route::delete('/{childId}', [AdminColumnChildBlockController::class, 'destroy'])->name('destroy');
+            Route::delete('/{childId}', [AdminColumnChildBlockController::class, 'destroy'])->name('destroy')->middleware('confirm.delete');
         });
 
         Route::prefix('{blockId}/items')->name('items.')->group(function () {
             Route::post('/', [AdminAccordionItemController::class, 'store'])->name('store');
             Route::get('/{itemId}/edit', [AdminAccordionItemController::class, 'edit'])->name('edit');
             Route::put('/{itemId}', [AdminAccordionItemController::class, 'update'])->name('update');
-            Route::delete('/{itemId}', [AdminAccordionItemController::class, 'destroy'])->name('destroy');
+            Route::delete('/{itemId}', [AdminAccordionItemController::class, 'destroy'])->name('destroy')->middleware('confirm.delete');
             Route::post('/reorder', [AdminAccordionItemController::class, 'reorder'])->name('reorder');
 
             Route::prefix('{itemId}/content')->name('content.')->group(function () {
@@ -93,7 +93,7 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin, UserRole::
                 Route::post('/', [AdminAccordionItemContentController::class, 'store'])->name('store');
                 Route::get('/{contentId}/edit', [AdminAccordionItemContentController::class, 'edit'])->name('edit');
                 Route::put('/{contentId}', [AdminAccordionItemContentController::class, 'update'])->name('update');
-                Route::delete('/{contentId}', [AdminAccordionItemContentController::class, 'destroy'])->name('destroy');
+                Route::delete('/{contentId}', [AdminAccordionItemContentController::class, 'destroy'])->name('destroy')->middleware('confirm.delete');
             });
         });
     });
