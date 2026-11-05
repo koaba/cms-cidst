@@ -3,6 +3,7 @@
     $seoTitle = $model ? \App\Services\SeoService::title($model) : ($seoPageMeta['title'] ?? config('app.name', 'CIDST'));
     $seoDescription = $model ? \App\Services\SeoService::description($model) : ($seoPageMeta['description'] ?? null);
     $seoImage = $model ? \App\Services\SeoService::image($model) : null;
+    $seoSocialImage = $seoImage ?? \App\Services\SeoService::logoUrl();
     $seoCanonical = $model ? \App\Services\SeoService::canonical($model) : \App\Services\SeoService::listCanonical();
     $seoNoIndex = $model ? \App\Services\SeoService::noIndex($model) : ($seoPageMeta['noindex'] ?? false);
     $seoOgType = $model ? \App\Services\SeoService::ogType($model) : 'website';
@@ -28,8 +29,8 @@
 <meta property="og:type" content="{{ $seoOgType }}">
 <meta property="og:site_name" content="{{ config('app.name', 'CIDST') }}">
 <meta property="og:locale" content="fr_FR">
-@if($seoImage)
-    <meta property="og:image" content="{{ $seoImage }}">
+@if($seoSocialImage)
+    <meta property="og:image" content="{{ $seoSocialImage }}">
 @endif
 
 {{-- Twitter Card --}}
@@ -38,8 +39,8 @@
 @if($seoDescription)
     <meta name="twitter:description" content="{{ $seoDescription }}">
 @endif
-@if($seoImage)
-    <meta name="twitter:image" content="{{ $seoImage }}">
+@if($seoSocialImage)
+    <meta name="twitter:image" content="{{ $seoSocialImage }}">
 @endif
 
-@include('partials.seo-jsonld', ['model' => $model ?? null])
+@include('partials.seo-jsonld', ['model' => $model ?? null, 'seoPage' => $seoPage ?? null])
