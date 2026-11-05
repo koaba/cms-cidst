@@ -1,8 +1,8 @@
 # CMS CIDST
 
-CMS Laravel modulaire : pages composées de blocs, articles, sliders, médiathèque, documents PDF, SEO (sitemap, robots) et tableau de bord d'administration. Design moderne et responsive (mobile-first), administration très personnalisable, portable sur hébergement mutualisé.
+CMS Laravel modulaire, propre et évolutif : design moderne et responsive (mobile-first), administration très personnalisable, SEO natif, portable sur hébergement mutualisé.
 
-> Ce fichier remplace l'ancien `README.md`, `ENVIRONMENT.md`, `DEPLOYMENT.md` et `CMS-ROADMAP-RECOMMANDATIONS.md`. Dernière mise à jour : 21/10/2026.
+> Ce fichier remplace `README.md` (version Laravel par défaut), `ENVIRONMENT.md`, `DEPLOYMENT.md` et `CMS-ROADMAP-RECOMMANDATIONS.md`. Dernière mise à jour : 21/10/2026.
 > `[non vérifié]` désigne ce qu'aucune sortie ni lecture du code n'a confirmé.
 
 ## Sommaire
@@ -55,12 +55,9 @@ cp .env.example .env
 php artisan key:generate
 npm ci
 php artisan migrate
-php artisan storage:link
 npm run build
 ./vendor/bin/pest --compact
 ```
-
-Renseigner la base de données dans `.env` avant `php artisan migrate`. En développement, remplacer `npm run build` par `npm run dev`.
 
 Points d'attention :
 
@@ -85,23 +82,6 @@ Comptes de test locaux : `admin@academy.local` (Super Admin) et `user@academy.lo
 | `Middleware\SecurityHeaders` | En-têtes de sécurité HTTP, appliqué au groupe `web` dans `bootstrap/app.php`. |
 | Middleware `track.view` | Suivi des vues (aujourd'hui limité à `blog.show`). |
 
-### Pages composées de blocs
-
-- Une page est composée de `PageBlock` ordonnés et imbriquables. Chaque type de bloc a une classe de règles (`app/Blocks/Rules`), une entrée dans `BlockRegistry`, un partial admin et un partial public.
-- Le traitement des fichiers de blocs est centralisé dans `BlockMediaService`. La lecture des dimensions d'image passe par `MediaDimensionsReader`.
-- Chargement des images publiques : règles imposées par `tests/Feature/PublicImgLoadingTest.php`.
-- Le sitemap est mis en cache et invalidé par `SitemapCacheObserver`.
-
-### Commandes Artisan du projet
-
-| Commande | Rôle |
-|---|---|
-| `media:prune` | Supprime les médias liés à aucun contenu |
-| `media:backfill-dimensions [--dry-run]` | Renseigne `width` et `height` des images existantes (idempotente) |
-| `sliders:migrate-to-media [--dry-run]` | Migre les images de sliders vers la médiathèque |
-| `app:migrate-videos-to-media [--dry-run]` | Migre les vidéos vers la médiathèque |
-| `blocks:audit-phantom-columns` | Audit des blocs colonnes (voir `AuditPhantomColumnBlocks`) |
-
 ### Règle « média utilisé »
 
 Un média est utilisé si l'un de ces quatre cas est vrai (quatre `exists()` portables dans `MediaOverviewService::isInUse`) : présent dans le pivot `mediables`, `articles.cover_media_id`, `articles.image = media.path`, `seo_metas.og_image = media.path`. Cette règle protège toute suppression de fichier.
@@ -119,7 +99,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 ### Thème et design
 
 - Tailwind lit `cidst-red` / `cidst-ink` via `var(--color-primary, #C41E2A)` et `var(--color-secondary, #17181A)`. Aujourd'hui rien ne définit ces variables : le repli hexadécimal est toujours utilisé.
-- Thème injecté par `<x-theme-style />` (layouts public et admin, après `@vite`) : `html:root{--p;--pc;--a;--ac;--s;--sc;--n;--nc;--color-primary-rgb;--color-secondary-rgb}`, généré par `ThemeStyleBuilder` depuis `getRawOriginal()` de `SiteSetting` (valeur invalide : repli sur `#C41E2A` / `#17181A`). Ne pas utiliser les accesseurs `primary_color` / `secondary_color` (`#000000` / `#FFFFFF` si invalide, figés par `SiteSettingColorTest`). Tailwind : `cidst.red` et `cidst.ink` lisent `rgb(var(--color-primary-rgb) / <alpha-value>)`.
+- Chantier en cours : un bloc `:root` généré depuis `SiteSetting` (`--p`, `--pc`, `--s`, `--sc`, `--color-primary-rgb`…) injecté dans les layouts public et admin, puis alignement de `tailwind.config.js`.
 - Défauts en base : `#E80000` / `#1A1A1A`, différents de ceux du thème DaisyUI (`#C41E2A` / `#17181A`). Décision recommandée : migration qui ne remplace que les lignes encore à l'ancien défaut.
 - Variables admin : 4 variables `--admin-*` dans `app.css`.
 - Règle de chaque lot design : mobile-first, paliers Tailwind par défaut, vérification à 360, 768, 1024, 1440 et 1920 px.
@@ -134,7 +114,7 @@ Existant : sitemap, `seo_metas`, en-têtes de sécurité. À compléter : sitema
 - **Modèles** : `$fillable` strict ; `user_id` toujours assigné côté serveur.
 - **Slugs et visibilité** : un seul générateur de slug (trait `HasSlug`) et un seul scope `publiclyVisible` (`is_published`, `published_at` non nul et `<= now()`) pour tout contenu publiable. `NULL <= now()` est toujours faux : un `published_at` nul rend le contenu invisible sans erreur. `[à vérifier : traits créés ou non]`
 - **Fichiers** : UTF-8 sans BOM, LF (préserver CRLF sur un fichier existant, par exemple `sidebar.blade.php`).
-- **Git** : branches courtes (`feat/`, `fix/`, `perf/`, `chore/`, `docs/`), fusionnées en `--no-ff`. Commits sémantiques (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`). `git add` fichier par fichier. Ordre : Pint, Pest, commit. Merge `--no-ff`, push, `git branch -d`, `git status -sb`.
+- **Git** : commits sémantiques (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`). `git add` fichier par fichier. Ordre : Pint, Pest, commit. Merge `--no-ff`, push, `git branch -d`, `git status -sb`.
 - **Tests** : test rouge d'abord, sur échec d'assertion (jamais sur une erreur PHP), puis correctif, puis mutation de contrôle d'une ligne.
 - **Front** : CSS et JS non couverts par Pest : `npm run build` puis vérification visuelle (Ctrl+F5).
 - **Helpers Pest globaux** : ils vivent dans l'espace global, donc un nom déjà pris provoque une erreur. Préfixer chaque helper par son domaine (`colorConv…`, `inUse…`, `dash…`) et vérifier le nom avant d'en ajouter.
@@ -161,7 +141,7 @@ Le terminal Laragon est Bash/MinGW (`grep`, slashs `/`), alors que celui de VS C
 | `composer dump-autoload` silencieux : lancé depuis `C:\laragon\www` au lieu du dossier du projet, la classe reste introuvable | Vérifier le dossier courant, `cd C:\laragon\www\laravel-academy`, puis `composer dump-autoload -o` et contrôler le classmap |
 | Git « dubious ownership » dans le terminal Laragon | `git config --global --add safe.directory C:/laragon/www/laravel-academy` (une seule fois) |
 | `migrate:rollback --step=N` annule par ordre chronologique, pas par nom | Annuler un cran à la fois, `migrate:status` après chaque étape, réappliquer ce qui doit rester, supprimer les fichiers orphelins puis `migrate` |
-| `sf_proc_00.out.lock` (Permission denied) : `artisan test` plante, les miniatures PDF (Poppler) échouent sans erreur | `$env:TEMP = "$PWD\storage\framework\tmp"; $env:TMP = $env:TEMP; New-Item -ItemType Directory -Force $env:TEMP \| Out-Null` puis `./vendor/bin/pest`. Valable pour la session du terminal. Cause racine non identifiée (hypothèse : verrou sur le dossier temporaire). Explique aussi les échecs dispersés sur les variantes d'images (`ImageVariantService`, `ProcessMediaImage`) et sur `MediaSharedUsageTest` (ligne 94). |
+| `sf_proc_00.out.lock` (Permission denied) : `artisan test` plante, les miniatures PDF (Poppler) échouent sans erreur | `$env:TEMP = "$PWD\storage\framework\tmp"; $env:TMP = $env:TEMP; New-Item -ItemType Directory -Force $env:TEMP \| Out-Null` puis `./vendor/bin/pest`. Valable pour la session du terminal. Cause racine non identifiée. |
 | Accents déformés dans cmd.exe (« créé » devient « crÃ©Ã© ») : faux problème d'encodage | `chcp 65001` avant de diagnostiquer |
 | `findstr` et `type` peu fiables pour juger l'encodage ou le contenu d'un fichier | `Select-String` ou une vérification hex via Tinker |
 | PowerShell 5 : `Select-String` n'a pas `-Recurse` ; lecture sans `-Encoding UTF8` affiche « Ã© » ; `@(@("a","b"))` aplatit ; pas de `String.Replace` à 3 arguments | `Get-ChildItem -Recurse \| Select-String …`, toujours `-Encoding UTF8` |
