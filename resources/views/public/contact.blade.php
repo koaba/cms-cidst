@@ -1,4 +1,4 @@
-<x-layout :sidebar="false" title="Contact">
+<x-layout :sidebar="false" seo-page="contact">
     <div class="max-w-xl mx-auto">
         <h1 class="text-3xl font-display font-bold mb-6 text-cidst-ink">Contact</h1>
         @if (session('success'))

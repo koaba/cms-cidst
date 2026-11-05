@@ -7,6 +7,7 @@ use App\Models\Article;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 /**
  * Centralise la résolution des métadonnées SEO publiques pour tout
@@ -97,6 +98,40 @@ class SeoService
     public static function ogType(Model $model): string
     {
         return $model instanceof Article ? 'article' : 'website';
+    }
+
+    /**
+     * SEO d'une page sans modele (accueil, liste, contact, recherche), lu dans
+     * config/seo.php. $replace complete les jetons (ex. ['name' => 'Physique']).
+     *
+     * @return array{title: string, description: string, noindex: bool}
+     */
+    public static function forPage(string $key, array $replace = []): array
+    {
+        $meta = config("seo.pages.{$key}")
+            ?? throw new InvalidArgumentException("Page SEO inconnue : {$key}");
+
+        $tokens = [':site' => self::siteName()];
+        foreach ($replace as $token => $value) {
+            $tokens[':'.$token] = $value;
+        }
+
+        return [
+            'title' => strtr($meta['title'], $tokens),
+            'description' => Str::limit(strtr($meta['description'], $tokens), 160, '…'),
+            'noindex' => (bool) ($meta['noindex'] ?? false),
+        ];
+    }
+
+    /**
+     * Canonical d'une page sans modele : l'URL courante sans query string,
+     * sauf le numero de page d'une liste paginee (page 2 et suivantes).
+     */
+    public static function listCanonical(): string
+    {
+        $page = request()->integer('page', 1);
+
+        return $page > 1 ? url()->current().'?page='.$page : url()->current();
     }
 
     /**

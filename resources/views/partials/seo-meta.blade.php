@@ -1,9 +1,10 @@
 @php
-    $seoTitle = $model ? \App\Services\SeoService::title($model) : ($title ?? config('app.name', 'CIDST'));
-    $seoDescription = $model ? \App\Services\SeoService::description($model) : null;
+    $seoPageMeta = ! $model && $seoPage ? \App\Services\SeoService::forPage($seoPage, $seoReplace) : null;
+    $seoTitle = $model ? \App\Services\SeoService::title($model) : ($seoPageMeta['title'] ?? config('app.name', 'CIDST'));
+    $seoDescription = $model ? \App\Services\SeoService::description($model) : ($seoPageMeta['description'] ?? null);
     $seoImage = $model ? \App\Services\SeoService::image($model) : null;
-    $seoCanonical = $model ? \App\Services\SeoService::canonical($model) : url()->current();
-    $seoNoIndex = $model ? \App\Services\SeoService::noIndex($model) : false;
+    $seoCanonical = $model ? \App\Services\SeoService::canonical($model) : \App\Services\SeoService::listCanonical();
+    $seoNoIndex = $model ? \App\Services\SeoService::noIndex($model) : ($seoPageMeta['noindex'] ?? false);
     $seoOgType = $model ? \App\Services\SeoService::ogType($model) : 'website';
 @endphp
 

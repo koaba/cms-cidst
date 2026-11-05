@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @include('partials.seo-meta', ['model' => $seo ?? null, 'title' => $title ?? null])
+    @include('partials.seo-meta', ['model' => $seo ?? null, 'seoPage' => $seoPage ?? null, 'seoReplace' => $seoReplace ?? []])
     @vite('resources/css/public.css')
     <x-theme-style />
 </head>
