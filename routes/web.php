@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ColumnChildBlockController as AdminColumnChildBlockController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GuideController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MediaOrderController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
@@ -62,6 +63,7 @@ Route::middleware('auth')->group(function () {
 // Accès partagé : Super Admin ET Publication (contenu éditorial)
 Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin, UserRole::Publication)])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/guide', GuideController::class)->name('admin.guide');
     Route::resource('admin/articles', AdminArticleController::class)->names('admin.articles')->middlewareFor('destroy', 'confirm.delete');
     Route::resource('admin/pages', AdminPageController::class)->names('admin.pages')->middlewareFor('destroy', 'confirm.delete');
     Route::prefix('admin/pages/{page}/blocks')->name('admin.pages.blocks.')->group(function () {
