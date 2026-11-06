@@ -1,0 +1,571 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Relation ''mediables'' is not found in App\\Models\\Media model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Console/Commands/MigrateVideosToMedia.php
+
+		-
+			message: '#^Relation ''mediables'' is not found in App\\Models\\Media model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Console/Commands/PruneUnusedMedia.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/AccordionItemContentController.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Controllers\\Admin\\AccordionItemController\:\:\$blockMedia\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/Admin/AccordionItemController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/AccordionItemController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Article\:\:\$coverMedia\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ArticleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Article\:\:\$diaporamas\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ArticleController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Article\:\:\$videos\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ArticleController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/ArticleController.php
+
+		-
+			message: '#^Relation ''diaporamas'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Admin/ArticleController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/ArticleController.php
+
+		-
+			message: '#^Relation ''videoMedia'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/ArticleController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/CategoryController.php
+
+		-
+			message: '#^Constant App\\Http\\Controllers\\Admin\\CategoryController\:\:MAX_PDFS is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: app/Http/Controllers/Admin/CategoryController.php
+
+		-
+			message: '#^Relation ''articles'' is not found in App\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/CategoryController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/CategoryController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/ColumnChildBlockController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/DashboardController.php
+
+		-
+			message: '#^Relation ''mediables'' is not found in App\\Models\\Media model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/MediaController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:reorderMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/MediaOrderController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/MenuController.php
+
+		-
+			message: '#^Relation ''children'' is not found in App\\Models\\Menu model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/MenuController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/PageBlockController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$children_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/PageBuilderController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$media\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/PageBuilderController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/PageController.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Admin/PageController.php
+
+		-
+			message: '#^Relation ''documents'' is not found in App\\Models\\PdfCategory model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PdfCategoryController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/PdfDocumentController.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\PdfDocument model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PdfDocumentController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\PdfDocument model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Admin/PdfDocumentController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/SliderController.php
+
+		-
+			message: '#^Relation ''categories'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/ArticleController.php
+
+		-
+			message: '#^Relation ''coverMedia'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/ArticleController.php
+
+		-
+			message: '#^Relation ''diaporamas'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/ArticleController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/ArticleController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/ArticleController.php
+
+		-
+			message: '#^Relation ''videos'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/ArticleController.php
+
+		-
+			message: '#^Parameter \#1 \$user of class Illuminate\\Auth\\Events\\Verified constructor expects Illuminate\\Contracts\\Auth\\MustVerifyEmail, App\\Models\\User\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Auth/VerifyEmailController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\Slider model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/HomeController.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\PdfDocument model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/PdfDocumentController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\PdfDocument model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/PdfDocumentController.php
+
+		-
+			message: '#^Relation ''pdfs'' is not found in App\\Models\\PdfDocument model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/PdfDocumentController.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\Slider model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/SliderController.php
+
+		-
+			message: '#^Match arm comparison between ''image'' and ''image'' is always true\.$#'
+			identifier: match.alwaysTrue
+			count: 1
+			path: app/Http/Requests/Admin/Concerns/ValidatesArticleMedia.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Media\:\:\$mediables\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Media.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy\<string, App\\Models\\Media, Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Media\>\>\:\:\$mediables\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Media.php
+
+		-
+			message: '#^Relation ''mediables'' is not found in App\\Models\\Media model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Models/Media.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Menu\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Menu.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/Menu.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Page\:\:\$blocks\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Models/Page.php
+
+		-
+			message: '#^Relation ''blocks'' is not found in App\\Models\\Page model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\Page model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Relation ''seo'' is not found in App\\Models\\Page model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$children\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/PageBlock.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Models/PageBlock.php
+
+		-
+			message: '#^Relation ''pageViews'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/Dashboard/DashboardStatsService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Media\:\:\$bytes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MediaOverviewService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Media\:\:\$mediables_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MediaOverviewService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Media\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MediaOverviewService.php
+
+		-
+			message: '#^Relation ''media'' is not found in App\\Models\\PageBlock model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/MediaOverviewService.php
+
+		-
+			message: '#^Relation ''mediables'' is not found in App\\Models\\Media model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Services/MediaOverviewService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Article\:\:\$coverMedia\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/MediaSyncService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:attachExistingMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/MediaSyncService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:attachUploadedFiles\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/MediaSyncService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:detachOwnedMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/MediaSyncService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Services/MediaSyncService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageBlock\:\:\$media\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:detachAndPruneOrphanMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Method App\\Services\\PageBuilder\\BlockSyncService\:\:plan\(\) should return list\<array\{block\: App\\Models\\PageBlock\|null, type\: string, data\: array\|null\}\> but returns list\<array\{block\: Illuminate\\Database\\Eloquent\\Model, type\: mixed, data\: null\}\|array\{block\: Illuminate\\Database\\Eloquent\\Model\|null, type\: mixed, data\: array, media_id\: int\|null\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Offset ''media'' on array\{creatable\: bool, defaults\: array, fields\: list\<array\>, design\?\: array\{fields\: list\<array\>\}, note\?\: string\} on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:filter\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: bool\)\|null, Closure\(App\\Models\\PageBlock\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Parameter \#4 \$block of method App\\Services\\PageBuilder\\BlockSyncService\:\:validatedData\(\) expects App\\Models\\PageBlock\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Parameter \#4 \$block of method App\\Services\\PageBuilder\\BlockSyncService\:\:validatedMediaId\(\) expects App\\Models\\PageBlock\|null, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PageBuilder/BlockSyncService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Article\:\:\$coverMedia\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/SeoService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$blocks\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/SeoService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/SeoService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$media\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/SeoService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$seo\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Services/SeoService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>no_index" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/SeoService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$seo\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/SitemapUrlBuilder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/SitemapUrlBuilder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:publicUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/SitemapUrlBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Services/SitemapUrlBuilder.php
+
+		-
+			message: '#^Relation ''seo'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/SitemapUrlBuilder.php
+
+		-
+			message: '#^Relation ''seo'' is not found in App\\Models\\Page model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/SitemapUrlBuilder.php
+
+		-
+			message: '#^Relation ''coverMedia'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Support/PublicLayout.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Page\:\:\$blocks\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Support/PublicPageCache.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Page\:\:\$media\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Support/PublicPageCache.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Page\:\:\$seo\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Support/PublicPageCache.php
+
+		-
+			message: '#^Relation ''pdfs'' is not found in App\\Models\\PdfDocument model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Support/PublicPageCache.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: \(object\{content\: string, link_url\: string\|null\}&stdClass\), Closure\(App\\Models\\NewsTicker\)\: \(object\{content\: string, link_url\: string\|null\}&stdClass\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/View/Components/NewsTicker.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: \(object\{content\: string, link_url\: string\}&stdClass\), Closure\(App\\Models\\Article\)\: \(object\{content\: string, link_url\: string\}&stdClass\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/View/Components/NewsTicker.php
