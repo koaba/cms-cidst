@@ -2,6 +2,7 @@
     <h1 class="text-2xl font-bold mb-4">
         Modifier l'item — {{ $page->title }}
     </h1>
+    @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
 
     <form action="{{ route('admin.pages.blocks.items.update', [$page, $parent->id, $item->id]) }}" method="POST">
         @csrf
@@ -30,11 +31,9 @@
                     <span>{{ config('page_blocks.types')[$content->type] ?? $content->type }}</span>
                     <span class="space-x-2">
                         <a href="{{ route('admin.pages.blocks.items.content.edit', [$page, $parent->id, $item->id, $content->id]) }}" class="text-blue-600 hover:underline">Modifier</a>
-                        <form action="{{ route('admin.pages.blocks.items.content.destroy', [$page, $parent->id, $item->id, $content->id]) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce contenu ?');">
-                            @csrf
-                            @method('DELETE')
+                        <x-delete-form :action="route('admin.pages.blocks.items.content.destroy', [$page, $parent->id, $item->id, $content->id])" message="Supprimer ce contenu ?">
                             <button type="submit" class="text-red-600 hover:underline">Supprimer</button>
-                        </form>
+                        </x-delete-form>
                     </span>
                 </li>
             @empty
