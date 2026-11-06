@@ -17,7 +17,7 @@ use Illuminate\Validation\ValidationException;
 /** Page Builder : seconde interface d'edition des blocs racine d'une page. */
 class PageBuilderController extends Controller
 {
-    public function show(Page $page, BlockSyncService $sync): View
+    public function show(Page $page, BlockSyncService $sync, DeleteCodeVerifier $verifier): View
     {
         $labels = config('page_blocks.types');
 
@@ -59,6 +59,7 @@ class PageBuilderController extends Controller
                 'types' => $types,
                 'blocks' => $blocks,
                 'version' => $sync->version($page),
+                'requiresDeleteCode' => $verifier->isRequiredFor(auth()->user()),
             ],
         ]);
     }
