@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Media;
+use App\Support\Like;
 use Illuminate\Http\Request;
 
 class MediaController extends Controller
@@ -14,7 +15,7 @@ class MediaController extends Controller
 
         return Media::query()
             ->with('mediables')
-            ->when($term !== '', fn ($query) => $query->where('original_name', 'like', "%{$term}%"))
+            ->when($term !== '', fn ($query) => Like::contains($query, 'original_name', $term))
             ->latest();
     }
 

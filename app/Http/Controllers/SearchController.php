@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Page;
+use App\Support\Like;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -20,16 +21,12 @@ class SearchController extends Controller
         $pages = collect();
 
         if ($query !== '') {
-            $articles = Article::query()
-                ->publiclyVisible()
-                ->where('title', 'like', "%{$query}%")
+            $articles = Like::contains(Article::query()->publiclyVisible(), 'title', $query)
                 ->latest('published_at')
                 ->limit(20)
                 ->get();
 
-            $pages = Page::query()
-                ->publiclyVisible()
-                ->where('title', 'like', "%{$query}%")
+            $pages = Like::contains(Page::query()->publiclyVisible(), 'title', $query)
                 ->limit(20)
                 ->get();
         }
