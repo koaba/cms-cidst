@@ -6,16 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaveBuilderRequest;
 use App\Models\Page;
 use App\Models\PageBlock;
+use App\Services\DeleteCodeVerifier;
 use App\Services\PageBuilder\BlockFieldCatalog;
 use App\Services\PageBuilder\BlockSyncService;
 use App\Services\PageBuilder\StaleBuilderException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 /** Page Builder : seconde interface d'edition des blocs racine d'une page. */
 class PageBuilderController extends Controller
 {
-    public function show(Page $page, BlockSyncService $sync): View
+    public function show(Page $page, BlockSyncService $sync, DeleteCodeVerifier $verifier): View
     {
         $labels = config('page_blocks.types');
 
@@ -57,6 +59,7 @@ class PageBuilderController extends Controller
                 'types' => $types,
                 'blocks' => $blocks,
                 'version' => $sync->version($page),
+                'requiresDeleteCode' => $verifier->isRequiredFor(auth()->user()),
             ],
         ]);
     }
@@ -77,12 +80,18 @@ class PageBuilderController extends Controller
         ] : null];
     }
 
-    public function save(SaveBuilderRequest $request, Page $page, BlockSyncService $sync): JsonResponse
+    public function save(SaveBuilderRequest $request, Page $page, BlockSyncService $sync, DeleteCodeVerifier $verifier): JsonResponse
     {
         $payload = $request->validated();
 
         try {
-            $blocks = $sync->sync($page, $payload['blocks'], $payload['version'] ?? null);
+            $blocks = $sync->sync($page, $payload['blocks'], $payload['version'] ?? null, function () use ($request, $verifier) {
+                $error = $verifier->check($request);
+
+                if ($error !== null) {
+                    throw ValidationException::withMessages(['delete_code' => $error]);
+                }
+            });
         } catch (StaleBuilderException $e) {
             return response()->json(['success' => false, 'code' => 'stale', 'message' => $e->getMessage()], 409);
         }

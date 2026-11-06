@@ -28,6 +28,10 @@
                 <p role="status" aria-live="polite" class="min-w-0 flex-1 text-sm"
                    x-bind:class="statusKind === 'ok' ? 'text-green-700' : (statusKind === 'error' ? 'text-red-600' : 'text-cidst-muted')"
                    x-text="status || (dirty ? 'Modifications non enregistrées' : '')"></p>
+                <label x-show="requiresDeleteCode && pendingDeletions > 0" x-cloak class="flex items-center gap-2 text-sm text-cidst-ink">
+                    <span>Code de suppression</span>
+                    <input type="password" autocomplete="off" x-model="deleteCode" class="w-36 rounded-lg border border-cidst-border px-2 py-1.5 text-sm focus:border-cidst-red focus:outline-none focus:ring-2 focus:ring-cidst-red/40">
+                </label>
                 <button type="button" x-show="stale" x-cloak x-on:click="reload()" class="rounded-lg border border-cidst-red px-3 py-2 text-sm font-medium text-cidst-red hover:bg-cidst-red hover:text-white focus:outline-none focus:ring-2 focus:ring-cidst-red/40">Recharger</button>
                 <button type="button"
                         class="rounded-lg bg-cidst-red px-4 py-2 text-sm font-semibold text-white hover:bg-cidst-red/90 focus:outline-none focus:ring-2 focus:ring-cidst-red/40 disabled:cursor-not-allowed disabled:opacity-50"

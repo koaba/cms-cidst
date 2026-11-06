@@ -74,12 +74,16 @@ export function pageBuilder() {
         seq: 0,
         version: null,
         stale: false,
+        requiresDeleteCode: false,
+        deleteCode: '',
+        pendingDeletions: 0,
 
         init() {
             const config = JSON.parse(this.$root.dataset.config);
             this.types = config.types;
             this.saveUrl = config.saveUrl;
             this.version = config.version ?? null;
+            this.requiresDeleteCode = config.requiresDeleteCode ?? false;
             this.blocks = config.blocks.map((raw) => this.hydrate(raw));
 
             window.addEventListener('beforeunload', (event) => {
@@ -234,6 +238,7 @@ export function pageBuilder() {
             if (!block || block.locked) return;
             if (block.id && !window.confirm('Supprimer ce bloc ? La suppression sera appliquée à l\'enregistrement.')) return;
 
+            if (block.id) this.pendingDeletions++;
             this.blocks.splice(index, 1);
             if (this.selectedUid === block.uid) this.selectedUid = null;
             this.markDirty();
@@ -299,7 +304,7 @@ export function pageBuilder() {
                         Accept: 'application/json',
                         'X-CSRF-TOKEN': csrfToken(),
                     },
-                    body: JSON.stringify({ blocks: buildPayload(this.blocks), version: this.version }),
+                    body: JSON.stringify(this.requestBody()),
                 });
                 const body = await response.json().catch(() => ({}));
 
@@ -320,6 +325,8 @@ export function pageBuilder() {
                 } else {
                     this.version = body.version ?? this.version;
                     this.stale = false;
+                    this.pendingDeletions = 0;
+                    this.deleteCode = '';
                     this.applySaved(body.blocks ?? []);
                 }
             } catch {
@@ -327,6 +334,13 @@ export function pageBuilder() {
             } finally {
                 this.saving = false;
             }
+        },
+
+        /** Corps du POST : le code n'est envoye que si une suppression est en attente. */
+        requestBody() {
+            const body = { blocks: buildPayload(this.blocks), version: this.version };
+            if (this.requiresDeleteCode && this.pendingDeletions > 0) body.delete_code = this.deleteCode;
+            return body;
         },
 
         /** Relie les ids serveur par position ; recharge si la page a divergé (autre onglet). */

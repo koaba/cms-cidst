@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Models\PageBlock;
 use App\Services\BlockMediaService;
 use App\Support\PublicPageCache;
+use Closure;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -31,11 +32,12 @@ class BlockSyncService
 
     /**
      * @param  list<array{id?: int|null, type: string, data?: array|null}>  $items  blocs dans l'ordre voulu
+     * @param  (Closure(int): void)|null  $beforeDeleting  appelee dans la transaction avec le nombre de blocs a supprimer ; peut lever pour tout annuler
      * @return list<array{id: int, type: string, order: int}> blocs racine apres sauvegarde
      */
-    public function sync(Page $page, array $items, ?string $expectedVersion = null): array
+    public function sync(Page $page, array $items, ?string $expectedVersion = null, ?Closure $beforeDeleting = null): array
     {
-        $blocks = DB::transaction(function () use ($page, $items, $expectedVersion) {
+        $blocks = DB::transaction(function () use ($page, $items, $expectedVersion, $beforeDeleting) {
             Page::query()->whereKey($page->getKey())->lockForUpdate()->first();
 
             if ($expectedVersion !== null && ! hash_equals($this->version($page), $expectedVersion)) {
@@ -46,6 +48,12 @@ class BlockSyncService
 
             $this->assertIdsAreRootBlocksOfPage($items, $roots);
             $plan = $this->plan($items, $roots);
+
+            $deletions = $this->countDeletions($plan, $roots);
+
+            if ($deletions > 0 && $beforeDeleting !== null) {
+                $beforeDeleting($deletions);
+            }
 
             $this->apply($page, $plan, $roots);
 
@@ -167,6 +175,16 @@ class BlockSyncService
         }
 
         return (int) $mediaId;
+    }
+
+    /** Nombre de blocs racine editables absents du plan : ceux que apply() va supprimer. */
+    private function countDeletions(array $plan, Collection $roots): int
+    {
+        $keptIds = collect($plan)->pluck('block.id')->filter()->all();
+
+        return $roots
+            ->filter(fn (PageBlock $block) => ! in_array($block->id, $keptIds, true) && $this->isEditable($block->type))
+            ->count();
     }
 
     private function apply(Page $page, array $plan, Collection $roots): void
