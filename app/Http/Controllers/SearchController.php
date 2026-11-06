@@ -21,15 +21,14 @@ class SearchController extends Controller
 
         if ($query !== '') {
             $articles = Article::query()
-                ->where('is_published', true)
-                ->where('published_at', '<=', now())
+                ->publiclyVisible()
                 ->where('title', 'like', "%{$query}%")
                 ->latest('published_at')
                 ->limit(20)
                 ->get();
 
             $pages = Page::query()
-                ->where('is_published', true)
+                ->publiclyVisible()
                 ->where('title', 'like', "%{$query}%")
                 ->limit(20)
                 ->get();
