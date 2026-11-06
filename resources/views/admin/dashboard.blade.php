@@ -17,6 +17,21 @@
         <a href="{{ route('admin.pages.create') }}" class="btn btn-outline btn-sm">Nouvelle page</a>
         <a href="{{ route('admin.media.index') }}" class="btn btn-outline btn-sm">M&eacute;diath&egrave;que</a>
     </div>
+    <section id="raccourcis" class="mb-8" aria-labelledby="shortcuts-title">
+        <h2 id="shortcuts-title" class="text-lg font-semibold mb-3">Raccourcis</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @foreach (config('admin_menu') as $item)
+                @if (! isset($item['roles']) || auth()->user()->hasAnyRole($item['roles']))
+                    <a href="{{ route($item['route']) }}" class="card bg-base-100 shadow transition hover:shadow-md">
+                        <div class="card-body p-4">
+                            <h3 class="card-title text-base">{{ $item['label'] }}</h3>
+                            <p class="text-sm opacity-70">{{ $item['description'] }}</p>
+                        </div>
+                    </a>
+                @endif
+            @endforeach
+        </div>
+    </section>
     <section id="a-traiter" class="mb-8" aria-labelledby="todo-title">
         <h2 id="todo-title" class="text-lg font-semibold mb-3">&Agrave; traiter</h2>
         <div class="stats shadow w-full flex-wrap">
