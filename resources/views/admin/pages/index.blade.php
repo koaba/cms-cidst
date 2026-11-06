@@ -12,7 +12,7 @@
         <thead>
             <tr class="border-b">
                 <th class="text-left p-2">Titre</th>
-                <th class="text-left p-2">Statut</th>
+                <th class="text-left p-2">Statut <x-admin.help term="statut" text="Brouillon : invisible au public. Programmée : visible à la date choisie. Publiée : visible par tous." /></th>
                 <th class="text-left p-2">Actions</th>
             </tr>
         </thead>
