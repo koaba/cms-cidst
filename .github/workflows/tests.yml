@@ -54,6 +54,10 @@ jobs:
         if: matrix.php == '8.3'
         run: php vendor/bin/pint --test
 
+      - name: Analyse statique (Larastan)
+        if: matrix.php == '8.3'
+        run: php vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
       - name: Audit des dependances
         if: matrix.php == '8.3'
         run: composer audit --abandoned=report
