@@ -37,7 +37,7 @@ class AudienceService
             $days[$row->day] = [(int) $row->visits, (int) $row->visitors, (int) $row->mobile_visits];
         }
 
-        $recent = SiteVisit::query()
+        $recent = DB::table('site_visits')
             ->selectRaw("DATE(visited_at) as day, COUNT(*) as visits, COUNT(DISTINCT visitor_hash) as visitors, SUM(CASE WHEN device = 'mobile' THEN 1 ELSE 0 END) as mobile_visits")
             ->groupByRaw('DATE(visited_at)')->get();
 

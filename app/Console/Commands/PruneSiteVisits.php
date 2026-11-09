@@ -16,7 +16,7 @@ class PruneSiteVisits extends Command
     {
         $cutoff = now()->subMonths(13)->startOfDay();
 
-        $days = SiteVisit::query()->where('visited_at', '<', $cutoff)
+        $days = DB::table('site_visits')->where('visited_at', '<', $cutoff)
             ->selectRaw("DATE(visited_at) as day, COUNT(*) as visits, COUNT(DISTINCT visitor_hash) as visitors, SUM(CASE WHEN device = 'mobile' THEN 1 ELSE 0 END) as mobile_visits")
             ->groupByRaw('DATE(visited_at)')
             ->get()
