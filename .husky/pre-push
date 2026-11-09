@@ -1,4 +1,20 @@
-echo "Verification avant push (Pint puis Pest)..."
+# Un push qui ne fait que supprimer des branches n'a rien a verifier.
+if [ ! -t 0 ]; then
+    HAS_REF=0
+    ONLY_DELETE=1
+    while read -r local_ref local_sha remote_ref remote_sha; do
+        HAS_REF=1
+        case "$local_sha" in
+            *[!0]*) ONLY_DELETE=0 ;;
+        esac
+    done
+    if [ "$HAS_REF" -eq 1 ] && [ "$ONLY_DELETE" -eq 1 ]; then
+        echo "Suppression de branche : verifications ignorees."
+        exit 0
+    fi
+fi
+
+echo "Verification avant push (Pint, Larastan puis Pest)..."
 ROOT="$(pwd -W 2>/dev/null || pwd)"
 export TEMP="$ROOT/storage/framework/tmp"
 export TMP="$TEMP"
@@ -17,6 +33,7 @@ if ! php vendor/bin/phpstan analyse --no-progress --memory-limit=1G; then
     echo "Push bloque : Larastan signale des erreurs. Corrige-les avant de pousser."
     exit 1
 fi
+
 if ! php vendor/bin/pest --compact; then
     echo ""
     echo "Push bloque : des tests echouent. Corrige-les avant de pousser."
