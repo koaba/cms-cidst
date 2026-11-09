@@ -22,6 +22,8 @@ final readonly class DashboardPeriod
 
     public const DEFAULT = 'month';
 
+    private const LABELS = ['week' => '7 jours', 'month' => '30 jours', 'year' => '12 mois', 'all' => 'Global'];
+
     private function __construct(public string $key, public string $step, private int $count) {}
 
     public static function from(?string $key, ?CarbonInterface $firstView = null): self
@@ -43,14 +45,14 @@ final readonly class DashboardPeriod
     }
 
     /** @return array<string, string> cle => libelle */
-    public static function options(): array
+    public static function options(bool $withGlobal = true): array
     {
-        return ['week' => '7 jours', 'month' => '30 jours', 'year' => '12 mois', 'all' => 'Global'];
+        return $withGlobal ? self::LABELS : array_diff_key(self::LABELS, ['all' => true]);
     }
 
     public function label(): string
     {
-        return self::options()[$this->key];
+        return self::LABELS[$this->key];
     }
 
     public function format(): string

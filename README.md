@@ -102,7 +102,7 @@ Trois niveaux : public ; authentifié + rôle Super Admin **ou** Publication (ar
 
 | Partie | Rôle |
 |---|---|
-| `Services\Dashboard\DashboardPeriod` | Période du tableau de bord : `week`, `month` (défaut), `year`, `all` (plafonné à 60 mois). Variation `null` si la période précédente vaut 0. |
+| `Services\Dashboard\DashboardPeriod` | Période du tableau de bord : `week`, `month` (défaut), `year`, `all` (plafonné à 60 mois). `options(withGlobal: false)` retire Global (page Audience). Variation `null` si la période précédente vaut 0. |
 | `Services\Theme\ColorConverter` | Convertit `#RRGGBB` en triplet RGB (Tailwind) et en OKLCH (DaisyUI 4), avec la couleur de contraste. |
 | `Services\Theme\ThemeStyleBuilder` | Produit le bloc CSS du thème actif (voir [Thèmes](#thèmes)). |
 | `MediaOverviewService` | Vue d'ensemble de la médiathèque (compteurs, alertes, derniers ajouts) et règle `isInUse(Media)`. |

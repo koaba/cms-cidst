@@ -77,3 +77,18 @@ it('couvre les mois depuis la premiere vue, plafonnes a 60', function (int $mont
 it('retombe sur 12 mois sans aucune vue', function () {
     expect(globalPeriodOrNull(null)?->labels() ?? [])->toHaveCount(12);
 });
+
+function optionKeysWithoutGlobal(): ?array
+{
+    try {
+        return array_keys(DashboardPeriod::options(withGlobal: false));
+    } catch (Throwable) {
+        return null;
+    }
+}
+
+it('masque Global a la demande sans changer les libelles', function () {
+    expect(array_keys(DashboardPeriod::options()))->toBe(['week', 'month', 'year', 'all'])
+        ->and(optionKeysWithoutGlobal())->toBe(['week', 'month', 'year'])
+        ->and(DashboardPeriod::from('all')->label())->toBe('Global');
+});
