@@ -40,10 +40,10 @@
             >
             <div id="pdf-thumbnails-preview" class="flex flex-wrap gap-2 mb-2"></div>
             <input type="hidden" name="pdf_thumbnails" id="pdf-thumbnails-data">
-            <p class="text-xs text-gray-500 mt-1">Au moins 1 fichier requis, 10 max, 10 Mo max chacun.</p>
+            <p class="text-xs text-base-content/60 mt-1">Au moins 1 fichier requis, 10 max, 10 Mo max chacun.</p>
             @error('pdfs') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             <ul id="pdfs-preview" class="text-sm mt-2 space-y-1"></ul>
-            <label class="flex items-center gap-2 text-sm text-gray-700 mt-2">
+            <label class="flex items-center gap-2 text-sm text-base-content/80 mt-2">
                 <input type="checkbox" name="apply_watermark" value="1"
                        {{ old('apply_watermark', \App\Models\SiteSetting::current()->pdf_watermark_default_enabled) ? 'checked' : '' }}>
                 Appliquer le filigrane de protection sur ces documents

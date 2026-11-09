@@ -19,7 +19,7 @@
     @error('autoplay_interval')
         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
     @enderror
-    <p class="text-xs text-gray-500 mt-1">Un bouton pause sera toujours affiché aux visiteurs.</p>
+    <p class="text-xs text-base-content/60 mt-1">Un bouton pause sera toujours affiché aux visiteurs.</p>
 </div>
 
 @if(isset($block) && $block->media->isNotEmpty())
@@ -30,7 +30,7 @@
                 <div class="border rounded p-1">
                     <img src="{{ $media->display_url }}" class="w-full h-20 object-cover rounded">
                     @if($media->pivot->caption)
-                        <p class="text-xs text-gray-500 mt-1 truncate">{{ $media->pivot->caption }}</p>
+                        <p class="text-xs text-base-content/60 mt-1 truncate">{{ $media->pivot->caption }}</p>
                     @endif
                     <label class="flex items-center gap-1 text-xs mt-1 text-red-600">
                         <input type="checkbox" name="delete_media[]" value="{{ $media->id }}">
@@ -70,7 +70,7 @@
             const row = document.createElement('div');
             row.className = 'border rounded p-3';
             row.innerHTML = `
-                <p class="text-xs text-gray-500 mb-2">${file.name}</p>
+                <p class="text-xs text-base-content/60 mb-2">${file.name}</p>
                 <label class="block text-xs mb-1">Texte alternatif (alt)</label>
                 <input type="text" name="images_alt[${index}]" class="w-full border rounded p-2 text-sm mb-2">
                 <label class="block text-xs mb-1">Légende (optionnel)</label>

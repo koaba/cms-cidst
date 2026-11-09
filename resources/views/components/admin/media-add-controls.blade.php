@@ -29,12 +29,12 @@
 <div id="{{ $previewContainerId }}" class="flex flex-wrap gap-2 mb-2"></div>
 
 <div class="flex gap-2">
-    <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100">
+    <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-base-200 hover:bg-base-300">
         + {{ $label }}
         <input type="file" name="{{ $uploadFieldName }}" accept="{{ $accept }}" multiple class="hidden"
                onchange="ArticleForm.previewNewUploads(this, '{{ $previewContainerId }}')">
     </label>
-    <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
+    <button type="button" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300"
             onclick="ArticleForm.pickExistingMedia('{{ $previewContainerId }}', '{{ $pickFieldName }}')">
         Choisir depuis la médiathèque
     </button>

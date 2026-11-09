@@ -12,7 +12,7 @@
 
         <div class="mt-4 space-x-2">
             <button type="submit" class="text-sm border rounded px-3 py-2 bg-blue-600 text-white hover:bg-blue-700">Enregistrer</button>
-            <a href="{{ route('admin.pages.blocks.items.edit', [$page, $parent->id, $item->id]) }}" class="text-sm text-gray-500">Annuler</a>
+            <a href="{{ route('admin.pages.blocks.items.edit', [$page, $parent->id, $item->id]) }}" class="text-sm text-base-content/60">Annuler</a>
         </div>
     </form>
 </x-admin.layout>

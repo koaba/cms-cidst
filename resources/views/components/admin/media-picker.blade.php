@@ -3,7 +3,7 @@
     <div class="bg-white rounded p-4 w-full max-w-2xl max-h-[80vh] flex flex-col">
         <div class="flex justify-between items-center mb-3">
             <h3 class="font-semibold" id="media-picker-title">Choisir des images</h3>
-            <button type="button" onclick="MediaPicker.close()" class="text-gray-500">&times;</button>
+            <button type="button" onclick="MediaPicker.close()" class="text-base-content/60">&times;</button>
         </div>
         <input type="text" id="media-picker-search" placeholder="Rechercher..."
                class="border rounded p-2 mb-3" oninput="MediaPicker.search(this.value)">
@@ -56,7 +56,7 @@ function render(items) {
     grid.innerHTML = '';
     items.forEach(item => {
         const el = document.createElement('div');
-        el.className = 'cursor-pointer border-2 rounded overflow-hidden border-transparent hover:border-blue-300 bg-gray-100';
+        el.className = 'cursor-pointer border-2 rounded overflow-hidden border-transparent hover:border-blue-300 bg-base-200';
         el.innerHTML = `<img src="${item.url}" loading="lazy" class="w-full h-20 object-cover" title="${item.name}">`;
         el.onclick = () => select(item, el);
         grid.appendChild(el);

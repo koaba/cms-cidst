@@ -26,7 +26,7 @@
                 <td class="p-2">{{ $item->link_url ?? '—' }}</td>
                 <td class="p-2">{{ $item->order }}</td>
                 <td class="p-2">
-                    <span class="{{ $item->is_active ? 'text-green-600' : 'text-gray-400' }}">
+                    <span class="{{ $item->is_active ? 'text-green-600' : 'text-base-content/50' }}">
                         {{ $item->is_active ? 'Oui' : 'Non' }}
                     </span>
                 </td>
@@ -38,7 +38,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="5" class="p-4 text-center text-gray-500">Aucune actualité</td></tr>
+            <tr><td colspan="5" class="p-4 text-center text-base-content/60">Aucune actualité</td></tr>
             @endforelse
         </tbody>
     </table>

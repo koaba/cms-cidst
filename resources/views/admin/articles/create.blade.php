@@ -34,7 +34,7 @@
         <div class="mb-4">
             <label class="block font-medium mb-1">Date de publication</label>
             <input type="datetime-local" name="published_at" value="{{ old('published_at', now()->format('Y-m-d\TH:i')) }}" class="w-full border rounded p-2">
-            <p class="text-xs text-gray-500 mt-1">Laisse la date actuelle, ou choisis une date passée/future. Un article programmé dans le futur restera invisible au public jusqu'à cette date.</p>
+            <p class="text-xs text-base-content/60 mt-1">Laisse la date actuelle, ou choisis une date passée/future. Un article programmé dans le futur restera invisible au public jusqu'à cette date.</p>
         </div>
 
         <div class="mb-4">
@@ -57,7 +57,7 @@
         </div>
 
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-gray-500 font-normal">(20 max)</span></h2>
+            <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-base-content/60 font-normal">(20 max)</span></h2>
 
           <x-admin.media-add-controls
     preview-container-id="gallery-selected"
@@ -76,9 +76,9 @@
         </div>
 
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-gray-500 font-normal">(10 max, visibles publiquement sur la page article)</span></h2>
+            <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-base-content/60 font-normal">(10 max, visibles publiquement sur la page article)</span></h2>
 
-            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100 inline-block mb-2">
+            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-base-200 hover:bg-base-300 inline-block mb-2">
                 + Ajouter des PDF
                 <input type="file" name="pdfs[]" class="hidden js-pdf-thumbnail-input" accept="application/pdf" multiple data-preview="pdf-thumbnails-preview" data-data-input="pdf-thumbnails-data" data-max="10">
             </label>
@@ -95,11 +95,11 @@
         </div>
 
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">Diaporamas <span class="text-xs text-gray-500 font-normal">(4 max, 10 images max chacun)</span></h2>
+            <h2 class="font-semibold mb-2">Diaporamas <span class="text-xs text-base-content/60 font-normal">(4 max, 10 images max chacun)</span></h2>
 
             <div id="diaporamas-container" class="space-y-4" data-max-diaporamas="{{ config('media.max_diaporamas') }}" data-max-images-per-diaporama="{{ config('media.max_images_per_diaporama') }}"></div>
 
-            <button type="button" id="add-diaporama-btn" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100 mt-2" onclick="ArticleForm.addDiaporama()">
+            <button type="button" id="add-diaporama-btn" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300 mt-2" onclick="ArticleForm.addDiaporama()">
                 + Ajouter un diaporama
             </button>
             <x-admin.watermark-checkbox
@@ -111,11 +111,11 @@
         </div>
 
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
+            <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-base-content/60 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
            <div id="videos-container" class="space-y-4" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}" data-max-videos="{{ config('media.max_videos') }}" data-max-video-kb="{{ config('media.max_video_upload_kb') }}"></div>
 
-            <button type="button" id="add-video-btn" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100 mt-2" onclick="ArticleForm.addVideo()">
+            <button type="button" id="add-video-btn" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300 mt-2" onclick="ArticleForm.addVideo()">
                 + Ajouter une vidéo
             </button>
         </div>

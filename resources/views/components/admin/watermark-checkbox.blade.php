@@ -13,7 +13,7 @@
     $checkboxId = $id ?? $name;
 @endphp
 
-<label for="{{ $checkboxId }}" class="flex items-center gap-2 text-sm text-gray-700 {{ $class }}">
+<label for="{{ $checkboxId }}" class="flex items-center gap-2 text-sm text-base-content/80 {{ $class }}">
     <input
         type="checkbox"
         id="{{ $checkboxId }}"

@@ -10,7 +10,7 @@
                 <figure class="snap-start shrink-0 w-72">
                     <x-media-img :media="$item" :alt="$item->pivot->alt ?? ''" sizes="288px" class="w-full h-48 object-cover rounded-lg" />
                     @if($item->pivot->caption)
-                        <figcaption class="text-sm text-gray-500 mt-1">{{ $item->pivot->caption }}</figcaption>
+                        <figcaption class="text-sm text-cidst-muted mt-1">{{ $item->pivot->caption }}</figcaption>
                     @endif
                 </figure>
             @endforeach
@@ -91,7 +91,7 @@
             <figure>
                 <x-media-img :media="$item" :alt="$item->pivot->alt ?? ''" sizes="(min-width: 768px) 33vw, 50vw" class="w-full h-40 object-cover rounded-lg" />
                 @if($item->pivot->caption)
-                    <figcaption class="text-sm text-gray-500 mt-1">{{ $item->pivot->caption }}</figcaption>
+                    <figcaption class="text-sm text-cidst-muted mt-1">{{ $item->pivot->caption }}</figcaption>
                 @endif
             </figure>
         @endforeach

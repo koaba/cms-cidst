@@ -17,7 +17,7 @@
 
     {{-- Choix de la source --}}
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Source du document</label>
+        <label class="block text-sm font-medium text-base-content/80 mb-2">Source du document</label>
         <div class="flex gap-4">
             <label class="inline-flex items-center gap-2">
                 <input
@@ -47,13 +47,13 @@
 
     {{-- Bloc "document existant" --}}
     <div id="pdf-source-existing" class="{{ $pdfSource === 'existing' ? '' : 'hidden' }}">
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="pdf_document_id">
+        <label class="block text-sm font-medium text-base-content/80 mb-1" for="pdf_document_id">
             Document PDF
         </label>
         <select
             name="pdf_document_id"
             id="pdf_document_id"
-            class="w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full rounded border-base-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
         >
             <option value="">-- Choisir --</option>
             @foreach($pdfDocuments as $document)
@@ -73,7 +73,7 @@
     {{-- Bloc "nouveau document" --}}
     <div id="pdf-source-new" class="{{ $pdfSource === 'new' ? '' : 'hidden' }} space-y-3">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="pdf_title">
+            <label class="block text-sm font-medium text-base-content/80 mb-1" for="pdf_title">
                 Titre du document
             </label>
             <input
@@ -81,7 +81,7 @@
                 name="pdf_title"
                 id="pdf_title"
                 value="{{ old('pdf_title', $data['pdf_title'] ?? '') }}"
-                class="w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                class="w-full rounded border-base-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
             >
             @error('pdf_title')
                 <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
@@ -89,7 +89,7 @@
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="pdfs">
+            <label class="block text-sm font-medium text-base-content/80 mb-1" for="pdfs">
                 Fichier(s) PDF
             </label>
             <input
@@ -98,9 +98,9 @@
                 id="pdfs"
                 multiple
                 accept="application/pdf"
-                class="w-full text-sm text-gray-600"
+                class="w-full text-sm text-base-content/70"
             >
-            <p class="text-xs text-gray-500 mt-1">
+            <p class="text-xs text-base-content/60 mt-1">
                 Max {{ config('media.max_pdfs', 10) }} fichiers,
                 {{ config('media.max_pdf_upload_kb', 10240) / 1024 }} Mo chacun.
             </p>

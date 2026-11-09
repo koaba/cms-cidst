@@ -35,7 +35,7 @@
         <div class="mb-4">
             <label class="block font-medium mb-1">Date de publication</label>
             <input type="datetime-local" name="published_at" value="{{ old('published_at', $article->published_at?->format('Y-m-d\TH:i')) }}" class="w-full border rounded p-2">
-            <p class="text-xs text-gray-500 mt-1">Modifie cette date pour antidater ou programmer la publication.</p>
+            <p class="text-xs text-base-content/60 mt-1">Modifie cette date pour antidater ou programmer la publication.</p>
         </div>
 
         <div class="mb-4">
@@ -67,7 +67,7 @@
             $attachedPdfs = $article->media->filter(fn ($m) => $m->mime_type === 'application/pdf');
         @endphp
         <div class="mb-6 border-t pt-4" data-dropzone>
-    <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-gray-500 font-normal">(20 max)</span></h2>
+    <h2 class="font-semibold mb-2">Galerie d'images <span class="text-xs text-base-content/60 font-normal">(20 max)</span></h2>
 
     <x-admin.media-reorder-list
         :items="$galleryImages"
@@ -97,7 +97,7 @@
 
         {{-- ===================== DOCUMENTS PDF ===================== --}}
         <div class="mb-6 border-t pt-4" data-dropzone>
-            <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-gray-500 font-normal">(10 max, visibles publiquement sur la page article)</span></h2>
+            <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-base-content/60 font-normal">(10 max, visibles publiquement sur la page article)</span></h2>
 
            <x-admin.media-reorder-list
     :items="$attachedPdfs"
@@ -107,7 +107,7 @@
     delete-field="delete_pdfs[]"
 />
 
-            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100 inline-block mb-2">
+            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-base-200 hover:bg-base-300 inline-block mb-2">
                 + Ajouter des PDF
                 <input
                     type="file"
@@ -134,7 +134,7 @@
 
         {{-- ===================== DIAPORAMAS ===================== --}}
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">Diaporamas <span class="text-xs text-gray-500 font-normal">(4 max, 10 images max chacun)</span></h2>
+            <h2 class="font-semibold mb-2">Diaporamas <span class="text-xs text-base-content/60 font-normal">(4 max, 10 images max chacun)</span></h2>
 
             <div id="diaporamas-container" class="space-y-4" data-initial-count="{{ $article->diaporamas->count() }}" data-max-diaporamas="{{ config('media.max_diaporamas') }}" data-max-images-per-diaporama="{{ config('media.max_images_per_diaporama') }}">
                 @foreach ($article->diaporamas as $i => $diaporama)
@@ -168,7 +168,7 @@
                 @endforeach
             </div>
 
-            <button type="button" id="add-diaporama-btn" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100 mt-2" onclick="ArticleForm.addDiaporama()">
+            <button type="button" id="add-diaporama-btn" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300 mt-2" onclick="ArticleForm.addDiaporama()">
                 + Ajouter un diaporama
             </button>
 
@@ -182,7 +182,7 @@
 
         {{-- ===================== VIDÉOS ===================== --}}
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-gray-500 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
+            <h2 class="font-semibold mb-2">Vidéos <span class="text-xs text-base-content/60 font-normal">(5 max, upload MP4/WebM 15 Mo max, ou lien externe)</span></h2>
 
                       <div id="videos-container" class="space-y-2" data-initial-count="{{ $article->videoMedia->count() }}" data-new-container="videos-new-container" data-watermark-default="{{ \App\Models\SiteSetting::current()->video_watermark_default_enabled ? '1' : '0' }}" data-max-videos="{{ config('media.max_videos') }}" data-max-video-kb="{{ config('media.max_video_upload_kb') }}">
                      @foreach ($article->videoMedia as $video)
@@ -198,15 +198,15 @@
                             </label>
                         </div>
 
-                        <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
+                        <label class="flex items-center gap-1 text-xs text-base-content/70 mb-2">
                             <input type="checkbox" name="videos[{{ $loop->index }}][apply_watermark]" value="1" @checked($video->apply_watermark)>
                             Appliquer le filigrane
                         </label>
 
                         @if ($video->source_type === 'upload')
-                            <p class="text-xs text-gray-500 mb-1">Fichier actuel : {{ basename($video->path) }}</p>
+                            <p class="text-xs text-base-content/60 mb-1">Fichier actuel : {{ basename($video->path) }}</p>
                             <input type="file" name="videos[{{ $loop->index }}][file]" accept="video/mp4,video/webm" class="w-full border rounded p-2 text-sm">
-                            <p class="text-xs text-gray-500 mt-1">Laisse vide pour garder le fichier actuel, ou choisis-en un nouveau pour le remplacer (MP4/WebM, 15 Mo max).</p>
+                            <p class="text-xs text-base-content/60 mt-1">Laisse vide pour garder le fichier actuel, ou choisis-en un nouveau pour le remplacer (MP4/WebM, 15 Mo max).</p>
                         @else
                             <input type="url" name="videos[{{ $loop->index }}][url]" value="{{ $video->url }}" placeholder="https://youtube.com/..." class="w-full border rounded p-2 text-sm">
                         @endif
@@ -216,7 +216,7 @@
 
             <div id="videos-new-container" class="space-y-4 mt-2"></div>
 
-            <button type="button" id="add-video-btn" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100 mt-2" onclick="ArticleForm.addVideo()">
+            <button type="button" id="add-video-btn" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300 mt-2" onclick="ArticleForm.addVideo()">
                 + Ajouter une vidéo
             </button>
         </div>

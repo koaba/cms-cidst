@@ -2,7 +2,7 @@
     $opacite = ($data['overlay_opacity'] ?? 40) / 100;
     $aUneImage = $media->isNotEmpty();
 @endphp
-<section class="relative w-full min-h-[480px] flex items-center justify-center text-center overflow-hidden {{ $aUneImage ? '' : 'bg-gray-800' }}">
+<section class="relative w-full min-h-[480px] flex items-center justify-center text-center overflow-hidden {{ $aUneImage ? '' : 'bg-cidst-ink' }}">
     @if($aUneImage)
         <x-media-img :media="$media->first()" :alt="$data['alt'] ?? ''" sizes="100vw" :priority="true" class="absolute inset-0 w-full h-full object-cover" />
         <div class="absolute inset-0 bg-black" style="opacity: {{ $opacite }}"></div>
@@ -16,7 +16,7 @@
         @endif
 
         @if(!empty($data['bouton_texte']) && !empty($data['bouton_url']))
-            <a href="{{ $data['bouton_url'] }}" class="inline-block bg-white text-black font-semibold px-6 py-3 rounded hover:bg-gray-100 transition">
+            <a href="{{ $data['bouton_url'] }}" class="inline-block bg-white text-black font-semibold px-6 py-3 rounded hover:bg-cidst-bg transition">
                 {{ $data['bouton_texte'] }}
             </a>
         @endif

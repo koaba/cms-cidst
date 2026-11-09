@@ -1,8 +1,8 @@
 @php
     $bgClasses = [
-        'gray' => 'bg-gray-100 text-gray-900',
+        'gray' => 'bg-cidst-bg text-cidst-ink',
         'blue' => 'bg-blue-600 text-white',
-        'dark' => 'bg-gray-900 text-white',
+        'dark' => 'bg-cidst-ink text-white',
     ];
     $bgClass = $bgClasses[$data['bg_color'] ?? 'gray'] ?? $bgClasses['gray'];
 @endphp
@@ -14,7 +14,7 @@
     @if(!empty($data['button_label']) && !empty($data['button_url']))
         <a href="{{ $data['button_url'] }}"
            @if(!empty($data['button_new_tab'])) target="_blank" rel="noopener noreferrer" @endif
-           class="inline-block px-5 py-2 rounded font-medium bg-white text-gray-900 hover:bg-gray-100">
+           class="inline-block px-5 py-2 rounded font-medium bg-white text-cidst-ink hover:bg-cidst-bg">
             {{ $data['button_label'] }}
         </a>
     @endif

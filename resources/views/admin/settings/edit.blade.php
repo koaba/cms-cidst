@@ -18,7 +18,7 @@
                 <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo actuel" class="h-16 mb-2">
             @endif
             <input type="file" name="logo" accept="image/*" class="w-full border rounded p-2">
-            <p class="text-xs text-gray-500 mt-1">PNG avec fond transparent recommandé. Laisse vide pour conserver le logo actuel.</p>
+            <p class="text-xs text-base-content/60 mt-1">PNG avec fond transparent recommandé. Laisse vide pour conserver le logo actuel.</p>
             @error('logo') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 
@@ -39,7 +39,7 @@
                     </label>
                 @endforeach
             </div>
-            <p class="text-xs text-gray-500 mt-1">Les couleurs ci-dessous ne s'appliquent qu'au thème CIDST ; un autre thème impose sa propre palette.</p>
+            <p class="text-xs text-base-content/60 mt-1">Les couleurs ci-dessous ne s'appliquent qu'au thème CIDST ; un autre thème impose sa propre palette.</p>
             @error('theme') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </fieldset>
 
@@ -125,7 +125,7 @@
             <input type="text" name="hero_eyebrow" value="{{ old('hero_eyebrow', $settings->hero_eyebrow) }}"
                    class="w-full border rounded p-2 mb-2">
 
-            <label class="block text-sm text-gray-600 mb-1">Taille de l'eyebrow</label>
+            <label class="block text-sm text-base-content/70 mb-1">Taille de l'eyebrow</label>
             <select name="hero_eyebrow_size" class="w-full border rounded p-2">
                 <option value="xs" {{ old('hero_eyebrow_size', $settings->hero_eyebrow_size) === 'xs' ? 'selected' : '' }}>Très petit</option>
                 <option value="sm" {{ old('hero_eyebrow_size', $settings->hero_eyebrow_size) === 'sm' ? 'selected' : '' }}>Petit (par défaut)</option>

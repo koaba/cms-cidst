@@ -1,4 +1,4 @@
-﻿// Gere les miniatures JPEG pour les fichiers PDF selectionnes (via pdf.js), stockees en JSON dans un input hidden.
+// Gere les miniatures JPEG pour les fichiers PDF selectionnes (via pdf.js), stockees en JSON dans un input hidden.
 // Utilise par : admin/articles/create.blade.php, admin/articles/edit.blade.php, admin/pdf-documents/create.blade.php, admin/pdf-documents/edit.blade.php.
 // Maintient un etat des fichiers en memoire, reconstruit input.files via DataTransfer a chaque ajout/retrait.
 // Markup attendu : <input class="js-pdf-thumbnail-input" data-preview="..." data-data-input="..." data-max="10">
@@ -62,11 +62,11 @@ function renderCards(input) {
         preview.innerHTML = "";
         entries.forEach(entry => {
             const card = document.createElement("div");
-            card.className = "relative w-24 border rounded-lg bg-gray-50 shadow-sm overflow-hidden";
+            card.className = "relative w-24 border rounded-lg bg-base-200 shadow-sm overflow-hidden";
             const thumbHtml = entry.thumbnail
                 ? `<img src="${entry.thumbnail}" class="w-full h-full object-cover" alt="">`
                 : `<span class="text-2xl" aria-hidden="true">&#128196;</span>`;
-            card.innerHTML = `<button type="button" data-remove-id="${entry.id}" class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/90 text-red-600 text-xs font-bold shadow hover:bg-red-50" aria-label="Retirer ce fichier">&times;</button><div class="w-full h-20 flex items-center justify-center bg-white border-b">${thumbHtml}</div><div class="px-1.5 py-1"><p class="text-[11px] font-medium truncate" title="${entry.file.name}">${entry.file.name}</p><p class="text-[10px] text-gray-500">${formatSize(entry.file.size)}</p></div>`;
+            card.innerHTML = `<button type="button" data-remove-id="${entry.id}" class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/90 text-red-600 text-xs font-bold shadow hover:bg-red-50" aria-label="Retirer ce fichier">&times;</button><div class="w-full h-20 flex items-center justify-center bg-white border-b">${thumbHtml}</div><div class="px-1.5 py-1"><p class="text-[11px] font-medium truncate" title="${entry.file.name}">${entry.file.name}</p><p class="text-[10px] text-base-content/60">${formatSize(entry.file.size)}</p></div>`;
             card.querySelector("[data-remove-id]").addEventListener("click", () => removeFile(input, entry.id));
             preview.appendChild(card);
         });

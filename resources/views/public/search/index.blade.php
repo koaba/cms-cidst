@@ -9,7 +9,7 @@
                     name="q"
                     value="{{ $query }}"
                     placeholder="Rechercher un article ou une page..."
-                    class="flex-1 border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cidst-red"
+                    class="flex-1 border border-cidst-border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cidst-red"
                 >
                 <button type="submit" class="bg-cidst-red text-white px-6 py-2 rounded hover:opacity-90">
                     Rechercher
@@ -18,15 +18,15 @@
         </form>
 
         @if ($query === '')
-            <p class="text-gray-500">Entrez un mot-clé pour lancer une recherche.</p>
+            <p class="text-cidst-muted">Entrez un mot-clé pour lancer une recherche.</p>
         @else
-            <p class="text-gray-600 mb-6">
+            <p class="text-cidst-muted mb-6">
                 Résultats pour « {{ $query }} » —
                 {{ $articles->count() + $pages->count() }} résultat(s)
             </p>
 
             @if ($articles->isEmpty() && $pages->isEmpty())
-                <p class="text-gray-500">Aucun résultat trouvé.</p>
+                <p class="text-cidst-muted">Aucun résultat trouvé.</p>
             @endif
 
             @if ($articles->isNotEmpty())
@@ -34,11 +34,11 @@
                     <h2 class="text-lg font-semibold mb-3">Articles</h2>
                     <ul class="space-y-3">
                         @foreach ($articles as $article)
-                            <li class="border-b border-gray-200 pb-2">
+                            <li class="border-b border-cidst-border pb-2">
                               <a href="{{ route('blog.show', $article->slug) }}" class="text-cidst-red hover:underline font-medium">
                                     {{ $article->title }}
                                 </a>
-                                <p class="text-sm text-gray-500">
+                                <p class="text-sm text-cidst-muted">
                                     {{ $article->published_at?->format('d/m/Y') }}
                                 </p>
                             </li>
@@ -52,7 +52,7 @@
                     <h2 class="text-lg font-semibold mb-3">Pages</h2>
                     <ul class="space-y-3">
                         @foreach ($pages as $page)
-                            <li class="border-b border-gray-200 pb-2">
+                            <li class="border-b border-cidst-border pb-2">
                                 <a href="{{ route('pages.show', $page) }}" class="text-cidst-red hover:underline font-medium">
                                     {{ $page->title }}
                                 </a>

@@ -17,7 +17,7 @@ function previewNewUploads(input, containerId) {
     const container = document.getElementById(containerId);
     [...input.files].forEach(file => {
         const chip = document.createElement('div');
-        chip.className = 'text-xs bg-gray-100 border rounded px-2 py-1';
+        chip.className = 'text-xs bg-base-200 border rounded px-2 py-1';
         chip.textContent = file.name;
         container.appendChild(chip);
     });
@@ -82,11 +82,11 @@ function addDiaporama() {
         </div>
         <div id="diaporama-${index}-selected" class="flex flex-wrap gap-2 mb-2"></div>
         <div class="flex gap-2">
-            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-base-200 hover:bg-base-300">
                 + Uploader
                 <input type="file" name="diaporamas[${index}][images][]" accept="image/*" multiple class="hidden" onchange="ArticleForm.previewNewUploads(this, 'diaporama-${index}-selected')">
             </label>
-            <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100" onclick="ArticleForm.pickExistingMedia('diaporama-${index}-selected', 'diaporamas[${index}][existing_media][]')">
+            <button type="button" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300" onclick="ArticleForm.pickExistingMedia('diaporama-${index}-selected', 'diaporamas[${index}][existing_media][]')">
                 Choisir depuis la médiathèque
             </button>
         </div>
@@ -113,7 +113,7 @@ function addVideo() {
             <input type="text" name="videos[${index}][title]" placeholder="Titre de la vidéo (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
                         <button type="button" onclick="ArticleForm.removeVideo(${index})" class="text-red-600 text-sm">Supprimer</button>
         </div>
-              <label class="flex items-center gap-1 text-xs text-gray-600 mb-2">
+              <label class="flex items-center gap-1 text-xs text-base-content/70 mb-2">
             <input type="checkbox" name="videos[${index}][apply_watermark]" value="1" ${videoWatermarkDefault ? 'checked' : ''}>
             Appliquer le filigrane
         </label>
