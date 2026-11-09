@@ -18,8 +18,10 @@
         <a href="{{ route('admin.media.index') }}" class="btn btn-outline btn-sm">M&eacute;diath&egrave;que</a>
     </div>
     <section id="raccourcis" class="mb-8" aria-labelledby="shortcuts-title">
-        <h2 id="shortcuts-title" class="text-lg font-semibold mb-3">Raccourcis</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <h2 id="shortcuts-title" class="sr-only">Raccourcis</h2>
+        <details data-shortcuts class="group">
+            <summary class="btn btn-outline btn-sm cursor-pointer">Raccourcis <span aria-hidden="true">&#9662;</span></summary>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
             @foreach (config('admin_menu') as $item)
                 @if (! isset($item['roles']) || auth()->user()->hasAnyRole($item['roles']))
                     <a href="{{ route($item['route']) }}" class="card bg-base-100 shadow transition hover:shadow-md">
@@ -31,6 +33,7 @@
                 @endif
             @endforeach
         </div>
+        </details>
     </section>
     <section id="a-traiter" class="mb-8" aria-labelledby="todo-title">
         <h2 id="todo-title" class="text-lg font-semibold mb-3">&Agrave; traiter</h2>
