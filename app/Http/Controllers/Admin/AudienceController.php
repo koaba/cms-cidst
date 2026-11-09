@@ -18,6 +18,7 @@ class AudienceController extends Controller
         return view('admin.audience', [
             'period' => $period,
             'summary' => $service->summary(now()->subDays(self::PERIODS[$period])),
+            'monthly' => $service->monthly(),
         ]);
     }
 }
