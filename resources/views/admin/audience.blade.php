@@ -12,7 +12,7 @@
 
     <div class="stats shadow w-full mb-8 flex-wrap">
         <div class="stat" data-audience="visitors" data-count="{{ $summary['visitors'] }}">
-            <div class="stat-title">Visiteurs uniques</div>
+            <div class="stat-title">Visiteurs (cumul des jours)</div>
             <div class="stat-value text-primary">{{ $summary['visitors'] }}</div>
         </div>
         <div class="stat" data-audience="visits" data-count="{{ $summary['visits'] }}">

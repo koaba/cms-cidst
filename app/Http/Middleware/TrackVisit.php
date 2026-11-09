@@ -28,7 +28,7 @@ class TrackVisit
         $response = $next($request);
         $agent = (string) $request->userAgent();
 
-        if (! $request->isMethod('GET') || ! $response->isSuccessful() || $this->isBot($agent) || ! $this->isTracked($request)) {
+        if (! $request->isMethod('GET') || ! $response->isSuccessful() || $request->user() !== null || $this->isBot($agent) || ! $this->isTracked($request)) {
             return $response;
         }
 
