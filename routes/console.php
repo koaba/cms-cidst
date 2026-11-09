@@ -10,3 +10,5 @@ Artisan::command('inspire', function () {
 
 // Purge hebdomadaire des vues de pages (necessite le cron `php artisan schedule:run` chaque minute).
 Schedule::command('page-views:prune')->weekly();
+
+Schedule::command('audience:prune')->daily();

@@ -14,6 +14,7 @@ return [
     ['label' => 'News Ticker', 'route' => 'admin.news-tickers.index', 'description' => "Bandeau d\u{e9}filant des actualit\u{e9}s en haut du site.", 'active' => 'admin.news-tickers.*'],
     ['label' => 'Menus', 'route' => 'admin.menus.index', 'description' => 'Navigation principale du site public.', 'active' => 'admin.menus.*', 'roles' => [UserRole::SuperAdmin->value]],
     ['label' => 'Réglages', 'route' => 'admin.settings.edit', 'description' => "Identit\u{e9}, couleurs et code de suppression.", 'active' => 'admin.settings.*', 'roles' => [UserRole::SuperAdmin->value]],
+    ['label' => 'Audience', 'route' => 'admin.audience', 'description' => 'Visiteurs, pages les plus vues et provenance du trafic.', 'active' => 'admin.audience', 'roles' => [UserRole::SuperAdmin->value]],
     ['label' => 'Messages', 'route' => 'admin.messages.index', 'description' => "Messages re\u{e7}us via le formulaire de contact.", 'active' => 'admin.messages.*', 'roles' => [UserRole::SuperAdmin->value]],
     ['label' => 'Utilisateurs', 'route' => 'admin.users.index', 'description' => "Comptes, r\u{f4}les et r\u{e9}initialisation des mots de passe.", 'active' => 'admin.users.*', 'roles' => [UserRole::SuperAdmin->value]],
     ['label' => 'Guide', 'route' => 'admin.guide', 'description' => "Prise en main : r\u{f4}le de chaque menu et glossaire.", 'active' => 'admin.guide'],

@@ -5,6 +5,7 @@ use App\Http\Middleware\ConfirmDeleteCode;
 use App\Http\Middleware\ForcePasswordChange;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TrackPageView;
+use App\Http\Middleware\TrackVisit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->web(append: [
             SecurityHeaders::class,
+            TrackVisit::class,
             ForcePasswordChange::class,
         ]);
         // Fait confiance aux en-têtes standards de proxy (X-Forwarded-For, etc.)
