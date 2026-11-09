@@ -222,7 +222,7 @@ Le terminal Laragon est Bash/MinGW (`grep`, slashs `/`), alors que celui de VS C
 
 Règle générale : une confirmation verbale ne vaut pas sauvegarde disque. Revérifier un fichier par lecture indépendante avant de le considérer terminé.
 
-En cas d'erreur serveur inexpliquée, lire `storage/logs/laravel.log` (heure UTC = heure locale moins 3 h).
+En cas d'erreur serveur inexpliquée, lire `storage/logs/laravel.log` (heure de Madagascar, selon `APP_TIMEZONE`).
 
 ## 7. Tests et intégration continue
 
