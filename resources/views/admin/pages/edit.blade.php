@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Modifier la page">
     <h1 class="text-2xl font-bold mb-4">Modifier la page</h1>
     <form action="{{ route('admin.pages.update', $page) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf @method('PUT')

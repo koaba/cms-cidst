@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Nouveau slider">
     <h1 class="text-2xl font-bold mb-4">Nouveau slider</h1>
 
     <p class="text-sm text-gray-500 mb-4">{{ $remainingSlots }} emplacement(s) restant(s) sur {{ config('display.max_sliders') }} maximum.</p>

@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Réglages du site">
     <h1 class="text-2xl font-bold mb-6">Réglages du site — Page d'accueil</h1>
 
    @if(session('success'))

@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout :title="$message->subject ?: 'Message de '.$message->name">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">{{ $message->subject ?: 'Message de '.$message->name }}</h1>
         <a href="{{ route('admin.messages.index') }}" class="text-blue-600">&larr; Retour</a>

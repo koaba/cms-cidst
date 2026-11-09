@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Catégories de documents PDF">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Catégories de documents PDF</h1>
         <x-admin.button href="{{ route('admin.pdf-categories.create') }}">+ Nouvelle catégorie</x-admin.button>

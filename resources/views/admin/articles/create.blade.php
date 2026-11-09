@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Nouvel article">
     <h1 class="text-2xl font-bold mb-6">Nouvel article</h1>
 
     @if ($errors->any())

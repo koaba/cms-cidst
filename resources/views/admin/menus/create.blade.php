@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Nouveau menu">
     <h1 class="text-2xl font-bold mb-6">Nouveau menu</h1>
     <form action="{{ route('admin.menus.store') }}" method="POST" class="max-w-lg space-y-4">
         @csrf

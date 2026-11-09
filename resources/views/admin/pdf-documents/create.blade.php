@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Nouveau document PDF">
     <h1 class="text-2xl font-bold mb-6">Nouveau document PDF</h1>
     <form action="{{ route('admin.pdf-documents.store') }}" method="POST" enctype="multipart/form-data" class="max-w-lg space-y-4">
         @csrf

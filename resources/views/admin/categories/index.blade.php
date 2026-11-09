@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Catégories">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Catégories</h1>
         <x-admin.button href="{{ route('admin.categories.create') }}">+ Nouvelle catégorie</x-admin.button>

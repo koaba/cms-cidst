@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout :title="'Ajouter un bloc — '.$page->title">
     <h1 class="text-2xl font-bold mb-4">Ajouter un bloc — {{ $page->title }}</h1>
 
     <form action="{{ route('admin.pages.blocks.store', $page) }}" method="POST" enctype="multipart/form-data">

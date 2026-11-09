@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Tableau de bord">
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 class="text-2xl font-bold">Tableau de bord</h1>
         @role(\App\Enums\UserRole::SuperAdmin)

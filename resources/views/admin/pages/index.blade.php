@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Pages">
     <h1 class="text-2xl font-bold mb-4">Pages</h1>
 
     <x-admin.button href="{{ route('admin.pages.create') }}">+ Nouvelle page</x-admin.button>
