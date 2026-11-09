@@ -4,6 +4,7 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Admin\AccordionItemContentController as AdminAccordionItemContentController;
 use App\Http\Controllers\Admin\AccordionItemController as AdminAccordionItemController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
+use App\Http\Controllers\Admin\AudienceController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ColumnChildBlockController as AdminColumnChildBlockController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
@@ -116,6 +117,7 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin)])->group(f
     Route::resource('admin/pdf-documents', AdminPdfDocumentController::class)->names('admin.pdf-documents');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
+    Route::get('admin/audience', AudienceController::class)->name('admin.audience');
     Route::resource('admin/messages', AdminContactMessageController::class)->only(['index', 'show'])->names('admin.messages');
     Route::resource('admin/users', UserController::class)->names('admin.users');
     Route::patch('admin/users/{user}/reset-password', [UserController::class, 'resetPassword'])
