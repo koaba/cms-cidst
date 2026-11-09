@@ -2,10 +2,10 @@
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 class="text-2xl font-bold">Audience</h1>
         <nav class="join" aria-label="P&eacute;riode">
-            @foreach (['week' => '7 jours', 'month' => '30 jours', 'year' => '12 mois'] as $key => $label)
+            @foreach (\App\Services\Dashboard\DashboardPeriod::options(withGlobal: false) as $key => $label)
                 <a href="{{ route('admin.audience', ['period' => $key]) }}"
-                   class="join-item btn btn-sm {{ $period === $key ? 'btn-neutral' : 'btn-ghost bg-base-100' }}"
-                   @if ($period === $key) aria-current="page" @endif>{{ $label }}</a>
+                   class="join-item btn btn-sm {{ $period->key === $key ? 'btn-neutral' : 'btn-ghost bg-base-100' }}"
+                   @if ($period->key === $key) aria-current="page" @endif>{{ $label }}</a>
             @endforeach
         </nav>
     </div>
