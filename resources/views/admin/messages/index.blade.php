@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Messages">
     <h1 class="text-2xl font-bold mb-6">Messages</h1>
 
     <table class="w-full border-collapse">

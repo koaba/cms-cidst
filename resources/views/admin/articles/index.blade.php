@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Articles">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Articles</h1>
         <x-admin.button href="{{ route('admin.articles.create') }}">+ Nouvel article</x-admin.button>

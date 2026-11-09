@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Nouvelle page">
     <h1 class="text-2xl font-bold mb-4">Nouvelle page</h1>
 
     <form action="{{ route('admin.pages.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">

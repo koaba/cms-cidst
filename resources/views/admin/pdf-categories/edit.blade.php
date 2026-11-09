@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Modifier la catégorie">
     <h1 class="text-2xl font-bold mb-6">Modifier la catégorie</h1>
     <form action="{{ route('admin.pdf-categories.update', $category) }}" method="POST" class="max-w-lg space-y-4">
         @csrf

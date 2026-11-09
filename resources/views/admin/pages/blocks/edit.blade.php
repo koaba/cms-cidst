@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout :title="'Modifier un bloc — '.$page->title">
     <h1 class="text-2xl font-bold mb-4">Modifier un bloc — {{ $page->title }}</h1>
     @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
 

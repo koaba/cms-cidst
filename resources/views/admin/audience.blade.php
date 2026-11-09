@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Audience">
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 class="text-2xl font-bold">Audience</h1>
         <nav class="join" aria-label="P&eacute;riode">

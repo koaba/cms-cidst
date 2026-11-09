@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Modifier le slider">
     <h1 class="text-2xl font-bold mb-4">Modifier le slider</h1>
 
     <form action="{{ route('admin.sliders.update', $slider) }}" method="POST" enctype="multipart/form-data" class="space-y-4">

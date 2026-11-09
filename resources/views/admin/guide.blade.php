@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Guide">
     <h1 class="text-2xl font-bold mb-6">Guide</h1>
 
     <section id="guide-menus" class="mb-10" aria-labelledby="guide-menus-title">

@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Modifier un bloc enfant">
     <h1 class="text-2xl font-bold mb-4">
         Modifier un bloc — Colonne {{ $slotIndex + 1 }} — {{ $page->title }}
     </h1>

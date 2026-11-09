@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Bandeau d'actualités">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Bandeau d'actualités</h1>
         <x-admin.button href="{{ route('admin.news-tickers.create') }}">+ Nouvelle actualité</x-admin.button>

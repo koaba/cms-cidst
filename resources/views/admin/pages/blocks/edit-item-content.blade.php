@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Modifier un contenu">
     <h1 class="text-2xl font-bold mb-4">
         Modifier le contenu — {{ $item->data['title'] }} — {{ $page->title }}
     </h1>

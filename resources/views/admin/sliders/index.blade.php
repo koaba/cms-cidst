@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Sliders">
     <h1 class="text-2xl font-bold mb-4">Sliders</h1>
 
     @if($sliders->count() >= config('display.max_sliders'))

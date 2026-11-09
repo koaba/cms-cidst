@@ -1,4 +1,4 @@
-<x-admin.layout>
+<x-admin.layout title="Modifier un élément">
     <h1 class="text-2xl font-bold mb-4">
         Modifier l'item — {{ $page->title }}
     </h1>
