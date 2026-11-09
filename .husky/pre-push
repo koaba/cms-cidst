@@ -11,6 +11,12 @@ if ! php vendor/bin/pint --test; then
     exit 1
 fi
 
+echo "Larastan (analyse statique)..."
+if ! php vendor/bin/phpstan analyse --no-progress --memory-limit=1G; then
+    echo ""
+    echo "Push bloque : Larastan signale des erreurs. Corrige-les avant de pousser."
+    exit 1
+fi
 if ! php vendor/bin/pest --compact; then
     echo ""
     echo "Push bloque : des tests echouent. Corrige-les avant de pousser."
