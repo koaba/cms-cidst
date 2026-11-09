@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\MorphPivot;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
 
 return [
@@ -131,6 +134,12 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    'serializable_classes' => [
+        // Modeles mis en cache (SiteSetting, PublicLayout, PublicPageCache) : liste fermee, jamais `true`.
+        Collection::class,
+        MorphPivot::class,
+        Pivot::class,
+        ...array_map(fn (string $file) => 'App\\Models\\'.basename($file, '.php'), glob(app_path('Models/*.php')) ?: []),
+    ],
 
 ];
