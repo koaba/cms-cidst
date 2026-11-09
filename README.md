@@ -262,7 +262,7 @@ Déjà en place :
 
 ## 9. Exploitation
 
-- **Planification** : `page-views:prune` est planifiée chaque semaine. Cron chaque minute : `php artisan schedule:run`.
+- **Planification** : `page-views:prune` (chaque semaine) et `audience:prune` (chaque jour, conserve 13 mois de détail) sont planifiées dans `routes/console.php`. Sans le cron chaque minute `php artisan schedule:run`, aucune des deux ne tourne.
 - **File d'attente** : sans worker permanent, utiliser `queue:work` supervisé, ou `queue:work --stop-when-empty` lancé par cron. Sans cela, miniatures et variantes d'images ne sont jamais générées.
 - **Choix d'hébergement** (mutualisé ou VPS) : non tranché. Il décide du worker et du cron.
 - **Base de données** : MySQL 8.4 LTS ou MariaDB en production (disponible sur tout hébergement mutualisé). SQLite n'est utilisé qu'en mémoire pour les tests ; la CI contrôle en plus la suite sur MySQL 8.4.
@@ -289,7 +289,12 @@ Déjà en place :
 - [ ] Extension `gd` ; binaire `pdftoppm` (paquet `poppler-utils`)
 - [ ] Worker de file supervisé (Supervisor ou systemd) : `php artisan queue:work`, et `php artisan queue:restart` à chaque déploiement ; cron `schedule:run` chaque minute
 - [ ] `php artisan migrate --force`, puis `php artisan media:backfill-dimensions`
-- [ ] `config:cache`, `route:cache`, `view:cache`
+- [ ] `php artisan storage:link` au premier déploiement (le disque `public` en dépend pour toutes les images). Si l'hébergeur interdit les liens symboliques, prévoir une alternative (voir `docs/REQUIREMENTS.md`)
+- [ ] SMTP réel (`MAIL_MAILER`, `MAIL_HOST`, adresse expéditrice valide) ; tester `/contact`, `/admin/messages` et l'alerte e-mail. L'alerte est envoyée pendant la requête (non mise en file) : un SMTP lent fait attendre le visiteur, et un échec est seulement loggé
+- [ ] `trustProxies` (commenté dans `bootstrap/app.php`) si un proxy ou un CDN se place devant le site, sinon les visiteurs sont sous-comptés
+- [ ] Fuseau : `app.timezone` est écrit en dur à `UTC` dans `config/app.php` ; les jours de l'audience basculent à 03h00 à Madagascar. Décision à prendre avant la mise en ligne : changer le fuseau après coup désynchronise les dates déjà stockées
+- [ ] `CSP_MODE` : `report-only` par défaut (`config/security.php`). Relire la console du navigateur, puis passer à `enforce`
+- [ ] Après chaque déploiement : `config:clear` et `cache:clear` (sinon `__PHP_Incomplete_Class` sur les modèles mis en cache), **puis** `config:cache`, `route:cache`, `view:cache`. Contrôle fait le 9 novembre 2026 : les trois compilent sans erreur sur `master` (aucune closure de route, aucune erreur Blade)
 - [ ] Permissions de `storage/` et `bootstrap/cache/`
 - [ ] `npm run build` (pas de `npm run dev`)
 - [ ] Sauvegardes automatisées de la base **et** des fichiers (`storage/app/public`, médiathèque), idéalement chiffrées
@@ -305,17 +310,17 @@ Déjà en place :
 
 ### Prochaines étapes (ordre proposé)
 
-1. **CI** : nouvelle tentative automatique sur `apt-get`, `composer audit`, Larastan, tests de fumée navigateur sur le builder.
+1. **CI** : nouvelle tentative automatique sur `apt-get`, `composer audit`, tests de fumée navigateur sur le builder. Larastan tourne en CI et dans le hook `pre-push` (Pint, Larastan, Pest) depuis le 9 novembre 2026.
 2. **Boutons** : composant Blade `<x-button>` inspiré de shadcn/ui, adapté à Tailwind 3 (ne pas lancer `npx shadcn`, le projet n'est pas en React ni en Tailwind 4). Variantes `default`, `outline`, `secondary`, `ghost`, `destructive`, `link` ; tailles `xs`, `sm`, `default`, `lg`, `icon` ; un lien est une vraie balise `<a>` portant les mêmes classes, jamais `role="button"`.
 3. **Thèmes, surfaces** : fond, surfaces, bordures, muted et arrondi deviennent des variables (dans les configs Tailwind, seules les définitions changent, pas les usages dans les vues). Contour des champs de formulaire à au moins 3:1.
 4. **SEO restant** : relire `config/seo.php` ; valider les JSON-LD (Rich Results Test) et mesurer Lighthouse ; champ `og_image` dans l'administration avec le sélecteur de médias existant (`MediaPicker`, mode `single`) et contrôle d'existence du média ; SEO de `documents.show` ; le titre de `/documents` ne suit pas `pdf_documents_title` ; pages de catégorie dans le sitemap (observers sur `Category` et `PdfCategory`) ; fil d'Ariane d'un article sans sa catégorie ; textes SEO éditables (colonne JSON, repli sur `config/seo.php`).
 5. **Nettoyage** : `Http/Controllers/ArticleController` (public) utilise `SavesSeoMeta` sans enregistrer de SEO (code mort, commit `chore:` séparé).
 6. **`confirm.delete`** : décider de l'extension aux sliders, bandeaux et blocs, puis l'implémenter test d'abord.
 7. **Page Builder** : `BlockDuplicator` côté serveur (annuler, dupliquer, copier-coller) **avant** toute interface, puis fusion des deux éditeurs de blocs. Chantier le plus risqué, à ne lancer qu'avec une CI solide.
-8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), migration des `gray-*` (environ 104 occurrences dans 34 fichiers).
+8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), migration des `gray-*` (environ 269 occurrences dans 63 fichiers, grep brut du 9 novembre 2026).
 9. Suppression des médias inutilisés (Super Admin, refus si `isInUse`, boucle sur les modèles).
 10. Suivi des visites : filtre des robots (test d'abord), puis accueil et pages. Seule `blog.show` porte `track.view:article`, donc les chiffres sont incomplets et possiblement gonflés.
-11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`).
+11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Même chantier : `AudienceController` duplique ses périodes (`PERIODS`, fenêtres glissantes de 7, 30 et 365 jours) au lieu de réutiliser `DashboardPeriod` (jours entiers, 12 mois civils) ; décision en attente, à prendre avec celle du fuseau UTC.
 12. Polices auto-hébergées, rapport CSV.
 13. Déploiement, en dernier.
 
