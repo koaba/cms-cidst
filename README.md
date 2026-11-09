@@ -292,7 +292,7 @@ Déjà en place :
 - [ ] `php artisan storage:link` au premier déploiement (le disque `public` en dépend pour toutes les images). Si l'hébergeur interdit les liens symboliques, prévoir une alternative (voir `docs/REQUIREMENTS.md`)
 - [ ] SMTP réel (`MAIL_MAILER`, `MAIL_HOST`, adresse expéditrice valide) ; tester `/contact`, `/admin/messages` et l'alerte e-mail. L'alerte est envoyée pendant la requête (non mise en file) : un SMTP lent fait attendre le visiteur, et un échec est seulement loggé
 - [ ] `trustProxies` (commenté dans `bootstrap/app.php`) si un proxy ou un CDN se place devant le site, sinon les visiteurs sont sous-comptés
-- [ ] Fuseau : `app.timezone` est écrit en dur à `UTC` dans `config/app.php` ; les jours de l'audience basculent à 03h00 à Madagascar. Décision à prendre avant la mise en ligne : changer le fuseau après coup désynchronise les dates déjà stockées
+- [ ] Fuseau : `APP_TIMEZONE` vaut `Indian/Antananarivo` par défaut (UTC+3, sans heure d'été) ; vérifier qu'il n'est pas écrasé dans le `.env` de production. Ne plus le changer après la mise en ligne : les dates stockées sont enregistrées sans fuseau et seraient décalées
 - [ ] `CSP_MODE` : `report-only` par défaut (`config/security.php`). Relire la console du navigateur, puis passer à `enforce`
 - [ ] Après chaque déploiement : `config:clear` et `cache:clear` (sinon `__PHP_Incomplete_Class` sur les modèles mis en cache), **puis** `config:cache`, `route:cache`, `view:cache`. Contrôle fait le 9 novembre 2026 : les trois compilent sans erreur sur `master` (aucune closure de route, aucune erreur Blade)
 - [ ] Permissions de `storage/` et `bootstrap/cache/`
@@ -320,7 +320,7 @@ Déjà en place :
 8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), migration des `gray-*` (environ 269 occurrences dans 63 fichiers, grep brut du 9 novembre 2026).
 9. Suppression des médias inutilisés (Super Admin, refus si `isInUse`, boucle sur les modèles).
 10. Suivi des visites : filtre des robots (test d'abord), puis accueil et pages. Seule `blog.show` porte `track.view:article`, donc les chiffres sont incomplets et possiblement gonflés.
-11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Même chantier : `AudienceController` duplique ses périodes (`PERIODS`, fenêtres glissantes de 7, 30 et 365 jours) au lieu de réutiliser `DashboardPeriod` (jours entiers, 12 mois civils) ; décision en attente, à prendre avec celle du fuseau UTC.
+11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Même chantier : `AudienceController` duplique ses périodes (`PERIODS`, fenêtres glissantes de 7, 30 et 365 jours) au lieu de réutiliser `DashboardPeriod` (jours entiers, 12 mois civils) ; décision en attente (le fuseau est réglé sur Madagascar depuis le 9 novembre 2026 : les jours entiers commencent donc à minuit local).
 12. Polices auto-hébergées, rapport CSV.
 13. Déploiement, en dernier.
 
