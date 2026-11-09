@@ -60,5 +60,23 @@
         </div>
     </div>
 
+    <section id="historique" class="card bg-base-100 shadow mt-8" aria-labelledby="historique-title">
+        <div class="card-body">
+            <h2 id="historique-title" class="card-title text-base">Historique mensuel</h2>
+            <div class="overflow-x-auto">
+                <table class="table table-sm">
+                    <thead><tr><th>Mois</th><th class="text-right">Pages vues</th><th class="text-right">Visiteurs (cumul des jours)</th><th class="text-right">Mobile</th></tr></thead>
+                    <tbody>
+                        @forelse ($monthly as $month => $row)
+                            <tr data-month="{{ $month }}"><td>{{ $month }}</td><td class="text-right">{{ $row['visits'] }}</td><td class="text-right">{{ $row['visitors'] }}</td><td class="text-right">{{ $row['mobile'] }}</td></tr>
+                        @empty
+                            <tr><td colspan="4" class="opacity-60">Aucune donn&eacute;e pour le moment.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
     <p class="text-xs opacity-60 mt-6">Visites anonymes : aucune adresse IP n'est conserv&eacute;e, et un visiteur est compt&eacute; une fois par jour.</p>
 </x-admin.layout>
