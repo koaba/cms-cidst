@@ -16,7 +16,7 @@
 
 <div id="video-upload-field" class="mb-4 {{ ($data['source_type'] ?? 'upload') !== 'upload' ? 'hidden' : '' }}">
     @if(isset($block) && $block->media->isNotEmpty())
-        <p class="text-xs text-gray-500 mb-1">Fichier actuel : {{ basename($block->media->first()->path) }}</p>
+        <p class="text-xs text-base-content/60 mb-1">Fichier actuel : {{ basename($block->media->first()->path) }}</p>
         <label class="flex items-center gap-2 text-sm text-red-600 mb-2">
             <input type="checkbox" name="delete_video" value="1">
             Supprimer le fichier vidéo actuel
@@ -24,7 +24,7 @@
     @endif
     <input type="file" name="video_file" accept="video/mp4,video/webm" class="w-full border rounded p-2 text-sm">
     @error('video_file') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-    <p class="text-xs text-gray-500 mt-1">Laisse vide pour garder le fichier actuel (MP4/WebM, 15 Mo max).</p>
+    <p class="text-xs text-base-content/60 mt-1">Laisse vide pour garder le fichier actuel (MP4/WebM, 15 Mo max).</p>
 </div>
 
 <div id="video-url-field" class="mb-4 {{ ($data['source_type'] ?? 'upload') !== 'url' ? 'hidden' : '' }}">

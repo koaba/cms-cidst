@@ -10,7 +10,7 @@
         <div>
             <label class="block font-semibold">Slug (URL) <x-admin.help term="slug" text="Partie de l'adresse web de la page, en minuscules et sans accents." /></label>
             <input type="text" name="slug" value="{{ old('slug', $page->slug) }}" class="border w-full p-2 rounded">
-            <p class="text-gray-500 text-sm">Modifier le slug change l&rsquo;adresse de la page ; les anciens liens ne sont pas redirig&eacute;s.</p>
+            <p class="text-base-content/60 text-sm">Modifier le slug change l&rsquo;adresse de la page ; les anciens liens ne sont pas redirig&eacute;s.</p>
             @error('slug') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         <div>

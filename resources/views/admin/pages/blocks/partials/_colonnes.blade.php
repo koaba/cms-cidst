@@ -12,9 +12,9 @@
     @if(isset($data))
         {{-- Édition : figé après création pour ne pas perdre le contenu des colonnes existantes. --}}
         <input type="hidden" name="column_count" value="{{ $data['column_count'] }}">
-        <p class="text-sm text-gray-700 border rounded p-2 bg-gray-50">
+        <p class="text-sm text-base-content/80 border rounded p-2 bg-base-200">
             {{ $data['column_count'] }} colonnes
-            <span class="text-gray-400">(non modifiable après création)</span>
+            <span class="text-base-content/50">(non modifiable après création)</span>
         </p>
     @else
         <select name="column_count" class="w-full border rounded p-2 text-sm">
@@ -29,7 +29,7 @@
 </div>
 
 @if(isset($data))
-    <p class="text-sm text-gray-500 border-t pt-3 mt-3">
+    <p class="text-sm text-base-content/60 border-t pt-3 mt-3">
         Le contenu de chaque colonne se gère depuis la page de modification du bloc, une fois celui-ci enregistré.
     </p>
 @endif

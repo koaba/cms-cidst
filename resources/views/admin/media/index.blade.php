@@ -10,14 +10,14 @@
                 placeholder="Rechercher par nom de fichier..."
                 class="flex-1 border rounded px-4 py-2"
             >
-            <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">
+            <button type="submit" class="bg-neutral text-white px-4 py-2 rounded hover:bg-neutral/80">
                 Rechercher
             </button>
         </div>
     </form>
 
     @if ($media->isEmpty())
-        <p class="text-gray-500">Aucun média trouvé.</p>
+        <p class="text-base-content/60">Aucun média trouvé.</p>
     @else
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             @foreach ($media as $item)
@@ -27,12 +27,12 @@
                         <p class="text-sm font-medium truncate" title="{{ $item->original_name }}">
                             {{ $item->original_name }}
                         </p>
-                        <p class="text-xs text-gray-500">
+                        <p class="text-xs text-base-content/60">
                             {{ number_format($item->size / 1024, 0) }} Ko
                         </p>
                         @php $usages = $item->usages(); @endphp
                         @if (count($usages) > 0)
-                            <p class="text-xs text-gray-600 mt-1">
+                            <p class="text-xs text-base-content/70 mt-1">
                                 Utilisé par :
                                 @foreach ($usages as $usage)
                                     {{ $usage['type'] }} « {{ $usage['title'] }} »@if (!$loop->last), @endif

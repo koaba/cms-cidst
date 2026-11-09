@@ -8,11 +8,10 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/js/**/*.js',
     ],
     safelist: [
-        'bg-gray-100', 'text-gray-900',
         'bg-blue-600', 'text-white',
-        'bg-gray-900',
     ],
     theme: {
         extend: {

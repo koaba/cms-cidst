@@ -41,7 +41,7 @@
          data-model-id="{{ $modelId }}">
         @foreach ($items as $media)
             @if ($variant === 'pdf')
-                <label class="flex items-center gap-2 text-sm border rounded px-3 py-2 bg-gray-50 cursor-move" draggable="true" data-media-id="{{ $media->id }}">
+                <label class="flex items-center gap-2 text-sm border rounded px-3 py-2 bg-base-200 cursor-move" draggable="true" data-media-id="{{ $media->id }}">
                     @if ($media->thumbnail_path)
                         <img src="{{ Storage::url($media->thumbnail_path) }}" class="w-8 h-10 object-cover rounded border" draggable="false">
                     @else

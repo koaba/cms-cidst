@@ -18,7 +18,7 @@
 
         <div class="mt-4 space-x-2">
             <button type="submit" class="text-sm border rounded px-3 py-2 bg-blue-600 text-white hover:bg-blue-700">Enregistrer</button>
-            <a href="{{ route('admin.pages.blocks.edit', [$page, $parent->id]) }}" class="text-sm text-gray-500">Retour</a>
+            <a href="{{ route('admin.pages.blocks.edit', [$page, $parent->id]) }}" class="text-sm text-base-content/60">Retour</a>
         </div>
     </form>
 
@@ -37,14 +37,14 @@
                     </span>
                 </li>
             @empty
-                <li class="text-sm text-gray-400 italic">Aucun contenu pour cet item</li>
+                <li class="text-sm text-base-content/50 italic">Aucun contenu pour cet item</li>
             @endforelse
         </ul>
 
         <div class="flex flex-wrap gap-1">
             @foreach(config('page_blocks.nestable_in_columns') as $nestableType)
                 <a href="{{ route('admin.pages.blocks.items.content.create', [$page, $parent->id, $item->id, $nestableType]) }}"
-                   class="text-xs border rounded px-2 py-1 hover:bg-gray-100">
+                   class="text-xs border rounded px-2 py-1 hover:bg-base-300">
                     + {{ config('page_blocks.types')[$nestableType] ?? $nestableType }}
                 </a>
             @endforeach

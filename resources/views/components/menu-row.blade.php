@@ -1,11 +1,11 @@
-<tr class="border-b {{ $depth > 0 ? 'bg-gray-50' : '' }}">
+<tr class="border-b {{ $depth > 0 ? 'bg-base-200' : '' }}">
     <td class="p-2" style="padding-left: {{ 0.5 + $depth * 2 }}rem">
         {{ $depth > 0 ? str_repeat('-- ', $depth) : '' }}{{ $menu->label }}
     </td>
-    <td class="p-2 text-sm text-gray-500">{{ $menu->target }}</td>
+    <td class="p-2 text-sm text-base-content/60">{{ $menu->target }}</td>
     <td class="p-2">{{ $menu->order }}</td>
     <td class="p-2">
-        <span class="{{ $menu->is_active ? 'text-green-600' : 'text-gray-400' }}">
+        <span class="{{ $menu->is_active ? 'text-green-600' : 'text-base-content/50' }}">
             {{ $menu->is_active ? 'Oui' : 'Non' }}
         </span>
     </td>

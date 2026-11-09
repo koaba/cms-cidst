@@ -30,10 +30,10 @@
                         <img
                             src="{{ Storage::url($pdf->thumbnail_path) }}"
                             alt="Miniature de {{ $pdf->original_name ?? $pdfDocument->title }}"
-                            loading="lazy" decoding="async" class="w-full h-40 object-cover bg-gray-100"
+                            loading="lazy" decoding="async" class="w-full h-40 object-cover bg-cidst-bg"
                         >
                     @else
-                        <div class="w-full h-40 flex items-center justify-center bg-gray-100 text-gray-400">
+                        <div class="w-full h-40 flex items-center justify-center bg-cidst-bg text-cidst-muted">
                             PDF
                         </div>
                     @endif
@@ -43,7 +43,7 @@
                             {{ $pdf->original_name ?? $pdfDocument->title }}
                         </p>
                         @if(!empty($pdf->size))
-                            <p class="text-sm text-gray-500 mb-2">
+                            <p class="text-sm text-cidst-muted mb-2">
                                 {{ number_format($pdf->size / 1024 / 1024, 2) }} Mo
                             </p>
                         @endif

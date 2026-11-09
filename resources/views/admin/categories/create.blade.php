@@ -20,11 +20,11 @@
         </div>
 
         <div class="mb-6 border-t pt-4">
-            <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-gray-500 font-normal">(10 max)</span></h2>
+            <h2 class="font-semibold mb-2">Documents PDF <span class="text-xs text-base-content/60 font-normal">(10 max)</span></h2>
 
             <div id="pdfs-selected" class="flex flex-col gap-1 mb-2"></div>
 
-            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-gray-50 hover:bg-gray-100 inline-block">
+            <label class="text-sm border rounded px-3 py-2 cursor-pointer bg-base-200 hover:bg-base-300 inline-block">
                 + Uploader des PDF
                 <input type="file" name="pdfs[]" accept="application/pdf" multiple class="hidden" onchange="previewPdfs(this, 'pdfs-selected')">
             </label>
@@ -42,7 +42,7 @@
             const container = document.getElementById(containerId);
             [...input.files].forEach(file => {
                 const chip = document.createElement('div');
-                chip.className = 'text-xs bg-gray-100 border rounded px-2 py-1 inline-flex items-center gap-1 w-fit';
+                chip.className = 'text-xs bg-base-200 border rounded px-2 py-1 inline-flex items-center gap-1 w-fit';
                 chip.textContent = '📄 ' + file.name;
                 container.appendChild(chip);
             });

@@ -23,7 +23,7 @@
             @forelse($menus as $menu)
                 <x-menu-row :menu="$menu" :depth="0" />
             @empty
-                <tr><td colspan="5" class="p-4 text-center text-gray-500">Aucun menu</td></tr>
+                <tr><td colspan="5" class="p-4 text-center text-base-content/60">Aucun menu</td></tr>
             @endforelse
         </tbody>
     </table>

@@ -317,10 +317,10 @@ Déjà en place :
 5. **Nettoyage** : `Http/Controllers/ArticleController` (public) utilise `SavesSeoMeta` sans enregistrer de SEO (code mort, commit `chore:` séparé).
 6. **`confirm.delete`** : décider de l'extension aux sliders, bandeaux et blocs, puis l'implémenter test d'abord.
 7. **Page Builder** : `BlockDuplicator` côté serveur (annuler, dupliquer, copier-coller) **avant** toute interface, puis fusion des deux éditeurs de blocs. Chantier le plus risqué, à ne lancer qu'avec une CI solide.
-8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), migration des `gray-*` (environ 269 occurrences dans 63 fichiers, grep brut du 9 novembre 2026).
+8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), restes `dark:` de Breeze (indigo, vert, rouge) ; les `gray-*` sont migrés (garde : NoHardcodedGrayTest).
 9. Suppression des médias inutilisés (Super Admin, refus si `isInUse`, boucle sur les modèles).
 10. Suivi des visites : filtre des robots (test d'abord), puis accueil et pages. Seule `blog.show` porte `track.view:article`, donc les chiffres sont incomplets et possiblement gonflés.
-11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Même chantier : `AudienceController` duplique ses périodes (`PERIODS`, fenêtres glissantes de 7, 30 et 365 jours) au lieu de réutiliser `DashboardPeriod` (jours entiers, 12 mois civils) ; décision en attente (le fuseau est réglé sur Madagascar depuis le 9 novembre 2026 : les jours entiers commencent donc à minuit local).
+11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Le lot `AudienceController` / `DashboardPeriod` est fait : périodes en jours entiers, sans Global, minuit heure de Madagascar.
 12. Polices auto-hébergées, rapport CSV.
 13. Déploiement, en dernier.
 

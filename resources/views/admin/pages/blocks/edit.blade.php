@@ -11,7 +11,7 @@
 
         <div class="mt-4 space-x-2">
             <button type="submit" class="text-sm border rounded px-3 py-2 bg-blue-600 text-white hover:bg-blue-700">Enregistrer</button>
-            <a href="{{ route('admin.pages.blocks.index', $page) }}" class="text-sm text-gray-500">Annuler</a>
+            <a href="{{ route('admin.pages.blocks.index', $page) }}" class="text-sm text-base-content/60">Annuler</a>
         </div>
     </form>
 
@@ -24,7 +24,7 @@
 
             <div class="grid gap-4" style="grid-template-columns: repeat({{ $block->data['column_count'] }}, minmax(0, 1fr));">
                 @for($i = 0; $i < $block->data['column_count']; $i++)
-                    <div class="border rounded p-3 bg-gray-50">
+                    <div class="border rounded p-3 bg-base-200">
                         <p class="text-sm font-medium mb-2">Colonne {{ $i + 1 }}</p>
 
                         <ul class="space-y-2 mb-3">
@@ -39,14 +39,14 @@
                                     </span>
                                 </li>
                             @empty
-                                <li class="text-sm text-gray-400 italic">Colonne vide</li>
+                                <li class="text-sm text-base-content/50 italic">Colonne vide</li>
                             @endforelse
                         </ul>
 
                                                 <div class="flex flex-wrap gap-1">
                             @foreach($nestableTypes as $nestableType)
                                 <a href="{{ route('admin.pages.blocks.columns.create', [$page, $block->id, $i, $nestableType]) }}" 
-                                   class="text-xs border rounded px-2 py-1 hover:bg-gray-100">
+                                   class="text-xs border rounded px-2 py-1 hover:bg-base-300">
                                     + {{ config('page_blocks.types')[$nestableType] ?? $nestableType }}
                                 </a>
                             @endforeach
@@ -63,7 +63,7 @@
 
             <ul class="space-y-2 mb-4">
                 @forelse($block->children as $item)
-                    <li class="flex items-center justify-between bg-gray-50 border rounded p-3">
+                    <li class="flex items-center justify-between bg-base-200 border rounded p-3">
                         <span class="text-sm font-medium">{{ $item->data['title'] }}</span>
                         <span class="space-x-2 text-sm">
                             <a href="{{ route('admin.pages.blocks.items.edit', [$page, $block->id, $item->id]) }}" class="text-blue-600 hover:underline">Modifier / Contenu</a>
@@ -73,7 +73,7 @@
                         </span>
                     </li>
                 @empty
-                    <li class="text-sm text-gray-400 italic">Aucun item pour le moment</li>
+                    <li class="text-sm text-base-content/50 italic">Aucun item pour le moment</li>
                 @endforelse
             </ul>
 

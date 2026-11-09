@@ -44,7 +44,7 @@
         class="w-full"
         oninput="document.getElementById('overlay-opacity-valeur').textContent = this.value"
     >
-    <p class="text-xs text-gray-500 mt-1">Un calque sombre améliore la lisibilité du texte posé sur l'image.</p>
+    <p class="text-xs text-base-content/60 mt-1">Un calque sombre améliore la lisibilité du texte posé sur l'image.</p>
     @error('overlay_opacity')
         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
     @enderror
@@ -58,7 +58,7 @@
             <input type="checkbox" name="delete_image" value="1">
             Supprimer l'image actuelle
         </label>
-        <p class="text-xs text-gray-500 mb-2">Laisse vide pour garder l'image actuelle, ou coche la case pour la retirer.</p>
+        <p class="text-xs text-base-content/60 mb-2">Laisse vide pour garder l'image actuelle, ou coche la case pour la retirer.</p>
     @endif
     <input type="file" name="image" id="hero-image" accept="image/*" class="w-full border rounded p-2 text-sm">
     @error('image')

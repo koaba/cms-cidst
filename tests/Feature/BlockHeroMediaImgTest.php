@@ -33,7 +33,7 @@ it('affiche le hero sans image : fond gris et aucune balise img', function () {
     $html = renderBlockHero(collect());
 
     expect($html)
-        ->toContain('bg-gray-800')
+        ->toContain('bg-cidst-ink')
         ->toContain('Titre du hero')
         ->not->toContain('<img');
 });

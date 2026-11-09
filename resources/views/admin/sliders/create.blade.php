@@ -1,7 +1,7 @@
 <x-admin.layout title="Nouveau slider">
     <h1 class="text-2xl font-bold mb-4">Nouveau slider</h1>
 
-    <p class="text-sm text-gray-500 mb-4">{{ $remainingSlots }} emplacement(s) restant(s) sur {{ config('display.max_sliders') }} maximum.</p>
+    <p class="text-sm text-base-content/60 mb-4">{{ $remainingSlots }} emplacement(s) restant(s) sur {{ config('display.max_sliders') }} maximum.</p>
 
     <form action="{{ route('admin.sliders.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf
@@ -23,7 +23,7 @@
             @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 
             <div class="mt-2">
-                <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
+                <button type="button" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300"
                         onclick="MediaPicker.open({ mode: 'single', onConfirm: items => setSliderImage(items[0]) })">
                     Ou choisir depuis la médiathèque
                 </button>

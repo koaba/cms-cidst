@@ -16,7 +16,7 @@
             @forelse($messages as $item)
             <tr class="border-b {{ $item->read_at ? '' : 'font-semibold' }}">
                 <td class="p-2">
-                    <span class="{{ $item->read_at ? 'text-gray-400' : 'text-green-600' }}">{{ $item->read_at ? 'Lu' : 'Nouveau' }}</span>
+                    <span class="{{ $item->read_at ? 'text-base-content/50' : 'text-green-600' }}">{{ $item->read_at ? 'Lu' : 'Nouveau' }}</span>
                 </td>
                 <td class="p-2">{{ $item->name }}</td>
                 <td class="p-2">{{ $item->email }}</td>
@@ -25,7 +25,7 @@
                 <td class="p-2"><a href="{{ route('admin.messages.show', $item) }}" class="text-blue-600">Lire</a></td>
             </tr>
             @empty
-            <tr><td colspan="6" class="p-4 text-center text-gray-500">Aucun message</td></tr>
+            <tr><td colspan="6" class="p-4 text-center text-base-content/60">Aucun message</td></tr>
             @endforelse
         </tbody>
     </table>

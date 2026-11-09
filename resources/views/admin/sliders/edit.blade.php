@@ -26,13 +26,13 @@
             @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 
             <div class="mt-2">
-                <button type="button" class="text-sm border rounded px-3 py-2 bg-gray-50 hover:bg-gray-100"
+                <button type="button" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300"
                         onclick="MediaPicker.open({ mode: 'single', onConfirm: items => setSliderImage(items[0]) })">
                     Ou choisir depuis la médiathèque
                 </button>
                 <input type="hidden" name="existing_media_id" id="slider-existing-media-id">
                 <div id="slider-picked-preview" class="hidden mt-2">
-                    <p class="text-xs text-gray-500 mb-1">Nouvelle image sélectionnée (remplacera l'actuelle après enregistrement) :</p>
+                    <p class="text-xs text-base-content/60 mb-1">Nouvelle image sélectionnée (remplacera l'actuelle après enregistrement) :</p>
                     <img id="slider-picked-img" class="w-24 h-24 object-cover rounded border">
                 </div>
             </div>

@@ -13,7 +13,7 @@
             <input type="text" name="target" value="{{ old('target') }}" required
                    placeholder="ex: blog.index ou /contact ou https://..."
                    class="w-full border rounded p-2">
-            <p class="text-xs text-gray-500 mt-1">Nom de route Laravel (ex: blog.index) ou URL libre (ex: /contact, https://...)</p>
+            <p class="text-xs text-base-content/60 mt-1">Nom de route Laravel (ex: blog.index) ou URL libre (ex: /contact, https://...)</p>
             @error('target') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
