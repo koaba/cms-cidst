@@ -264,9 +264,9 @@ Déjà en place :
 
 - **Planification** : `page-views:prune` (chaque semaine) et `audience:prune` (chaque jour, conserve 13 mois de détail) sont planifiées dans `routes/console.php`. Sans le cron chaque minute `php artisan schedule:run`, aucune des deux ne tourne.
 - **File d'attente** : sans worker permanent, utiliser `queue:work` supervisé, ou `queue:work --stop-when-empty` lancé par cron. Sans cela, miniatures et variantes d'images ne sont jamais générées.
-- **Choix d'hébergement** (mutualisé ou VPS) : non tranché. Il décide du worker et du cron.
+- **Choix d'hébergement** (mutualisé ou VPS) : non tranché. Il ne change que la façon de lancer le worker et le cron ; les contrôles de production les vérifient par leur effet, quel que soit l'hébergeur.
 - **Base de données** : MySQL 8.4 LTS ou MariaDB en production (disponible sur tout hébergement mutualisé). SQLite n'est utilisé qu'en mémoire pour les tests ; la CI contrôle en plus la suite sur MySQL 8.4.
-- **Vérification** : `php artisan app:check-environment`.
+- **Vérification** : `php artisan app:check-environment`. En production (`APP_ENV=production`), elle contrôle aussi `APP_DEBUG` (erreur bloquante), le courrier (`MAIL_MAILER` et expéditeur), le worker (tâches en attente depuis plus de 10 min), le cron (battement `scheduler-heartbeat` écrit chaque minute dans le cache), `storage:link` et `CSP_MODE`. Non vérifiables en ligne de commande : `trustProxies`, et la présence d'un worker tant qu'aucune tâche n'a été enfilée.
 
 ## 10. Déploiement
 
