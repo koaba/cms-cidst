@@ -16,4 +16,7 @@ return [
     'max_side' => 4000,
 
     'jpeg_quality' => 85,
+
+    // Duree de conservation des images, en jours (0 = illimitee). Voir contact:prune-images.
+    'retention_days' => (int) env('CONTACT_IMAGES_RETENTION_DAYS', 90),
 ];
