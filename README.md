@@ -317,12 +317,12 @@ Déjà en place :
 5. **Nettoyage** : `Http/Controllers/ArticleController` (public) utilise `SavesSeoMeta` sans enregistrer de SEO (code mort, commit `chore:` séparé).
 6. **`confirm.delete`** : décider de l'extension aux sliders, bandeaux et blocs, puis l'implémenter test d'abord.
 7. **Page Builder** : `BlockDuplicator` côté serveur (annuler, dupliquer, copier-coller) **avant** toute interface, puis fusion des deux éditeurs de blocs. Chantier le plus risqué, à ne lancer qu'avec une CI solide.
-8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), restes `dark:` de Breeze (indigo, vert, rouge) ; les `gray-*` sont migrés (garde : NoHardcodedGrayTest).
+8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), les `gray-*`, `indigo-*` et `dark:` de Breeze sont migrés (garde : NoHardcodedGrayTest).
 9. Suppression des médias inutilisés (Super Admin, refus si `isInUse`, boucle sur les modèles).
 10. Suivi des visites : filtre des robots (test d'abord), puis accueil et pages. Seule `blog.show` porte `track.view:article`, donc les chiffres sont incomplets et possiblement gonflés.
 11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Le lot `AudienceController` / `DashboardPeriod` est fait : périodes en jours entiers, sans Global, minuit heure de Madagascar.
 12. Polices auto-hébergées, rapport CSV.
-13. Déploiement, en dernier.
+13. Déploiement, en dernier (section 10). Hébergeur non tranché (mutualisé ou VPS) : les contrôles de `php artisan app:check-environment` valent pour les deux. Critère de réussite : zéro erreur avec `APP_ENV=production`, et le battement du planificateur visible après une minute de cron.
 
 ### Dette connue
 
@@ -330,11 +330,15 @@ Déjà en place :
 - `resources/views/dashboard.blade.php` probablement orphelin (la route `/dashboard` redirige) `[non vérifié]`.
 - La transaction de `MediaSyncService` / `ArticleController` ne protège pas le disque (fichier supprimé avant un échec possible).
 - `layout.blade.php` : tiroir mobile en JS inline, sans Échap, `aria-expanded` ni focus piégé ; pas de `max-w` sur `<main>`.
-- Safelist héritée de Breeze dans `tailwind.config.js` à auditer.
+- Safelist de `tailwind.config.js` : il reste `bg-blue-600` et `text-white`, à auditer.
 - Graphiques : `<canvas height="90">` sans conteneur de hauteur fixe, d'où le graphique écrasé en `?period=all`.
 - `admin/media/index.blade.php` : N+1, `asset('storage/'.$path)` cassé pour vidéos externes et PDF.
 - Sous-menus (dropdown) du module Menus : `parent_id` nullable + logique récursive.
 - Non vérifiés : Alpine, builder, CSP, tests navigateur.
+- `views_30d` encore calculé ; graphiques du tableau de bord en `groupBy` mémoire ; carte « Pages » qui compte les programmées.
+- `ContactAlert` est envoyée pendant la requête : un SMTP lent fait attendre le visiteur de `/contact`.
+- Pas de redirection depuis un ancien slug ; upload dupliqué dans `Admin\PageController`.
+- `AudienceService::monthly()` groupe par `DATE(visited_at)` (balayage borné par `audience:prune`, 13 mois).
 
 ### Évolutions futures (ne pas démarrer maintenant)
 
