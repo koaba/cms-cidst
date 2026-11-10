@@ -1,15 +1,20 @@
-# Un push qui ne fait que supprimer des branches n'a rien a verifier.
+# Un push qui ne fait que supprimer des branches ou envoyer des tags n'a rien a verifier.
 if [ ! -t 0 ]; then
     HAS_REF=0
-    ONLY_DELETE=1
+    NOTHING_TO_CHECK=1
     while read -r local_ref local_sha remote_ref remote_sha; do
         HAS_REF=1
-        case "$local_sha" in
-            *[!0]*) ONLY_DELETE=0 ;;
+        case "$remote_ref" in
+            refs/tags/*) ;;
+            *)
+                case "$local_sha" in
+                    *[!0]*) NOTHING_TO_CHECK=0 ;;
+                esac
+                ;;
         esac
     done
-    if [ "$HAS_REF" -eq 1 ] && [ "$ONLY_DELETE" -eq 1 ]; then
-        echo "Suppression de branche : verifications ignorees."
+    if [ "$HAS_REF" -eq 1 ] && [ "$NOTHING_TO_CHECK" -eq 1 ]; then
+        echo "Suppression de branche ou push de tag : verifications ignorees."
         exit 0
     fi
 fi
