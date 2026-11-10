@@ -41,6 +41,8 @@ class UpdateSiteSettingRequest extends FormRequest
             'image_watermark_default_enabled' => 'nullable|boolean',
             'pdf_watermark_default_enabled' => 'nullable|boolean',
             'diaporama_watermark_default_enabled' => 'nullable|boolean',
+            'contact_images_enabled' => 'nullable|boolean',
+            'contact_images_max_mb' => 'nullable|integer|min:1|max:10',
             'delete_code' => 'nullable|string|min:8|max:50',
         ];
     }
