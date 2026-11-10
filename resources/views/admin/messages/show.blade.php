@@ -25,7 +25,10 @@
             <p class="font-medium mb-2">Images jointes ({{ $message->attachments->count() }})</p>
             <ul class="space-y-1">
                 @foreach ($message->attachments as $file)
-                    <li class="flex flex-wrap items-center gap-x-3">
+                    <li class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                        <a href="{{ route('admin.messages.attachments.preview', [$message, $file]) }}" target="_blank" rel="noopener noreferrer">
+                            <img src="{{ route('admin.messages.attachments.preview', [$message, $file]) }}" alt="{{ $file->original_name }}" loading="lazy" class="max-h-32 max-w-full rounded border border-base-300">
+                        </a>
                         <span class="break-all">{{ $file->original_name }}</span>
                         <span class="text-sm text-base-content/60">{{ number_format($file->size / 1024, 0, ',', ' ') }} Ko</span>
                         <a href="{{ route('admin.messages.attachments.show', [$message, $file]) }}" class="link link-primary">T&eacute;l&eacute;charger</a>

@@ -120,6 +120,7 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin)])->group(f
     Route::get('admin/audience', AudienceController::class)->name('admin.audience');
     Route::resource('admin/messages', AdminContactMessageController::class)->only(['index', 'show'])->names('admin.messages');
     Route::get('admin/messages/{message}/attachments/{attachment}', [AdminContactMessageController::class, 'attachment'])->name('admin.messages.attachments.show');
+    Route::get('admin/messages/{message}/attachments/{attachment}/preview', [AdminContactMessageController::class, 'preview'])->name('admin.messages.attachments.preview');
     Route::resource('admin/users', UserController::class)->names('admin.users');
     Route::patch('admin/users/{user}/reset-password', [UserController::class, 'resetPassword'])
         ->name('admin.users.reset-password');

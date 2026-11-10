@@ -43,6 +43,7 @@ class UpdateSiteSettingRequest extends FormRequest
             'diaporama_watermark_default_enabled' => 'nullable|boolean',
             'contact_images_enabled' => 'nullable|boolean',
             'contact_images_max_mb' => 'nullable|integer|min:1|max:10',
+            'contact_public_email' => 'nullable|email|max:255',
             'delete_code' => 'nullable|string|min:8|max:50',
         ];
     }

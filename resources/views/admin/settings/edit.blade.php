@@ -231,6 +231,15 @@
     </div>
     <p class="text-sm opacity-70">Les images sont réencodées et rangées hors du site public. Les PDF ne sont pas acceptés : les visiteurs utilisent le lien de partage.</p>
 </fieldset>
+<fieldset class="border rounded p-4 space-y-3">
+    <legend class="font-medium px-1">Formulaire de contact : adresse pour les documents</legend>
+    <div>
+        <label for="contact_public_email" class="block font-medium mb-1">Adresse e-mail affichée sur la page Contact</label>
+        <input id="contact_public_email" type="email" name="contact_public_email" maxlength="255" value="{{ old('contact_public_email', $settings->contact_public_email) }}" class="w-full border rounded p-2">
+        @error('contact_public_email') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        <p class="text-sm opacity-70">Les visiteurs peuvent y envoyer un PDF ou un document. Laisser vide pour ne rien afficher.</p>
+    </div>
+</fieldset>
 <div class="flex items-center gap-3">
             <x-admin.button type="submit">Enregistrer</x-admin.button>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>

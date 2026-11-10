@@ -33,6 +33,7 @@ class SiteSetting extends Model
         'diaporama_watermark_default_enabled',
         'contact_images_enabled',
         'contact_images_max_mb',
+        'contact_public_email',
     ];
 
     protected $hidden = ['delete_code_hash'];
