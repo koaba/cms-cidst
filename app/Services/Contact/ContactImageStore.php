@@ -5,6 +5,7 @@ namespace App\Services\Contact;
 use App\Models\ContactAttachment;
 use App\Models\ContactMessage;
 use GdImage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -23,14 +24,22 @@ class ContactImageStore
         IMAGETYPE_WEBP => 'webp',
     ];
 
-    /** Retourne null si le fichier n'est pas une image saine (rien n'est alors enregistre). */
+    // 4 octets par pixel en memoire GD, doubles : copie lors de la rotation EXIF.
+    private const BYTES_PER_PIXEL = 8;
+
+    /** Retourne null si le fichier n'est pas une image saine (rien n'est alors enregistre, un avertissement est journalise). */
     public function store(string $path, string $originalName, ContactMessage $message): ?ContactAttachment
     {
         $info = @getimagesize($path);
         $side = (int) config('contact.max_side');
 
         if ($info === false || ! isset(self::EXTENSIONS[$info[2]]) || $info[0] > $side || $info[1] > $side) {
-            return null;
+            return $this->discard($message, 'not_a_safe_image');
+        }
+
+        // Une erreur fatale de memoire ne se rattrape pas : on refuse avant de decoder.
+        if ($this->availableMemory() < $info[0] * $info[1] * self::BYTES_PER_PIXEL) {
+            return $this->discard($message, 'not_enough_memory');
         }
 
         $image = match ($info[2]) {
@@ -40,7 +49,7 @@ class ContactImageStore
         };
 
         if (! $image instanceof GdImage) {
-            return null;
+            return $this->discard($message, 'decode_failed');
         }
 
         if ($info[2] === IMAGETYPE_JPEG) {
@@ -58,7 +67,7 @@ class ContactImageStore
         $binary = (string) ob_get_clean();
 
         if ($binary === '') {
-            return null;
+            return $this->discard($message, 'encode_failed');
         }
 
         $target = 'contact/'.Str::uuid().'.'.self::EXTENSIONS[$info[2]];
@@ -70,6 +79,33 @@ class ContactImageStore
             'mime' => (string) image_type_to_mime_type($info[2]),
             'size' => strlen($binary),
         ]);
+    }
+
+    /** Memoire encore utilisable par PHP, en octets. */
+    protected function availableMemory(): int
+    {
+        $raw = trim((string) ini_get('memory_limit'));
+        $value = (int) $raw;
+
+        if ($value <= 0) {
+            return PHP_INT_MAX;
+        }
+
+        $bytes = match (strtolower(substr($raw, -1))) {
+            'g' => $value * 1024 ** 3,
+            'm' => $value * 1024 ** 2,
+            'k' => $value * 1024,
+            default => $value,
+        };
+
+        return max(0, $bytes - memory_get_usage(true));
+    }
+
+    private function discard(ContactMessage $message, string $reason): null
+    {
+        Log::warning('contact.image_discarded', ['contact_message_id' => $message->id, 'reason' => $reason]);
+
+        return null;
     }
 
     private function orient(GdImage $image, string $path): GdImage

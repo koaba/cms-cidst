@@ -12,8 +12,9 @@ return [
 
     'max_files' => 3,
 
-    // Cote maximale en pixels (verifiee avant tout decodage).
-    'max_side' => 4000,
+    // Cote maximale en pixels (verifiee avant tout decodage). 3000 px couvre une photo de telephone
+    // reduite ; au-dela, le decodage GD (environ 4 octets par pixel) menace la memoire de PHP.
+    'max_side' => 3000,
 
     'jpeg_quality' => 85,
 
