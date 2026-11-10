@@ -290,7 +290,7 @@ Déjà en place :
 - [ ] Worker de file supervisé (Supervisor ou systemd) : `php artisan queue:work`, et `php artisan queue:restart` à chaque déploiement ; cron `schedule:run` chaque minute
 - [ ] `php artisan migrate --force`, puis `php artisan media:backfill-dimensions`
 - [ ] `php artisan storage:link` au premier déploiement (le disque `public` en dépend pour toutes les images). Si l'hébergeur interdit les liens symboliques, prévoir une alternative (voir `docs/REQUIREMENTS.md`)
-- [ ] SMTP réel (`MAIL_MAILER`, `MAIL_HOST`, adresse expéditrice valide) ; tester `/contact`, `/admin/messages` et l'alerte e-mail. L'alerte est envoyée pendant la requête (non mise en file) : un SMTP lent fait attendre le visiteur, et un échec est seulement loggé
+- [ ] SMTP réel (`MAIL_MAILER`, `MAIL_HOST`, adresse expéditrice valide) ; tester `/contact`, `/admin/messages` et l'alerte e-mail. L'alerte est envoyée après la réponse (`defer()`, sans worker) : sous PHP-FPM ou LiteSpeed un SMTP lent ne fait plus attendre le visiteur, et un échec est seulement loggé
 - [ ] `trustProxies` (commenté dans `bootstrap/app.php`) si un proxy ou un CDN se place devant le site, sinon les visiteurs sont sous-comptés
 - [ ] Fuseau : `APP_TIMEZONE` vaut `Indian/Antananarivo` par défaut (UTC+3, sans heure d'été) ; vérifier qu'il n'est pas écrasé dans le `.env` de production. Ne plus le changer après la mise en ligne : les dates stockées sont enregistrées sans fuseau et seraient décalées
 - [ ] `CSP_MODE` : `report-only` par défaut (`config/security.php`). Relire la console du navigateur, puis passer à `enforce`
@@ -336,7 +336,6 @@ Déjà en place :
 - Sous-menus (dropdown) du module Menus : `parent_id` nullable + logique récursive.
 - Non vérifiés : Alpine, builder, CSP, tests navigateur.
 - `views_30d` encore calculé ; graphiques du tableau de bord en `groupBy` mémoire ; carte « Pages » qui compte les programmées.
-- `ContactAlert` est envoyée pendant la requête : un SMTP lent fait attendre le visiteur de `/contact`.
 - Pas de redirection depuis un ancien slug ; upload dupliqué dans `Admin\PageController`.
 - `AudienceService::monthly()` groupe par `DATE(visited_at)` (balayage borné par `audience:prune`, 13 mois).
 

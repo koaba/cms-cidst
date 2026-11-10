@@ -6,7 +6,6 @@ use App\Http\Requests\ContactMessageRequest;
 use App\Mail\ContactAlert;
 use App\Models\ContactMessage;
 use Illuminate\Support\Facades\Mail;
-use Throwable;
 
 class ContactController extends Controller
 {
@@ -25,12 +24,12 @@ class ContactController extends Controller
         $message->ip_hash = hash_hmac('sha256', (string) $request->ip(), (string) config('app.key'));
         $message->save();
 
-        try {
+        // Envoi apres la reponse : un SMTP lent ne fait pas attendre le visiteur.
+        // defer() isole l'echec (signale, jamais montre au visiteur) ; alerted_at reste alors vide.
+        defer(function () use ($message) {
             Mail::to(config('mail.from.address'))->send(new ContactAlert);
             $message->forceFill(['alerted_at' => now()])->save();
-        } catch (Throwable $e) {
-            report($e);
-        }
+        });
 
         return redirect()->route('contact.show')->with('success', true);
     }
