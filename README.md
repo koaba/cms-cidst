@@ -226,8 +226,8 @@ En cas d'erreur serveur inexpliquée, lire `storage/logs/laravel.log` (heure de 
 
 ## 7. Tests et intégration continue
 
-- **Local** : `./vendor/bin/pest --compact`. **936 tests (2496 assertions)** à `4d1da21`, sur SQLite en mémoire.
-- **Hooks Husky** : pre-commit `php -l` ; pre-push `pint --test` puis `pest --compact` complet (2,5 à 7 minutes). Le push est bloqué sur toute erreur de style ou de test.
+- **Local** : `./vendor/bin/pest --parallel --compact` (4 processus, environ 1,5 min sous Windows ; sans `--parallel`, 4 à 6 min). **1065 tests (3015 assertions)** à `68bca36`, sur SQLite en mémoire.
+- **Hooks Husky** : pre-commit `php -l` ; pre-push `pint --test`, Larastan puis `pest --parallel --compact` complet (environ 2 à 3 minutes ; la CI reste séquentielle, c'est la référence). Le push est bloqué sur toute erreur de style ou de test.
 - **GitHub Actions** (`.github/workflows/tests.yml`), sur push et pull_request :
   - `tests` : matrice PHP 8.3 / 8.4 / 8.5 (`fail-fast` désactivé), Poppler installé, Pint sur 8.3 seulement, Pest sur SQLite ;
   - `tests-mysql` : service MySQL 8.4, PHP 8.3, Pest avec `DB_CONNECTION=mysql` (vert à `3f031c4`) ;

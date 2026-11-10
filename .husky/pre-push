@@ -34,7 +34,7 @@ if ! php vendor/bin/phpstan analyse --no-progress --memory-limit=1G; then
     exit 1
 fi
 
-if ! php vendor/bin/pest --compact; then
+if ! php vendor/bin/pest --parallel --compact; then
     echo ""
     echo "Push bloque : des tests echouent. Corrige-les avant de pousser."
     exit 1
