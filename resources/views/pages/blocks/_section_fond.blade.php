@@ -12,7 +12,7 @@
     @endif
     <p class="mb-4">{{ $data['text'] }}</p>
     @if(!empty($data['button_label']) && !empty($data['button_url']))
-        <a href="{{ $data['button_url'] }}"
+        <a href="{{ \App\Support\SafeUrl::sanitize($data['button_url']) }}"
            @if(!empty($data['button_new_tab'])) target="_blank" rel="noopener noreferrer" @endif
            class="inline-block px-5 py-2 rounded font-medium bg-white text-cidst-ink hover:bg-cidst-bg">
             {{ $data['button_label'] }}

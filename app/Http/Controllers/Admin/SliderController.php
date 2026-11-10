@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Slider;
+use App\Rules\SafeLinkUrl;
 use App\Services\MediaUploader;
 use App\Traits\HasOrphanMediaCleanup;
 use Illuminate\Http\Request;
@@ -102,7 +103,7 @@ class SliderController extends Controller
             'subtitle' => 'nullable|string|max:255',
             'image' => 'nullable|image|max:2048',
             'existing_media_id' => 'nullable|integer|exists:media,id',
-            'link_url' => 'nullable|string|max:255',
+            'link_url' => ['nullable', 'string', 'max:255', new SafeLinkUrl],
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);

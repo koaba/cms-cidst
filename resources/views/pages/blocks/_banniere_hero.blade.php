@@ -16,7 +16,7 @@
         @endif
 
         @if(!empty($data['bouton_texte']) && !empty($data['bouton_url']))
-            <a href="{{ $data['bouton_url'] }}" class="inline-block bg-white text-black font-semibold px-6 py-3 rounded hover:bg-cidst-bg transition">
+            <a href="{{ \App\Support\SafeUrl::sanitize($data['bouton_url']) }}" class="inline-block bg-white text-black font-semibold px-6 py-3 rounded hover:bg-cidst-bg transition">
                 {{ $data['bouton_texte'] }}
             </a>
         @endif

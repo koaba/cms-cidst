@@ -5,7 +5,7 @@
                 @foreach($items as $item)
                     <div class="py-2 text-center">
                         @if($item->link_url)
-                            <a href="{{ $item->link_url }}" class="hover:underline">{{ $item->content }}</a>
+                            <a href="{{ \App\Support\SafeUrl::sanitize($item->link_url) }}" class="hover:underline">{{ $item->content }}</a>
                         @else
                             <span>{{ $item->content }}</span>
                         @endif
@@ -18,7 +18,7 @@
             <div class="inline-block animate-marquee">
                 @foreach($items as $item)
                     @if($item->link_url)
-                        <a href="{{ $item->link_url }}" class="mx-8 hover:underline">{{ $item->content }}</a>
+                        <a href="{{ \App\Support\SafeUrl::sanitize($item->link_url) }}" class="mx-8 hover:underline">{{ $item->content }}</a>
                     @else
                         <span class="mx-8">{{ $item->content }}</span>
                     @endif

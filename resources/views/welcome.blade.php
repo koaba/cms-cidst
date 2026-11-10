@@ -101,7 +101,7 @@
                             data-index="{{ $index }}"
                         >
                             @if($slider->link_url)
-                                <a href="{{ $slider->link_url }}" class="block w-full h-full">
+                                <a href="{{ \App\Support\SafeUrl::sanitize($slider->link_url) }}" class="block w-full h-full">
                             @endif
 
                           @php $sliderMedia = $slider->media->first(); @endphp

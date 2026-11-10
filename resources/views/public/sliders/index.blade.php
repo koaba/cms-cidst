@@ -3,7 +3,7 @@
         @foreach($sliders as $slider)
             <div class="relative rounded-lg overflow-hidden shadow-md">
                 @if($slider->link_url)
-                    <a href="{{ $slider->link_url }}">
+                    <a href="{{ \App\Support\SafeUrl::sanitize($slider->link_url) }}">
                 @endif
 
                 @php $sliderMedia = $slider->media->first(); @endphp

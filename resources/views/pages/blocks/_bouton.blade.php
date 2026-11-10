@@ -6,7 +6,7 @@
     ];
     $styleClass = $styles[$data['style'] ?? 'primaire'] ?? $styles['primaire'];
 @endphp
-<a href="{{ $data['url'] }}"
+<a href="{{ \App\Support\SafeUrl::sanitize($data['url']) }}"
    @if(!empty($data['new_tab'])) target="_blank" rel="noopener noreferrer" @endif
    class="inline-block px-5 py-2 rounded font-medium {{ $styleClass }}">
     {{ $data['label'] }}
