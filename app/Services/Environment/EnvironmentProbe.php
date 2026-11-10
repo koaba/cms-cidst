@@ -2,6 +2,7 @@
 
 namespace App\Services\Environment;
 
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -22,7 +23,12 @@ class EnvironmentProbe
         return [
             'php_version' => PHP_VERSION,
             'extensions' => array_map('strtolower', get_loaded_extensions()),
-            'gd_webp' => $this->gdWebp(),
+            'gd_webp' => $this->gdSupport('WebP Support'),
+            'gd_jpeg' => $this->gdSupport('JPEG Support'),
+            'gd_png' => $this->gdSupport('PNG Support'),
+            'upload_max_filesize' => (string) ini_get('upload_max_filesize'),
+            'post_max_size' => (string) ini_get('post_max_size'),
+            ...$this->contactImages(),
             'disabled_functions' => $disabled,
             'memory_limit' => (string) ini_get('memory_limit'),
             'max_execution_time' => (int) ini_get('max_execution_time'),
@@ -90,9 +96,32 @@ class EnvironmentProbe
         }
     }
 
-    private function gdWebp(): bool
+    private function gdSupport(string $feature): bool
     {
-        return function_exists('gd_info') && (bool) (gd_info()['WebP Support'] ?? false);
+        return function_exists('gd_info') && (bool) (gd_info()[$feature] ?? false);
+    }
+
+    /**
+     * Reglages des images jointes du formulaire de contact (desactivees si la base est inaccessible).
+     *
+     * @return array{contact_images_enabled: bool, contact_images_max_mb: int, contact_images_max_files: int}
+     */
+    private function contactImages(): array
+    {
+        try {
+            $settings = SiteSetting::current();
+            $enabled = (bool) $settings->contact_images_enabled;
+            $maxMb = (int) $settings->contact_images_max_mb;
+        } catch (\Throwable) {
+            $enabled = false;
+            $maxMb = 0;
+        }
+
+        return [
+            'contact_images_enabled' => $enabled,
+            'contact_images_max_mb' => $maxMb,
+            'contact_images_max_files' => (int) config('contact.max_files'),
+        ];
     }
 
     private function databaseOk(): bool

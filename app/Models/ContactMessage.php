@@ -14,6 +14,16 @@ class ContactMessage extends Model
         'alerted_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        // La cascade SQL ne declenche aucun evenement : on supprime les images une a une pour retirer aussi leurs fichiers.
+        static::deleting(function (self $message): void {
+            foreach ($message->attachments as $attachment) {
+                $attachment->delete();
+            }
+        });
+    }
+
     /** @return HasMany<ContactAttachment, $this> */
     public function attachments(): HasMany
     {

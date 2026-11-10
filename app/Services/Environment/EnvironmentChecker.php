@@ -39,6 +39,7 @@ class EnvironmentChecker
             $this->phpVersion(),
             $this->extensions(),
             $this->gdWebp(),
+            $this->contactImages(),
             $this->writable(),
             $this->database(),
             $this->procOpen(),
@@ -83,6 +84,41 @@ class EnvironmentChecker
         return ($this->probe['gd_webp'] ?? false)
             ? $this->result('gd_webp', 'ok', 'GD avec support WebP.')
             : $this->result('gd_webp', 'error', 'GD sans support WebP : les variantes d\'images ne peuvent pas etre generees.');
+    }
+
+    private function contactImages(): array
+    {
+        if (! ($this->probe['contact_images_enabled'] ?? false)) {
+            return $this->result('contact_images', 'ok', 'Images jointes du formulaire de contact desactivees : limites non controlees.');
+        }
+
+        $maxMb = (int) ($this->probe['contact_images_max_mb'] ?? 0);
+        $files = (int) ($this->probe['contact_images_max_files'] ?? 1);
+        $imageBytes = $maxMb * 1024 ** 2;
+        $uploadRaw = (string) ($this->probe['upload_max_filesize'] ?? '0');
+        $postRaw = (string) ($this->probe['post_max_size'] ?? '0');
+        $upload = $this->toBytes($uploadRaw);
+        $post = $this->toBytes($postRaw);
+        $problems = [];
+
+        $gd = ['JPEG' => $this->probe['gd_jpeg'] ?? false, 'PNG' => $this->probe['gd_png'] ?? false, 'WebP' => $this->probe['gd_webp'] ?? false];
+        $missing = array_keys(array_filter($gd, fn ($supported) => ! $supported));
+
+        if ($missing !== []) {
+            $problems[] = 'GD sans support '.implode(', ', $missing);
+        }
+
+        if ($upload !== -1 && $upload < $imageBytes) {
+            $problems[] = "upload_max_filesize = {$uploadRaw} : {$maxMb}M minimum pour une image de {$maxMb} Mo";
+        }
+
+        if ($post > 0 && $post < $imageBytes * $files) {
+            $problems[] = "post_max_size = {$postRaw} : ".($maxMb * $files)."M minimum pour {$files} images de {$maxMb} Mo";
+        }
+
+        return $problems === []
+            ? $this->result('contact_images', 'ok', "Images jointes : GD et limites PHP suffisants (upload_max_filesize = {$uploadRaw}, post_max_size = {$postRaw}).")
+            : $this->result('contact_images', 'warning', 'Images jointes du formulaire de contact : '.implode(' ; ', $problems).'.');
     }
 
     private function writable(): array
