@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ContactMessage;
+use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\Mail;
 
 function contactPayload(array $o = []): array
@@ -42,4 +43,42 @@ it('garde le message si l alerte echoue', function () {
 
 it('affiche le formulaire de contact', function () {
     $this->get('/contact')->assertOk()->assertSee('name="website"', false)->assertSee('Contact');
+});
+
+it('renseigne alerted_at quand l alerte part', function () {
+    Mail::fake();
+    $this->post('/contact', contactPayload())->assertRedirect();
+
+    expect(ContactMessage::first()->alerted_at)->not->toBeNull();
+});
+
+it('laisse alerted_at vide quand l alerte echoue', function () {
+    Mail::shouldReceive('to')->andThrow(new RuntimeException('smtp'));
+    $this->post('/contact', contactPayload())->assertRedirect();
+
+    expect(ContactMessage::first()->alerted_at)->toBeNull();
+});
+
+it('envoie l alerte apres la reponse et non pendant la requete', function () {
+    Mail::fake();
+    $deferred = new class extends DeferredCallbackCollection
+    {
+        public function invokeWhen(?Closure $when = null): void {}
+
+        public function flush(): void
+        {
+            parent::invokeWhen();
+        }
+    };
+    app()->instance(DeferredCallbackCollection::class, $deferred);
+
+    $this->post('/contact', contactPayload())->assertRedirect();
+
+    Mail::assertNothingSent();
+    expect(ContactMessage::first()->alerted_at)->toBeNull();
+
+    $deferred->flush();
+
+    Mail::assertSentCount(1);
+    expect(ContactMessage::first()->alerted_at)->not->toBeNull();
 });
