@@ -18,6 +18,7 @@ class ContactMessageRequest extends FormRequest
             'email' => ['required', 'email', 'max:255'],
             'subject' => ['nullable', 'string', 'max:150'],
             'message' => ['required', 'string', 'min:5', 'max:5000'],
+            'attachment_link' => ['nullable', 'url:https', 'max:500'],
             'website' => ['nullable', 'string'],
         ];
     }

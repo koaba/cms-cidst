@@ -20,7 +20,7 @@ class ContactController extends Controller
             return redirect()->route('contact.show')->with('success', true);
         }
 
-        $message = new ContactMessage($request->safe()->only(['name', 'email', 'subject', 'message']));
+        $message = new ContactMessage($request->safe()->only(['name', 'email', 'subject', 'message', 'attachment_link']));
         $message->ip_hash = hash_hmac('sha256', (string) $request->ip(), (string) config('app.key'));
         $message->save();
 
