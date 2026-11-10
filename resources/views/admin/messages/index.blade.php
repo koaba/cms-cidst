@@ -20,7 +20,7 @@
                 </td>
                 <td class="p-2">{{ $item->name }}</td>
                 <td class="p-2">{{ $item->email }}</td>
-                <td class="p-2">{{ Str::limit($item->subject ?: '-', 50) }}</td>
+                <td class="p-2">{{ Str::limit($item->subject ?: '-', 50) }}@if ($item->attachments_count) <span title="Images jointes">&#128206; {{ $item->attachments_count }}</span>@endif</td>
                 <td class="p-2">{{ $item->created_at->format('d/m/Y H:i') }}</td>
                 <td class="p-2"><a href="{{ route('admin.messages.show', $item) }}" class="text-blue-600">Lire</a></td>
             </tr>

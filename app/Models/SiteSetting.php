@@ -31,6 +31,8 @@ class SiteSetting extends Model
         'image_watermark_default_enabled',
         'pdf_watermark_default_enabled',
         'diaporama_watermark_default_enabled',
+        'contact_images_enabled',
+        'contact_images_max_mb',
     ];
 
     protected $hidden = ['delete_code_hash'];
@@ -40,6 +42,8 @@ class SiteSetting extends Model
         'image_watermark_default_enabled' => 'boolean',
         'pdf_watermark_default_enabled' => 'boolean',
         'diaporama_watermark_default_enabled' => 'boolean',
+        'contact_images_enabled' => 'boolean',
+        'contact_images_max_mb' => 'integer',
     ];
 
     public function getPrimaryColorAttribute($value): string

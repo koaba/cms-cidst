@@ -218,6 +218,19 @@
     @error('pdf_documents_content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
         <div><label class="block font-medium mb-1">Code de suppression</label><input type="password" name="delete_code" autocomplete="new-password" minlength="8" maxlength="50" class="w-full border rounded p-2"><p class="text-sm opacity-70">Laisser vide pour ne pas changer. Demand&eacute; aux utilisateurs Publication pour supprimer.</p>@error('delete_code') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror</div>
+<fieldset class="border rounded p-4 space-y-3">
+    <legend class="font-medium px-1">Formulaire de contact : images jointes</legend>
+    <label class="flex items-center gap-2 font-medium">
+        <input type="checkbox" name="contact_images_enabled" value="1" class="h-4 w-4" {{ old('contact_images_enabled', $settings->contact_images_enabled) ? 'checked' : '' }}>
+        Autoriser les visiteurs à joindre des images
+    </label>
+    <div>
+        <label for="contact_images_max_mb" class="block font-medium mb-1">Taille maximale par image (Mo)</label>
+        <input id="contact_images_max_mb" type="number" min="1" max="10" name="contact_images_max_mb" value="{{ old('contact_images_max_mb', $settings->contact_images_max_mb) }}" class="w-32 border rounded p-2">
+        @error('contact_images_max_mb') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    </div>
+    <p class="text-sm opacity-70">Les images sont réencodées et rangées hors du site public. Les PDF ne sont pas acceptés : les visiteurs utilisent le lien de partage.</p>
+</fieldset>
 <div class="flex items-center gap-3">
             <x-admin.button type="submit">Enregistrer</x-admin.button>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ContactMessage extends Model
 {
@@ -12,6 +13,12 @@ class ContactMessage extends Model
         'read_at' => 'datetime',
         'alerted_at' => 'datetime',
     ];
+
+    /** @return HasMany<ContactAttachment, $this> */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(ContactAttachment::class);
+    }
 
     public function isRead(): bool
     {

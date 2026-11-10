@@ -18,6 +18,7 @@ class SiteSettingService
         'image_watermark_default_enabled',
         'pdf_watermark_default_enabled',
         'diaporama_watermark_default_enabled',
+        'contact_images_enabled',
     ];
 
     public function update(SiteSetting $settings, array $data): SiteSetting
@@ -33,6 +34,11 @@ class SiteSettingService
         // Un theme absent ou vide ne change rien (la colonne est NOT NULL).
         if (blank($data['theme'] ?? null)) {
             unset($data['theme']);
+        }
+
+        // Une taille vide ne change rien (la colonne est NOT NULL).
+        if (blank($data['contact_images_max_mb'] ?? null)) {
+            unset($data['contact_images_max_mb']);
         }
 
         if (filled($deleteCode)) {

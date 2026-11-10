@@ -20,5 +20,20 @@
         </div>
     @endif
 
+    @if ($message->attachments->isNotEmpty())
+        <div class="border rounded p-4 mb-6">
+            <p class="font-medium mb-2">Images jointes ({{ $message->attachments->count() }})</p>
+            <ul class="space-y-1">
+                @foreach ($message->attachments as $file)
+                    <li class="flex flex-wrap items-center gap-x-3">
+                        <span class="break-all">{{ $file->original_name }}</span>
+                        <span class="text-sm text-base-content/60">{{ number_format($file->size / 1024, 0, ',', ' ') }} Ko</span>
+                        <a href="{{ route('admin.messages.attachments.show', [$message, $file]) }}" class="link link-primary">T&eacute;l&eacute;charger</a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <x-admin.button href="mailto:{{ $message->email }}?subject={{ rawurlencode('Re: '.($message->subject ?: 'Votre message')) }}">R&eacute;pondre</x-admin.button>
 </x-admin.layout>
