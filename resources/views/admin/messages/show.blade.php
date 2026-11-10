@@ -38,5 +38,12 @@
         </div>
     @endif
 
-    <x-admin.button href="mailto:{{ $message->email }}?subject={{ rawurlencode('Re: '.($message->subject ?: 'Votre message')) }}">R&eacute;pondre</x-admin.button>
+    <div class="flex flex-wrap items-center gap-3">
+        <x-admin.button href="mailto:{{ $message->email }}?subject={{ rawurlencode('Re: '.($message->subject ?: 'Votre message')) }}">R&eacute;pondre</x-admin.button>
+        <form method="POST" action="{{ route('admin.messages.destroy', $message) }}" onsubmit="return confirm('Supprimer ce message et ses images ? Cette action est d&eacute;finitive.')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-error btn-sm text-white">Supprimer</button>
+        </form>
+    </div>
 </x-admin.layout>

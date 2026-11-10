@@ -20,4 +20,8 @@ return [
 
     // Duree de conservation des images, en jours (0 = illimitee). Voir contact:prune-images.
     'retention_days' => (int) env('CONTACT_IMAGES_RETENTION_DAYS', 90),
+
+    // Duree de conservation des messages eux-memes (nom, e-mail), en jours (0 = illimitee).
+    // Voir contact:prune-messages. Ne pas garder des donnees personnelles plus longtemps que necessaire.
+    'message_retention_days' => (int) env('CONTACT_MESSAGES_RETENTION_DAYS', 365),
 ];

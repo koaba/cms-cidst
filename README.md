@@ -121,7 +121,7 @@ Trois niveaux : public ; authentifié + rôle Super Admin **ou** Publication (ar
 | Images jointes | Désactivées par défaut. Réglages (Super Admin) : interrupteur et taille maximale par image (1 à 10 Mo, 5 par défaut). `config/contact.php` : 3 images, 3000 px de côté, qualité 85, conservation `retention_days` (90 ; variable `CONTACT_IMAGES_RETENTION_DAYS`, `0` = illimitée). |
 | Traitement | `Services\Contact\ContactImageStore` : type et dimensions lus avant tout décodage ; image refusée si la mémoire disponible ne suffit pas (8 octets par pixel) ; ré-encodage GD (le fichier d'origine n'est jamais conservé : code caché et EXIF, dont le GPS, disparaissent) ; rotation EXIF ; nom aléatoire sur le disque privé `local` (`storage/app/private/contact`). Toute image écartée écrit un avertissement `contact.image_discarded` (raison et id du message). |
 | Administration | Liste (trombone et nombre d'images), page d'un message (miniature cliquable, téléchargement). Routes `admin.messages.attachments.show` et `.preview` : Super Admin seul, 404 si l'image n'appartient pas au message. |
-| Suppression des fichiers | Événement `deleting` de `ContactAttachment` et de `ContactMessage` : **toujours supprimer par modèle, jamais en masse** (la cascade SQL et `query()->delete()` ne déclenchent aucun événement et laisseraient les fichiers). Purge planifiée `contact:prune-images` (les messages restent). Aucune interface de suppression de message à ce jour. |
+| Suppression des fichiers | Événement `deleting` de `ContactAttachment` et de `ContactMessage` : **toujours supprimer par modèle, jamais en masse** (la cascade SQL et `query()->delete()` ne déclenchent aucun événement et laisseraient les fichiers). Purge planifiée `contact:prune-images` (les messages restent, 90 jours) et `contact:prune-messages` (supprime le message entier, 365 jours par défaut, variable `CONTACT_MESSAGES_RETENTION_DAYS`). Le Super Admin supprime un message depuis la liste ou la page du message (confirmation, par modèle). |
 | Adresse publique | Réglage `contact_public_email` : affichée sous le champ lien pour l'envoi d'un PDF par e-mail ; vide, rien ne s'affiche. |
 | Contrôle d'environnement | `app:check-environment` : ligne `contact_images`, seulement si les images sont activées (`upload_max_filesize`, `post_max_size`, GD avec JPEG, PNG et WebP). |
 
@@ -189,6 +189,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 | `app:check-environment` | Vérifie l'environnement du serveur |
 | `page-views:prune` | Purge les anciennes vues (planifiée chaque semaine) |
 | `audience:prune` | Purge le détail de l'audience au-delà de 13 mois (planifiée chaque jour) |
+| `contact:prune-messages [--days=N]` | Supprime les messages de contact plus vieux que la durée de conservation, images et fichiers compris (défaut : `CONTACT_MESSAGES_RETENTION_DAYS`, 365 jours ; `0` = illimitée). Planifiée chaque jour |
 | `contact:prune-images [--days=N]` | Supprime les images jointes plus vieilles que la durée de conservation (défaut : `CONTACT_IMAGES_RETENTION_DAYS`, 90 jours ; `0` = illimitée) ; les messages restent. Planifiée chaque jour |
 
 ## 5. Conventions de développement
@@ -281,7 +282,7 @@ Déjà en place :
 
 ## 9. Exploitation
 
-- **Planification** : `page-views:prune` (chaque semaine), `audience:prune` (chaque jour, conserve 13 mois de détail) et `contact:prune-images` (chaque jour) sont planifiées dans `routes/console.php`. Sans le cron chaque minute `php artisan schedule:run`, aucune des trois ne tourne.
+- **Planification** : `page-views:prune` (chaque semaine), `audience:prune` (chaque jour, conserve 13 mois de détail), `contact:prune-images` et `contact:prune-messages` (chaque jour) sont planifiées dans `routes/console.php`. Sans le cron chaque minute `php artisan schedule:run`, aucune des quatre ne tourne.
 - **File d'attente** : sans worker permanent, utiliser `queue:work` supervisé, ou `queue:work --stop-when-empty` lancé par cron. Sans cela, miniatures et variantes d'images ne sont jamais générées.
 - **Choix d'hébergement** (mutualisé ou VPS) : non tranché. Il ne change que la façon de lancer le worker et le cron ; les contrôles de production les vérifient par leur effet, quel que soit l'hébergeur.
 - **Base de données** : MySQL 8.4 LTS ou MariaDB en production (disponible sur tout hébergement mutualisé). SQLite n'est utilisé qu'en mémoire pour les tests ; la CI contrôle en plus la suite sur MySQL 8.4.
@@ -330,7 +331,7 @@ Déjà en place :
 ### Prochaines étapes (ordre proposé)
 
 1. **CI** : nouvelle tentative automatique sur `apt-get`, `composer audit`, tests de fumée navigateur sur le builder. Larastan tourne en CI et dans le hook `pre-push` (Pint, Larastan, Pest) depuis le 9 novembre 2026.
-2. **Contact (suite)** : test navigateur A1 à A4 fait le 10 novembre 2026. À faire : interface de **suppression d'un message** (par modèle) et politique de conservation des messages eux-mêmes (nom, e-mail, `ip_hash` ; RGPD) ; durée de conservation des images réglable dans les Réglages (aujourd'hui : variable d'environnement) ; à décider : réduction des photos dans le navigateur avant l'envoi (les photos de téléphone de 4032 x 3024 px dépassent la limite de 3000 px).
+2. **Contact (suite)** : test navigateur A1 à A4 fait le 10 novembre 2026. À faire : durées de conservation (images et messages) réglables dans les Réglages (aujourd'hui : variable d'environnement) ; à décider : réduction des photos dans le navigateur avant l'envoi (les photos de téléphone de 4032 x 3024 px dépassent la limite de 3000 px).
 3. **Boutons** : composant Blade `<x-button>` inspiré de shadcn/ui, adapté à Tailwind 3 (ne pas lancer `npx shadcn`, le projet n'est pas en React ni en Tailwind 4). Variantes `default`, `outline`, `secondary`, `ghost`, `destructive`, `link` ; tailles `xs`, `sm`, `default`, `lg`, `icon` ; un lien est une vraie balise `<a>` portant les mêmes classes, jamais `role="button"`.
 4. **Thèmes, surfaces** : fond, surfaces, bordures, muted et arrondi deviennent des variables (dans les configs Tailwind, seules les définitions changent, pas les usages dans les vues). Contour des champs de formulaire à au moins 3:1.
 5. **SEO restant** : relire `config/seo.php` ; valider les JSON-LD (Rich Results Test) et mesurer Lighthouse ; champ `og_image` dans l'administration avec le sélecteur de médias existant (`MediaPicker`, mode `single`) et contrôle d'existence du média ; SEO de `documents.show` ; le titre de `/documents` ne suit pas `pdf_documents_title` ; pages de catégorie dans le sitemap (observers sur `Category` et `PdfCategory`) ; fil d'Ariane d'un article sans sa catégorie ; textes SEO éditables (colonne JSON, repli sur `config/seo.php`).

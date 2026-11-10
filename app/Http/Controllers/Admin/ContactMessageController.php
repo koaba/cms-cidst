@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ContactAttachment;
 use App\Models\ContactMessage;
 use App\Services\Contact\ContactImageStore;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -26,6 +27,14 @@ class ContactMessageController extends Controller
         $message->load('attachments');
 
         return view('admin.messages.show', compact('message'));
+    }
+
+    public function destroy(ContactMessage $message): RedirectResponse
+    {
+        // Suppression par modele : l'evenement `deleting` retire aussi les fichiers des images.
+        $message->delete();
+
+        return redirect()->route('admin.messages.index')->with('success', "Message supprim\u{e9}.");
     }
 
     public function attachment(ContactMessage $message, ContactAttachment $attachment): StreamedResponse
