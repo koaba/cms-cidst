@@ -19,6 +19,7 @@ class ContactController extends Controller
             'imagesEnabled' => $settings->contact_images_enabled,
             'imagesMaxMb' => max(1, (int) $settings->contact_images_max_mb),
             'imagesMaxFiles' => (int) config('contact.max_files'),
+            'publicEmail' => filled($settings->contact_public_email) ? $settings->contact_public_email : null,
         ]);
     }
 
