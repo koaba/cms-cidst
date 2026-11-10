@@ -33,30 +33,44 @@ class ContactController extends Controller
         $message->ip_hash = hash_hmac('sha256', (string) $request->ip(), (string) config('app.key'));
         $message->save();
 
-        // Reencodage apres la reponse : le visiteur n'attend pas GD.
+        // Alerte d'abord : un echec du traitement d'image (memoire, erreur fatale) ne doit jamais la supprimer.
+        $this->deferAlert($message);
+        $this->deferImages($request, $message);
+
+        return redirect()->route('contact.show')->with('success', true);
+    }
+
+    /**
+     * Envoi apres la reponse : un SMTP lent ne fait pas attendre le visiteur.
+     * defer() isole l'echec (signale, jamais montre au visiteur) ; alerted_at reste alors vide.
+     */
+    private function deferAlert(ContactMessage $message): void
+    {
+        defer(function () use ($message) {
+            Mail::to(config('mail.from.address'))->send(new ContactAlert);
+            $message->forceFill(['alerted_at' => now()])->save();
+        });
+    }
+
+    /** Reencodage apres la reponse : le visiteur n'attend pas GD. */
+    private function deferImages(ContactMessageRequest $request, ContactMessage $message): void
+    {
         $images = collect($request->file('images', []))
             ->map(fn ($file) => ['path' => $file->getRealPath(), 'name' => $file->getClientOriginalName()])
             ->filter(fn ($image) => $image['path'] !== false)
             ->values()
             ->all();
 
-        if ($images !== []) {
-            defer(function () use ($message, $images) {
-                $store = app(ContactImageStore::class);
-
-                foreach ($images as $image) {
-                    $store->store($image['path'], $image['name'], $message);
-                }
-            });
+        if ($images === []) {
+            return;
         }
 
-        // Envoi apres la reponse : un SMTP lent ne fait pas attendre le visiteur.
-        // defer() isole l'echec (signale, jamais montre au visiteur) ; alerted_at reste alors vide.
-        defer(function () use ($message) {
-            Mail::to(config('mail.from.address'))->send(new ContactAlert);
-            $message->forceFill(['alerted_at' => now()])->save();
-        });
+        defer(function () use ($message, $images) {
+            $store = app(ContactImageStore::class);
 
-        return redirect()->route('contact.show')->with('success', true);
+            foreach ($images as $image) {
+                $store->store($image['path'], $image['name'], $message);
+            }
+        });
     }
 }
