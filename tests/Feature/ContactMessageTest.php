@@ -82,3 +82,48 @@ it('envoie l alerte apres la reponse et non pendant la requete', function () {
     Mail::assertSentCount(1);
     expect(ContactMessage::first()->alerted_at)->not->toBeNull();
 });
+
+it('enregistre un lien de document https facultatif', function () {
+    Mail::fake();
+    $link = 'https://drive.google.com/file/d/abc/view';
+
+    $this->post('/contact', contactPayload(['attachment_link' => $link]))->assertRedirect()->assertSessionHasNoErrors();
+
+    expect(ContactMessage::first()->attachment_link)->toBe($link);
+});
+
+it('refuse un lien qui n est pas en https', function (string $link) {
+    $this->post('/contact', contactPayload(['attachment_link' => $link]))->assertSessionHasErrors('attachment_link');
+
+    expect(ContactMessage::count())->toBe(0);
+})->with([
+    'http' => 'http://example.com/f.pdf',
+    'javascript' => 'javascript:alert(1)',
+    'ftp' => 'ftp://example.com/f.pdf',
+    'file' => 'file:///etc/passwd',
+    'texte' => 'pas un lien',
+]);
+
+it('refuse un lien de plus de 500 caracteres', function () {
+    $this->post('/contact', contactPayload(['attachment_link' => 'https://example.com/'.str_repeat('a', 500)]))
+        ->assertSessionHasErrors('attachment_link');
+});
+
+it('affiche la consigne de partage sur le formulaire', function () {
+    $this->get('/contact')
+        ->assertOk()
+        ->assertSee('name="attachment_link"', false)
+        ->assertSee('Google Drive', false);
+});
+
+it('affiche le lien dans l administration avec un rel securise', function () {
+    $m = ContactMessage::create([
+        'name' => 'Jean', 'email' => 'jean@example.com', 'subject' => 'Doc', 'message' => 'Un message assez long.',
+        'attachment_link' => 'https://drive.google.com/x',
+    ]);
+
+    $this->actingAs(adminUser())->get(route('admin.messages.show', $m))
+        ->assertOk()
+        ->assertSee('https://drive.google.com/x', false)
+        ->assertSee('rel="noopener noreferrer nofollow"', false);
+});

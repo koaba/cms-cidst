@@ -28,6 +28,12 @@
                 <textarea id="message" name="message" rows="6" required class="w-full border border-cidst-border rounded p-2">{{ old('message') }}</textarea>
                 @error('message') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
+            <div>
+                <label for="attachment_link" class="block font-medium mb-1 text-cidst-ink">Lien vers un document <span class="font-normal text-cidst-muted">(facultatif)</span></label>
+                <input id="attachment_link" type="url" name="attachment_link" value="{{ old('attachment_link') }}" maxlength="500" placeholder="https://drive.google.com/..." aria-describedby="attachment_link_help" class="w-full border border-cidst-border rounded p-2">
+                <p id="attachment_link_help" class="mt-1 text-sm text-cidst-muted">Pour joindre un fichier (PDF, document, etc.), d&eacute;posez-le sur Google Drive, Dropbox ou OneDrive, puis collez ici le lien de partage. Nous pourrons ainsi le t&eacute;l&eacute;charger sur notre ordinateur, sans passer par le site.</p>
+                @error('attachment_link') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            </div>
             <button type="submit" class="inline-flex items-center rounded bg-cidst-red px-5 py-2 font-medium text-white hover:opacity-90">Envoyer</button>
         </form>
     </div>

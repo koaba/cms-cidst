@@ -11,5 +11,14 @@
 
     <div class="border rounded p-4 mb-6 whitespace-pre-line">{{ $message->message }}</div>
 
+    @if ($message->attachment_link && str_starts_with($message->attachment_link, 'https://'))
+        <div class="border rounded p-4 mb-6">
+            <p class="font-medium mb-1">Document partag&eacute; par le visiteur</p>
+            <p class="text-sm break-all mb-2">{{ $message->attachment_link }}</p>
+            <a href="{{ $message->attachment_link }}" target="_blank" rel="noopener noreferrer nofollow" class="link link-primary">Ouvrir le lien (nouvel onglet)</a>
+            <p class="text-sm text-base-content/60 mt-2">N'ouvrez ce lien que si vous connaissez l'exp&eacute;diteur.</p>
+        </div>
+    @endif
+
     <x-admin.button href="mailto:{{ $message->email }}?subject={{ rawurlencode('Re: '.($message->subject ?: 'Votre message')) }}">R&eacute;pondre</x-admin.button>
 </x-admin.layout>
