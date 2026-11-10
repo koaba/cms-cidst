@@ -4,6 +4,7 @@ namespace App\Blocks\Rules;
 
 use App\Contracts\BlockRules;
 use App\Models\PageBlock;
+use App\Rules\SafeLinkUrl;
 use Illuminate\Http\Request;
 
 class BoutonRules implements BlockRules
@@ -12,7 +13,7 @@ class BoutonRules implements BlockRules
     {
         return [
             'label' => 'required|string|max:100',
-            'url' => 'required|string|max:255',
+            'url' => ['required', 'string', 'max:255', new SafeLinkUrl],
             'style' => 'nullable|in:primaire,secondaire,outline',
             'new_tab' => 'nullable|boolean',
         ];

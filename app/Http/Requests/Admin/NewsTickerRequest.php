@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Rules\SafeLinkUrl;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -20,7 +21,7 @@ class NewsTickerRequest extends FormRequest
     {
         return [
             'content' => 'required|string|max:255',
-            'link_url' => 'nullable|string|max:255',
+            'link_url' => ['nullable', 'string', 'max:255', new SafeLinkUrl],
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ];
