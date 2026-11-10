@@ -16,7 +16,6 @@ beforeEach(function () {
     ob_start();
     imagepng($logo);
     $logoContent = ob_get_clean();
-    imagedestroy($logo);
 
     Storage::disk('public')->put(config('watermark.logo_path'), $logoContent);
 });
@@ -27,7 +26,6 @@ it('applique le filigrane sur une image et conserve ses dimensions', function ()
     ob_start();
     imagejpeg($image);
     $imageContent = ob_get_clean();
-    imagedestroy($image);
 
     Storage::disk('public')->put('test/base.jpg', $imageContent);
 
@@ -54,7 +52,6 @@ it('retourne false si le logo de filigrane est introuvable', function () {
     ob_start();
     imagejpeg($image);
     $imageContent = ob_get_clean();
-    imagedestroy($image);
 
     Storage::disk('public')->put('test/base2.jpg', $imageContent);
 

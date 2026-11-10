@@ -111,6 +111,22 @@ Trois niveaux : public ; authentifié + rôle Super Admin **ou** Publication (ar
 | `Middleware\SecurityHeaders` | En-têtes de sécurité HTTP, appliqué au groupe `web` dans `bootstrap/app.php`. |
 | Middleware `track.view` | Suivi des vues (aujourd'hui limité à `blog.show`). |
 
+### Formulaire de contact
+
+`ContactController::store` valide (`ContactMessageRequest`), enregistre un `ContactMessage` (`ip_hash` = HMAC de l'adresse IP, jamais l'IP elle-même), puis lance deux `defer()` **dans cet ordre** : l'alerte e-mail (`ContactAlert` vers `mail.from.address`, qui renseigne `alerted_at`), puis le traitement des images. Un échec est journalisé et jamais montré au visiteur. Anti-spam : champ piège `website` et `throttle:5,1`.
+
+| Fonction | Détail |
+|---|---|
+| Lien de document | `attachment_link`, `https` seulement, 500 caractères. Affiché en administration avec `rel="noopener noreferrer nofollow"`. |
+| Images jointes | Désactivées par défaut. Réglages (Super Admin) : interrupteur et taille maximale par image (1 à 10 Mo, 5 par défaut). `config/contact.php` : 3 images, 3000 px de côté, qualité 85, conservation `retention_days` (90 ; variable `CONTACT_IMAGES_RETENTION_DAYS`, `0` = illimitée). |
+| Traitement | `Services\Contact\ContactImageStore` : type et dimensions lus avant tout décodage ; image refusée si la mémoire disponible ne suffit pas (8 octets par pixel) ; ré-encodage GD (le fichier d'origine n'est jamais conservé : code caché et EXIF, dont le GPS, disparaissent) ; rotation EXIF ; nom aléatoire sur le disque privé `local` (`storage/app/private/contact`). Toute image écartée écrit un avertissement `contact.image_discarded` (raison et id du message). |
+| Administration | Liste (trombone et nombre d'images), page d'un message (miniature cliquable, téléchargement). Routes `admin.messages.attachments.show` et `.preview` : Super Admin seul, 404 si l'image n'appartient pas au message. |
+| Suppression des fichiers | Événement `deleting` de `ContactAttachment` et de `ContactMessage` : **toujours supprimer par modèle, jamais en masse** (la cascade SQL et `query()->delete()` ne déclenchent aucun événement et laisseraient les fichiers). Purge planifiée `contact:prune-images` (les messages restent). Aucune interface de suppression de message à ce jour. |
+| Adresse publique | Réglage `contact_public_email` : affichée sous le champ lien pour l'envoi d'un PDF par e-mail ; vide, rien ne s'affiche. |
+| Contrôle d'environnement | `app:check-environment` : ligne `contact_images`, seulement si les images sont activées (`upload_max_filesize`, `post_max_size`, GD avec JPEG, PNG et WebP). |
+
+Politique : seules les images sont reçues directement (ré-encodées, jamais servies publiquement) ; ni PDF ni Word envoyés par le visiteur ; aucune pièce jointe dans l'alerte e-mail. ClamAV est repoussé (1 à 1,5 Go de RAM en permanence) : à n'envisager que sur un VPS d'au moins 4 Go, et seulement si les PDF de visiteurs deviennent nécessaires. Hébergement mutualisé déconseillé (limites PHP basses, `defer()` peu utile sans PHP-FPM) ; VPS avec PHP-FPM recommandé.
+
 ### Pages composées de blocs
 
 - Une page est composée de `PageBlock` ordonnés et imbriquables (colonnes, accordéon). Chaque type de bloc a une classe de règles (`app/Blocks/Rules`), une entrée dans `BlockRegistry`, une entrée dans `BlockFieldCatalog` (si éditable), un partial admin et un partial public.
@@ -172,6 +188,8 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 | `blocks:audit-phantom-columns` | Audit des blocs colonnes (voir `AuditPhantomColumnBlocks`) |
 | `app:check-environment` | Vérifie l'environnement du serveur |
 | `page-views:prune` | Purge les anciennes vues (planifiée chaque semaine) |
+| `audience:prune` | Purge le détail de l'audience au-delà de 13 mois (planifiée chaque jour) |
+| `contact:prune-images [--days=N]` | Supprime les images jointes plus vieilles que la durée de conservation (défaut : `CONTACT_IMAGES_RETENTION_DAYS`, 90 jours ; `0` = illimitée) ; les messages restent. Planifiée chaque jour |
 
 ## 5. Conventions de développement
 
@@ -226,7 +244,7 @@ En cas d'erreur serveur inexpliquée, lire `storage/logs/laravel.log` (heure de 
 
 ## 7. Tests et intégration continue
 
-- **Local** : `./vendor/bin/pest --parallel --compact` (4 processus, environ 1,5 min sous Windows ; sans `--parallel`, 4 à 6 min). **1065 tests (3015 assertions)** à `68bca36`, sur SQLite en mémoire.
+- **Local** : `./vendor/bin/pest --parallel --compact` (4 processus, environ 1,5 min sous Windows ; sans `--parallel`, 4 à 6 min). **1149 tests (3222 assertions)** à `69ad7fe`, sur SQLite en mémoire.
 - **Hooks Husky** : pre-commit `php -l` ; pre-push `pint --test`, Larastan puis `pest --parallel --compact` complet (environ 2 à 3 minutes ; la CI reste séquentielle, c'est la référence). Le push est bloqué sur toute erreur de style ou de test.
 - **GitHub Actions** (`.github/workflows/tests.yml`), sur push et pull_request :
   - `tests` : matrice PHP 8.3 / 8.4 / 8.5 (`fail-fast` désactivé), Poppler installé, Pint sur 8.3 seulement, Pest sur SQLite ;
@@ -247,6 +265,7 @@ Déjà en place :
 - **Dernier Super Admin protégé** (`User::isLastSuperAdmin()`) ; **compte auteur de contenu non supprimable** (`User::ownsContent()`) ; un Super Admin ne supprime pas son propre compte.
 - **`confirm.delete`** (`ConfirmDeleteCode`) : le rôle Publication doit fournir le champ `delete_code` pour supprimer un article ou une page ; le Super Admin en est exempté. Le code est haché dans `SiteSetting.delete_code_hash` et se définit dans les réglages, **8 caractères minimum** (les codes plus anciens restent valides).
 - **Limitation des tentatives du code de suppression** : clé `confirm-delete:<id utilisateur>` (repli sur l'IP), 5 échecs en 900 secondes, puis refus même avec le bon code ; un code correct remet le compteur à zéro ; refus par redirection avec erreur sur `delete_code` (pas de 429) ; un envoi sans code compte comme un échec ; compteur en cache (base) en production.
+- **Images jointes du contact** : désactivées par défaut (l'interrupteur des Réglages sert de coupe-circuit) ; type réel et dimensions contrôlés avant décodage, ré-encodage GD, disque privé, nom aléatoire, accès Super Admin seul, purge planifiée (voir [Formulaire de contact](#formulaire-de-contact)).
 - **JSON-LD** : encodage anti-injection (`JSON_HEX_TAG`, `JSON_HEX_AMP`) dans `SeoService::jsonLd()`.
 
 À prévoir :
@@ -262,7 +281,7 @@ Déjà en place :
 
 ## 9. Exploitation
 
-- **Planification** : `page-views:prune` (chaque semaine) et `audience:prune` (chaque jour, conserve 13 mois de détail) sont planifiées dans `routes/console.php`. Sans le cron chaque minute `php artisan schedule:run`, aucune des deux ne tourne.
+- **Planification** : `page-views:prune` (chaque semaine), `audience:prune` (chaque jour, conserve 13 mois de détail) et `contact:prune-images` (chaque jour) sont planifiées dans `routes/console.php`. Sans le cron chaque minute `php artisan schedule:run`, aucune des trois ne tourne.
 - **File d'attente** : sans worker permanent, utiliser `queue:work` supervisé, ou `queue:work --stop-when-empty` lancé par cron. Sans cela, miniatures et variantes d'images ne sont jamais générées.
 - **Choix d'hébergement** (mutualisé ou VPS) : non tranché. Il ne change que la façon de lancer le worker et le cron ; les contrôles de production les vérifient par leur effet, quel que soit l'hébergeur.
 - **Base de données** : MySQL 8.4 LTS ou MariaDB en production (disponible sur tout hébergement mutualisé). SQLite n'est utilisé qu'en mémoire pour les tests ; la CI contrôle en plus la suite sur MySQL 8.4.
@@ -311,18 +330,19 @@ Déjà en place :
 ### Prochaines étapes (ordre proposé)
 
 1. **CI** : nouvelle tentative automatique sur `apt-get`, `composer audit`, tests de fumée navigateur sur le builder. Larastan tourne en CI et dans le hook `pre-push` (Pint, Larastan, Pest) depuis le 9 novembre 2026.
-2. **Boutons** : composant Blade `<x-button>` inspiré de shadcn/ui, adapté à Tailwind 3 (ne pas lancer `npx shadcn`, le projet n'est pas en React ni en Tailwind 4). Variantes `default`, `outline`, `secondary`, `ghost`, `destructive`, `link` ; tailles `xs`, `sm`, `default`, `lg`, `icon` ; un lien est une vraie balise `<a>` portant les mêmes classes, jamais `role="button"`.
-3. **Thèmes, surfaces** : fond, surfaces, bordures, muted et arrondi deviennent des variables (dans les configs Tailwind, seules les définitions changent, pas les usages dans les vues). Contour des champs de formulaire à au moins 3:1.
-4. **SEO restant** : relire `config/seo.php` ; valider les JSON-LD (Rich Results Test) et mesurer Lighthouse ; champ `og_image` dans l'administration avec le sélecteur de médias existant (`MediaPicker`, mode `single`) et contrôle d'existence du média ; SEO de `documents.show` ; le titre de `/documents` ne suit pas `pdf_documents_title` ; pages de catégorie dans le sitemap (observers sur `Category` et `PdfCategory`) ; fil d'Ariane d'un article sans sa catégorie ; textes SEO éditables (colonne JSON, repli sur `config/seo.php`).
-5. **Nettoyage** : `Http/Controllers/ArticleController` (public) utilise `SavesSeoMeta` sans enregistrer de SEO (code mort, commit `chore:` séparé).
-6. **`confirm.delete`** : décider de l'extension aux sliders, bandeaux et blocs, puis l'implémenter test d'abord.
-7. **Page Builder** : `BlockDuplicator` côté serveur (annuler, dupliquer, copier-coller) **avant** toute interface, puis fusion des deux éditeurs de blocs. Chantier le plus risqué, à ne lancer qu'avec une CI solide.
-8. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), les `gray-*`, `indigo-*` et `dark:` de Breeze sont migrés (garde : NoHardcodedGrayTest).
-9. Suppression des médias inutilisés (Super Admin, refus si `isInUse`, boucle sur les modèles).
-10. Suivi des visites : filtre des robots (test d'abord), puis accueil et pages. Seule `blog.show` porte `track.view:article`, donc les chiffres sont incomplets et possiblement gonflés.
-11. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Le lot `AudienceController` / `DashboardPeriod` est fait : périodes en jours entiers, sans Global, minuit heure de Madagascar.
-12. Polices auto-hébergées, rapport CSV.
-13. Déploiement, en dernier (section 10). Hébergeur non tranché (mutualisé ou VPS) : les contrôles de `php artisan app:check-environment` valent pour les deux. Critère de réussite : zéro erreur avec `APP_ENV=production`, et le battement du planificateur visible après une minute de cron.
+2. **Contact (suite)** : test navigateur A1 à A4 fait le 10 novembre 2026. À faire : interface de **suppression d'un message** (par modèle) et politique de conservation des messages eux-mêmes (nom, e-mail, `ip_hash` ; RGPD) ; durée de conservation des images réglable dans les Réglages (aujourd'hui : variable d'environnement) ; à décider : réduction des photos dans le navigateur avant l'envoi (les photos de téléphone de 4032 x 3024 px dépassent la limite de 3000 px).
+3. **Boutons** : composant Blade `<x-button>` inspiré de shadcn/ui, adapté à Tailwind 3 (ne pas lancer `npx shadcn`, le projet n'est pas en React ni en Tailwind 4). Variantes `default`, `outline`, `secondary`, `ghost`, `destructive`, `link` ; tailles `xs`, `sm`, `default`, `lg`, `icon` ; un lien est une vraie balise `<a>` portant les mêmes classes, jamais `role="button"`.
+4. **Thèmes, surfaces** : fond, surfaces, bordures, muted et arrondi deviennent des variables (dans les configs Tailwind, seules les définitions changent, pas les usages dans les vues). Contour des champs de formulaire à au moins 3:1.
+5. **SEO restant** : relire `config/seo.php` ; valider les JSON-LD (Rich Results Test) et mesurer Lighthouse ; champ `og_image` dans l'administration avec le sélecteur de médias existant (`MediaPicker`, mode `single`) et contrôle d'existence du média ; SEO de `documents.show` ; le titre de `/documents` ne suit pas `pdf_documents_title` ; pages de catégorie dans le sitemap (observers sur `Category` et `PdfCategory`) ; fil d'Ariane d'un article sans sa catégorie ; textes SEO éditables (colonne JSON, repli sur `config/seo.php`).
+6. **Nettoyage** : `Http/Controllers/ArticleController` (public) utilise `SavesSeoMeta` sans enregistrer de SEO (code mort, commit `chore:` séparé).
+7. **`confirm.delete`** : décider de l'extension aux sliders, bandeaux et blocs, puis l'implémenter test d'abord.
+8. **Page Builder** : `BlockDuplicator` côté serveur (annuler, dupliquer, copier-coller) **avant** toute interface, puis fusion des deux éditeurs de blocs. Chantier le plus risqué, à ne lancer qu'avec une CI solide.
+9. **Tableau de bord** : thème personnalisable (variables CSS depuis `SiteSetting`, composants Blade, mode sombre), sidebar (icônes, groupes, `aria-current`), les `gray-*`, `indigo-*` et `dark:` de Breeze sont migrés (garde : NoHardcodedGrayTest).
+10. Suppression des médias inutilisés (Super Admin, refus si `isInUse`, boucle sur les modèles).
+11. Suivi des visites : filtre des robots (test d'abord), puis accueil et pages. Seule `blog.show` porte `track.view:article`, donc les chiffres sont incomplets et possiblement gonflés.
+12. Années civiles `?year=2025` (décision en attente ; recommandation : année en cours jusqu'au mois courant, logique dans `DashboardPeriod`). Le lot `AudienceController` / `DashboardPeriod` est fait : périodes en jours entiers, sans Global, minuit heure de Madagascar.
+13. Polices auto-hébergées, rapport CSV.
+14. Déploiement, en dernier (section 10). Hébergeur non tranché (mutualisé ou VPS) : les contrôles de `php artisan app:check-environment` valent pour les deux. Critère de réussite : zéro erreur avec `APP_ENV=production`, et le battement du planificateur visible après une minute de cron.
 
 ### Dette connue
 
