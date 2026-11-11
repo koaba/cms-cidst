@@ -183,6 +183,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 | `media:prune` | Supprime les médias liés à aucun contenu |
 | `media:backfill-dimensions [--dry-run]` | Renseigne `width` et `height` des images existantes (idempotente) |
 | `media:backfill-variants` | Génère les variantes d'images manquantes |
+| `media:convert-webp [--force] [--dry-run] [--limit=N]` | Convertit en WebP les JPEG et PNG déjà présents (médias, logo, sliders, articles, image sociale), réécrit les chemins en base puis supprime les originaux. Simule par défaut : faire une sauvegarde avant `--force` ; commencer par `--limit=5` |
 | `articles:migrate-to-media [--dry-run]` | Migre les images d'articles vers la médiathèque |
 | `sliders:migrate-to-media [--dry-run]` | Migre les images de sliders vers la médiathèque |
 | `app:migrate-videos-to-media [--dry-run]` | Migre les vidéos vers la médiathèque |
