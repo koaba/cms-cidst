@@ -17,9 +17,17 @@
             @if($settings->logo_path)
                 <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo actuel" class="h-16 mb-2">
             @endif
-            <input type="file" name="logo" accept="image/*" class="w-full border rounded p-2">
-            <p class="text-xs text-base-content/60 mt-1">PNG avec fond transparent recommandé. Laisse vide pour conserver le logo actuel.</p>
+            <input type="file" name="logo" accept="image/jpeg,image/png,image/webp" class="w-full border rounded p-2">
+            <p class="text-xs text-base-content/60 mt-1">PNG ou WebP avec fond transparent recommandé (un JPEG garde un fond plein). Converti en WebP à l'envoi. Laisse vide pour conserver le logo actuel.</p>
             @error('logo') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label for="logo_height" class="block font-medium mb-1">Hauteur du logo dans le menu (px)</label>
+            <input type="number" id="logo_height" name="logo_height" min="24" max="72" step="1"
+                   value="{{ old('logo_height', $settings->logo_height) }}" class="w-32 border rounded p-2">
+            <p class="text-xs text-base-content/60 mt-1">Entre 24 et 72 px (48 par défaut). La largeur suit les proportions du logo.</p>
+            @error('logo_height') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 
         <fieldset>
