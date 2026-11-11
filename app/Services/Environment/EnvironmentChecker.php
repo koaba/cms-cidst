@@ -40,6 +40,7 @@ class EnvironmentChecker
             $this->extensions(),
             $this->gdWebp(),
             $this->contactImages(),
+            $this->watermarkLogo(),
             $this->writable(),
             $this->database(),
             $this->procOpen(),
@@ -119,6 +120,14 @@ class EnvironmentChecker
         return $problems === []
             ? $this->result('contact_images', 'ok', "Images jointes : GD et limites PHP suffisants (upload_max_filesize = {$uploadRaw}, post_max_size = {$postRaw}).")
             : $this->result('contact_images', 'warning', 'Images jointes du formulaire de contact : '.implode(' ; ', $problems).'.');
+    }
+
+    private function watermarkLogo(): array
+    {
+        // Sonde absente : rien n'a ete mesure, on ne signale rien.
+        return ($this->probe['watermark_logo'] ?? true)
+            ? $this->result('watermark_logo', 'ok', 'Logo de filigrane present.')
+            : $this->result('watermark_logo', 'warning', 'Logo de filigrane absent du disque public : les images et PDF seront enregistres sans filigrane. Lancer `php artisan watermark:install-logo`.');
     }
 
     private function writable(): array
