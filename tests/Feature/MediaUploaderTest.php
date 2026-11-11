@@ -13,7 +13,7 @@ it('stocke le fichier sur le disque public et cree le Media', function () {
     expect($media)->toBeInstanceOf(Media::class)
         ->and($media->exists)->toBeTrue()
         ->and($media->original_name)->toBe('photo.jpg')
-        ->and($media->mime_type)->toBe('image/jpeg')
+        ->and($media->mime_type)->toBe(Storage::disk('public')->mimeType($media->path))
         ->and($media->size)->toBeGreaterThan(0)
         ->and($media->path)->toStartWith('pages/');
 
@@ -56,7 +56,8 @@ it('execute le hook sur le fichier stocke avant la creation du Media', function 
         },
     );
 
-    expect($received)->toBe($media->path);
+    // Le hook voit le fichier d'origine ; le Media peut pointer vers sa version WebP (meme nom, autre extension).
+    expect(pathinfo($received, PATHINFO_FILENAME))->toBe(pathinfo($media->path, PATHINFO_FILENAME));
 });
 
 it('relit la taille du fichier apres le hook', function () {
