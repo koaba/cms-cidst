@@ -17,8 +17,8 @@
             @if($settings->logo_path)
                 <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo actuel" class="h-16 mb-2">
             @endif
-            <input type="file" name="logo" accept="image/jpeg,image/png,image/webp" class="w-full border rounded p-2">
-            <p class="text-xs text-base-content/60 mt-1">PNG ou WebP avec fond transparent recommandé (un JPEG garde un fond plein). Converti en WebP à l'envoi. Laisse vide pour conserver le logo actuel.</p>
+            <input type="file" name="logo" accept="image/jpeg,image/png" class="w-full border rounded p-2">
+            <p class="text-xs text-base-content/60 mt-1">PNG avec fond transparent recommandé (un JPEG garde un fond plein). Converti en WebP à l'envoi. Laisse vide pour conserver le logo actuel.</p>
             @error('logo') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 
