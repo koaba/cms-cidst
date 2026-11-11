@@ -11,6 +11,8 @@ use Throwable;
 
 class MediaUploader
 {
+    public function __construct(private ImageOptimizer $optimizer) {}
+
     /**
      * Stocke un fichier envoye sur le disque public et cree le Media correspondant.
      *
@@ -23,6 +25,10 @@ class MediaUploader
      *                                                           apres son execution. S'il retourne un tableau, celui-ci complete les attributs
      *                                                           calcules (ex : dimensions lues apres filigrane). Si le hook leve une exception,
      *                                                           le fichier stocke est supprime puis l'exception est relancee.
+     *
+     * Une image JPEG ou PNG est ensuite convertie en WebP (voir ImageOptimizer) : le chemin, le
+     * type MIME et la taille du Media refletent alors le fichier WebP. Le hook voit toujours le
+     * fichier d'origine, donc le filigrane s'applique avant la conversion.
      */
     public function fromUpload(UploadedFile $file, string $directory, array $attributes = [], ?Closure $beforeCreate = null): Media
     {
@@ -48,6 +54,16 @@ class MediaUploader
 
             $computed['size'] = Storage::disk('public')->size($path);
             $fromHook = is_array($result) ? $result : [];
+        }
+
+        if (str_starts_with((string) $computed['mime_type'], 'image/')) {
+            $optimized = $this->optimizer->optimize($path);
+
+            if ($optimized !== $path) {
+                $path = $optimized;
+                $computed['mime_type'] = 'image/webp';
+                $computed['size'] = Storage::disk('public')->size($path);
+            }
         }
 
         return Media::create(['path' => $path] + $computed + $fromHook + $attributes);
