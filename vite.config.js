@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/public.css',
                 'resources/js/app.js',
+                'resources/js/public/contact-images.js',
                 'resources/js/admin/dashboard.js',
                 'resources/js/admin/article-form.js',
                 'resources/js/admin/pdf-thumbnail.js',

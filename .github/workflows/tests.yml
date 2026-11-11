@@ -138,6 +138,9 @@ jobs:
       - name: Installer les dependances npm
         run: npm ci
 
+      - name: Tests JavaScript (fonctions pures)
+        run: npm run test:js
+
       - name: Build (un avertissement est un defaut)
         run: |
           set -o pipefail
