@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class SiteSettingService
 {
+    public function __construct(private ImageOptimizer $optimizer) {}
+
     private const BOOLEAN_FIELDS = [
         'video_watermark_default_enabled',
         'image_watermark_default_enabled',
@@ -36,9 +38,11 @@ class SiteSettingService
             unset($data['theme']);
         }
 
-        // Une taille vide ne change rien (la colonne est NOT NULL).
-        if (blank($data['contact_images_max_mb'] ?? null)) {
-            unset($data['contact_images_max_mb']);
+        // Une valeur vide ne change rien (ces colonnes sont NOT NULL).
+        foreach (['contact_images_max_mb', 'logo_height'] as $field) {
+            if (blank($data[$field] ?? null)) {
+                unset($data[$field]);
+            }
         }
 
         if (filled($deleteCode)) {
@@ -60,6 +64,7 @@ class SiteSettingService
             Storage::disk('public')->delete($settings->logo_path);
         }
 
-        return $logo->store('logos', 'public');
+        // JPEG et PNG deviennent du WebP (transparence conservee) : un logo charge sur chaque page.
+        return $this->optimizer->optimize($logo->store('logos', 'public'));
     }
 }
