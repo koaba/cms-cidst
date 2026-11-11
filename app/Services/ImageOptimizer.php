@@ -19,10 +19,27 @@ class ImageOptimizer
     private const BYTES_PER_PIXEL = 8;
 
     /**
-     * Retourne le chemin final : le nouveau chemin en .webp si la conversion a eu lieu,
-     * sinon le chemin recu.
+     * Retourne le chemin final : le nouveau chemin en .webp si la conversion a eu lieu
+     * (l'original est alors supprime), sinon le chemin recu.
      */
     public function optimize(string $path): string
+    {
+        $target = $this->convert($path);
+
+        if ($target !== $path) {
+            Storage::disk('public')->delete($path);
+        }
+
+        return $target;
+    }
+
+    /**
+     * Ecrit le WebP a cote de l'original, sans supprimer ce dernier : l'appelant le retire une
+     * fois ses references mises a jour. Retourne le chemin du WebP, ou le chemin recu quand rien
+     * n'est converti (desactive, fichier absent ou non JPEG/PNG, WebP pas plus leger, ou un
+     * fichier du meme nom en .webp existe deja : il n'est jamais ecrase).
+     */
+    public function convert(string $path): string
     {
         if (! config('media.webp.enabled')) {
             return $path;
@@ -34,17 +51,20 @@ class ImageOptimizer
             return $path;
         }
 
+        $directory = pathinfo($path, PATHINFO_DIRNAME);
+        $target = ($directory === '.' ? '' : $directory.'/').pathinfo($path, PATHINFO_FILENAME).'.webp';
+
+        if ($disk->exists($target)) {
+            return $path;
+        }
+
         $binary = $this->encode($disk->path($path), (int) config('media.webp.quality', 82));
 
         if ($binary === null || strlen($binary) >= $disk->size($path)) {
             return $path;
         }
 
-        $directory = pathinfo($path, PATHINFO_DIRNAME);
-        $target = ($directory === '.' ? '' : $directory.'/').pathinfo($path, PATHINFO_FILENAME).'.webp';
-
         $disk->put($target, $binary);
-        $disk->delete($path);
 
         return $target;
     }
