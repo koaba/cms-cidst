@@ -27,6 +27,7 @@ class MediaSyncService
     public function __construct(
         private WatermarkService $watermarkService,
         private PdfThumbnailProcessor $pdfThumbnailProcessor,
+        private ImageOptimizer $imageOptimizer,
     ) {}
 
     /* ------------------------------------------------------------------ */
@@ -60,7 +61,8 @@ class MediaSyncService
             $this->watermarkService->watermarkImage($path);
         }
 
-        return $path;
+        // Apres le filigrane : le chemin retourne peut passer en .webp.
+        return $this->imageOptimizer->optimize($path);
     }
 
     /**

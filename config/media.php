@@ -17,4 +17,11 @@ return [
     'max_pdfs' => 10,
     'max_pdf_upload_kb' => 10240, // 10 Mo par PDF
 
+    // Conversion automatique des images JPEG et PNG en WebP a l'envoi (l'original n'est pas conserve).
+    // Le WebP n'est garde que s'il est plus leger que l'original. Coupe-circuit : MEDIA_WEBP=false.
+    'webp' => [
+        'enabled' => (bool) env('MEDIA_WEBP', true),
+        'quality' => 82,
+    ],
+
 ];
