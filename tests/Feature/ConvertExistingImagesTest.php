@@ -6,6 +6,7 @@ use App\Models\SeoMeta;
 use App\Models\SiteSetting;
 use App\Models\Slider;
 use App\Services\ImageOptimizer;
+use App\Support\PublicLayout;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -69,7 +70,7 @@ function cvtMedia(string $path, array $attributes = []): Media
         'path' => $path,
         'type' => 'image',
         'mime_type' => str_ends_with($path, '.png') ? 'image/png' : 'image/jpeg',
-        'size' => Storage::disk('public')->size($path),
+        'size' => $attributes['size'] ?? Storage::disk('public')->size($path),
     ], $attributes));
 }
 
@@ -285,8 +286,18 @@ it('vide le cache des pages publiques seulement quand un fichier a ete converti'
     $this->artisan('media:convert-webp --force')->assertSuccessful();
     expect(Cache::get('public.pages.version'))->toBe('avant');
 
-    cvtMedia(cvtPut('pages/photo.jpg', cvtJpeg()));
+    Slider::factory()->create(['image' => cvtPut('pages/seul.jpg', cvtJpeg())]);
+    Cache::forever('public.pages.version', 'avant');
 
     $this->artisan('media:convert-webp --force')->assertSuccessful();
     expect(Cache::get('public.pages.version'))->not->toBe('avant');
+});
+
+it('vide aussi le cache du layout public, dont la sidebar affiche les images d articles', function () {
+    Article::factory()->create(['image' => cvtPut('pages/une.jpg', cvtJpeg())]);
+    Cache::forever(PublicLayout::CACHE_KEY, 'avant');
+
+    $this->artisan('media:convert-webp --force')->assertSuccessful();
+
+    expect(Cache::get(PublicLayout::CACHE_KEY))->toBeNull();
 });
