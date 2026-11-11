@@ -4,6 +4,10 @@ return [
     // Chemin du logo filigrane sur le disque "public" (storage/app/public/...)
     'logo_path' => 'watermark/logo-cidst.png',
 
+    // Logo versionne (relatif a public/) copie par `php artisan watermark:install-logo`,
+    // car storage/app/public n'est pas dans git : sans cette copie, le filigrane est ignore.
+    'default_logo' => 'images/logo-cidst.png',
+
     // Opacité du filigrane en pourcentage (0-100)
     'opacity' => 25,
 

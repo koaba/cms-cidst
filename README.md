@@ -188,6 +188,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 | `app:migrate-videos-to-media [--dry-run]` | Migre les vidéos vers la médiathèque |
 | `blocks:audit-phantom-columns` | Audit des blocs colonnes (voir `AuditPhantomColumnBlocks`) |
 | `app:check-environment` | Vérifie l'environnement du serveur |
+| `watermark:install-logo [--force]` | Copie `public/images/logo-cidst.png` vers `storage/app/public/watermark/` (non versionné) ; sans lui, le filigrane est ignoré. Ne remplace rien sans `--force` |
 | `page-views:prune` | Purge les anciennes vues (planifiée chaque semaine) |
 | `audience:prune` | Purge le détail de l'audience au-delà de 13 mois (planifiée chaque jour) |
 | `contact:prune-messages [--days=N]` | Supprime les messages de contact plus vieux que la durée de conservation, images et fichiers compris (défaut : `CONTACT_MESSAGES_RETENTION_DAYS`, 365 jours ; `0` = illimitée). Planifiée chaque jour |
@@ -311,6 +312,7 @@ Déjà en place :
 - [ ] Extension `gd` ; binaire `pdftoppm` (paquet `poppler-utils`)
 - [ ] Worker de file supervisé (Supervisor ou systemd) : `php artisan queue:work`, et `php artisan queue:restart` à chaque déploiement ; cron `schedule:run` chaque minute
 - [ ] `php artisan migrate --force`, puis `php artisan media:backfill-dimensions`
+- [ ] `php artisan watermark:install-logo` au premier déploiement (le logo de filigrane vit dans `storage/app/public`, qui n'est pas dans git ; `app:check-environment` le signale s'il manque)
 - [ ] `php artisan storage:link` au premier déploiement (le disque `public` en dépend pour toutes les images). Si l'hébergeur interdit les liens symboliques, prévoir une alternative (voir `docs/REQUIREMENTS.md`)
 - [ ] SMTP réel (`MAIL_MAILER`, `MAIL_HOST`, adresse expéditrice valide) ; tester `/contact`, `/admin/messages` et l'alerte e-mail. L'alerte est envoyée après la réponse (`defer()`, sans worker) : sous PHP-FPM ou LiteSpeed un SMTP lent ne fait plus attendre le visiteur, et un échec est seulement loggé
 - [ ] `trustProxies` (commenté dans `bootstrap/app.php`) si un proxy ou un CDN se place devant le site, sinon les visiteurs sont sous-comptés

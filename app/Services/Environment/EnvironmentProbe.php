@@ -6,6 +6,7 @@ use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 
 /**
@@ -49,6 +50,7 @@ class EnvironmentProbe
             'now' => time(),
             'scheduler_heartbeat' => $this->heartbeat(),
             'storage_link' => file_exists(public_path('storage')),
+            'watermark_logo' => $this->watermarkLogo(),
             'csp_mode' => (string) config('security.csp.mode'),
         ];
     }
@@ -122,6 +124,16 @@ class EnvironmentProbe
             'contact_images_max_mb' => $maxMb,
             'contact_images_max_files' => (int) config('contact.max_files'),
         ];
+    }
+
+    /** Le logo de filigrane vit dans storage/app/public, qui n'est pas versionne. */
+    private function watermarkLogo(): bool
+    {
+        try {
+            return Storage::disk('public')->exists((string) config('watermark.logo_path'));
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     private function databaseOk(): bool
