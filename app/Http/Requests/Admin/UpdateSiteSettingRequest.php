@@ -23,7 +23,7 @@ class UpdateSiteSettingRequest extends FormRequest
             'hero_eyebrow_size' => 'nullable|in:xs,sm,base,lg,xl',
             'hero_title' => 'required|string|max:255',
             'hero_subtitle' => 'nullable|string|max:500',
-            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             // Le menu public fait 80 px de haut : 72 px au plus pour garder une marge.
             'logo_height' => 'nullable|integer|min:24|max:72',
             'cta_primary_label' => 'nullable|string|max:100',
