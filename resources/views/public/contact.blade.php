@@ -31,8 +31,10 @@
             @if ($imagesEnabled)
                 <div>
                     <label for="images" class="block font-medium mb-1 text-cidst-ink">Images <span class="font-normal text-cidst-muted">(facultatif)</span></label>
-                    <input id="images" type="file" name="images[]" multiple accept="image/jpeg,image/png,image/webp" aria-describedby="images_help" class="block w-full text-sm text-cidst-ink file:mr-3 file:rounded file:border-0 file:bg-cidst-bg file:px-3 file:py-2 file:font-medium file:text-cidst-ink">
+                    <input id="images" type="file" name="images[]" multiple accept="image/jpeg,image/png,image/webp" aria-describedby="images_help" data-max-side="{{ $imagesMaxSide }}" data-max-bytes="{{ $imagesMaxMb * 1048576 }}" class="block w-full text-sm text-cidst-ink file:mr-3 file:rounded file:border-0 file:bg-cidst-bg file:px-3 file:py-2 file:font-medium file:text-cidst-ink">
                     <p id="images_help" class="mt-1 text-sm text-cidst-muted">JPG, PNG ou WebP, {{ $imagesMaxFiles }} images au maximum, {{ $imagesMaxMb }} Mo chacune. Pour un PDF ou un autre document, utilisez le lien ci-dessous.</p>
+                    <p id="images_status" role="status" aria-live="polite" class="mt-1 text-sm text-cidst-muted"></p>
+                    @vite('resources/js/public/contact-images.js')
                     @error('images') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
                     @foreach (collect($errors->get('images.*'))->flatten()->unique() as $error)
                         <p class="text-red-600 text-sm">{{ $error }}</p>

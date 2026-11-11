@@ -5,6 +5,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "test:js": "node --test resources/js/public/contact-images.test.js",
     "prepare": "husky"
   },
   "devDependencies": {

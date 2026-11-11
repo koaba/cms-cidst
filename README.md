@@ -122,6 +122,7 @@ Trois niveaux : public ; authentifié + rôle Super Admin **ou** Publication (ar
 | Traitement | `Services\Contact\ContactImageStore` : type et dimensions lus avant tout décodage ; image refusée si la mémoire disponible ne suffit pas (8 octets par pixel) ; ré-encodage GD (le fichier d'origine n'est jamais conservé : code caché et EXIF, dont le GPS, disparaissent) ; rotation EXIF ; nom aléatoire sur le disque privé `local` (`storage/app/private/contact`). Toute image écartée écrit un avertissement `contact.image_discarded` (raison et id du message). |
 | Administration | Liste (trombone et nombre d'images), page d'un message (miniature cliquable, téléchargement). Routes `admin.messages.attachments.show` et `.preview` : Super Admin seul, 404 si l'image n'appartient pas au message. |
 | Suppression des fichiers | Événement `deleting` de `ContactAttachment` et de `ContactMessage` : **toujours supprimer par modèle, jamais en masse** (la cascade SQL et `query()->delete()` ne déclenchent aucun événement et laisseraient les fichiers). Purge planifiée `contact:prune-images` (les messages restent, 90 jours) et `contact:prune-messages` (supprime le message entier, 365 jours par défaut, variable `CONTACT_MESSAGES_RETENTION_DAYS`). Le Super Admin supprime un message depuis la liste ou la page du message (confirmation, par modèle). |
+| Réduction dans le navigateur | `resources/js/public/contact-images.js` (entrée Vite chargée sur la page Contact seulement si les images sont activées) : une photo plus grande que la limite est réduite avant l'envoi (canvas, JPEG à 85 %, orientation EXIF respectée). Sans JavaScript, le serveur valide comme avant. Fonctions pures testées par `npm run test:js` (Node, sans dépendance). |
 | Adresse publique | Réglage `contact_public_email` : affichée sous le champ lien pour l'envoi d'un PDF par e-mail ; vide, rien ne s'affiche. |
 | Contrôle d'environnement | `app:check-environment` : ligne `contact_images`, seulement si les images sont activées (`upload_max_filesize`, `post_max_size`, GD avec JPEG, PNG et WebP). |
 
@@ -205,7 +206,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 - **Requêtes d'écriture dans les tests** : ajouter `assertRedirect(...)` ou `assertOk()`. `assertSessionHasNoErrors()` seul ne détecte pas une erreur 500, car une 500 n'a pas d'erreurs de validation.
 - **Helpers Pest globaux** : `adminUser()`, `publicationUser()` et `setDeleteCode()` existent dans `tests/Pest.php`. Ne pas créer d'autre fonction globale : utiliser des closures dans `beforeEach` (par exemple `$this->useTheme = function ...`).
 - **Tests créant des `Media`** : toujours `Queue::fake()` ou `Bus::fake()`.
-- **Front** : CSS et JS non couverts par Pest : `npm run build` puis vérification visuelle (Ctrl+F5).
+- **Front** : CSS et JS non couverts par Pest : `npm run build` puis vérification visuelle (Ctrl+F5). Les fonctions pures de la réduction des photos du contact sont testées par `npm run test:js` (Node, lancé aussi par le job `frontend` de la CI).
 - **Ne pas migrer le hero public** (`BlockHeroMediaImgTest`).
 
 ## 6. Environnement local Windows / Laragon
@@ -250,7 +251,7 @@ En cas d'erreur serveur inexpliquée, lire `storage/logs/laravel.log` (heure de 
 - **GitHub Actions** (`.github/workflows/tests.yml`), sur push et pull_request :
   - `tests` : matrice PHP 8.3 / 8.4 / 8.5 (`fail-fast` désactivé), Poppler installé, Pint sur 8.3 seulement, Pest sur SQLite ;
   - `tests-mysql` : service MySQL 8.4, PHP 8.3, Pest avec `DB_CONNECTION=mysql` (vert à `3f031c4`) ;
-  - `frontend` : Node 22, `npm ci`, `npm run build`, tout avertissement Vite fait échouer le job.
+  - `frontend` : Node 22, `npm ci`, `npm run test:js`, `npm run build`, tout avertissement Vite fait échouer le job.
 - Un échec isolé de l'étape `apt-get` (code 100) a déjà été observé sur un job : « Re-run failed jobs » suffit, mais une nouvelle tentative automatique dans le workflow reste à ajouter.
 - Minimum attendu par module dans `tests/Feature` : visibilité publique, validation des entrées sensibles, suppression en cascade des fichiers.
 - À ajouter en CI : `composer audit --abandoned=report`, Larastan (niveau ≥ 5), tests de fumée navigateur sur le builder.
