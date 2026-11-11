@@ -143,3 +143,18 @@ it('applique la hauteur au logo par defaut du menu public', function () {
         ->assertSee(asset('images/logo-cidst.png'), false)
         ->assertSee('height: 56px', false);
 });
+
+it('refuse un logo WebP : seuls PNG et JPEG sont acceptes', function () {
+    $this->actingAs(adminUser())
+        ->put(route('admin.settings.update'), ['hero_title' => 'Titre', 'logo' => UploadedFile::fake()->image('logo.webp')])
+        ->assertSessionHasErrors('logo');
+
+    expect(SiteSetting::current()->fresh()->logo_path)->toBeNull();
+});
+
+it('limite le champ logo des reglages aux PNG et JPEG', function () {
+    $this->actingAs(adminUser())
+        ->get(route('admin.settings.edit'))
+        ->assertOk()
+        ->assertSee('name="logo" accept="image/jpeg,image/png"', false);
+});
