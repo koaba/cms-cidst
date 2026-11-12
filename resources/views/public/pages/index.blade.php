@@ -44,7 +44,7 @@
                     <p class="text-cidst-text text-sm mt-2 line-clamp-3">
                         {{ Str::limit(strip_tags($page->content), 120) }}
                     </p>
-                    <span class="text-cidst-red text-sm font-medium mt-2">Lire la suite &rarr;</span>
+                    <span class="text-cidst-primary text-sm font-medium mt-2">Lire la suite &rarr;</span>
                 </div>
             </a>
         @endforeach

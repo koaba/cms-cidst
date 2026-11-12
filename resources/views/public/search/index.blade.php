@@ -1,6 +1,6 @@
 <x-layout seo-page="search">
     <div class="max-w-4xl mx-auto px-4 py-8">
-        <h1 class="text-2xl font-bold text-cidst-red mb-6">Résultats de recherche</h1>
+        <h1 class="text-2xl font-bold text-cidst-primary mb-6">Résultats de recherche</h1>
 
         <form action="{{ route('search') }}" method="GET" class="mb-8">
             <div class="flex gap-2">
@@ -9,9 +9,9 @@
                     name="q"
                     value="{{ $query }}"
                     placeholder="Rechercher un article ou une page..."
-                    class="flex-1 border border-cidst-border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cidst-red"
+                    class="flex-1 border border-cidst-border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cidst-primary"
                 >
-                <button type="submit" class="bg-cidst-red text-white px-6 py-2 rounded hover:opacity-90">
+                <button type="submit" class="bg-cidst-primary text-white px-6 py-2 rounded hover:opacity-90">
                     Rechercher
                 </button>
             </div>
@@ -35,7 +35,7 @@
                     <ul class="space-y-3">
                         @foreach ($articles as $article)
                             <li class="border-b border-cidst-border pb-2">
-                              <a href="{{ route('blog.show', $article->slug) }}" class="text-cidst-red hover:underline font-medium">
+                              <a href="{{ route('blog.show', $article->slug) }}" class="text-cidst-primary hover:underline font-medium">
                                     {{ $article->title }}
                                 </a>
                                 <p class="text-sm text-cidst-muted">
@@ -53,7 +53,7 @@
                     <ul class="space-y-3">
                         @foreach ($pages as $page)
                             <li class="border-b border-cidst-border pb-2">
-                                <a href="{{ route('pages.show', $page) }}" class="text-cidst-red hover:underline font-medium">
+                                <a href="{{ route('pages.show', $page) }}" class="text-cidst-primary hover:underline font-medium">
                                     {{ $page->title }}
                                 </a>
                             </li>

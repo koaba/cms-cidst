@@ -12,10 +12,6 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 const rgb = (variable) => `rgb(var(${variable}) / <alpha-value>)`;
 
 export const cidstColors = {
-    // Anciens noms, retires avec le renommage des vues (lot 3d-3a).
-    red: rgb('--color-primary-rgb'),
-    ink: rgb('--color-secondary-rgb'),
-
     primary: rgb('--color-primary-rgb'),
     'primary-content': rgb('--color-primary-content-rgb'),
     secondary: rgb('--color-secondary-rgb'),

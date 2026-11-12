@@ -2,7 +2,7 @@
     $bgClasses = [
         'gray' => 'bg-cidst-bg text-cidst-text',
         'blue' => 'bg-blue-600 text-white',
-        'dark' => 'bg-cidst-ink text-white',
+        'dark' => 'bg-cidst-secondary text-white',
     ];
     $bgClass = $bgClasses[$data['bg_color'] ?? 'gray'] ?? $bgClasses['gray'];
 @endphp

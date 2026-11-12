@@ -12,7 +12,7 @@
     <noscript>
         <p class="rounded-lg border border-cidst-border bg-cidst-surface p-4 text-sm">
             Le Page Builder nécessite JavaScript.
-            <a href="{{ $builder['classicUrl'] }}" class="font-medium text-cidst-red underline">Utiliser l'éditeur classique</a>
+            <a href="{{ $builder['classicUrl'] }}" class="font-medium text-cidst-primary underline">Utiliser l'éditeur classique</a>
         </p>
     </noscript>
 
@@ -24,17 +24,17 @@
 
             {{-- Barre d'actions --}}
             <div class="sticky top-16 z-30 mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-cidst-border bg-cidst-surface/95 p-3 shadow-sm backdrop-blur">
-                <a href="{{ $builder['classicUrl'] }}" class="rounded-lg border border-cidst-border px-3 py-2 text-sm font-medium text-cidst-text hover:border-cidst-red hover:text-cidst-red">Éditeur classique</a>
+                <a href="{{ $builder['classicUrl'] }}" class="rounded-lg border border-cidst-border px-3 py-2 text-sm font-medium text-cidst-text hover:border-cidst-primary hover:text-cidst-primary">Éditeur classique</a>
                 <p role="status" aria-live="polite" class="min-w-0 flex-1 text-sm"
                    x-bind:class="statusKind === 'ok' ? 'text-green-700' : (statusKind === 'error' ? 'text-red-600' : 'text-cidst-muted')"
                    x-text="status || (dirty ? 'Modifications non enregistrées' : '')"></p>
                 <label x-show="requiresDeleteCode && pendingDeletions > 0" x-cloak class="flex items-center gap-2 text-sm text-cidst-text">
                     <span>Code de suppression</span>
-                    <input type="password" autocomplete="off" x-model="deleteCode" class="w-36 rounded-lg border border-cidst-border px-2 py-1.5 text-sm focus:border-cidst-red focus:outline-none focus:ring-2 focus:ring-cidst-red/40">
+                    <input type="password" autocomplete="off" x-model="deleteCode" class="w-36 rounded-lg border border-cidst-border px-2 py-1.5 text-sm focus:border-cidst-primary focus:outline-none focus:ring-2 focus:ring-cidst-primary/40">
                 </label>
-                <button type="button" x-show="stale" x-cloak x-on:click="reload()" class="rounded-lg border border-cidst-red px-3 py-2 text-sm font-medium text-cidst-red hover:bg-cidst-red hover:text-white focus:outline-none focus:ring-2 focus:ring-cidst-red/40">Recharger</button>
+                <button type="button" x-show="stale" x-cloak x-on:click="reload()" class="rounded-lg border border-cidst-primary px-3 py-2 text-sm font-medium text-cidst-primary hover:bg-cidst-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-cidst-primary/40">Recharger</button>
                 <button type="button"
-                        class="rounded-lg bg-cidst-red px-4 py-2 text-sm font-semibold text-white hover:bg-cidst-red/90 focus:outline-none focus:ring-2 focus:ring-cidst-red/40 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="rounded-lg bg-cidst-primary px-4 py-2 text-sm font-semibold text-white hover:bg-cidst-primary/90 focus:outline-none focus:ring-2 focus:ring-cidst-primary/40 disabled:cursor-not-allowed disabled:opacity-50"
                         x-bind:disabled="saving || !dirty" x-on:click="save()">
                     <span x-text="saving ? 'Enregistrement…' : 'Enregistrer'"></span>
                 </button>
@@ -48,7 +48,7 @@
                     <div class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
                         <template x-for="item in palette" x-bind:key="item.type">
                             <button type="button" draggable="true"
-                                    class="shrink-0 rounded-lg border border-cidst-border bg-cidst-bg px-3 py-2 text-left text-sm font-medium text-cidst-text hover:border-cidst-red hover:text-cidst-red focus:outline-none focus:ring-2 focus:ring-cidst-red/40"
+                                    class="shrink-0 rounded-lg border border-cidst-border bg-cidst-bg px-3 py-2 text-left text-sm font-medium text-cidst-text hover:border-cidst-primary hover:text-cidst-primary focus:outline-none focus:ring-2 focus:ring-cidst-primary/40"
                                     x-on:click="add(item.type)"
                                     x-on:dragstart="paletteDrag(item.type, $event)"
                                     x-on:dragend="paletteType = null"
@@ -68,8 +68,8 @@
 
                     <template x-for="(block, index) in blocks" x-bind:key="block.uid">
                         <div role="button" tabindex="0" draggable="true"
-                             class="flex items-start gap-3 rounded-xl border p-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-cidst-red/40"
-                             x-bind:class="(selectedUid === block.uid ? 'border-cidst-red ring-2 ring-cidst-red/30' : 'border-cidst-border') + ' ' + (block.locked ? 'bg-cidst-bg' : 'bg-cidst-surface') + ' ' + (dragIndex === index ? 'opacity-50' : 'cursor-grab')"
+                             class="flex items-start gap-3 rounded-xl border p-3 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-cidst-primary/40"
+                             x-bind:class="(selectedUid === block.uid ? 'border-cidst-primary ring-2 ring-cidst-primary/30' : 'border-cidst-border') + ' ' + (block.locked ? 'bg-cidst-bg' : 'bg-cidst-surface') + ' ' + (dragIndex === index ? 'opacity-50' : 'cursor-grab')"
                              x-bind:aria-pressed="selectedUid === block.uid"
                              x-on:click="select(block.uid)"
                              x-on:keydown.enter.self.prevent="select(block.uid)"
@@ -81,8 +81,8 @@
                             <div class="min-w-0 flex-1">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="text-sm font-semibold text-cidst-text" x-text="block.label"></span>
-                                    <span x-show="block.locked" class="rounded bg-cidst-ink/10 px-2 py-0.5 text-xs text-cidst-muted">Verrouillé</span>
-                                    <span x-show="block.id === null" class="rounded bg-cidst-red/10 px-2 py-0.5 text-xs text-cidst-red">Nouveau</span>
+                                    <span x-show="block.locked" class="rounded bg-cidst-secondary/10 px-2 py-0.5 text-xs text-cidst-muted">Verrouillé</span>
+                                    <span x-show="block.id === null" class="rounded bg-cidst-primary/10 px-2 py-0.5 text-xs text-cidst-primary">Nouveau</span>
                                 </div>
                                 <p class="mt-1 truncate text-sm text-cidst-muted" x-text="summary(block)"></p>
                                 <p x-show="blockError(block.uid)" class="mt-1 text-xs font-medium text-red-600" x-text="blockError(block.uid)"></p>
@@ -116,7 +116,7 @@
                             <template x-if="current.locked">
                                 <div class="space-y-3 text-sm text-cidst-muted">
                                     <p>Ce bloc est géré par l'éditeur classique. Le Page Builder le conserve tel quel, avec son contenu imbriqué : vous pouvez seulement le déplacer.</p>
-                                    <a x-bind:href="current.editUrl" class="inline-block rounded-lg border border-cidst-border px-3 py-2 font-medium text-cidst-text hover:border-cidst-red hover:text-cidst-red">Modifier dans l'éditeur classique</a>
+                                    <a x-bind:href="current.editUrl" class="inline-block rounded-lg border border-cidst-border px-3 py-2 font-medium text-cidst-text hover:border-cidst-primary hover:text-cidst-primary">Modifier dans l'éditeur classique</a>
                                 </div>
                             </template>
 
@@ -124,14 +124,14 @@
 
                             <template x-if="!current.locked && types[current.type]?.media">
                                 <div class="space-y-2">
-                                    <span class="block text-sm font-medium text-cidst-text">Image <span class="text-cidst-red">*</span></span>
+                                    <span class="block text-sm font-medium text-cidst-text">Image <span class="text-cidst-primary">*</span></span>
                                     <template x-if="current.media">
                                         <img x-bind:src="current.media.url" x-bind:alt="current.media.name"
                                              class="h-32 w-full rounded-lg border border-cidst-border object-cover">
                                     </template>
                                     <p x-show="!current.media" class="rounded-lg border-2 border-dashed border-cidst-border p-4 text-center text-sm text-cidst-muted">Aucune image choisie.</p>
                                     <button type="button"
-                                            class="rounded-lg border border-cidst-border px-3 py-2 text-sm font-medium text-cidst-text hover:border-cidst-red hover:text-cidst-red focus:outline-none focus:ring-2 focus:ring-cidst-red/40"
+                                            class="rounded-lg border border-cidst-border px-3 py-2 text-sm font-medium text-cidst-text hover:border-cidst-primary hover:text-cidst-primary focus:outline-none focus:ring-2 focus:ring-cidst-primary/40"
                                             x-on:click="pickImage()" x-text="current.media ? 'Changer' : 'Choisir une image'"></button>
                                     <p x-show="fieldError('media_id')" class="text-xs font-medium text-red-600" x-text="fieldError('media_id')"></p>
                                 </div>
@@ -140,30 +140,30 @@
                             <template x-for="field in fields" x-bind:key="current.uid + ':' + field.key">
                                 <div class="space-y-1">
                                     <label x-show="field.type !== 'checkbox'" class="block text-sm font-medium text-cidst-text" x-bind:for="'field-' + field.key">
-                                        <span x-text="field.label"></span><span x-show="field.required" class="text-cidst-red"> *</span>
+                                        <span x-text="field.label"></span><span x-show="field.required" class="text-cidst-primary"> *</span>
                                     </label>
 
                                     <template x-if="field.type === 'text'">
                                         <input type="text" x-bind:id="'field-' + field.key" x-bind:maxlength="field.max" x-model="current.data[field.key]"
-                                               class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-red focus:ring-cidst-red"
+                                               class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
                                                x-bind:class="fieldError(field.key) ? 'border-red-500' : ''">
                                     </template>
 
                                     <template x-if="field.type === 'textarea'">
                                         <textarea rows="7" x-bind:id="'field-' + field.key" x-model="current.data[field.key]"
-                                                  class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-red focus:ring-cidst-red"
+                                                  class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
                                                   x-bind:class="fieldError(field.key) ? 'border-red-500' : ''"></textarea>
                                     </template>
 
                                     <template x-if="field.type === 'number'">
                                         <input type="number" x-bind:id="'field-' + field.key" x-bind:min="field.min" x-bind:max="field.max" x-model.number="current.data[field.key]"
-                                               class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-red focus:ring-cidst-red"
+                                               class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
                                                x-bind:class="fieldError(field.key) ? 'border-red-500' : ''">
                                     </template>
 
                                     <template x-if="field.type === 'select'">
                                         <select x-bind:id="'field-' + field.key" x-model="current.data[field.key]"
-                                                class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-red focus:ring-cidst-red">
+                                                class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary">
                                             <template x-for="option in field.options" x-bind:key="option.value">
                                                 <option x-bind:value="option.value" x-text="option.label"></option>
                                             </template>
@@ -172,7 +172,7 @@
 
                                     <template x-if="field.type === 'checkbox'">
                                         <label class="flex items-center gap-2 text-sm text-cidst-text">
-                                            <input type="checkbox" x-model="current.data[field.key]" class="rounded border-cidst-border text-cidst-red focus:ring-cidst-red">
+                                            <input type="checkbox" x-model="current.data[field.key]" class="rounded border-cidst-border text-cidst-primary focus:ring-cidst-primary">
                                             <span x-text="field.label"></span>
                                         </label>
                                     </template>
@@ -192,7 +192,7 @@
                                             <label class="block text-sm font-medium text-cidst-text" x-bind:for="'design-' + field.key" x-text="field.label"></label>
 
                                             <select x-bind:id="'design-' + field.key"
-                                                    class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-red focus:ring-cidst-red"
+                                                    class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
                                                     x-bind:class="fieldError('design.' + field.key) ? 'border-red-500' : ''"
                                                     x-on:change="setDesign(field.key, $event.target.value)">
                                                 <template x-for="option in field.options" x-bind:key="'option:' + option.value">

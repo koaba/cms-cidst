@@ -30,7 +30,7 @@
                 @if ($article->categories->isNotEmpty())
                     <div class="flex flex-wrap gap-1 mb-2">
                         @foreach ($article->categories as $cat)
-                            <span class="text-[10px] leading-none bg-cidst-red/10 text-cidst-red px-1.5 py-0.5 rounded-full">
+                            <span class="text-[10px] leading-none bg-cidst-primary/10 text-cidst-primary px-1.5 py-0.5 rounded-full">
                                 {{ $cat->name }}
                             </span>
                         @endforeach
@@ -42,7 +42,7 @@
                 <p class="text-cidst-text text-sm mt-2 line-clamp-3">
                     {{ Str::limit(strip_tags($article->content), 120) }}
                 </p>
-                <span class="text-cidst-red text-sm font-medium mt-2">Lire la suite &rarr;</span>
+                <span class="text-cidst-primary text-sm font-medium mt-2">Lire la suite &rarr;</span>
             </div>
         </a>
     @endforeach

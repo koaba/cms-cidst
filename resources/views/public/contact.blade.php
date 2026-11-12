@@ -50,7 +50,7 @@
                 @endif
                 @error('attachment_link') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
-            <button type="submit" class="inline-flex items-center rounded bg-cidst-red px-5 py-2 font-medium text-white hover:opacity-90">Envoyer</button>
+            <button type="submit" class="inline-flex items-center rounded bg-cidst-primary px-5 py-2 font-medium text-white hover:opacity-90">Envoyer</button>
         </form>
     </div>
 </x-layout>
