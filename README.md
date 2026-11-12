@@ -162,7 +162,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 - **Ajouter un thème** : ajouter une entrée dans `config/themes.php` (palette complète avec `primary`, `secondary`, `accent` et leurs `*_content`). Le sélecteur, la validation et le test de contraste le prennent en compte.
 - Le mode sombre d'Itadori est écarté (contrastes insuffisants).
 - Ne pas utiliser les accesseurs `primary_color` / `secondary_color` du modèle pour générer le thème (ils renvoient `#000000` / `#FFFFFF` si la valeur est invalide, comportement figé par `SiteSettingColorTest`) : le builder lit les valeurs brutes.
-- Défauts en base : `#E80000` / `#1A1A1A`, différents de ceux du thème DaisyUI (`#C41E2A` / `#17181A`). Décision du propriétaire en attente.
+- Défauts en base : `#C41E2A` / `#17181A`, identiques à `ThemeStyleBuilder::DEFAULT_PRIMARY` et `DEFAULT_SECONDARY` (alignés par la migration `align_default_theme_colors`, qui ne touche que les réglages jamais personnalisés). Un test fige cette égalité.
 - Fond, surfaces, bordures, muted et arrondi restent des hexadécimaux figés dans les configs Tailwind (public et admin) : chantier prévu (voir feuille de route).
 - Règle de chaque lot design : mobile-first, paliers Tailwind par défaut, vérification à 360, 768, 1024, 1440 et 1920 px.
 
