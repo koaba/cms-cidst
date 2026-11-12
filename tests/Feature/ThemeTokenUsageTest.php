@@ -58,7 +58,7 @@ it('garde un texte sombre fixe sur le bouton blanc de la section de fond', funct
         ->toContain("'gray' => 'bg-cidst-bg text-cidst-text'");
 });
 
-it('garde les fonds sombres fixes sur le jeton secondaire historique', function () {
-    expect(themeUsageSource('resources/views/pages/blocks/_banniere_hero.blade.php'))->toContain('bg-cidst-ink')
-        ->and(themeUsageSource('resources/views/pages/blocks/_section_fond.blade.php'))->toContain("'dark' => 'bg-cidst-ink text-white'");
+it('garde les fonds sombres fixes sur le jeton secondaire partage', function () {
+    expect(themeUsageSource('resources/views/pages/blocks/_banniere_hero.blade.php'))->toContain('bg-cidst-secondary')
+        ->and(themeUsageSource('resources/views/pages/blocks/_section_fond.blade.php'))->toContain("'dark' => 'bg-cidst-secondary text-white'");
 });
