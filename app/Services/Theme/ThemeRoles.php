@@ -11,8 +11,8 @@ use InvalidArgumentException;
  * (--color-{rôle}-rgb, défaut dans resources/css/shared.css) et un jeton Tailwind
  * (tailwind.tokens.js). ThemeTokensTest vérifie que les trois restent alignés.
  *
- * Les défauts sont les couleurs actuelles du site. Le texte secondaire passera à
- * #4B5057 (contraste 7,25 sur le fond) avec les réglages de couleurs (lot 3d-4).
+ * Les défauts sont les couleurs du site. Le texte secondaire est #4B5057 (contraste 7,25
+ * sur le fond, 8,13 sur blanc) : l'ancien #6B7078 passait sous 4,5 sur le fond.
  */
 final class ThemeRoles
 {
@@ -24,7 +24,7 @@ final class ThemeRoles
         'bg' => ['label' => 'Fond de page', 'default' => '#F1F2F4'],
         'surface' => ['label' => 'Surface (menu, cartes)', 'default' => '#FFFFFF'],
         'text' => ['label' => 'Texte principal', 'default' => '#17181A'],
-        'muted' => ['label' => 'Texte secondaire', 'default' => '#6B7078'],
+        'muted' => ['label' => 'Texte secondaire', 'default' => '#4B5057'],
         'border' => ['label' => 'Bordures', 'default' => '#D8DADE'],
     ];
 

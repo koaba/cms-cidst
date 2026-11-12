@@ -24,6 +24,7 @@ class SiteSetting extends Model
         'cta_secondary_target',
         'primary_color',
         'secondary_color',
+        'theme_colors',
         'theme',
         'news_ticker_direction',
         'pages_grid_columns',
@@ -51,6 +52,7 @@ class SiteSetting extends Model
         'logo_height' => 'integer',
         'logo_width' => 'integer',
         'logo_natural_height' => 'integer',
+        'theme_colors' => 'array',
     ];
 
     public function getPrimaryColorAttribute($value): string

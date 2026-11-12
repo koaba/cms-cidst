@@ -3,10 +3,13 @@
 /*
  * Themes selectionnables dans admin/settings (colonne site_settings.theme).
  *
- * « cidst » est le theme par defaut : il n'a pas de palette et utilise les couleurs
- * saisies dans les reglages. Un autre theme impose sa palette (les couleurs des
- * reglages ne s'appliquent alors plus). Chaque role a sa couleur de texte (_content),
- * choisie pour un contraste d'au moins 4,5 (verifie par ThemeSelectionTest).
+ * « cidst » est le theme par defaut : il n'a pas de palette et utilise les couleurs des
+ * reglages. Un theme peut imposer une palette (cles : primary, secondary, accent, leurs
+ * *_content, puis les roles bg, surface, text, muted, border) ; les couleurs personnalisees
+ * (site_settings.theme_colors) passent toujours apres la palette. Chaque couleur de texte
+ * (_content) est choisie pour un contraste d'au moins 4,5.
+ *
+ * Les themes Clair, Sombre et de fetes arrivent aux lots 3e et 3e-bis.
  */
 return [
     'default' => 'cidst',
@@ -14,18 +17,6 @@ return [
     'themes' => [
         'cidst' => [
             'label' => 'CIDST (par défaut)',
-        ],
-
-        'itadori' => [
-            'label' => 'Itadori',
-            'palette' => [
-                'primary' => '#E61919',
-                'primary_content' => '#FFFFFF',
-                'secondary' => '#24335C',
-                'secondary_content' => '#FFFFFF',
-                'accent' => '#FFAFBD',
-                'accent_content' => '#5C111C',
-            ],
         ],
     ],
 ];
