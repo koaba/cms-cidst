@@ -9,9 +9,9 @@
                     name="q"
                     value="{{ $query }}"
                     placeholder="Rechercher un article ou une page..."
-                    class="flex-1 border border-cidst-border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cidst-primary"
+                    class="flex-1 border border-cidst-border rounded px-4 py-2 bg-cidst-surface text-cidst-text focus:outline-none focus:ring-2 focus:ring-cidst-primary"
                 >
-                <button type="submit" class="bg-cidst-primary text-white px-6 py-2 rounded hover:opacity-90">
+                <button type="submit" class="bg-cidst-primary text-cidst-primary-content px-6 py-2 rounded hover:opacity-90">
                     Rechercher
                 </button>
             </div>

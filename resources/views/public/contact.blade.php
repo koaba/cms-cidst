@@ -11,21 +11,21 @@
             </div>
             <div>
                 <label for="name" class="block font-medium mb-1 text-cidst-text">Nom</label>
-                <input id="name" name="name" value="{{ old('name') }}" required class="w-full border border-cidst-border rounded p-2">
+                <input id="name" name="name" value="{{ old('name') }}" required class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">
                 @error('name') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="email" class="block font-medium mb-1 text-cidst-text">Email</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required class="w-full border border-cidst-border rounded p-2">
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">
                 @error('email') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="subject" class="block font-medium mb-1 text-cidst-text">Sujet</label>
-                <input id="subject" name="subject" value="{{ old('subject') }}" class="w-full border border-cidst-border rounded p-2">
+                <input id="subject" name="subject" value="{{ old('subject') }}" class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">
             </div>
             <div>
                 <label for="message" class="block font-medium mb-1 text-cidst-text">Message</label>
-                <textarea id="message" name="message" rows="6" required class="w-full border border-cidst-border rounded p-2">{{ old('message') }}</textarea>
+                <textarea id="message" name="message" rows="6" required class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">{{ old('message') }}</textarea>
                 @error('message') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
             @if ($imagesEnabled)
@@ -43,14 +43,14 @@
             @endif
             <div>
                 <label for="attachment_link" class="block font-medium mb-1 text-cidst-text">Lien vers un document <span class="font-normal text-cidst-muted">(facultatif)</span></label>
-                <input id="attachment_link" type="url" name="attachment_link" value="{{ old('attachment_link') }}" maxlength="500" placeholder="https://drive.google.com/..." aria-describedby="attachment_link_help" class="w-full border border-cidst-border rounded p-2">
+                <input id="attachment_link" type="url" name="attachment_link" value="{{ old('attachment_link') }}" maxlength="500" placeholder="https://drive.google.com/..." aria-describedby="attachment_link_help" class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">
                 <p id="attachment_link_help" class="mt-1 text-sm text-cidst-muted">Pour joindre un fichier (PDF, document, etc.), d&eacute;posez-le sur Google Drive, Dropbox ou OneDrive, puis collez ici le lien de partage. Nous pourrons ainsi le t&eacute;l&eacute;charger sur notre ordinateur, sans passer par le site.</p>
                 @if ($publicEmail)
                     <p id="contact_public_email" class="mt-1 text-sm text-cidst-muted">Vous pouvez aussi envoyer un PDF ou un document par e-mail &agrave; <a href="mailto:{{ $publicEmail }}" class="underline text-cidst-text">{{ $publicEmail }}</a>.</p>
                 @endif
                 @error('attachment_link') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
-            <button type="submit" class="inline-flex items-center rounded bg-cidst-primary px-5 py-2 font-medium text-white hover:opacity-90">Envoyer</button>
+            <button type="submit" class="inline-flex items-center rounded bg-cidst-primary px-5 py-2 font-medium text-cidst-primary-content hover:opacity-90">Envoyer</button>
         </form>
     </div>
 </x-layout>

@@ -23,12 +23,12 @@
     </h1>
     <div class="flex flex-wrap gap-2 mb-6">
         <a href="{{ route('documents.index') }}"
-           class="text-xs px-2 py-1 rounded-full border {{ !isset($pdfCategory) ? 'bg-cidst-primary text-white border-cidst-primary' : 'border-cidst-border text-cidst-text' }}">
+           class="text-xs px-2 py-1 rounded-full border {{ !isset($pdfCategory) ? 'bg-cidst-primary text-cidst-primary-content border-cidst-primary' : 'border-cidst-border text-cidst-text' }}">
             Toutes les catégories
         </a>
         @foreach (\App\Models\PdfCategory::orderBy('name')->get() as $cat)
             <a href="{{ route('documents.category', $cat) }}"
-               class="text-xs px-2 py-1 rounded-full border {{ isset($pdfCategory) && $pdfCategory->id === $cat->id ? 'bg-cidst-primary text-white border-cidst-primary' : 'border-cidst-border text-cidst-text' }}">
+               class="text-xs px-2 py-1 rounded-full border {{ isset($pdfCategory) && $pdfCategory->id === $cat->id ? 'bg-cidst-primary text-cidst-primary-content border-cidst-primary' : 'border-cidst-border text-cidst-text' }}">
                 {{ $cat->name }}
             </a>
         @endforeach
