@@ -1,6 +1,6 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 import daisyui from 'daisyui';
+import { cidstColors, cidstFontFamily } from './tailwind.tokens.js';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -15,11 +15,7 @@ export default {
     ],
     theme: {
         extend: {
-            fontFamily: {
-                display: ['Space Grotesk', ...defaultTheme.fontFamily.sans],
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
-                mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
-            },
+            fontFamily: cidstFontFamily,
             colors: {
                 admin: {
                     bg: 'var(--admin-bg)',
@@ -27,14 +23,7 @@ export default {
                     hover: 'var(--admin-hover)',
                     text: 'var(--admin-text)',
                 },
-                cidst: {
-                    red: 'rgb(var(--color-primary-rgb) / <alpha-value>)',
-                    ink: 'rgb(var(--color-secondary-rgb) / <alpha-value>)',
-                    surface: '#FFFFFF',
-                    bg: '#F1F2F4',
-                    border: '#D8DADE',
-                    muted: '#6B7078',
-                },
+                cidst: cidstColors,
             },
         },
     },
