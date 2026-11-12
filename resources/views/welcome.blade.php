@@ -48,7 +48,7 @@
             <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
                 @if($settings->cta_primary_label && $settings->cta_primary_target)
                     <a href="{{ \Illuminate\Support\Facades\Route::has($settings->cta_primary_target) ? route($settings->cta_primary_target) : $settings->cta_primary_target }}"
-                       class="bg-cidst-primary text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-red-700 transition-colors">
+                       class="bg-cidst-primary text-cidst-primary-content px-6 py-3 rounded-md text-sm font-medium hover:opacity-90 transition-opacity">
                         {{ $settings->cta_primary_label }}
                     </a>
                 @endif
