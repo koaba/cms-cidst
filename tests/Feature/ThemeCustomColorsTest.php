@@ -43,7 +43,7 @@ it('relit theme_colors comme un tableau', function () {
     $settings = SiteSetting::current();
     $settings->forceFill(['theme_colors' => ['primary' => '#123ABC', 'bg' => '#101010']])->saveQuietly();
 
-    expect($settings->fresh()->theme_colors)->toBe(['primary' => '#123ABC', 'bg' => '#101010']);
+    expect($settings->fresh()->theme_colors)->toEqual(['primary' => '#123ABC', 'bg' => '#101010']);
 });
 
 it('applique les couleurs personnalisees sur les roles donnes et garde les defauts des autres', function () {
