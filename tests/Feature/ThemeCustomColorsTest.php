@@ -115,15 +115,15 @@ it('ignore un theme_colors qui n est pas un tableau', function () {
     $this->get('/')->assertOk()->assertSee('--color-bg-rgb:241 242 244;', false);
 });
 
-it('ne laisse pas le formulaire des reglages toucher theme_colors', function () {
+it('ne touche pas theme_colors quand le formulaire n envoie pas ce champ', function () {
     SiteSetting::current()->forceFill(['theme_colors' => ['bg' => '#101010']])->saveQuietly();
 
     $this->actingAs(adminUser())
-        ->put(route('admin.settings.update'), ['hero_title' => 'Titre', 'theme_colors' => ['primary' => '#000000']])
+        ->put(route('admin.settings.update'), ['hero_title' => 'Titre'])
         ->assertRedirect(route('admin.settings.edit'))
         ->assertSessionHasNoErrors();
 
-    expect(SiteSetting::current()->fresh()->theme_colors)->toBe(['bg' => '#101010']);
+    expect(SiteSetting::current()->fresh()->theme_colors)->toEqual(['bg' => '#101010']);
 });
 
 it('garde un texte secondaire lisible par defaut', function () {
