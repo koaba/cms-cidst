@@ -1,6 +1,6 @@
 <x-layout>
     <div class="max-w-2xl mx-auto">
-        <span class="text-[10px] leading-none bg-cidst-red/10 text-cidst-red px-1.5 py-0.5 rounded-full">
+        <span class="text-[10px] leading-none bg-cidst-primary/10 text-cidst-primary px-1.5 py-0.5 rounded-full">
             {{ $document->category->name }}
         </span>
 
@@ -28,14 +28,14 @@
                                  loading="lazy" decoding="async" class="w-full h-32 object-cover rounded border border-cidst-border mb-2"
                                  alt="{{ $pdf->original_name ?? basename($pdf->path) }}">
                         @else
-                            <div class="w-full h-32 flex items-center justify-center bg-cidst-red/5 rounded border border-cidst-border mb-2 text-3xl">
+                            <div class="w-full h-32 flex items-center justify-center bg-cidst-primary/5 rounded border border-cidst-border mb-2 text-3xl">
                                 📄
                             </div>
                         @endif
                         <span class="text-cidst-text text-xs text-center line-clamp-2">
                             {{ $pdf->original_name ?? basename($pdf->path) }}
                         </span>
-                        <span class="text-cidst-red text-xs font-medium mt-1">
+                        <span class="text-cidst-primary text-xs font-medium mt-1">
                             Télécharger &rarr;
                         </span>
                     </a>
@@ -43,7 +43,7 @@
             </div>
         @endif
 
-        <a href="{{ route('documents.index') }}" class="inline-block mt-6 text-cidst-red text-sm font-medium">
+        <a href="{{ route('documents.index') }}" class="inline-block mt-6 text-cidst-primary text-sm font-medium">
             &larr; Retour aux documents
         </a>
     </div>

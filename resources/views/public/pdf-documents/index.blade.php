@@ -23,12 +23,12 @@
     </h1>
     <div class="flex flex-wrap gap-2 mb-6">
         <a href="{{ route('documents.index') }}"
-           class="text-xs px-2 py-1 rounded-full border {{ !isset($pdfCategory) ? 'bg-cidst-red text-white border-cidst-red' : 'border-cidst-border text-cidst-text' }}">
+           class="text-xs px-2 py-1 rounded-full border {{ !isset($pdfCategory) ? 'bg-cidst-primary text-white border-cidst-primary' : 'border-cidst-border text-cidst-text' }}">
             Toutes les catégories
         </a>
         @foreach (\App\Models\PdfCategory::orderBy('name')->get() as $cat)
             <a href="{{ route('documents.category', $cat) }}"
-               class="text-xs px-2 py-1 rounded-full border {{ isset($pdfCategory) && $pdfCategory->id === $cat->id ? 'bg-cidst-red text-white border-cidst-red' : 'border-cidst-border text-cidst-text' }}">
+               class="text-xs px-2 py-1 rounded-full border {{ isset($pdfCategory) && $pdfCategory->id === $cat->id ? 'bg-cidst-primary text-white border-cidst-primary' : 'border-cidst-border text-cidst-text' }}">
                 {{ $cat->name }}
             </a>
         @endforeach
@@ -46,11 +46,11 @@
                              loading="lazy" decoding="async" class="w-full h-32 object-cover rounded border border-cidst-border mb-3"
                              alt="{{ $document->title }}">
                     @else
-                        <div class="w-full h-32 flex items-center justify-center bg-cidst-red/5 rounded border border-cidst-border mb-3 text-3xl">
+                        <div class="w-full h-32 flex items-center justify-center bg-cidst-primary/5 rounded border border-cidst-border mb-3 text-3xl">
                             📄
                         </div>
                     @endif
-                    <span class="text-[10px] leading-none bg-cidst-red/10 text-cidst-red px-1.5 py-0.5 rounded-full self-start mb-2">
+                    <span class="text-[10px] leading-none bg-cidst-primary/10 text-cidst-primary px-1.5 py-0.5 rounded-full self-start mb-2">
                         {{ $document->category->name }}
                     </span>
                     <h2 class="text-lg font-display font-semibold text-cidst-text line-clamp-2">
@@ -62,7 +62,7 @@
                         </p>
                     @endif
                     <span class="text-cidst-muted text-xs mt-2">{{ $document->pdfs->count() }} fichier(s) PDF</span>
-                    <span class="text-cidst-red text-sm font-medium mt-2">Voir les documents &rarr;</span>
+                    <span class="text-cidst-primary text-sm font-medium mt-2">Voir les documents &rarr;</span>
                 </a>
             @endforeach
         </div>

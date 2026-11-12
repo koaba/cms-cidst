@@ -1,5 +1,5 @@
 <x-layout :seo="$article">
-    <a href="{{ route('blog.index') }}" class="text-cidst-red hover:underline">&larr; Retour au blog</a>
+    <a href="{{ route('blog.index') }}" class="text-cidst-primary hover:underline">&larr; Retour au blog</a>
     <h1 class="text-3xl font-display font-bold mt-4 mb-2 text-cidst-text">{{ $article->title }}</h1>
     <p class="text-cidst-muted mb-6">{{ $article->published_at?->format('d/m/Y') }} - {{ $article->user->name }}</p>
            @if ($article->image)
@@ -21,7 +21,7 @@
     @if ($article->categories->isNotEmpty())
         <div class="flex flex-wrap gap-1 mb-6">
             @foreach ($article->categories as $cat)
-                <span class="text-[10px] leading-none bg-cidst-red/10 text-cidst-red px-1.5 py-0.5 rounded-full">
+                <span class="text-[10px] leading-none bg-cidst-primary/10 text-cidst-primary px-1.5 py-0.5 rounded-full">
                     {{ $cat->name }}
                 </span>
             @endforeach
@@ -71,9 +71,9 @@
                              alt="Aperçu du document {{ $pdf->original_name }}"
                              loading="lazy" decoding="async" class="w-24 h-32 object-cover rounded border group-hover:opacity-80 transition">
                     @else
-                        <div class="w-24 h-32 flex items-center justify-center bg-cidst-red/5 rounded border text-3xl group-hover:opacity-80 transition">📄</div>
+                        <div class="w-24 h-32 flex items-center justify-center bg-cidst-primary/5 rounded border text-3xl group-hover:opacity-80 transition">📄</div>
                     @endif
-                    <span class="text-xs text-cidst-red group-hover:underline break-words">
+                    <span class="text-xs text-cidst-primary group-hover:underline break-words">
                         {{ $pdf->original_name }}
                     </span>
                 </a>
@@ -151,11 +151,11 @@
                                          alt="{{ $video->title ?? $article->title }}"
                                          loading="lazy" decoding="async" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-cidst-ink/90"></div>
+                                    <div class="w-full h-full bg-cidst-secondary/90"></div>
                                 @endif
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
                                     <div class="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
-                                        <svg class="w-6 h-6 text-cidst-red ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-6 h-6 text-cidst-primary ml-1" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z"/>
                                         </svg>
                                     </div>
@@ -172,10 +172,10 @@
     @endif
 
       <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 opacity-0 transition-opacity duration-300">
-        <button type="button" id="lightbox-close" class="absolute top-4 right-4 text-white text-3xl leading-none hover:text-cidst-red transition-colors">&times;</button>
-        <button type="button" id="lightbox-prev" class="absolute left-4 text-white text-4xl leading-none hover:text-cidst-red transition-colors">&lsaquo;</button>
+        <button type="button" id="lightbox-close" class="absolute top-4 right-4 text-white text-3xl leading-none hover:text-cidst-primary transition-colors">&times;</button>
+        <button type="button" id="lightbox-prev" class="absolute left-4 text-white text-4xl leading-none hover:text-cidst-primary transition-colors">&lsaquo;</button>
         <img id="lightbox-img" src="" alt="" class="max-h-[92vh] max-w-[95vw] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300">
-        <button type="button" id="lightbox-next" class="absolute right-4 text-white text-4xl leading-none hover:text-cidst-red transition-colors">&rsaquo;</button>
+        <button type="button" id="lightbox-next" class="absolute right-4 text-white text-4xl leading-none hover:text-cidst-primary transition-colors">&rsaquo;</button>
     </div>
 
     <script>

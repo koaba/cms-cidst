@@ -22,7 +22,7 @@
                         <a href="{{ $item->resolved_url }}"
                            class="relative text-cidst-text text-sm font-medium tracking-wide
                                   after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0
-                                  after:bg-cidst-red after:transition-all after:duration-300
+                                  after:bg-cidst-primary after:transition-all after:duration-300
                                   hover:after:w-full">
                             {{ $item->label }}
                         </a>

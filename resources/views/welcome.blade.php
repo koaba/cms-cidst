@@ -30,7 +30,7 @@
                     $eyebrowSizeClass = $eyebrowSizes[$settings->hero_eyebrow_size] ?? 'text-xs';
                 @endphp
                 <p class="font-mono {{ $eyebrowSizeClass }} tracking-widest text-cidst-muted uppercase mb-5">
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cidst-red mr-2 align-middle"></span>
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-cidst-primary mr-2 align-middle"></span>
                     {{ $settings->hero_eyebrow }}
                 </p>
             @endif
@@ -48,7 +48,7 @@
             <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
                 @if($settings->cta_primary_label && $settings->cta_primary_target)
                     <a href="{{ \Illuminate\Support\Facades\Route::has($settings->cta_primary_target) ? route($settings->cta_primary_target) : $settings->cta_primary_target }}"
-                       class="bg-cidst-red text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-red-700 transition-colors">
+                       class="bg-cidst-primary text-white px-6 py-3 rounded-md text-sm font-medium hover:bg-red-700 transition-colors">
                         {{ $settings->cta_primary_label }}
                     </a>
                 @endif
