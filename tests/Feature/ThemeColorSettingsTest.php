@@ -100,9 +100,9 @@ it('bloque un texte principal illisible sur la surface', function () {
 });
 
 it('explique le blocage avec le contraste et le minimum', function () {
-    themeColorSettingsSave($this, themeColorSettingsFull(['text' => '#CCCCCC']));
+    $response = $this->actingAs(adminUser())->putJson(route('admin.settings.update'), ['hero_title' => 'Titre', 'theme_colors' => themeColorSettingsFull(['text' => '#CCCCCC'])]);
 
-    $message = session('errors')->first('theme_colors.text');
+    $message = $response->assertStatus(422)->json('errors')['theme_colors.text'][0];
 
     expect($message)->toContain('Texte principal sur le fond')->toContain('minimum 4,5:1');
 });

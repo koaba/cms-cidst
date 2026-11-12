@@ -117,6 +117,7 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin)])->group(f
     Route::resource('admin/pdf-documents', AdminPdfDocumentController::class)->names('admin.pdf-documents');
     Route::get('admin/settings', [SiteSettingController::class, 'edit'])->name('admin.settings.edit');
     Route::put('admin/settings', [SiteSettingController::class, 'update'])->name('admin.settings.update');
+    Route::delete('admin/settings/colors', [SiteSettingController::class, 'resetColors'])->name('admin.settings.colors.reset');
     Route::get('admin/audience', AudienceController::class)->name('admin.audience');
     Route::resource('admin/messages', AdminContactMessageController::class)->only(['index', 'show', 'destroy'])->names('admin.messages');
     Route::get('admin/messages/{message}/attachments/{attachment}', [AdminContactMessageController::class, 'attachment'])->name('admin.messages.attachments.show');

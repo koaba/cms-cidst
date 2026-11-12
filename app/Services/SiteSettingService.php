@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SiteSetting;
+use App\Services\Theme\ThemeRoles;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -36,6 +37,14 @@ class SiteSettingService
             $data['logo_natural_height'] = $dimensions['height'] ?? null;
         }
 
+        // Couleurs des sept roles : seuls les roles valides et remplis sont gardes, en majuscules ;
+        // un champ absent ne change rien (la reinitialisation passe par resetColors()).
+        if (is_array($data['theme_colors'] ?? null)) {
+            $data['theme_colors'] = $this->normalizeColors($data['theme_colors']);
+        } else {
+            unset($data['theme_colors']);
+        }
+
         // Un theme absent ou vide ne change rien (la colonne est NOT NULL).
         if (blank($data['theme'] ?? null)) {
             unset($data['theme']);
@@ -59,6 +68,39 @@ class SiteSettingService
         $settings->update($data);
 
         return $settings;
+    }
+
+    /** Retour aux couleurs par defaut : plus de couleurs personnalisees, reglages historiques remis a zero. */
+    public function resetColors(SiteSetting $settings): SiteSetting
+    {
+        $defaults = ThemeRoles::defaults();
+
+        $settings->update([
+            'theme_colors' => null,
+            'primary_color' => $defaults['primary'],
+            'secondary_color' => $defaults['secondary'],
+        ]);
+
+        return $settings;
+    }
+
+    /**
+     * @param  array<string, mixed>  $colors
+     * @return array<string, string>|null
+     */
+    private function normalizeColors(array $colors): ?array
+    {
+        $normalized = [];
+
+        foreach (ThemeRoles::keys() as $role) {
+            $value = $colors[$role] ?? null;
+
+            if (is_string($value) && $value !== '') {
+                $normalized[$role] = strtoupper($value);
+            }
+        }
+
+        return $normalized === [] ? null : $normalized;
     }
 
     private function replaceLogo(SiteSetting $settings, UploadedFile $logo): string
