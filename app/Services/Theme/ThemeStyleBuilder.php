@@ -23,18 +23,24 @@ final class ThemeStyleBuilder
         private readonly ContrastChecker $contrast = new ContrastChecker,
     ) {}
 
-    public function css(?string $primary, ?string $secondary, ?string $theme = null): string
+    /**
+     * Couches, la dernière l'emporte : défauts des rôles, réglages historiques (primary_color,
+     * secondary_color), palette du thème, puis couleurs personnalisées (site_settings.theme_colors).
+     *
+     * @param  array<string, mixed>|null  $colors  Couleurs personnalisées par rôle ; invalides ignorées.
+     */
+    public function css(?string $primary, ?string $secondary, ?string $theme = null, ?array $colors = null): string
     {
         $palette = $this->palette($theme);
 
-        // Un thème avec palette impose ses couleurs : sa couche passe après celle des réglages.
-        $roles = ThemePalette::resolve(['primary' => $primary, 'secondary' => $secondary], $palette ?? []);
+        $roles = ThemePalette::resolve(['primary' => $primary, 'secondary' => $secondary], $palette ?? [], $colors ?? []);
         $primary = $roles->color('primary');
         $secondary = $roles->color('secondary');
         $accent = $this->valid($palette['accent'] ?? $primary, $primary);
 
-        $primaryContent = $this->content($palette['primary_content'] ?? null, $primary);
-        $secondaryContent = $this->content($palette['secondary_content'] ?? null, $secondary);
+        // Une couleur personnalisée remplace celle du thème : son texte imposé ne vaut plus, on le recalcule.
+        $primaryContent = $this->content($this->customized($colors, 'primary') ? null : ($palette['primary_content'] ?? null), $primary);
+        $secondaryContent = $this->content($this->customized($colors, 'secondary') ? null : ($palette['secondary_content'] ?? null), $secondary);
         $accentContent = $this->content($palette['accent_content'] ?? null, $accent);
 
         $vars = [
@@ -74,6 +80,12 @@ final class ThemeStyleBuilder
         $palette = config('themes.themes', [])[$theme]['palette'] ?? null;
 
         return is_array($palette) ? $palette : null;
+    }
+
+    /** @param  array<string, mixed>|null  $colors */
+    private function customized(?array $colors, string $role): bool
+    {
+        return preg_match(self::HEX, is_string($colors[$role] ?? null) ? $colors[$role] : '') === 1;
     }
 
     /** Couleur de texte imposée par le thème, sinon calculée comme DaisyUI. */

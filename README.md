@@ -157,13 +157,14 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 
 ### Thèmes
 
-- Registre : `config/themes.php` (clés `default` et `themes`). Thèmes livrés : `cidst` (défaut, aucune palette imposée) et `itadori`.
+- Registre : `config/themes.php` (clés `default` et `themes`). Thème livré : `cidst` (défaut, aucune palette imposée). Itadori est retiré ; les thèmes Clair, Sombre et de fêtes arrivent aux lots 3e et 3e-bis.
 - Colonne `site_settings.theme` : `string(30)`, `DEFAULT 'cidst'`, `NOT NULL`. Choix dans l'administration : **Réglages, bloc « Thème du site »**.
 - `<x-theme-style />` (layouts public et admin, après `@vite`) transmet `getRawOriginal('theme')` à `ThemeStyleBuilder`, qui génère `html:root{--p;--pc;--a;--ac;--s;--sc;--n;--nc;--color-primary-rgb;--color-secondary-rgb}`. Un thème inconnu en base retombe sur `cidst`.
 - **Règle** : les couleurs saisies dans les réglages (`primary_color`, `secondary_color`) ne s'appliquent qu'au thème `cidst`. Tout autre thème impose sa palette (primary, secondary, accent).
 - **Contraste** : chaque palette fixe ses propres couleurs de texte (`*_content`), car le calcul automatique de DaisyUI peut passer sous 4,5:1. Un test échoue si une paire texte/fond passe sous 4,5.
 - **Ajouter un thème** : ajouter une entrée dans `config/themes.php` (palette complète avec `primary`, `secondary`, `accent` et leurs `*_content`). Le sélecteur, la validation et le test de contraste le prennent en compte.
-- Le mode sombre d'Itadori est écarté (contrastes insuffisants).
+- **Couleurs personnalisées** : colonne `site_settings.theme_colors` (JSON nullable, une clé par rôle, valeur `#RRGGBB`). `ThemeStyleBuilder::css()` empile les couches, la dernière l'emporte : défauts de `ThemeRoles`, réglages historiques (`primary_color`, `secondary_color`), palette du thème, puis `theme_colors`. Une valeur invalide ou un rôle inconnu est ignoré ; un JSON absent ou qui n'est pas un tableau aussi. Une couleur personnalisée remplace celle du thème : le texte imposé par le thème (`*_content`) est alors recalculé. Le formulaire des réglages n'écrit pas encore cette colonne (lot 3d-4b).
+- Texte secondaire par défaut : `#4B5057` (7,25 sur le fond, 8,13 sur blanc).
 - Ne pas utiliser les accesseurs `primary_color` / `secondary_color` du modèle pour générer le thème (ils renvoient `#000000` / `#FFFFFF` si la valeur est invalide, comportement figé par `SiteSettingColorTest`) : le builder lit les valeurs brutes.
 - Défauts en base : `#C41E2A` / `#17181A`, identiques à `ThemeStyleBuilder::DEFAULT_PRIMARY` et `DEFAULT_SECONDARY` (alignés par la migration `align_default_theme_colors`, qui ne touche que les réglages jamais personnalisés). Un test fige cette égalité.
 - **Jetons Tailwind** : un seul fichier `tailwind.tokens.js`, importé par `tailwind.config.js` (admin) et `tailwind.public.config.js` (public). Chaque couleur `cidst-*` lit une variable `--color-{rôle}-rgb` (défauts dans `resources/css/shared.css`, valeurs émises par `ThemeStyleBuilder`) : changer de couleur ne demande aucune recompilation. `ThemeTokensTest` échoue si `ThemeRoles`, `shared.css` et les jetons se désynchronisent. Les anciens noms `cidst-red` et `cidst-ink` sont retirés : on écrit `cidst-primary` et `cidst-secondary` (`ThemeLegacyTokensTest` les interdit).

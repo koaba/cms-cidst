@@ -3,6 +3,19 @@
 use App\Models\SiteSetting;
 
 beforeEach(function () {
+    // Itadori est retire : un theme d'essai porte la palette imposee que ces tests verifient.
+    config(['themes.themes.essai' => [
+        'label' => 'Essai',
+        'palette' => [
+            'primary' => '#E61919',
+            'primary_content' => '#FFFFFF',
+            'secondary' => '#24335C',
+            'secondary_content' => '#FFFFFF',
+            'accent' => '#FFAFBD',
+            'accent_content' => '#5C111C',
+        ],
+    ]]);
+
     $this->useTheme = function (string $theme, string $primary = '#123ABC', string $secondary = '#000000'): void {
         SiteSetting::current()
             ->forceFill(['theme' => $theme, 'primary_color' => $primary, 'secondary_color' => $secondary])
@@ -38,7 +51,7 @@ it('garde les couleurs des reglages avec le theme cidst', function () {
 });
 
 it('impose la palette du theme choisi sur le site public', function () {
-    ($this->useTheme)('itadori');
+    ($this->useTheme)('essai');
 
     $html = $this->get('/')->getContent();
 
@@ -48,7 +61,7 @@ it('impose la palette du theme choisi sur le site public', function () {
 });
 
 it('impose la palette du theme choisi dans l administration', function () {
-    ($this->useTheme)('itadori');
+    ($this->useTheme)('essai');
 
     $html = $this->actingAs(adminUser())->get(route('admin.dashboard'))->getContent();
 
@@ -56,7 +69,7 @@ it('impose la palette du theme choisi dans l administration', function () {
 });
 
 it('fixe les couleurs de texte du theme au lieu de les calculer', function () {
-    ($this->useTheme)('itadori');
+    ($this->useTheme)('essai');
 
     $html = $this->actingAs(adminUser())->get(route('admin.dashboard'))->getContent();
 
@@ -70,10 +83,10 @@ it('retombe sur cidst quand le theme stocke est inconnu', function () {
 });
 
 it('enregistre le theme choisi dans les reglages', function () {
-    $this->actingAs(adminUser())->put(route('admin.settings.update'), ['hero_title' => 'Titre', 'theme' => 'itadori'])
+    $this->actingAs(adminUser())->put(route('admin.settings.update'), ['hero_title' => 'Titre', 'theme' => 'essai'])
         ->assertRedirect(route('admin.settings.edit'))->assertSessionHasNoErrors();
 
-    expect(SiteSetting::current()->fresh()->theme)->toBe('itadori');
+    expect(SiteSetting::current()->fresh()->theme)->toBe('essai');
 });
 
 it('refuse un theme inconnu', function () {
@@ -84,39 +97,39 @@ it('refuse un theme inconnu', function () {
 });
 
 it('garde le theme existant quand le champ est absent ou vide', function () {
-    ($this->useTheme)('itadori');
+    ($this->useTheme)('essai');
 
     $this->actingAs(adminUser())->put(route('admin.settings.update'), ['hero_title' => 'Titre'])
         ->assertRedirect(route('admin.settings.edit'))->assertSessionHasNoErrors();
-    expect(SiteSetting::current()->fresh()->theme)->toBe('itadori');
+    expect(SiteSetting::current()->fresh()->theme)->toBe('essai');
 
     $this->actingAs(adminUser())->put(route('admin.settings.update'), ['hero_title' => 'Titre', 'theme' => ''])
         ->assertRedirect(route('admin.settings.edit'))->assertSessionHasNoErrors();
-    expect(SiteSetting::current()->fresh()->theme)->toBe('itadori');
+    expect(SiteSetting::current()->fresh()->theme)->toBe('essai');
 });
 
 it('propose les themes dans les reglages avec cidst coche par defaut', function () {
     $html = $this->actingAs(adminUser())->get(route('admin.settings.edit'))->assertOk()->getContent();
 
     expect($html)->toContain('name="theme"')
-        ->and($html)->toContain('Itadori')
+        ->and($html)->toContain('Essai')
         ->and($html)->toMatch('/value="cidst"\s+checked/')
-        ->and($html)->not->toMatch('/value="itadori"\s+checked/');
+        ->and($html)->not->toMatch('/value="essai"\s+checked/');
 });
 
 it('coche le theme enregistre dans les reglages', function () {
-    ($this->useTheme)('itadori');
+    ($this->useTheme)('essai');
 
     $html = $this->actingAs(adminUser())->get(route('admin.settings.edit'))->getContent();
 
-    expect($html)->toMatch('/value="itadori"\s+checked/')
+    expect($html)->toMatch('/value="essai"\s+checked/')
         ->and($html)->not->toMatch('/value="cidst"\s+checked/');
 });
 
 it('declare des palettes lisibles pour chaque theme', function () {
     $themes = config('themes.themes');
 
-    expect($themes)->toHaveKey('cidst')->toHaveKey('itadori');
+    expect($themes)->toHaveKey('cidst')->toHaveKey('essai');
 
     foreach (collect($themes)->filter(fn ($theme) => isset($theme['palette'])) as $key => $theme) {
         foreach (['primary', 'secondary', 'accent'] as $role) {
