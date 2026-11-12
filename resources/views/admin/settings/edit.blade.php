@@ -7,6 +7,18 @@
 @if(session('error'))
     <div class="bg-red-100 text-red-800 p-3 rounded mb-4">{{ session('error') }}</div>
 @endif
+@if(session('warnings'))
+    <div class="alert alert-warning mb-4" role="status">
+        <div>
+            <p class="font-medium">Couleurs enregistrées, avec des points à surveiller :</p>
+            <ul class="list-disc pl-5 text-sm">
+                @foreach (session('warnings') as $warning)
+                    <li>{{ $warning }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
 
     <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="max-w-2xl space-y-6">
         @csrf
@@ -47,24 +59,62 @@
                     </label>
                 @endforeach
             </div>
-            <p class="text-xs text-base-content/60 mt-1">Les couleurs ci-dessous ne s'appliquent qu'au thème CIDST ; un autre thème impose sa propre palette.</p>
+            <p class="text-xs text-base-content/60 mt-1">Les couleurs personnalisées ci-dessous passent après la palette du thème choisi.</p>
             @error('theme') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </fieldset>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label class="block font-medium mb-1">Couleur principale</label>
-                <input type="color" name="primary_color" value="{{ old('primary_color', $settings->primary_color) }}"
-                       class="w-full h-10 border rounded p-1">
-                @error('primary_color') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        <fieldset class="space-y-3">
+            <legend class="block font-medium mb-1">Couleurs du site</legend>
+            <p class="text-xs text-base-content/60">
+                Sept rôles de couleur. Le texte posé sur la couleur primaire est calculé automatiquement pour rester lisible.
+                Un texte principal sous 4,5:1 de contraste sur le fond ou la surface bloque l'enregistrement ; les autres écarts sont seulement signalés.
+            </p>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+                @foreach (\App\Services\Theme\ThemeRoles::keys() as $role)
+                    @php($color = old('theme_colors.'.$role, $palette->color($role)))
+                    <div x-data>
+                        <label for="theme_colors_{{ $role }}" class="block font-medium mb-1">{{ \App\Services\Theme\ThemeRoles::label($role) }}</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" value="{{ $color }}" x-ref="picker"
+                                   x-on:input="$refs.hex.value = $event.target.value.toUpperCase()"
+                                   aria-label="Sélecteur de couleur : {{ \App\Services\Theme\ThemeRoles::label($role) }}"
+                                   class="h-11 w-14 border rounded p-1 cursor-pointer">
+                            <input type="text" id="theme_colors_{{ $role }}" name="theme_colors[{{ $role }}]" value="{{ $color }}" x-ref="hex"
+                                   x-on:input="if (/^#[0-9A-Fa-f]{6}$/.test($event.target.value)) $refs.picker.value = $event.target.value"
+                                   maxlength="7" pattern="#[0-9A-Fa-f]{6}" autocomplete="off" spellcheck="false"
+                                   class="w-32 h-11 border rounded p-2 font-mono uppercase">
+                        </div>
+                        @foreach ($errors->get('theme_colors.'.$role) as $message)
+                            <p class="text-red-600 text-sm" role="alert">{{ $message }}</p>
+                        @endforeach
+                    </div>
+                @endforeach
             </div>
-            <div>
-                <label class="block font-medium mb-1">Couleur secondaire</label>
-                <input type="color" name="secondary_color" value="{{ old('secondary_color', $settings->secondary_color) }}"
-                       class="w-full h-10 border rounded p-1">
-                @error('secondary_color') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+
+            @error('theme_colors')
+                <p class="text-red-600 text-sm">{{ $message }}</p>
+            @enderror
+
+            <div class="border rounded p-3 space-y-1">
+                <p class="font-medium">Lisibilité des couleurs enregistrées</p>
+                <ul class="text-sm space-y-0.5">
+                    @foreach ($report as $row)
+                        <li>
+                            {{ $row['label'] }} : {{ \App\Services\Theme\ContrastGuard::format($row['ratio']) }}:1
+                            (minimum {{ \App\Services\Theme\ContrastGuard::format($row['minimum']) }}:1) —
+                            @if ($row['passes'])
+                                correct
+                            @else
+                                {{ $row['blocking'] ? 'insuffisant, enregistrement bloqué' : 'à surveiller' }}
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
+
+            <button type="submit" form="reset-colors-form" class="btn btn-outline btn-sm">Réinitialiser les couleurs</button>
+        </fieldset>
 
         <div>
             <label class="block font-medium mb-1">Direction du bandeau d'actualités</label>
@@ -252,5 +302,11 @@
             <x-admin.button type="submit">Enregistrer</x-admin.button>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>
         </div>
+    </form>
+
+    <form id="reset-colors-form" action="{{ route('admin.settings.colors.reset') }}" method="POST"
+          onsubmit="return confirm('Remettre toutes les couleurs aux valeurs par défaut ?')">
+        @csrf
+        @method('DELETE')
     </form>
 </x-admin.layout>

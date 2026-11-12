@@ -2,8 +2,12 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Services\Theme\ContrastGuard;
+use App\Services\Theme\ThemePalette;
+use App\Services\Theme\ThemeRoles;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * Valide le formulaire des reglages du site (admin/settings).
@@ -18,7 +22,15 @@ class UpdateSiteSettingRequest extends FormRequest
 
     public function rules(): array
     {
+        // Un champ par role ; un role inconnu (ou le texte sur primaire, jamais saisi) est refuse.
+        $colorRules = ['theme_colors' => ['nullable', 'array:'.implode(',', ThemeRoles::keys())]];
+
+        foreach (ThemeRoles::keys() as $role) {
+            $colorRules['theme_colors.'.$role] = ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'];
+        }
+
         return [
+            ...$colorRules,
             'hero_eyebrow' => 'nullable|string|max:255',
             'hero_eyebrow_size' => 'nullable|in:xs,sm,base,lg,xl',
             'hero_title' => 'required|string|max:255',
@@ -48,5 +60,26 @@ class UpdateSiteSettingRequest extends FormRequest
             'contact_public_email' => 'nullable|email|max:255',
             'delete_code' => 'nullable|string|min:8|max:50',
         ];
+    }
+
+    /**
+     * Garde-fou de contraste (politique A) : le texte principal sous 4,5 sur le fond ou sur la
+     * surface bloque l'enregistrement. Les autres écarts sont signalés après l'enregistrement.
+     *
+     * @return list<callable>
+     */
+    public function after(): array
+    {
+        return [function (Validator $validator): void {
+            $colors = $this->input('theme_colors');
+
+            if (! is_array($colors) || collect($validator->errors()->keys())->contains(fn (string $key): bool => str_starts_with($key, 'theme_colors'))) {
+                return;
+            }
+
+            foreach ((new ContrastGuard)->blockers(ThemePalette::resolve($colors)) as $message) {
+                $validator->errors()->add('theme_colors.text', $message);
+            }
+        }];
     }
 }

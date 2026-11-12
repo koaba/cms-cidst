@@ -33,7 +33,7 @@ final class ThemeStyleBuilder
     {
         $palette = $this->palette($theme);
 
-        $roles = ThemePalette::resolve(['primary' => $primary, 'secondary' => $secondary], $palette ?? [], $colors ?? []);
+        $roles = $this->roles($primary, $secondary, $theme, $colors);
         $primary = $roles->color('primary');
         $secondary = $roles->color('secondary');
         $accent = $this->valid($palette['accent'] ?? $primary, $primary);
@@ -68,6 +68,17 @@ final class ThemeStyleBuilder
         }
 
         return 'html:root{'.$declarations.'}';
+    }
+
+    /**
+     * Valeur des sept rôles pour ces réglages, par les mêmes couches que css() : défauts, réglages
+     * historiques, palette du thème, couleurs personnalisées. Sert au formulaire des réglages.
+     *
+     * @param  array<string, mixed>|null  $colors
+     */
+    public function roles(?string $primary, ?string $secondary, ?string $theme = null, ?array $colors = null): ThemePalette
+    {
+        return ThemePalette::resolve(['primary' => $primary, 'secondary' => $secondary], $this->palette($theme) ?? [], $colors ?? []);
     }
 
     /** @return array<string, string>|null Palette du thème, null pour cidst ou un thème inconnu. */

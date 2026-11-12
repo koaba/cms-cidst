@@ -41,5 +41,6 @@ it('revient à la couleur par défaut quand une valeur invalide est stockée dir
     $response = $this->actingAs($admin)->get(route('admin.settings.edit'));
     $response->assertOk();
     $response->assertDontSee('red;}a{', false);
-    $response->assertSee('#000000', false);
+    // Le formulaire des sept roles part des couleurs resolues ; l'accesseur reste fige.
+    expect(SiteSetting::current()->primary_color)->toBe('#000000');
 });
