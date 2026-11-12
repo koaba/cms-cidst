@@ -11,7 +11,7 @@
     @endif
 
     @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
-    <table class="w-full bg-white shadow rounded">
+    <table class="w-full bg-cidst-surface shadow rounded">
         <thead>
             <tr class="text-left border-b">
                 <th class="p-3">Titre</th>

@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.articles.store') }}" enctype="multipart/form-data" class="bg-white shadow rounded p-6 max-w-3xl">
+    <form method="POST" action="{{ route('admin.articles.store') }}" enctype="multipart/form-data" class="bg-cidst-surface shadow rounded p-6 max-w-3xl">
         @csrf
 
         <div class="mb-4">

@@ -35,7 +35,7 @@
                 </p>
             @endif
 
-            <h1 class="font-display text-4xl sm:text-6xl font-semibold text-cidst-ink leading-[1.1] max-w-3xl mx-auto">
+            <h1 class="font-display text-4xl sm:text-6xl font-semibold text-cidst-text leading-[1.1] max-w-3xl mx-auto">
                 {{ $settings->hero_title }}
             </h1>
 
@@ -55,7 +55,7 @@
 
                 @if($settings->cta_secondary_label && $settings->cta_secondary_target)
                     <a href="{{ \Illuminate\Support\Facades\Route::has($settings->cta_secondary_target) ? route($settings->cta_secondary_target) : $settings->cta_secondary_target }}"
-                       class="border border-cidst-border text-cidst-ink px-6 py-3 rounded-md text-sm font-medium hover:bg-cidst-surface transition-colors">
+                       class="border border-cidst-border text-cidst-text px-6 py-3 rounded-md text-sm font-medium hover:bg-cidst-surface transition-colors">
                         {{ $settings->cta_secondary_label }}
                     </a>
                 @endif
@@ -68,19 +68,19 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
             <div class="bg-cidst-surface rounded-lg p-6 border border-cidst-border">
-                <h3 class="font-display font-semibold text-cidst-ink mb-2">Fiable</h3>
+                <h3 class="font-display font-semibold text-cidst-text mb-2">Fiable</h3>
                 <p class="text-sm text-cidst-muted leading-relaxed">
                     Une information verifiee, issue de sources scientifiques reconnues.
                 </p>
             </div>
             <div class="bg-cidst-surface rounded-lg p-6 border border-cidst-border">
-                <h3 class="font-display font-semibold text-cidst-ink mb-2">Structuree</h3>
+                <h3 class="font-display font-semibold text-cidst-text mb-2">Structuree</h3>
                 <p class="text-sm text-cidst-muted leading-relaxed">
                     Une documentation organisee, facile a explorer et a retrouver.
                 </p>
             </div>
             <div class="bg-cidst-surface rounded-lg p-6 border border-cidst-border">
-                <h3 class="font-display font-semibold text-cidst-ink mb-2">Accessible</h3>
+                <h3 class="font-display font-semibold text-cidst-text mb-2">Accessible</h3>
                 <p class="text-sm text-cidst-muted leading-relaxed">
                     Ecrite pour etre comprise, au-dela du seul cercle des specialistes.
                 </p>

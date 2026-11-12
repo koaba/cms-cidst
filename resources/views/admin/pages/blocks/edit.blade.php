@@ -29,7 +29,7 @@
 
                         <ul class="space-y-2 mb-3">
                             @forelse($childrenBySlot->get($i, collect()) as $child)
-                                <li class="flex items-center justify-between bg-white border rounded p-2 text-sm">
+                                <li class="flex items-center justify-between bg-cidst-surface border rounded p-2 text-sm">
                                     <span>{{ config('page_blocks.types')[$child->type] ?? $child->type }}</span>
                                     <span class="space-x-2">
                                         <a href="{{ route('admin.pages.blocks.columns.edit', [$page, $block->id, $i, $child->id]) }}" class="text-blue-600 hover:underline">Modifier</a>

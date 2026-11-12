@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.categories.update', $category) }}" enctype="multipart/form-data" class="bg-white shadow rounded p-6 max-w-lg">
+    <form method="POST" action="{{ route('admin.categories.update', $category) }}" enctype="multipart/form-data" class="bg-cidst-surface shadow rounded p-6 max-w-lg">
         @csrf
         @method('PUT')
 

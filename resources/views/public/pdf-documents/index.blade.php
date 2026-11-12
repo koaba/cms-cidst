@@ -2,7 +2,7 @@
     @if (!isset($pdfCategory) && ($settings->pdf_documents_title || $settings->pdf_documents_content))
         <div class="mb-6">
             @if ($settings->pdf_documents_title)
-                <h1 class="text-3xl font-display font-bold mb-2 text-cidst-ink">
+                <h1 class="text-3xl font-display font-bold mb-2 text-cidst-text">
                     {{ $settings->pdf_documents_title }}
                 </h1>
             @endif
@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <h1 class="text-3xl font-display font-bold mb-6 text-cidst-ink">
+    <h1 class="text-3xl font-display font-bold mb-6 text-cidst-text">
         @isset($pdfCategory)
             Documents dans : {{ $pdfCategory->name }}
         @else
@@ -23,12 +23,12 @@
     </h1>
     <div class="flex flex-wrap gap-2 mb-6">
         <a href="{{ route('documents.index') }}"
-           class="text-xs px-2 py-1 rounded-full border {{ !isset($pdfCategory) ? 'bg-cidst-red text-white border-cidst-red' : 'border-cidst-border text-cidst-ink' }}">
+           class="text-xs px-2 py-1 rounded-full border {{ !isset($pdfCategory) ? 'bg-cidst-red text-white border-cidst-red' : 'border-cidst-border text-cidst-text' }}">
             Toutes les catégories
         </a>
         @foreach (\App\Models\PdfCategory::orderBy('name')->get() as $cat)
             <a href="{{ route('documents.category', $cat) }}"
-               class="text-xs px-2 py-1 rounded-full border {{ isset($pdfCategory) && $pdfCategory->id === $cat->id ? 'bg-cidst-red text-white border-cidst-red' : 'border-cidst-border text-cidst-ink' }}">
+               class="text-xs px-2 py-1 rounded-full border {{ isset($pdfCategory) && $pdfCategory->id === $cat->id ? 'bg-cidst-red text-white border-cidst-red' : 'border-cidst-border text-cidst-text' }}">
                 {{ $cat->name }}
             </a>
         @endforeach
@@ -53,11 +53,11 @@
                     <span class="text-[10px] leading-none bg-cidst-red/10 text-cidst-red px-1.5 py-0.5 rounded-full self-start mb-2">
                         {{ $document->category->name }}
                     </span>
-                    <h2 class="text-lg font-display font-semibold text-cidst-ink line-clamp-2">
+                    <h2 class="text-lg font-display font-semibold text-cidst-text line-clamp-2">
                         {{ $document->title }}
                     </h2>
                     @if ($document->description)
-                        <p class="text-cidst-ink text-sm mt-2 line-clamp-3">
+                        <p class="text-cidst-text text-sm mt-2 line-clamp-3">
                             {{ Str::limit($document->description, 120) }}
                         </p>
                     @endif

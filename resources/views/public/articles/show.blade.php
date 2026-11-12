@@ -1,6 +1,6 @@
 <x-layout :seo="$article">
     <a href="{{ route('blog.index') }}" class="text-cidst-red hover:underline">&larr; Retour au blog</a>
-    <h1 class="text-3xl font-display font-bold mt-4 mb-2 text-cidst-ink">{{ $article->title }}</h1>
+    <h1 class="text-3xl font-display font-bold mt-4 mb-2 text-cidst-text">{{ $article->title }}</h1>
     <p class="text-cidst-muted mb-6">{{ $article->published_at?->format('d/m/Y') }} - {{ $article->user->name }}</p>
            @if ($article->image)
     <script type="application/json" id="diaporama-data-featured">
@@ -34,7 +34,7 @@
         $attachedPdfs = $article->media->filter(fn ($m) => $m->mime_type === 'application/pdf');
     @endphp
   @if ($galleryImages->isNotEmpty())
-    <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Galerie</h2>
+    <h2 class="text-xl font-display font-semibold text-cidst-text mt-8 mb-4">Galerie</h2>
 
     <script type="application/json" id="diaporama-data-gallery">
         {!! json_encode($galleryImages->map(fn ($m) => [
@@ -60,7 +60,7 @@
 @endif
 
         @if ($attachedPdfs->isNotEmpty())
-        <h2 class="text-xl font-display font-semibold text-cidst-ink mt-8 mb-4">Documents joints</h2>
+        <h2 class="text-xl font-display font-semibold text-cidst-text mt-8 mb-4">Documents joints</h2>
         <div class="flex flex-wrap gap-4 mb-6">
             @foreach ($attachedPdfs as $pdf)
                                <a href="{{ Storage::url($pdf->path) }}"
@@ -89,7 +89,7 @@
                 @if ($diaporama->media->isNotEmpty())
                     <div class="mb-8">
                         @if ($diaporama->title)
-                            <h3 class="font-display text-sm font-semibold text-cidst-ink mb-3">{{ $diaporama->title }}</h3>
+                            <h3 class="font-display text-sm font-semibold text-cidst-text mb-3">{{ $diaporama->title }}</h3>
                         @endif
                        <button type="button"
         class="diaporama-auto group relative w-full max-w-2xl h-64 sm:h-80 overflow-hidden rounded-lg border border-cidst-border block"

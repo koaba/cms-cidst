@@ -11,7 +11,7 @@
         <div class="alert alert-error mb-4">{{ session('error') }}</div>
     @endif
 
-    <table class="table w-full bg-white rounded shadow">
+    <table class="table w-full bg-cidst-surface rounded shadow">
         <thead>
             <tr>
                 <th>Nom</th>

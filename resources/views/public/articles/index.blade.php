@@ -1,5 +1,5 @@
 <x-layout :seo-page="isset($category) ? 'blog_category' : 'blog'" :seo-replace="['name' => $category->name ?? '']">
-  <h1 class="text-3xl font-display font-bold mb-6 text-cidst-ink">
+  <h1 class="text-3xl font-display font-bold mb-6 text-cidst-text">
       @isset($category)
           Articles dans : {{ $category->name }}
       @else
@@ -36,10 +36,10 @@
                         @endforeach
                     </div>
                 @endif
-                <h2 class="text-lg font-display font-semibold text-cidst-ink line-clamp-2">
+                <h2 class="text-lg font-display font-semibold text-cidst-text line-clamp-2">
                     {{ $article->title }}
                 </h2>
-                <p class="text-cidst-ink text-sm mt-2 line-clamp-3">
+                <p class="text-cidst-text text-sm mt-2 line-clamp-3">
                     {{ Str::limit(strip_tags($article->content), 120) }}
                 </p>
                 <span class="text-cidst-red text-sm font-medium mt-2">Lire la suite &rarr;</span>

@@ -27,7 +27,7 @@
 
         <ul class="space-y-2 mb-3">
             @forelse($item->children as $content)
-                <li class="flex items-center justify-between bg-white border rounded p-2 text-sm">
+                <li class="flex items-center justify-between bg-cidst-surface border rounded p-2 text-sm">
                     <span>{{ config('page_blocks.types')[$content->type] ?? $content->type }}</span>
                     <span class="space-x-2">
                         <a href="{{ route('admin.pages.blocks.items.content.edit', [$page, $parent->id, $item->id, $content->id]) }}" class="text-blue-600 hover:underline">Modifier</a>

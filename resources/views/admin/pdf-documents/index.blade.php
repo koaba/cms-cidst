@@ -13,7 +13,7 @@
             {{ session('error') }}
         </div>
     @endif
-    <table class="w-full bg-white shadow rounded">
+    <table class="w-full bg-cidst-surface shadow rounded">
         <thead>
             <tr class="text-left border-b">
                 <th class="p-3">Titre</th>

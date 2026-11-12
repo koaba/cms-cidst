@@ -21,7 +21,7 @@
     @else
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             @foreach ($media as $item)
-                <div class="border rounded overflow-hidden bg-white">
+                <div class="border rounded overflow-hidden bg-cidst-surface">
                     <img src="{{ asset('storage/' . $item->path) }}" alt="{{ $item->original_name }}" class="w-full h-32 object-cover">
                     <div class="p-2">
                         <p class="text-sm font-medium truncate" title="{{ $item->original_name }}">

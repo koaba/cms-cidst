@@ -1,7 +1,7 @@
 <x-admin.layout title="Modifier l'utilisateur">
     <h1 class="text-xl font-bold mb-6">Modifier {{ $user->name }}</h1>
 
-    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="bg-white p-6 rounded shadow max-w-md">
+    <form method="POST" action="{{ route('admin.users.update', $user) }}" class="bg-cidst-surface p-6 rounded shadow max-w-md">
         @csrf
         @method('PUT')
 
