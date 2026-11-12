@@ -27,7 +27,7 @@ it('emet les cinq autres roles avec leurs valeurs par defaut', function () {
     expect($css)->toContain('--color-bg-rgb:241 242 244;')
         ->and($css)->toContain('--color-surface-rgb:255 255 255;')
         ->and($css)->toContain('--color-text-rgb:23 24 26;')
-        ->and($css)->toContain('--color-muted-rgb:107 112 120;')
+        ->and($css)->toContain('--color-muted-rgb:75 80 87;')
         ->and($css)->toContain('--color-border-rgb:216 218 222;');
 });
 

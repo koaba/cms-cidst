@@ -24,7 +24,7 @@ it('garde pour defauts les couleurs actuelles du site (aucun changement visuel)'
         'bg' => '#F1F2F4',
         'surface' => '#FFFFFF',
         'text' => '#17181A',
-        'muted' => '#6B7078',
+        'muted' => '#4B5057',
         'border' => '#D8DADE',
     ]);
 });

@@ -10,7 +10,7 @@ it('injecte les variables des roles sur la page publique', function () {
     expect($html)->toContain('--color-bg-rgb:241 242 244;')
         ->and($html)->toContain('--color-surface-rgb:255 255 255;')
         ->and($html)->toContain('--color-text-rgb:23 24 26;')
-        ->and($html)->toContain('--color-muted-rgb:107 112 120;')
+        ->and($html)->toContain('--color-muted-rgb:75 80 87;')
         ->and($html)->toContain('--color-border-rgb:216 218 222;')
         ->and($html)->toContain('--color-primary-content-rgb:255 255 255;');
 });
