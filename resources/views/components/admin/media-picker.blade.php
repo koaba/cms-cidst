@@ -1,6 +1,6 @@
 @once
 <div id="media-picker-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-white rounded p-4 w-full max-w-2xl max-h-[80vh] flex flex-col">
+    <div class="bg-cidst-surface rounded p-4 w-full max-w-2xl max-h-[80vh] flex flex-col">
         <div class="flex justify-between items-center mb-3">
             <h3 class="font-semibold" id="media-picker-title">Choisir des images</h3>
             <button type="button" onclick="MediaPicker.close()" class="text-base-content/60">&times;</button>

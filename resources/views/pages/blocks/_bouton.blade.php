@@ -1,7 +1,7 @@
 @php
     $styles = [
         'primaire' => 'bg-blue-600 text-white hover:bg-blue-700',
-        'secondaire' => 'bg-cidst-border text-cidst-ink hover:bg-cidst-muted/30',
+        'secondaire' => 'bg-cidst-border text-cidst-text hover:bg-cidst-muted/30',
         'outline' => 'border border-blue-600 text-blue-600 hover:bg-blue-50',
     ];
     $styleClass = $styles[$data['style'] ?? 'primaire'] ?? $styles['primaire'];

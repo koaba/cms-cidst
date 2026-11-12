@@ -1,7 +1,7 @@
 <x-admin.layout title="Nouvel utilisateur">
     <h1 class="text-xl font-bold mb-6">Nouvel utilisateur</h1>
 
-    <form method="POST" action="{{ route('admin.users.store') }}" class="bg-white p-6 rounded shadow max-w-md">
+    <form method="POST" action="{{ route('admin.users.store') }}" class="bg-cidst-surface p-6 rounded shadow max-w-md">
         @csrf
 
         <div class="mb-4">

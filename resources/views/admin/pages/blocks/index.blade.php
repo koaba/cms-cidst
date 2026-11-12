@@ -27,7 +27,7 @@
 
     <div data-page-blocks-reorder data-reorder-url="{{ route('admin.pages.blocks.reorder', $page) }}" class="space-y-2">
         @forelse($blocks as $block)
-            <div data-block-id="{{ $block->id }}" class="border rounded p-3 flex justify-between items-center cursor-move bg-white">
+            <div data-block-id="{{ $block->id }}" class="border rounded p-3 flex justify-between items-center cursor-move bg-cidst-surface">
                 <div>
                     <span class="font-medium">{{ $types[$block->type] ?? $block->type }}</span>
                     @if(!empty($block->data['title']))

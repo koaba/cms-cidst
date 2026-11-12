@@ -4,17 +4,17 @@
             {{ $document->category->name }}
         </span>
 
-        <h1 class="text-3xl font-display font-bold mt-3 mb-4 text-cidst-ink">
+        <h1 class="text-3xl font-display font-bold mt-3 mb-4 text-cidst-text">
             {{ $document->title }}
         </h1>
 
         @if ($document->description)
-            <p class="text-cidst-ink mb-6">
+            <p class="text-cidst-text mb-6">
                 {{ $document->description }}
             </p>
         @endif
 
-        <h2 class="text-lg font-display font-semibold text-cidst-ink mb-3">Documents disponibles</h2>
+        <h2 class="text-lg font-display font-semibold text-cidst-text mb-3">Documents disponibles</h2>
 
         @if ($document->pdfs->isEmpty())
             <p class="text-cidst-muted">Aucun fichier disponible pour le moment.</p>
@@ -32,7 +32,7 @@
                                 📄
                             </div>
                         @endif
-                        <span class="text-cidst-ink text-xs text-center line-clamp-2">
+                        <span class="text-cidst-text text-xs text-center line-clamp-2">
                             {{ $pdf->original_name ?? basename($pdf->path) }}
                         </span>
                         <span class="text-cidst-red text-xs font-medium mt-1">

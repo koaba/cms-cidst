@@ -1,6 +1,6 @@
 @php
     $bgClasses = [
-        'gray' => 'bg-cidst-bg text-cidst-ink',
+        'gray' => 'bg-cidst-bg text-cidst-text',
         'blue' => 'bg-blue-600 text-white',
         'dark' => 'bg-cidst-ink text-white',
     ];
@@ -14,7 +14,7 @@
     @if(!empty($data['button_label']) && !empty($data['button_url']))
         <a href="{{ \App\Support\SafeUrl::sanitize($data['button_url']) }}"
            @if(!empty($data['button_new_tab'])) target="_blank" rel="noopener noreferrer" @endif
-           class="inline-block px-5 py-2 rounded font-medium bg-white text-cidst-ink hover:bg-cidst-bg">
+           class="inline-block px-5 py-2 rounded font-medium bg-white text-cidst-secondary hover:bg-cidst-bg">
             {{ $data['button_label'] }}
         </a>
     @endif

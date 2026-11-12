@@ -21,7 +21,7 @@
 @endphp
 
 <x-layout seo-page="pages">
-    <h1 class="text-3xl font-display font-bold mb-6 text-cidst-ink">Pages</h1>
+    <h1 class="text-3xl font-display font-bold mb-6 text-cidst-text">Pages</h1>
 
     @if ($pages->isEmpty())
         <p class="text-cidst-muted">Aucune page pour le moment.</p>
@@ -38,10 +38,10 @@
                     </div>
                 @endif
                 <div class="p-4 flex flex-col flex-1">
-                    <h2 class="text-lg font-display font-semibold text-cidst-ink line-clamp-2">
+                    <h2 class="text-lg font-display font-semibold text-cidst-text line-clamp-2">
                         {{ $page->title }}
                     </h2>
-                    <p class="text-cidst-ink text-sm mt-2 line-clamp-3">
+                    <p class="text-cidst-text text-sm mt-2 line-clamp-3">
                         {{ Str::limit(strip_tags($page->content), 120) }}
                     </p>
                     <span class="text-cidst-red text-sm font-medium mt-2">Lire la suite &rarr;</span>
