@@ -31,6 +31,9 @@ class SiteSettingService
 
         if ($logo instanceof UploadedFile) {
             $data['logo_path'] = $this->replaceLogo($settings, $logo);
+            $dimensions = MediaDimensionsReader::read($data['logo_path']);
+            $data['logo_width'] = $dimensions['width'] ?? null;
+            $data['logo_natural_height'] = $dimensions['height'] ?? null;
         }
 
         // Un theme absent ou vide ne change rien (la colonne est NOT NULL).

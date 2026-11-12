@@ -149,7 +149,7 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 - Filtrer sur `mime_type`, jamais sur `type` (enum).
 - `mediables` est en cascade sur `media_id` ; `articles.cover_media_id` est en `nullOnDelete`.
 - Les sliders passent par le pivot et par `sliders.image = media.path`.
-- Le disque public a pour URL `APP_URL/storage` ; le logo est servi par `asset('storage/' . logo_path)`.
+- Le disque public a pour URL `APP_URL/storage` ; le logo est servi par `asset('storage/' . logo_path)`, avec ses dimensions réelles (`logo_width`, `logo_natural_height`, lues à l'envoi et à la conversion WebP) en `width` et `height` pour réserver sa place.
 - `SiteSetting::current()` est mémorisé dans le conteneur et en cache permanent, invalidé à la sauvegarde.
 
 ### Thèmes

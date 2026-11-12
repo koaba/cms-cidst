@@ -4,7 +4,7 @@
             {{-- Logo --}}
             <a href="/" class="flex items-center gap-3">
                 @if($settings->logo_path)
-                    <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo" loading="eager" class="w-auto" style="height: {{ $settings->logo_height ?: 48 }}px">
+                    <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo" @if($settings->logo_width && $settings->logo_natural_height) width="{{ $settings->logo_width }}" height="{{ $settings->logo_natural_height }}" @endif loading="eager" class="w-auto" style="height: {{ $settings->logo_height ?: 48 }}px">
                 @else
                     <img src="{{ asset('images/logo-cidst.png') }}" alt="Logo" width="189" height="144" loading="eager" class="w-auto" style="height: {{ $settings->logo_height ?: 48 }}px">
                 @endif
