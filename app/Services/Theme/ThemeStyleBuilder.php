@@ -18,14 +18,19 @@ final class ThemeStyleBuilder
 
     private const HEX = '/^#[0-9A-Fa-f]{6}$/';
 
-    public function __construct(private readonly ColorConverter $converter) {}
+    public function __construct(
+        private readonly ColorConverter $converter,
+        private readonly ContrastChecker $contrast = new ContrastChecker,
+    ) {}
 
     public function css(?string $primary, ?string $secondary, ?string $theme = null): string
     {
         $palette = $this->palette($theme);
 
-        $primary = $this->valid($palette['primary'] ?? $primary, self::DEFAULT_PRIMARY);
-        $secondary = $this->valid($palette['secondary'] ?? $secondary, self::DEFAULT_SECONDARY);
+        // Un thème avec palette impose ses couleurs : sa couche passe après celle des réglages.
+        $roles = ThemePalette::resolve(['primary' => $primary, 'secondary' => $secondary], $palette ?? []);
+        $primary = $roles->color('primary');
+        $secondary = $roles->color('secondary');
         $accent = $this->valid($palette['accent'] ?? $primary, $primary);
 
         $primaryContent = $this->content($palette['primary_content'] ?? null, $primary);
@@ -44,6 +49,12 @@ final class ThemeStyleBuilder
             '--color-primary-rgb' => $this->converter->rgbTriplet($primary),
             '--color-secondary-rgb' => $this->converter->rgbTriplet($secondary),
         ];
+
+        foreach (['bg', 'surface', 'text', 'muted', 'border'] as $role) {
+            $vars[ThemeRoles::cssVariable($role)] = $this->converter->rgbTriplet($roles->color($role));
+        }
+
+        $vars[ThemeRoles::PRIMARY_CONTENT_VARIABLE] = $this->converter->rgbTriplet($this->contrast->readableTextOn($primary));
 
         $declarations = '';
         foreach ($vars as $name => $value) {

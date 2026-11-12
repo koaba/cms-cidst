@@ -105,6 +105,9 @@ Trois niveaux : public ; authentifié + rôle Super Admin **ou** Publication (ar
 | `Services\Dashboard\DashboardPeriod` | Période du tableau de bord : `week`, `month` (défaut), `year`, `all` (plafonné à 60 mois). `options(withGlobal: false)` retire Global (page Audience). Variation `null` si la période précédente vaut 0. |
 | `Services\Theme\ColorConverter` | Convertit `#RRGGBB` en triplet RGB (Tailwind) et en OKLCH (DaisyUI 4), avec la couleur de contraste. |
 | `Services\Theme\ThemeStyleBuilder` | Produit le bloc CSS du thème actif (voir [Thèmes](#thèmes)). |
+| `Services\Theme\ThemeRoles` | Les sept rôles de couleur (primaire, secondaire, fond de page, surface, texte principal, texte secondaire, bordures) avec libellé et défaut. |
+| `Services\Theme\ThemePalette` | Résout la valeur de chaque rôle par couches (défauts, puis chaque couche donnée, la dernière l'emporte ; valeurs invalides ignorées). |
+| `Services\Theme\ContrastChecker` | Contraste WCAG entre deux couleurs (`ratio`, `passes`, `readableTextOn`). Un seul calcul pour le thème, les réglages et les tests. |
 | `MediaOverviewService` | Vue d'ensemble de la médiathèque (compteurs, alertes, derniers ajouts) et règle `isInUse(Media)`. |
 | `MediaSyncService` | Synchronisation des couvertures et images liées aux contenus. |
 | Traits `HasOrphanMediaCleanup`, `HasOrderedMediaCollection` | Nettoyage des médias orphelins, collections de médias ordonnées. |
@@ -163,7 +166,8 @@ Limite connue : le format de `og_image` (chemin ou URL) n'est pas vérifié. Une
 - Le mode sombre d'Itadori est écarté (contrastes insuffisants).
 - Ne pas utiliser les accesseurs `primary_color` / `secondary_color` du modèle pour générer le thème (ils renvoient `#000000` / `#FFFFFF` si la valeur est invalide, comportement figé par `SiteSettingColorTest`) : le builder lit les valeurs brutes.
 - Défauts en base : `#C41E2A` / `#17181A`, identiques à `ThemeStyleBuilder::DEFAULT_PRIMARY` et `DEFAULT_SECONDARY` (alignés par la migration `align_default_theme_colors`, qui ne touche que les réglages jamais personnalisés). Un test fige cette égalité.
-- Fond, surfaces, bordures, muted et arrondi restent des hexadécimaux figés dans les configs Tailwind (public et admin) : chantier prévu (voir feuille de route).
+- **Jetons Tailwind** : un seul fichier `tailwind.tokens.js`, importé par `tailwind.config.js` (admin) et `tailwind.public.config.js` (public). Chaque couleur `cidst-*` lit une variable `--color-{rôle}-rgb` (défauts dans `resources/css/shared.css`, valeurs émises par `ThemeStyleBuilder`) : changer de couleur ne demande aucune recompilation. `ThemeTokensTest` échoue si `ThemeRoles`, `shared.css` et les jetons se désynchronisent. Les noms `cidst-red` et `cidst-ink` sont des alias provisoires de `cidst-primary` et `cidst-secondary`.
+- Le texte sur primaire (`--color-primary-content-rgb`) est calculé (blanc ou noir, meilleur contraste). L'arrondi reste figé dans les configs.
 - Règle de chaque lot design : mobile-first, paliers Tailwind par défaut, vérification à 360, 768, 1024, 1440 et 1920 px.
 
 ### SEO
