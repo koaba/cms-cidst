@@ -124,7 +124,11 @@ class ExistingImageConverter
 
         // Par le modele : l'enregistrement vide le cache des reglages du site.
         SiteSetting::query()->where('logo_path', $old)->get()
-            ->each(fn (SiteSetting $settings) => $settings->update(['logo_path' => $new]));
+            ->each(fn (SiteSetting $settings) => $settings->update([
+                'logo_path' => $new,
+                'logo_width' => $dimensions['width'] ?? null,
+                'logo_natural_height' => $dimensions['height'] ?? null,
+            ]));
 
         return $converted;
     }

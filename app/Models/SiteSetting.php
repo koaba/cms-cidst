@@ -16,6 +16,8 @@ class SiteSetting extends Model
         'hero_subtitle',
         'logo_path',
         'logo_height',
+        'logo_width',
+        'logo_natural_height',
         'cta_primary_label',
         'cta_primary_target',
         'cta_secondary_label',
@@ -47,6 +49,8 @@ class SiteSetting extends Model
         'contact_images_enabled' => 'boolean',
         'contact_images_max_mb' => 'integer',
         'logo_height' => 'integer',
+        'logo_width' => 'integer',
+        'logo_natural_height' => 'integer',
     ];
 
     public function getPrimaryColorAttribute($value): string
