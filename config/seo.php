@@ -11,6 +11,11 @@
 */
 
 return [
+    // Code pays ISO 3166-1 (alpha-2) de l'adresse postale du JSON-LD de l'accueil.
+    'organization' => [
+        'country' => 'MG',
+    ],
+
     'breadcrumbs' => [
         'home' => 'Accueil',
         'blog' => 'Blog',

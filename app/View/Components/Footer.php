@@ -3,20 +3,25 @@
 namespace App\View\Components;
 
 use App\Models\SiteSetting;
+use App\Services\Contact\SiteContact;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
 /**
  * Pied de page public. Les réglages viennent de SiteSetting (cache invalidé à l'enregistrement) ;
  * une colonne absente du modèle en cache (avant cache:clear) compte comme « affiché ».
+ * Les coordonnées viennent de SiteContact (source unique, partagée avec la page Contact et le JSON-LD).
  */
 class Footer extends Component
 {
     public SiteSetting $settings;
 
+    private SiteContact $contact;
+
     public function __construct(?SiteSetting $settings = null)
     {
         $this->settings = $settings ?? SiteSetting::current();
+        $this->contact = new SiteContact($this->settings);
     }
 
     public function shouldRender(): bool
@@ -31,91 +36,52 @@ class Footer extends Component
 
     public function showContacts(): bool
     {
-        return (bool) ($this->settings->footer_show_contacts ?? true);
+        return $this->contact->shown();
     }
 
     public function email(): ?string
     {
-        return $this->showContacts() ? $this->text($this->settings->contact_public_email) : null;
+        return $this->contact->email();
     }
 
-    /** Seules les adresses http(s) deviennent un lien : jamais javascript: ni autre schéma. */
     public function facebook(): ?string
     {
-        $url = $this->showContacts() ? $this->text($this->settings->facebook_url) : null;
-
-        return $url !== null && preg_match('#^https?://#i', $url) === 1 ? $url : null;
+        return $this->contact->facebook();
     }
 
     /** @return list<string> */
     public function addressLines(): array
     {
-        return $this->showContacts() ? $this->lines($this->settings->contact_address) : [];
+        return $this->contact->addressLines();
     }
 
     /** @return list<string> */
     public function hoursLines(): array
     {
-        return $this->showContacts() ? $this->lines($this->settings->contact_hours) : [];
+        return $this->contact->hoursLines();
     }
 
-    /**
-     * Téléphones affichés tels que saisis, avec un lien tel: nettoyé (chiffres et « + » initial).
-     * Un numéro de moins de 5 chiffres n'est pas affiché.
-     *
-     * @return list<array{label: string, href: string}>
-     */
+    /** @return list<array{label: string, href: string}> */
     public function phones(): array
     {
-        if (! $this->showContacts()) {
-            return [];
-        }
-
-        $phones = [];
-
-        foreach ([$this->settings->contact_phone, $this->settings->contact_phone_2] as $value) {
-            $label = $this->text($value);
-
-            if ($label === null) {
-                continue;
-            }
-
-            $number = $this->dialable($label);
-
-            if (strlen(ltrim($number, '+')) >= 5) {
-                $phones[] = ['label' => $label, 'href' => 'tel:'.$number];
-            }
-        }
-
-        return $phones;
+        return $this->contact->phones();
     }
 
-    /**
-     * WhatsApp exige le format international : sans « + » initial, le lien wa.me serait faux.
-     *
-     * @return array{label: string, href: string}|null
-     */
+    /** @return array{label: string, href: string}|null */
     public function whatsapp(): ?array
     {
-        $label = $this->showContacts() ? $this->text($this->settings->contact_whatsapp) : null;
-
-        if ($label === null || ! str_starts_with($label, '+')) {
-            return null;
-        }
-
-        $digits = (string) preg_replace('/\D/', '', $label);
-
-        return strlen($digits) >= 7 ? ['label' => $label, 'href' => 'https://wa.me/'.$digits] : null;
+        return $this->contact->whatsapp();
     }
 
     public function hasContacts(): bool
     {
-        return $this->addressLines() !== []
-            || $this->phones() !== []
-            || $this->whatsapp() !== null
-            || $this->hoursLines() !== []
-            || $this->email() !== null
-            || $this->facebook() !== null;
+        return $this->contact->has();
+    }
+
+    /** Lien « Nous trouver » vers la carte de la page Contact : seulement avec un point GPS valide affiché. */
+    public function locationUrl(): ?string
+    {
+        return $this->contact->coordinates() !== null ? route('contact.show').'#nous-trouver' : null;
     }
 
     /**
@@ -175,22 +141,6 @@ class Footer extends Component
     public function render(): View
     {
         return view('components.footer');
-    }
-
-    /** @return list<string> */
-    private function lines(?string $value): array
-    {
-        $lines = array_map('trim', preg_split('/\R/', (string) $value) ?: []);
-
-        return array_values(array_filter($lines, fn (string $line): bool => $line !== ''));
-    }
-
-    /** Chiffres du numéro, avec un « + » conservé seulement en tête. */
-    private function dialable(string $value): string
-    {
-        $number = (string) preg_replace('/[^\d+]/', '', $value);
-
-        return ($number !== '' && $number[0] === '+' ? '+' : '').str_replace('+', '', $number);
     }
 
     private function text(?string $value): ?string

@@ -20,6 +20,22 @@ class UpdateSiteSettingRequest extends FormRequest
         return true;
     }
 
+    /** Saisie francaise : « -18,9137 » est accepte et devient « -18.9137 » avant la validation. */
+    protected function prepareForValidation(): void
+    {
+        $decimals = [];
+
+        foreach (['map_latitude', 'map_longitude'] as $field) {
+            if (is_string($this->input($field))) {
+                $decimals[$field] = str_replace(',', '.', trim($this->input($field)));
+            }
+        }
+
+        if ($decimals !== []) {
+            $this->merge($decimals);
+        }
+    }
+
     public function rules(): array
     {
         // Un champ par role ; un role inconnu (ou le texte sur primaire, jamais saisi) est refuse.
@@ -68,6 +84,9 @@ class UpdateSiteSettingRequest extends FormRequest
             'contact_phone' => ['nullable', 'string', 'max:30', 'regex:/^\+?\(?[0-9][0-9 .\-()]{4,28}$/'],
             'contact_phone_2' => ['nullable', 'string', 'max:30', 'regex:/^\+?\(?[0-9][0-9 .\-()]{4,28}$/'],
             'contact_whatsapp' => ['nullable', 'string', 'max:30', 'regex:/^\+\(?[0-9][0-9 .\-()]{6,28}$/'],
+            // Point GPS : les deux ou aucun, dans les bornes, 7 decimales au plus (colonne decimal(10,7)).
+            'map_latitude' => ['nullable', 'numeric', 'between:-90,90', 'decimal:0,7', 'required_with:map_longitude'],
+            'map_longitude' => ['nullable', 'numeric', 'between:-180,180', 'decimal:0,7', 'required_with:map_latitude'],
             'delete_code' => 'nullable|string|min:8|max:50',
         ];
     }

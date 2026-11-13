@@ -24,6 +24,12 @@ return [
     'integer' => 'Le champ :attribute doit être un entier.',
     'exists' => 'La valeur sélectionnée pour :attribute n\'existe pas.',
     'array' => 'Le champ :attribute doit être un tableau.',
+    'numeric' => 'Le champ :attribute doit être un nombre.',
+    'between' => [
+        'numeric' => 'Le champ :attribute doit être compris entre :min et :max.',
+    ],
+    'decimal' => 'Le champ :attribute doit avoir au plus :decimal décimales.',
+    'required_with' => 'Le champ :attribute est obligatoire quand :values est renseigné.',
 
     'attributes' => [
         'title' => 'titre',
@@ -53,6 +59,8 @@ return [
         'columns.*.content' => 'contenu de la colonne',
         'columns.*.image' => 'image de la colonne',
         'column_count' => 'nombre de colonnes',
+        'map_latitude' => 'latitude',
+        'map_longitude' => 'longitude',
     ],
 
 ];

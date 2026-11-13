@@ -52,5 +52,6 @@
             </div>
             <button type="submit" class="inline-flex items-center rounded bg-cidst-primary px-5 py-2 font-medium text-cidst-primary-content hover:opacity-90">Envoyer</button>
         </form>
+        <x-contact.location :contact="$contact" />
     </div>
 </x-layout>

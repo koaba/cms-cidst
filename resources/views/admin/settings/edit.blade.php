@@ -300,7 +300,7 @@
 </fieldset>
 <fieldset class="border rounded p-4 space-y-4">
     <legend class="font-medium px-1">Coordonnées de l'établissement</legend>
-    <p class="text-sm opacity-70">Affichées dans le pied de page, colonne « Nous joindre » (si « Afficher les coordonnées » est coché ci-dessous). Laisser un champ vide pour ne rien afficher.</p>
+    <p class="text-sm opacity-70">Affichées dans le pied de page, sur la page Contact et dans le référencement local (si « Afficher les coordonnées » est coché ci-dessous). Laisser un champ vide pour ne rien afficher.</p>
     <div>
         <label for="contact_address" class="block font-medium mb-1">Adresse</label>
         <textarea id="contact_address" name="contact_address" rows="2" maxlength="255" class="w-full border rounded p-2">{{ old('contact_address', $settings->contact_address) }}</textarea>
@@ -331,6 +331,21 @@
         @error('contact_hours') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         <p class="text-sm opacity-70">Une ligne par retour à la ligne, par exemple « Lundi au vendredi : 8h – 17h ».</p>
     </div>
+    <div>
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+                <label for="map_latitude" class="block font-medium mb-1">Latitude</label>
+                <input id="map_latitude" type="text" inputmode="decimal" name="map_latitude" maxlength="12" value="{{ old('map_latitude', $settings->map_latitude) }}" placeholder="-18.9137" class="w-full border rounded p-2">
+                @error('map_latitude') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="map_longitude" class="block font-medium mb-1">Longitude</label>
+                <input id="map_longitude" type="text" inputmode="decimal" name="map_longitude" maxlength="12" value="{{ old('map_longitude', $settings->map_longitude) }}" placeholder="47.5361" class="w-full border rounded p-2">
+                @error('map_longitude') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            </div>
+        </div>
+        <p class="mt-1 text-sm opacity-70">Point GPS de l'établissement : les deux champs ou aucun (latitude de -90 à 90, longitude de -180 à 180, virgule ou point). Il affiche la carte sur la page Contact, le lien « Nous trouver » du pied de page et le référencement local. Astuce : clic droit sur le lieu dans Google Maps pour copier les deux valeurs.</p>
+    </div>
 </fieldset>
 <fieldset class="border rounded p-4 space-y-4">
     <legend class="font-medium px-1">Pied de page public</legend>
@@ -342,7 +357,7 @@
     </label>
     <label class="flex items-center gap-2 font-medium">
         <input type="checkbox" name="footer_show_contacts" value="1" class="h-4 w-4" {{ $footerChecked('footer_show_contacts') ? 'checked' : '' }}>
-        Afficher les coordonnées (adresse, téléphones, horaires, e-mail et Facebook)
+        Afficher les coordonnées (pied de page, page Contact, carte et référencement local)
     </label>
     <div>
         <label for="footer_description" class="block font-medium mb-1">Courte description</label>
