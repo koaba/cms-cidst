@@ -104,7 +104,8 @@ class Footer extends Component
             $actions[] = ['label' => 'WhatsApp', 'href' => $whatsapp['href'], 'external' => true];
         }
 
-        if ($actions !== [] || $this->email() !== null) {
+        // « Écrire » mène à la page Contact : inutile quand on y est déjà.
+        if (($actions !== [] || $this->email() !== null) && ! request()->routeIs('contact.show')) {
             $actions[] = ['label' => 'Écrire', 'href' => route('contact.show'), 'external' => false];
         }
 
