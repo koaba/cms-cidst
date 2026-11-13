@@ -62,6 +62,12 @@ class UpdateSiteSettingRequest extends FormRequest
             'footer_description' => 'nullable|string|max:255',
             'footer_show_contacts' => 'nullable|boolean',
             'footer_copyright' => 'nullable|string|max:255',
+            'contact_address' => 'nullable|string|max:255',
+            'contact_hours' => 'nullable|string|max:255',
+            // Telephone : chiffres, espaces, points, tirets et parentheses ; WhatsApp : format international (+).
+            'contact_phone' => ['nullable', 'string', 'max:30', 'regex:/^\+?\(?[0-9][0-9 .\-()]{4,28}$/'],
+            'contact_phone_2' => ['nullable', 'string', 'max:30', 'regex:/^\+?\(?[0-9][0-9 .\-()]{4,28}$/'],
+            'contact_whatsapp' => ['nullable', 'string', 'max:30', 'regex:/^\+\(?[0-9][0-9 .\-()]{6,28}$/'],
             'delete_code' => 'nullable|string|min:8|max:50',
         ];
     }
