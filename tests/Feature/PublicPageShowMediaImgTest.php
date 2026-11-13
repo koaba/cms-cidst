@@ -31,8 +31,12 @@ it('affiche l\'image de la page via srcset, prioritaire, avec alt et dimensions'
         ->toContain('fetchpriority="high"')
         ->toContain('alt="Ma page"')
         ->toContain('width="2000"')
-        ->toContain('height="1000"')
-        ->not->toContain('loading="lazy"');
+        ->toContain('height="1000"');
+
+    // Seule l'image de la page doit se charger tout de suite : le logo du pied de page, plus bas, reste en lazy.
+    preg_match('/<img\b[^>]*\balt="Ma page"[^>]*>/', $html, $image);
+
+    expect($image[0] ?? '')->not->toBeEmpty()->not->toContain('loading="lazy"');
 });
 
 it('reste valide sans variantes ni dimensions', function () {

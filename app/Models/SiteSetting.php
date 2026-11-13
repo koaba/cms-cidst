@@ -38,6 +38,10 @@ class SiteSetting extends Model
         'contact_images_enabled',
         'contact_images_max_mb',
         'contact_public_email',
+        'show_footer',
+        'footer_description',
+        'footer_show_contacts',
+        'footer_copyright',
     ];
 
     protected $hidden = ['delete_code_hash'];
@@ -53,6 +57,8 @@ class SiteSetting extends Model
         'logo_width' => 'integer',
         'logo_natural_height' => 'integer',
         'theme_colors' => 'array',
+        'show_footer' => 'boolean',
+        'footer_show_contacts' => 'boolean',
     ];
 
     public function getPrimaryColorAttribute($value): string

@@ -15,6 +15,8 @@ function expectedRawImgCounts(): array
         'components/media-img.blade.php' => 1,
         // Logos du menu, hors table media, loading="eager" voulu.
         'components/main-menu.blade.php' => 2,
+        // Logo du pied de page, hors table media, loading="lazy" ; une seule balise pour le logo des reglages et le logo par defaut.
+        'components/footer.blade.php' => 1,
         // Logo du filigrane, decoratif (alt vide, aria-hidden).
         'components/watermark-overlay.blade.php' => 1,
         // Repli des sliders sans media (teste dans PublicSlidersMediaImgTest).

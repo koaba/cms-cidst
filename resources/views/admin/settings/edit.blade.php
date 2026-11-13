@@ -298,6 +298,31 @@
         <p class="text-sm opacity-70">Les visiteurs peuvent y envoyer un PDF ou un document. Laisser vide pour ne rien afficher.</p>
     </div>
 </fieldset>
+<fieldset class="border rounded p-4 space-y-4">
+    <legend class="font-medium px-1">Pied de page public</legend>
+    {{-- Apres une erreur de validation, une case decochee reste decochee (old() seul la recocherait). --}}
+    @php($footerChecked = fn (string $field): bool => session()->hasOldInput() ? (bool) old($field) : (bool) ($settings->{$field} ?? true))
+    <label class="flex items-center gap-2 font-medium">
+        <input type="checkbox" name="show_footer" value="1" class="h-4 w-4" {{ $footerChecked('show_footer') ? 'checked' : '' }}>
+        Afficher le pied de page
+    </label>
+    <label class="flex items-center gap-2 font-medium">
+        <input type="checkbox" name="footer_show_contacts" value="1" class="h-4 w-4" {{ $footerChecked('footer_show_contacts') ? 'checked' : '' }}>
+        Afficher l'e-mail public et le lien Facebook
+    </label>
+    <div>
+        <label for="footer_description" class="block font-medium mb-1">Courte description</label>
+        <input id="footer_description" type="text" name="footer_description" maxlength="255" value="{{ old('footer_description', $settings->footer_description) }}" class="w-full border rounded p-2">
+        @error('footer_description') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        <p class="text-sm opacity-70">Affichée sous le logo. Laisser vide pour ne rien afficher.</p>
+    </div>
+    <div>
+        <label for="footer_copyright" class="block font-medium mb-1">Texte du copyright</label>
+        <input id="footer_copyright" type="text" name="footer_copyright" maxlength="255" value="{{ old('footer_copyright', $settings->footer_copyright) }}" placeholder="© {annee} {site}" class="w-full border rounded p-2">
+        @error('footer_copyright') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        <p class="text-sm opacity-70">{annee} devient l'année en cours et {site} le nom du site. Laisser vide pour « © année Nom du site ».</p>
+    </div>
+</fieldset>
 <div class="flex items-center gap-3">
             <x-admin.button type="submit">Enregistrer</x-admin.button>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>
