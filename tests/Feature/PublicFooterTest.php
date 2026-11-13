@@ -2,6 +2,7 @@
 
 use App\Models\SiteSetting;
 use App\View\Components\Footer;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 
 // Lot 3h-1 : pied de page public (composant x-footer, inclus dans le layout) et ses reglages
@@ -20,9 +21,9 @@ function publicFooterSet(array $attributes): void
     SiteSetting::current()->update($attributes);
 }
 
-function publicFooterHtml($test): string
+function publicFooterHtml(): string
 {
-    return (string) $test->blade('<x-footer />');
+    return Blade::render('<x-footer />');
 }
 
 function publicFooterSave($test, array $extra = [])
@@ -35,7 +36,7 @@ const PUBLIC_FOOTER_CHECKED = 'value="1" class="h-4 w-4" checked';
 // ---------------------------------------------------------------- contenu du composant
 
 it('affiche le pied de page par defaut avec les liens Contact et Rechercher', function () {
-    $html = publicFooterHtml($this);
+    $html = publicFooterHtml();
 
     expect($html)
         ->toContain('<footer id="site-footer"')
@@ -47,7 +48,7 @@ it('affiche le pied de page par defaut avec les liens Contact et Rechercher', fu
 it('ne rend rien quand le pied de page est masque', function () {
     publicFooterSet(['show_footer' => false]);
 
-    expect(publicFooterHtml($this))->not->toContain('<footer');
+    expect(publicFooterHtml())->not->toContain('<footer');
 });
 
 it('traite une colonne absente du modele en cache comme affichee', function () {
@@ -58,7 +59,7 @@ it('traite une colonne absente du modele en cache comme affichee', function () {
 it('affiche la description echappee', function () {
     publicFooterSet(['footer_description' => '<b>Bonjour</b> & merci']);
 
-    expect(publicFooterHtml($this))
+    expect(publicFooterHtml())
         ->toContain('&lt;b&gt;Bonjour&lt;/b&gt; &amp; merci')
         ->not->toContain('<b>Bonjour');
 });
@@ -66,13 +67,13 @@ it('affiche la description echappee', function () {
 it('n affiche pas de paragraphe pour une description vide', function () {
     publicFooterSet(['footer_description' => '   ']);
 
-    expect(publicFooterHtml($this))->not->toContain('leading-relaxed');
+    expect(publicFooterHtml())->not->toContain('leading-relaxed');
 });
 
 it('affiche l e-mail public et le lien Facebook', function () {
     publicFooterSet(['contact_public_email' => 'documents@cidst.mg', 'facebook_url' => 'https://facebook.com/cidst']);
 
-    expect(publicFooterHtml($this))
+    expect(publicFooterHtml())
         ->toContain('href="mailto:documents@cidst.mg"')
         ->toContain('href="https://facebook.com/cidst"')
         ->toContain('target="_blank" rel="noopener noreferrer"');
@@ -85,33 +86,33 @@ it('masque l e-mail et Facebook quand l option est decochee', function () {
         'footer_show_contacts' => false,
     ]);
 
-    expect(publicFooterHtml($this))
+    expect(publicFooterHtml())
         ->not->toContain('mailto:')
         ->not->toContain('facebook.com')
         ->not->toContain('Nous joindre');
 });
 
 it('n affiche pas la colonne Nous joindre sans e-mail ni Facebook', function () {
-    expect(publicFooterHtml($this))->not->toContain('Nous joindre');
+    expect(publicFooterHtml())->not->toContain('Nous joindre');
 });
 
 it('ne transforme en lien qu une adresse http ou https', function (string $url) {
     publicFooterSet(['facebook_url' => $url]);
 
-    expect(publicFooterHtml($this))->not->toContain($url)->not->toContain('Nous joindre');
+    expect(publicFooterHtml())->not->toContain($url)->not->toContain('Nous joindre');
 })->with(['javascript:alert(1)', 'data:text/html,x', 'ftp://exemple.mg/page']);
 
 it('ne reprend pas l identifiant du champ e-mail de la page Contact', function () {
     publicFooterSet(['contact_public_email' => 'documents@cidst.mg']);
 
-    expect(publicFooterHtml($this))->not->toContain('id="contact_public_email"');
+    expect(publicFooterHtml())->not->toContain('id="contact_public_email"');
 });
 
 it('affiche le copyright par defaut avec l annee en cours et le nom du site', function () {
     config(['app.name' => 'Mon Site']);
     $this->travelTo(now()->setDate(2031, 6, 15));
 
-    expect(publicFooterHtml($this))->toContain("\u{a9} 2031 Mon Site");
+    expect(publicFooterHtml())->toContain("\u{a9} 2031 Mon Site");
 });
 
 it('remplace les jetons du copyright personnalise', function () {
@@ -119,25 +120,25 @@ it('remplace les jetons du copyright personnalise', function () {
     $this->travelTo(now()->setDate(2031, 6, 15));
     publicFooterSet(['footer_copyright' => "\u{a9} {annee} - {site} - Tous droits reserves"]);
 
-    expect(publicFooterHtml($this))->toContain("\u{a9} 2031 - Mon Site - Tous droits reserves");
+    expect(publicFooterHtml())->toContain("\u{a9} 2031 - Mon Site - Tous droits reserves");
 });
 
 it('affiche un copyright sans jeton tel quel et echappe', function () {
     publicFooterSet(['footer_copyright' => '<i>Libre</i>']);
 
-    expect(publicFooterHtml($this))->toContain('&lt;i&gt;Libre&lt;/i&gt;')->not->toContain('<i>Libre');
+    expect(publicFooterHtml())->toContain('&lt;i&gt;Libre&lt;/i&gt;')->not->toContain('<i>Libre');
 });
 
 it('utilise le logo des reglages avec ses dimensions reelles', function () {
     publicFooterSet(['logo_path' => 'logos/test.png', 'logo_width' => 300, 'logo_natural_height' => 120]);
 
-    expect(publicFooterHtml($this))
+    expect(publicFooterHtml())
         ->toContain('storage/logos/test.png')
         ->toContain('width="300" height="120"');
 });
 
 it('reserve la place du logo par defaut', function () {
-    expect(publicFooterHtml($this))
+    expect(publicFooterHtml())
         ->toContain('images/logo-cidst.png')
         ->toContain('width="189" height="144"');
 });

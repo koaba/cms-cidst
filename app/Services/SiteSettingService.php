@@ -22,6 +22,8 @@ class SiteSettingService
         'pdf_watermark_default_enabled',
         'diaporama_watermark_default_enabled',
         'contact_images_enabled',
+        'show_footer',
+        'footer_show_contacts',
     ];
 
     public function update(SiteSetting $settings, array $data): SiteSetting

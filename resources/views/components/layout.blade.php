@@ -7,10 +7,10 @@
     @vite('resources/css/public.css')
     <x-theme-style />
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
     <x-news-ticker />
     <x-main-menu />
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <main class="w-full flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-10">
         @if($sidebar ?? true)
             <div class="flex flex-col lg:flex-row gap-8">
                 <div class="flex-1 min-w-0">
@@ -24,5 +24,6 @@
             {{ $slot }}
         @endif
     </main>
+    <x-footer />
 </body>
 </html>
