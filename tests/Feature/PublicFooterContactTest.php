@@ -78,6 +78,25 @@ it('affiche WhatsApp avec un lien wa.me qui s ouvre dans un nouvel onglet', func
         ->toContain('WhatsApp');
 });
 
+it('n affiche pas un WhatsApp trop court meme avec indicatif', function () {
+    publicFooterContactSet(['contact_whatsapp' => '+12 345']);
+
+    expect(publicFooterContactHtml())->not->toContain('wa.me');
+});
+
+it('affiche un WhatsApp de exactement 7 chiffres', function () {
+    publicFooterContactSet(['contact_whatsapp' => '+123 4567']);
+
+    expect(publicFooterContactHtml())->toContain('https://wa.me/1234567');
+});
+
+it('le formulaire envoie le champ', function (string $name) {
+    $this->actingAs(adminUser())
+        ->get(route('admin.settings.edit'))
+        ->assertOk()
+        ->assertSee('name="'.$name.'"', false);
+})->with(['contact_address', 'contact_phone', 'contact_phone_2', 'contact_whatsapp', 'contact_hours']);
+
 it('n affiche pas un WhatsApp sans indicatif international', function () {
     publicFooterContactSet(['contact_whatsapp' => '034 12 345 67']);
 

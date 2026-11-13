@@ -42,6 +42,11 @@ class SiteSetting extends Model
         'footer_description',
         'footer_show_contacts',
         'footer_copyright',
+        'contact_address',
+        'contact_phone',
+        'contact_phone_2',
+        'contact_whatsapp',
+        'contact_hours',
     ];
 
     protected $hidden = ['delete_code_hash'];

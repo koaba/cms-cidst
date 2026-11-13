@@ -299,6 +299,40 @@
     </div>
 </fieldset>
 <fieldset class="border rounded p-4 space-y-4">
+    <legend class="font-medium px-1">Coordonnées de l'établissement</legend>
+    <p class="text-sm opacity-70">Affichées dans le pied de page, colonne « Nous joindre » (si « Afficher les coordonnées » est coché ci-dessous). Laisser un champ vide pour ne rien afficher.</p>
+    <div>
+        <label for="contact_address" class="block font-medium mb-1">Adresse</label>
+        <textarea id="contact_address" name="contact_address" rows="2" maxlength="255" class="w-full border rounded p-2">{{ old('contact_address', $settings->contact_address) }}</textarea>
+        @error('contact_address') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        <p class="text-sm opacity-70">Une ligne par retour à la ligne.</p>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+            <label for="contact_phone" class="block font-medium mb-1">Téléphone</label>
+            <input id="contact_phone" type="tel" name="contact_phone" maxlength="30" value="{{ old('contact_phone', $settings->contact_phone) }}" placeholder="+261 20 22 000 00" class="w-full border rounded p-2">
+            @error('contact_phone') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
+        <div>
+            <label for="contact_phone_2" class="block font-medium mb-1">Deuxième téléphone</label>
+            <input id="contact_phone_2" type="tel" name="contact_phone_2" maxlength="30" value="{{ old('contact_phone_2', $settings->contact_phone_2) }}" placeholder="034 12 345 67" class="w-full border rounded p-2">
+            @error('contact_phone_2') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
+    </div>
+    <div>
+        <label for="contact_whatsapp" class="block font-medium mb-1">WhatsApp</label>
+        <input id="contact_whatsapp" type="tel" name="contact_whatsapp" maxlength="30" value="{{ old('contact_whatsapp', $settings->contact_whatsapp) }}" placeholder="+261 34 12 345 67" class="w-full border rounded p-2">
+        @error('contact_whatsapp') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        <p class="text-sm opacity-70">Format international obligatoire (commence par +), sinon le lien WhatsApp ne fonctionnerait pas.</p>
+    </div>
+    <div>
+        <label for="contact_hours" class="block font-medium mb-1">Horaires d'ouverture</label>
+        <textarea id="contact_hours" name="contact_hours" rows="2" maxlength="255" class="w-full border rounded p-2">{{ old('contact_hours', $settings->contact_hours) }}</textarea>
+        @error('contact_hours') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        <p class="text-sm opacity-70">Une ligne par retour à la ligne, par exemple « Lundi au vendredi : 8h – 17h ».</p>
+    </div>
+</fieldset>
+<fieldset class="border rounded p-4 space-y-4">
     <legend class="font-medium px-1">Pied de page public</legend>
     {{-- Apres une erreur de validation, une case decochee reste decochee (old() seul la recocherait). --}}
     @php($footerChecked = fn (string $field): bool => session()->hasOldInput() ? (bool) old($field) : (bool) ($settings->{$field} ?? true))
@@ -308,7 +342,7 @@
     </label>
     <label class="flex items-center gap-2 font-medium">
         <input type="checkbox" name="footer_show_contacts" value="1" class="h-4 w-4" {{ $footerChecked('footer_show_contacts') ? 'checked' : '' }}>
-        Afficher l'e-mail public et le lien Facebook
+        Afficher les coordonnées (adresse, téléphones, horaires, e-mail et Facebook)
     </label>
     <div>
         <label for="footer_description" class="block font-medium mb-1">Courte description</label>

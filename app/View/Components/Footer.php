@@ -47,6 +47,77 @@ class Footer extends Component
         return $url !== null && preg_match('#^https?://#i', $url) === 1 ? $url : null;
     }
 
+    /** @return list<string> */
+    public function addressLines(): array
+    {
+        return $this->showContacts() ? $this->lines($this->settings->contact_address) : [];
+    }
+
+    /** @return list<string> */
+    public function hoursLines(): array
+    {
+        return $this->showContacts() ? $this->lines($this->settings->contact_hours) : [];
+    }
+
+    /**
+     * Téléphones affichés tels que saisis, avec un lien tel: nettoyé (chiffres et « + » initial).
+     * Un numéro de moins de 5 chiffres n'est pas affiché.
+     *
+     * @return list<array{label: string, href: string}>
+     */
+    public function phones(): array
+    {
+        if (! $this->showContacts()) {
+            return [];
+        }
+
+        $phones = [];
+
+        foreach ([$this->settings->contact_phone, $this->settings->contact_phone_2] as $value) {
+            $label = $this->text($value);
+
+            if ($label === null) {
+                continue;
+            }
+
+            $number = $this->dialable($label);
+
+            if (strlen(ltrim($number, '+')) >= 5) {
+                $phones[] = ['label' => $label, 'href' => 'tel:'.$number];
+            }
+        }
+
+        return $phones;
+    }
+
+    /**
+     * WhatsApp exige le format international : sans « + » initial, le lien wa.me serait faux.
+     *
+     * @return array{label: string, href: string}|null
+     */
+    public function whatsapp(): ?array
+    {
+        $label = $this->showContacts() ? $this->text($this->settings->contact_whatsapp) : null;
+
+        if ($label === null || ! str_starts_with($label, '+')) {
+            return null;
+        }
+
+        $digits = (string) preg_replace('/\D/', '', $label);
+
+        return strlen($digits) >= 7 ? ['label' => $label, 'href' => 'https://wa.me/'.$digits] : null;
+    }
+
+    public function hasContacts(): bool
+    {
+        return $this->addressLines() !== []
+            || $this->phones() !== []
+            || $this->whatsapp() !== null
+            || $this->hoursLines() !== []
+            || $this->email() !== null
+            || $this->facebook() !== null;
+    }
+
     /** Texte du bas de page ; {annee} et {site} sont remplacés, vide = « © année Nom du site ». */
     public function copyright(): string
     {
@@ -77,6 +148,22 @@ class Footer extends Component
     public function render(): View
     {
         return view('components.footer');
+    }
+
+    /** @return list<string> */
+    private function lines(?string $value): array
+    {
+        $lines = array_map('trim', preg_split('/\R/', (string) $value) ?: []);
+
+        return array_values(array_filter($lines, fn (string $line): bool => $line !== ''));
+    }
+
+    /** Chiffres du numéro, avec un « + » conservé seulement en tête. */
+    private function dialable(string $value): string
+    {
+        $number = (string) preg_replace('/[^\d+]/', '', $value);
+
+        return ($number !== '' && $number[0] === '+' ? '+' : '').str_replace('+', '', $number);
     }
 
     private function text(?string $value): ?string
