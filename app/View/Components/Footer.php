@@ -118,6 +118,33 @@ class Footer extends Component
             || $this->facebook() !== null;
     }
 
+    /**
+     * Actions du bandeau d'appel : Appeler (premier numero), WhatsApp, puis Ecrire (page Contact).
+     * Aucune action sans telephone, WhatsApp ni e-mail valides, ou si les coordonnees sont masquees.
+     *
+     * @return list<array{label: string, href: string, external: bool}>
+     */
+    public function ctaActions(): array
+    {
+        $actions = [];
+        $phone = $this->phones()[0] ?? null;
+        $whatsapp = $this->whatsapp();
+
+        if ($phone !== null) {
+            $actions[] = ['label' => 'Appeler', 'href' => $phone['href'], 'external' => false];
+        }
+
+        if ($whatsapp !== null) {
+            $actions[] = ['label' => 'WhatsApp', 'href' => $whatsapp['href'], 'external' => true];
+        }
+
+        if ($actions !== [] || $this->email() !== null) {
+            $actions[] = ['label' => 'Écrire', 'href' => route('contact.show'), 'external' => false];
+        }
+
+        return $actions;
+    }
+
     /** Texte du bas de page ; {annee} et {site} sont remplacés, vide = « © année Nom du site ». */
     public function copyright(): string
     {
