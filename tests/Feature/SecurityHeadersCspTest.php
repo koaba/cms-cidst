@@ -29,13 +29,13 @@ it('n\'envoie aucun CSP quand il est desactive', function () {
         ->and($response->headers->has('Content-Security-Policy-Report-Only'))->toBeFalse();
 });
 
-it('limite frame-src aux seuls hotes de video autorises', function () {
+it('limite frame-src aux hotes de video et a la carte OpenStreetMap', function () {
     config(['security.csp.mode' => 'enforce']);
 
     $csp = $this->get('/login')->headers->get('Content-Security-Policy');
     $directive = collect(explode('; ', $csp))->first(fn ($d) => str_starts_with($d, 'frame-src '));
 
-    expect($directive)->toBe('frame-src https://www.youtube.com https://player.vimeo.com');
+    expect($directive)->toBe('frame-src https://www.youtube.com https://player.vimeo.com https://www.openstreetmap.org');
 });
 
 it('interdit les objets, la base externe et l\'embarquement par un autre site', function () {

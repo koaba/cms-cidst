@@ -17,7 +17,8 @@ return [
     | Les retirer demande des nonces, la suppression des onclick et @alpinejs/csp.
     |
     | frame-src doit rester aligne sur les hotes produits par App\Support\VideoEmbed
-    | (un test le verifie). Si les fichiers passent sur un CDN ou un stockage
+    | (un test le verifie), plus OpenStreetMap pour la carte de la page Contact
+    | (chargee au clic). Si les fichiers passent sur un CDN ou un stockage
     | externe, ajouter son hote a img-src et media-src.
     |
     */
@@ -34,7 +35,7 @@ return [
             'media-src' => ["'self'", 'blob:'],
             'connect-src' => ["'self'"],
             'worker-src' => ["'self'", 'blob:', 'https://cdnjs.cloudflare.com'],
-            'frame-src' => ['https://www.youtube.com', 'https://player.vimeo.com'],
+            'frame-src' => ['https://www.youtube.com', 'https://player.vimeo.com', 'https://www.openstreetmap.org'],
             'object-src' => ["'none'"],
             'base-uri' => ["'self'"],
             'form-action' => ["'self'"],

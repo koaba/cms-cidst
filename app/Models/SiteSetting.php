@@ -47,6 +47,8 @@ class SiteSetting extends Model
         'contact_phone_2',
         'contact_whatsapp',
         'contact_hours',
+        'map_latitude',
+        'map_longitude',
     ];
 
     protected $hidden = ['delete_code_hash'];
@@ -64,6 +66,8 @@ class SiteSetting extends Model
         'theme_colors' => 'array',
         'show_footer' => 'boolean',
         'footer_show_contacts' => 'boolean',
+        'map_latitude' => 'float',
+        'map_longitude' => 'float',
     ];
 
     public function getPrimaryColorAttribute($value): string

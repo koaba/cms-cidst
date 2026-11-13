@@ -7,6 +7,7 @@ use App\Mail\ContactAlert;
 use App\Models\ContactMessage;
 use App\Models\SiteSetting;
 use App\Services\Contact\ContactImageStore;
+use App\Services\Contact\SiteContact;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
@@ -21,6 +22,7 @@ class ContactController extends Controller
             'imagesMaxFiles' => (int) config('contact.max_files'),
             'imagesMaxSide' => (int) config('contact.max_side'),
             'publicEmail' => filled($settings->contact_public_email) ? $settings->contact_public_email : null,
+            'contact' => new SiteContact($settings),
         ]);
     }
 

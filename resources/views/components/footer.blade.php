@@ -34,6 +34,11 @@
                     <li>
                         <a href="{{ route('search') }}" class="inline-flex min-h-[44px] items-center rounded transition hover:text-cidst-text hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cidst-primary">Rechercher</a>
                     </li>
+                    @if($locationUrl())
+                        <li>
+                            <a href="{{ $locationUrl() }}" class="inline-flex min-h-[44px] items-center rounded transition hover:text-cidst-text hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cidst-primary">Nous trouver</a>
+                        </li>
+                    @endif
                 </ul>
             </nav>
 

@@ -6,6 +6,7 @@ use App\Contracts\HasPublicUrl;
 use App\Models\Article;
 use App\Models\Page;
 use App\Models\SiteSetting;
+use App\Services\Contact\SiteContact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -172,6 +173,36 @@ class SeoService
         ]);
     }
 
+    /**
+     * SEO local de l'Organization de l'accueil (adresse, telephone, e-mail, point GPS), lu dans la
+     * source unique des coordonnees : l'interrupteur des coordonnees masque tout. Les cles vides
+     * sont omises ; les horaires libres ne sont pas emis (schema.org attend un format structure).
+     * L'auteur et l'editeur des articles gardent l'Organization de base.
+     *
+     * @return array<string, mixed>
+     */
+    private static function localData(): array
+    {
+        $contact = SiteContact::current();
+        $street = implode(', ', $contact->addressLines());
+        $point = $contact->coordinates();
+
+        return array_filter([
+            'address' => $street === '' ? null : [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $street,
+                'addressCountry' => (string) config('seo.organization.country', 'MG'),
+            ],
+            'telephone' => $contact->phones()[0]['label'] ?? null,
+            'email' => $contact->email(),
+            'geo' => $point === null ? null : [
+                '@type' => 'GeoCoordinates',
+                'latitude' => $point['lat'],
+                'longitude' => $point['lng'],
+            ],
+        ], fn (mixed $value): bool => $value !== null);
+    }
+
     private static function articleData(Article $article): array
     {
         return [
@@ -215,7 +246,7 @@ class SeoService
         return [
             '@context' => 'https://schema.org',
             '@graph' => [
-                ['@id' => $organizationId] + self::organization(),
+                ['@id' => $organizationId] + self::organization() + self::localData(),
                 [
                     '@type' => 'WebSite',
                     '@id' => url('/').'#website',
