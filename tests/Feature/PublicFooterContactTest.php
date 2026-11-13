@@ -151,7 +151,9 @@ it('ordonne les coordonnees de facon stable', function () {
         'facebook_url' => 'https://facebook.com/cidst',
     ]);
 
-    $html = publicFooterContactHtml();
+    // Le bandeau d'appel (lot 3h-1e) reprend les liens tel:, wa.me et mailto: avant les colonnes :
+    // l'ordre se controle dans la colonne « Nous joindre ».
+    $html = (string) substr(publicFooterContactHtml(), (int) strpos(publicFooterContactHtml(), 'Nous joindre'));
     $positions = array_map(fn (string $needle) => strpos($html, $needle), [
         'Rue du Test', 'href="tel:', 'href="https://wa.me/', 'Lun-Ven', 'href="mailto:', 'href="https://facebook.com',
     ]);
