@@ -372,6 +372,14 @@
         <p class="text-sm opacity-70">{annee} devient l'année en cours et {site} le nom du site. Laisser vide pour « © année Nom du site ».</p>
     </div>
 </fieldset>
+<fieldset class="border rounded p-4 space-y-4">
+    <legend class="font-medium px-1">Menu public</legend>
+    <label class="flex items-center gap-2 font-medium">
+        <input type="checkbox" name="show_search" value="1" class="h-4 w-4" {{ $footerChecked('show_search') ? 'checked' : '' }}>
+        Afficher la recherche dans le menu
+    </label>
+    <p class="text-sm opacity-70">Une loupe à l'extrémité droite du menu (et un champ dans le menu mobile) qui ouvre la page de recherche.</p>
+</fieldset>
 <div class="flex items-center gap-3">
             <x-admin.button type="submit">Enregistrer</x-admin.button>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost">Annuler</a>
