@@ -249,3 +249,14 @@ it('garde un nom de route sur place, sans nouvel onglet', function (string $loca
         ->not->toContain('target=')
         ->and($segment)->not->toContain('(nouvel onglet)');
 })->with(['footer', 'legal']);
+
+it('ignore un element du pied de page qui aurait un parent', function (string $location) {
+    $parent = footerLinksMenu('Parent', 'main');
+    footerLinksMenu('Orphelin', $location, ['parent_id' => $parent->id]);
+    footerLinksMenu('Racine', $location);
+
+    $segment = footerLinksSegment(footerLinksFresh($this), $location);
+
+    expect(footerLinksAnchor($segment, 'Racine'))->not->toBe('')
+        ->and(footerLinksAnchor($segment, 'Orphelin'))->toBe('');
+})->with(['footer', 'legal']);
