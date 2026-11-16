@@ -16,7 +16,7 @@
                 @endif
             </a>
             {{-- Menu desktop --}}
-            <div class="hidden md:flex items-center space-x-8">
+            <div class="hidden md:ml-auto md:flex items-center space-x-8">
                 @foreach($items as $item)
                     @if($item->children->isEmpty())
                         <a href="{{ $item->resolved_url }}"
@@ -41,6 +41,10 @@
                     @endif
                 @endforeach
             </div>
+            {{-- Recherche (extremite droite) --}}
+            @if($settings->show_search ?? true)
+                <x-menu-search id="menu-search" input-id="menu-search-q" class="hidden md:ml-4 md:flex" />
+            @endif
             {{-- Bouton hamburger mobile --}}
             <button id="mobile-menu-toggle" class="md:hidden text-cidst-text" aria-label="Menu">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,6 +54,9 @@
         </div>
         {{-- Menu mobile --}}
         <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1 border-t border-cidst-border pt-4">
+            @if($settings->show_search ?? true)
+                <x-menu-search id="menu-search-mobile" input-id="menu-search-q-mobile" class="mb-2 flex px-2" />
+            @endif
             @foreach($items as $item)
                 @if($item->children->isEmpty())
                     <a href="{{ $item->resolved_url }}"
@@ -73,3 +80,26 @@ document.getElementById('mobile-menu-toggle')?.addEventListener('click', functio
     document.getElementById('mobile-menu')?.classList.toggle('hidden');
 });
 </script>
+@if($settings->show_search ?? true)
+    {{-- Confort : la loupe replie le champ du menu. Sans JavaScript, le champ reste visible et le formulaire fonctionne. --}}
+    <script>
+    (function () {
+        var form = document.getElementById('menu-search');
+        var input = document.getElementById('menu-search-q');
+        var button = form && form.querySelector('button');
+        if (!input || !button) return;
+        button.setAttribute('aria-expanded', 'false');
+        button.setAttribute('aria-controls', 'menu-search-q');
+        input.classList.add('md:hidden');
+        function open() { input.classList.remove('md:hidden'); button.setAttribute('aria-expanded', 'true'); input.focus(); }
+        function close() { input.classList.add('md:hidden'); button.setAttribute('aria-expanded', 'false'); }
+        button.addEventListener('click', function (e) {
+            if (button.getAttribute('aria-expanded') === 'false') { e.preventDefault(); open(); }
+            else if (input.value.trim() === '') { e.preventDefault(); close(); }
+        });
+        form.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') { close(); button.focus(); }
+        });
+    })();
+    </script>
+@endif

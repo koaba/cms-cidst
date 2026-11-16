@@ -23,6 +23,7 @@ class SiteSettingService
         'diaporama_watermark_default_enabled',
         'contact_images_enabled',
         'show_footer',
+        'show_search',
         'footer_show_contacts',
     ];
 
