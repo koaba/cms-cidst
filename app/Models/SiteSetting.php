@@ -11,6 +11,8 @@ class SiteSetting extends Model
 
         'hero_eyebrow',
         'facebook_url',
+        'youtube_url',
+        'linkedin_url',
         'hero_eyebrow_size',
         'hero_title',
         'hero_subtitle',

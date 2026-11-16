@@ -4,6 +4,7 @@ namespace App\View\Components;
 
 use App\Models\SiteSetting;
 use App\Services\Contact\SiteContact;
+use App\Services\Contact\SocialLinks;
 use App\Support\PublicLayout;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\Component;
@@ -20,10 +21,13 @@ class Footer extends Component
 
     private SiteContact $contact;
 
+    private SocialLinks $socialLinks;
+
     public function __construct(?SiteSetting $settings = null)
     {
         $this->settings = $settings ?? SiteSetting::current();
         $this->contact = new SiteContact($this->settings);
+        $this->socialLinks = new SocialLinks($this->settings, $this->contact);
     }
 
     public function shouldRender(): bool
@@ -77,7 +81,13 @@ class Footer extends Component
 
     public function hasContacts(): bool
     {
-        return $this->contact->has();
+        return $this->contact->has() || $this->socialLinks->has();
+    }
+
+    /** @return list<array{key: string, label: string, href: string}> */
+    public function socials(): array
+    {
+        return $this->socialLinks->all();
     }
 
     /** Lien « Nous trouver » vers la carte de la page Contact : seulement avec un point GPS valide affiché. */

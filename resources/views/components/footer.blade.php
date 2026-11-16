@@ -85,12 +85,12 @@
                                 <a href="mailto:{{ $email() }}" class="inline-flex min-h-[44px] items-center break-all rounded text-cidst-text transition hover:text-cidst-primary hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cidst-primary">{{ $email() }}</a>
                             </li>
                         @endif
-                        @if($facebook())
+                        @foreach($socials() as $social)
                             <li class="flex items-center gap-4">
-                                <x-footer-icon name="facebook" />
-                                <a href="{{ $facebook() }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[44px] items-center rounded text-cidst-text transition hover:text-cidst-primary hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cidst-primary">Facebook<span class="sr-only"> (nouvel onglet)</span></a>
+                                <x-footer-icon :name="$social['key']" />
+                                <a href="{{ $social['href'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-[44px] items-center rounded text-cidst-text transition hover:text-cidst-primary hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cidst-primary">{{ $social['label'] }}<span class="sr-only"> (nouvel onglet)</span></a>
                             </li>
-                        @endif
+                        @endforeach
                     </ul>
                 </div>
             @endif
