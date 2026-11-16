@@ -10,6 +10,8 @@
         'facebook' => ['M13.5 21v-8h2.7l.5-3.2h-3.2V7.9c0-.9.3-1.6 1.7-1.6h1.6V3.5c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1v2.3H7.6V13h2.8v8h3.1z'],
         'link' => ['M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244'],
     ];
+    // YouTube et LinkedIn : icone generique en attendant des pictogrammes de marque.
+    $paths['youtube'] = $paths['linkedin'] = $paths['link'];
     $filled = $name === 'facebook';
 @endphp
 @if($badge)<span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cidst-primary/10">@endif

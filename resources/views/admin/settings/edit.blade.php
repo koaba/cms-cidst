@@ -262,6 +262,20 @@
     @error('facebook_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
 </div>
 <div>
+    <label class="block font-medium mb-1">URL YouTube</label>
+    <input type="url" name="youtube_url" value="{{ old('youtube_url', $settings->youtube_url) }}"
+           placeholder="https://youtube.com/@votrechaine"
+           class="w-full border rounded p-2">
+    @error('youtube_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+<div>
+    <label class="block font-medium mb-1">URL LinkedIn</label>
+    <input type="url" name="linkedin_url" value="{{ old('linkedin_url', $settings->linkedin_url) }}"
+           placeholder="https://linkedin.com/company/votreorganisation"
+           class="w-full border rounded p-2">
+    @error('linkedin_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+</div>
+<div>
     <label class="block font-medium mb-1">Titre de la page Documents PDF</label>
     <input type="text" name="pdf_documents_title" value="{{ old('pdf_documents_title', $settings->pdf_documents_title) }}"
            placeholder="Documents et ressources"
