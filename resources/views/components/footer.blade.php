@@ -39,6 +39,9 @@
                             <a href="{{ $locationUrl() }}" class="inline-flex min-h-[44px] items-center rounded transition hover:text-cidst-text hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cidst-primary">Nous trouver</a>
                         </li>
                     @endif
+                    @foreach($links() as $link)
+                        <x-footer-link :menu="$link" />
+                    @endforeach
                 </ul>
             </nav>
 
@@ -96,6 +99,15 @@
     <div class="border-t border-cidst-border">
         <div class="max-w-6xl mx-auto flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <p>{{ $copyright() }}</p>
+            @if($legalLinks()->isNotEmpty())
+                <nav aria-label="Mentions légales">
+                    <ul class="flex flex-wrap gap-x-4">
+                        @foreach($legalLinks() as $link)
+                            <x-footer-link :menu="$link" />
+                        @endforeach
+                    </ul>
+                </nav>
+            @endif
             <a href="#" class="inline-flex min-h-[44px] items-center rounded transition hover:text-cidst-text hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cidst-primary">Haut de page</a>
         </div>
     </div>

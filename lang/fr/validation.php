@@ -38,6 +38,7 @@ return [
         'author' => 'auteur',
         'label' => 'texte du bouton',
         'url' => 'lien',
+        'location' => 'emplacement',
         'style' => 'style',
         'new_tab' => 'nouvel onglet',
         'image' => 'image',

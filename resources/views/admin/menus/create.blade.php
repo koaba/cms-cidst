@@ -17,6 +17,17 @@
             @error('target') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
+            <label for="location" class="block font-medium mb-1">Emplacement</label>
+            <select name="location" id="location" class="w-full border rounded p-2">
+                @foreach(\App\Models\Menu::LOCATIONS as $value => $label)
+                    <option value="{{ $value }}"
+                            {{ old('location', 'main') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+            <p class="text-xs text-base-content/60 mt-1">Les liens du pied de page et les mentions légales n'ont pas de sous-menus.</p>
+            @error('location') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
+        <div>
             <label class="block font-medium mb-1">Menu parent</label>
             <select name="parent_id" class="w-full border rounded p-2">
                 <option value="">— Aucun (menu de premier niveau) —</option>

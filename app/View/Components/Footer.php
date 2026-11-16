@@ -4,6 +4,8 @@ namespace App\View\Components;
 
 use App\Models\SiteSetting;
 use App\Services\Contact\SiteContact;
+use App\Support\PublicLayout;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
@@ -137,6 +139,18 @@ class Footer extends Component
         return $this->settings->logo_width && $this->settings->logo_natural_height
             ? ['width' => (int) $this->settings->logo_width, 'height' => (int) $this->settings->logo_natural_height]
             : null;
+    }
+
+    /** Liens editables du pied de page (emplacement footer), ajoutes apres les liens fixes. */
+    public function links(): Collection
+    {
+        return app(PublicLayout::class)->footerMenu();
+    }
+
+    /** Mentions legales (emplacement legal), dans la barre du bas. */
+    public function legalLinks(): Collection
+    {
+        return app(PublicLayout::class)->legalMenu();
     }
 
     public function render(): View
