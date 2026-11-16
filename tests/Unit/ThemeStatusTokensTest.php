@@ -52,7 +52,8 @@ it('garde l erreur lisible sur chaque fond de theme et sur son fond doux', funct
     $status = ThemeRoles::statusDefaults();
     $backgrounds = [ThemeRoles::defaults()['bg'], ThemeRoles::defaults()['surface']];
 
-    foreach (config('themes.themes') as $theme) {
+    // Test unitaire : l'application n'est pas demarree, config() est donc indisponible.
+    foreach ((require dirname(__DIR__, 2).'/config/themes.php')['themes'] as $theme) {
         foreach (['bg', 'surface'] as $role) {
             if (isset($theme['palette'][$role])) {
                 $backgrounds[] = $theme['palette'][$role];
