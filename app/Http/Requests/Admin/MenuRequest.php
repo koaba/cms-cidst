@@ -45,7 +45,7 @@ class MenuRequest extends FormRequest
                 return;
             }
 
-            $location = $this->input('location') ?: ($this->route('menu')?->location ?? Menu::MAIN);
+            $location = $this->input('location') ?: ($this->route('menu')->location ?? Menu::MAIN);
 
             if ($location !== Menu::MAIN) {
                 $validator->errors()->add('parent_id', 'Un lien du pied de page ou des mentions légales ne peut pas avoir de menu parent.');

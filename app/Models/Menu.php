@@ -126,6 +126,6 @@ class Menu extends Model
     /** Adresse complete http(s) : le lien s'ouvre alors dans un nouvel onglet. */
     public function getIsExternalAttribute(): bool
     {
-        return preg_match('~^https?://~i', $this->resolved_url) === 1;
+        return ! Route::has($this->target) && preg_match('~^https?://~i', $this->resolved_url) === 1;
     }
 }
