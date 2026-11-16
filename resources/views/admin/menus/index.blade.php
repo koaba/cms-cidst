@@ -9,22 +9,27 @@
     @if(session('error'))
         <div class="bg-red-100 text-red-800 p-3 rounded mb-4">{{ session('error') }}</div>
     @endif
-    <table class="w-full border-collapse">
-        <thead>
-            <tr class="text-left border-b">
-                <th class="p-2">Libellé</th>
-                <th class="p-2">Cible</th>
-                <th class="p-2">Ordre</th>
-                <th class="p-2">Actif</th>
-                <th class="p-2">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($menus as $menu)
-                <x-menu-row :menu="$menu" :depth="0" />
-            @empty
-                <tr><td colspan="5" class="p-4 text-center text-base-content/60">Aucun menu</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    @foreach($sections as $location => $section)
+        <section id="menus-{{ $location }}" class="mb-8">
+            <h2 class="text-lg font-semibold mb-2">{{ $section['label'] }}</h2>
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="text-left border-b">
+                        <th class="p-2">Libellé</th>
+                        <th class="p-2">Cible</th>
+                        <th class="p-2">Ordre</th>
+                        <th class="p-2">Actif</th>
+                        <th class="p-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($section['menus'] as $menu)
+                        <x-menu-row :menu="$menu" :depth="0" />
+                    @empty
+                        <tr><td colspan="5" class="p-4 text-center text-base-content/60">Aucun lien</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </section>
+    @endforeach
 </x-admin.layout>

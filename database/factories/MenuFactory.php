@@ -14,6 +14,7 @@ class MenuFactory extends Factory
             'order' => 0,
             'is_active' => true,
             'parent_id' => null,
+            'location' => 'main',
         ];
     }
 }

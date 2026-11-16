@@ -13,12 +13,19 @@ class MenuController extends Controller
 
     public function index()
     {
-        $menus = Menu::whereNull('parent_id')
+        $grouped = Menu::whereNull('parent_id')
             ->with('children.children')
             ->orderBy('order')
-            ->get();
+            ->orderBy('id')
+            ->get()
+            ->groupBy('location');
 
-        return view('admin.menus.index', compact('menus'));
+        $sections = collect(Menu::LOCATIONS)->map(fn (string $label, string $location) => [
+            'label' => $label,
+            'menus' => $grouped->get($location, collect()),
+        ]);
+
+        return view('admin.menus.index', compact('sections'));
     }
 
     public function create()
@@ -30,7 +37,7 @@ class MenuController extends Controller
 
     public function store(MenuRequest $request)
     {
-        Menu::create($request->menuData());
+        Menu::create($request->menuData() + ['location' => Menu::MAIN]);
 
         return redirect()->route('admin.menus.index')->with('success', 'Menu créé.');
     }
@@ -51,6 +58,12 @@ class MenuController extends Controller
         if (isset($data['parent_id']) && in_array($data['parent_id'], $excludedIds)) {
             return back()
                 ->withErrors(['parent_id' => 'Un menu ne peut pas être son propre parent ou descendant.'])
+                ->withInput();
+        }
+
+        if (($data['location'] ?? $menu->location) !== Menu::MAIN && $menu->children()->exists()) {
+            return back()
+                ->withErrors(['location' => 'Cet élément a des sous-menus : déplacez-les ou supprimez-les avant de le sortir du menu principal.'])
                 ->withInput();
         }
 
@@ -80,7 +93,8 @@ class MenuController extends Controller
 
     private function availableParents(array $excludedIds = [])
     {
-        return Menu::whereNotIn('id', $excludedIds)
+        return Menu::where('location', Menu::MAIN)
+            ->whereNotIn('id', $excludedIds)
             ->get()
             ->filter(fn ($menu) => $menu->depth() < 2)
             ->sortBy('order');

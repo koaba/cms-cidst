@@ -26,6 +26,18 @@ class PublicLayout
         return $this->data()['menu'];
     }
 
+    /** Liens du pied de page ; un cache anterieur a ces liens donne une liste vide. */
+    public function footerMenu(): Collection
+    {
+        return $this->data()['footer_menu'] ?? new Collection;
+    }
+
+    /** Mentions legales de la barre du bas. */
+    public function legalMenu(): Collection
+    {
+        return $this->data()['legal_menu'] ?? new Collection;
+    }
+
     /** Articles recents du ticker (modeles) ; les tickers manuels sont dans tickers(). */
     public function tickerArticles(): Collection
     {
@@ -58,8 +70,12 @@ class PublicLayout
 
     private function build(): array
     {
+        $menus = Menu::activeByLocation();
+
         return [
-            'menu' => Menu::activeTree(),
+            'menu' => $menus[Menu::MAIN],
+            'footer_menu' => $menus['footer'],
+            'legal_menu' => $menus['legal'],
             'ticker_articles' => Article::where('is_published', true)
                 ->where('published_at', '<=', now())
                 ->where('published_at', '>=', now()->subDays(config('display.ticker_recent_days')))
