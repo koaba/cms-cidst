@@ -41,7 +41,7 @@
             </label>
         </div>
         @error('pdf_source')
-            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            <p class="text-cidst-danger text-sm mt-1">{{ $message }}</p>
         @enderror
     </div>
 
@@ -66,7 +66,7 @@
             @endforeach
         </select>
         @error('pdf_document_id')
-            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            <p class="text-cidst-danger text-sm mt-1">{{ $message }}</p>
         @enderror
     </div>
 
@@ -84,7 +84,7 @@
                 class="w-full rounded border-base-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
             >
             @error('pdf_title')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                <p class="text-cidst-danger text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
 
@@ -105,10 +105,10 @@
                 {{ config('media.max_pdf_upload_kb', 10240) / 1024 }} Mo chacun.
             </p>
             @error('pdfs')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                <p class="text-cidst-danger text-sm mt-1">{{ $message }}</p>
             @enderror
             @error('pdfs.*')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                <p class="text-cidst-danger text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
     </div>

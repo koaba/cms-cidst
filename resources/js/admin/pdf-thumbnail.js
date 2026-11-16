@@ -66,7 +66,7 @@ function renderCards(input) {
             const thumbHtml = entry.thumbnail
                 ? `<img src="${entry.thumbnail}" class="w-full h-full object-cover" alt="">`
                 : `<span class="text-2xl" aria-hidden="true">&#128196;</span>`;
-            card.innerHTML = `<button type="button" data-remove-id="${entry.id}" class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/90 text-red-600 text-xs font-bold shadow hover:bg-red-50" aria-label="Retirer ce fichier">&times;</button><div class="w-full h-20 flex items-center justify-center bg-white border-b">${thumbHtml}</div><div class="px-1.5 py-1"><p class="text-[11px] font-medium truncate" title="${entry.file.name}">${entry.file.name}</p><p class="text-[10px] text-base-content/60">${formatSize(entry.file.size)}</p></div>`;
+            card.innerHTML = `<button type="button" data-remove-id="${entry.id}" class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/90 text-cidst-danger text-xs font-bold shadow hover:bg-cidst-danger-soft" aria-label="Retirer ce fichier">&times;</button><div class="w-full h-20 flex items-center justify-center bg-white border-b">${thumbHtml}</div><div class="px-1.5 py-1"><p class="text-[11px] font-medium truncate" title="${entry.file.name}">${entry.file.name}</p><p class="text-[10px] text-base-content/60">${formatSize(entry.file.size)}</p></div>`;
             card.querySelector("[data-remove-id]").addEventListener("click", () => removeFile(input, entry.id));
             preview.appendChild(card);
         });

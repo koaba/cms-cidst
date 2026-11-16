@@ -8,13 +8,13 @@
         <div class="mb-4">
             <label class="block mb-1">Nom</label>
             <input type="text" name="name" value="{{ old('name', $user->name) }}" class="input input-bordered w-full">
-            @error('name') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('name') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div class="mb-4">
             <label class="block mb-1">E-mail</label>
             <input type="email" name="email" value="{{ old('email', $user->email) }}" class="input input-bordered w-full">
-            @error('email') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('email') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div class="mb-6">
@@ -24,7 +24,7 @@
                     <option value="{{ $role }}" {{ $user->hasRole($role) ? 'selected' : '' }}>{{ $role }}</option>
                 @endforeach
             </select>
-            @error('role') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('role') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div class="flex gap-2">

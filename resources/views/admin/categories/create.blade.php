@@ -2,7 +2,7 @@
     <h1 class="text-2xl font-bold mb-6">Nouvelle catégorie</h1>
 
     @if ($errors->any())
-        <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
+        <div class="bg-cidst-danger-soft text-cidst-danger-content p-3 rounded mb-4">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>

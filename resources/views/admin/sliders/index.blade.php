@@ -31,7 +31,7 @@
                     <td class="p-2 space-x-2">
                         <a href="{{ route('admin.sliders.edit', $slider) }}" class="text-blue-600">Modifier</a>
                         <x-delete-form :action="route('admin.sliders.destroy', $slider)" message="Supprimer ce slider ?">
-                            <button type="submit" class="text-red-600">Supprimer</button>
+                            <button type="submit" class="text-cidst-danger">Supprimer</button>
                         </x-delete-form>
                     </td>
                 </tr>

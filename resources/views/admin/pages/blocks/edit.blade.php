@@ -34,7 +34,7 @@
                                     <span class="space-x-2">
                                         <a href="{{ route('admin.pages.blocks.columns.edit', [$page, $block->id, $i, $child->id]) }}" class="text-blue-600 hover:underline">Modifier</a>
                                         <x-delete-form :action="route('admin.pages.blocks.columns.destroy', [$page, $block->id, $i, $child->id])" message="Supprimer ce bloc de la colonne ?">
-                                            <button type="submit" class="text-red-600 hover:underline">Supprimer</button>
+                                            <button type="submit" class="text-cidst-danger hover:underline">Supprimer</button>
                                         </x-delete-form>
                                     </span>
                                 </li>
@@ -68,7 +68,7 @@
                         <span class="space-x-2 text-sm">
                             <a href="{{ route('admin.pages.blocks.items.edit', [$page, $block->id, $item->id]) }}" class="text-blue-600 hover:underline">Modifier / Contenu</a>
                             <x-delete-form :action="route('admin.pages.blocks.items.destroy', [$page, $block->id, $item->id])" message="Supprimer cet item et tout son contenu ?">
-                                <button type="submit" class="text-red-600 hover:underline">Supprimer</button>
+                                <button type="submit" class="text-cidst-danger hover:underline">Supprimer</button>
                             </x-delete-form>
                         </span>
                     </li>
@@ -83,7 +83,7 @@
                     <label class="block text-sm font-medium mb-1">Titre du nouvel item</label>
                     <input type="text" name="title" required class="w-full border rounded p-2 text-sm" placeholder="Ex. : Comment réinitialiser mon mot de passe ?">
                     @error('title')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-cidst-danger text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
                 <button type="submit" class="text-sm border rounded px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap">+ Ajouter un item</button>

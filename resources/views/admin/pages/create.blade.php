@@ -7,31 +7,31 @@
     <div>
             <label class="block font-semibold">Titre</label>
             <input type="text" name="title" value="{{ old('title') }}" class="border w-full p-2 rounded" required>
-            @error('title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('title') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
             <label class="block font-semibold">Slug (URL) <x-admin.help term="slug" text="Partie de l'adresse web de la page, en minuscules et sans accents." /></label>
             <input type="text" name="slug" value="{{ old('slug') }}" class="border w-full p-2 rounded">
             <p class="text-base-content/60 text-sm">Laisser vide pour le g&eacute;n&eacute;rer depuis le titre.</p>
-            @error('slug') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('slug') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
        <div>
             <label class="block font-semibold">Contenu</label>
             <textarea name="content" rows="10" class="border w-full p-2 rounded" required>{{ old('content') }}</textarea>
-            @error('content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('content') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
             <label class="block font-semibold">Date de publication</label>
             <input type="datetime-local" name="published_at" value="{{ old('published_at') }}" class="border w-full p-2 rounded" required>
-            @error('published_at') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('published_at') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
             <label class="block font-semibold">Image à la une (optionnelle)</label>
             <input type="file" name="image" class="border w-full p-2 rounded">
-            @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('image') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
       <div>

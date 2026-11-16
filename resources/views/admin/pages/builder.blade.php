@@ -26,7 +26,7 @@
             <div class="sticky top-16 z-30 mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-cidst-border bg-cidst-surface/95 p-3 shadow-sm backdrop-blur">
                 <a href="{{ $builder['classicUrl'] }}" class="rounded-lg border border-cidst-border px-3 py-2 text-sm font-medium text-cidst-text hover:border-cidst-primary hover:text-cidst-primary">Éditeur classique</a>
                 <p role="status" aria-live="polite" class="min-w-0 flex-1 text-sm"
-                   x-bind:class="statusKind === 'ok' ? 'text-green-700' : (statusKind === 'error' ? 'text-red-600' : 'text-cidst-muted')"
+                   x-bind:class="statusKind === 'ok' ? 'text-green-700' : (statusKind === 'error' ? 'text-cidst-danger' : 'text-cidst-muted')"
                    x-text="status || (dirty ? 'Modifications non enregistrées' : '')"></p>
                 <label x-show="requiresDeleteCode && pendingDeletions > 0" x-cloak class="flex items-center gap-2 text-sm text-cidst-text">
                     <span>Code de suppression</span>
@@ -85,14 +85,14 @@
                                     <span x-show="block.id === null" class="rounded bg-cidst-primary/10 px-2 py-0.5 text-xs text-cidst-primary">Nouveau</span>
                                 </div>
                                 <p class="mt-1 truncate text-sm text-cidst-muted" x-text="summary(block)"></p>
-                                <p x-show="blockError(block.uid)" class="mt-1 text-xs font-medium text-red-600" x-text="blockError(block.uid)"></p>
+                                <p x-show="blockError(block.uid)" class="mt-1 text-xs font-medium text-cidst-danger" x-text="blockError(block.uid)"></p>
                             </div>
                             <div class="flex shrink-0 gap-1">
                                 <button type="button" class="rounded p-1.5 text-cidst-muted hover:bg-cidst-bg hover:text-cidst-text disabled:opacity-30"
                                         aria-label="Monter le bloc" x-bind:disabled="index === 0" x-on:click.stop="move(index, -1)">&uarr;</button>
                                 <button type="button" class="rounded p-1.5 text-cidst-muted hover:bg-cidst-bg hover:text-cidst-text disabled:opacity-30"
                                         aria-label="Descendre le bloc" x-bind:disabled="index === blocks.length - 1" x-on:click.stop="move(index, 1)">&darr;</button>
-                                <button type="button" x-show="!block.locked" class="rounded p-1.5 text-red-600 hover:bg-red-50"
+                                <button type="button" x-show="!block.locked" class="rounded p-1.5 text-cidst-danger hover:bg-cidst-danger-soft"
                                         aria-label="Supprimer le bloc" x-on:click.stop="remove(index)">&times;</button>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
                                     <button type="button"
                                             class="rounded-lg border border-cidst-border px-3 py-2 text-sm font-medium text-cidst-text hover:border-cidst-primary hover:text-cidst-primary focus:outline-none focus:ring-2 focus:ring-cidst-primary/40"
                                             x-on:click="pickImage()" x-text="current.media ? 'Changer' : 'Choisir une image'"></button>
-                                    <p x-show="fieldError('media_id')" class="text-xs font-medium text-red-600" x-text="fieldError('media_id')"></p>
+                                    <p x-show="fieldError('media_id')" class="text-xs font-medium text-cidst-danger" x-text="fieldError('media_id')"></p>
                                 </div>
                             </template>
 
@@ -146,19 +146,19 @@
                                     <template x-if="field.type === 'text'">
                                         <input type="text" x-bind:id="'field-' + field.key" x-bind:maxlength="field.max" x-model="current.data[field.key]"
                                                class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
-                                               x-bind:class="fieldError(field.key) ? 'border-red-500' : ''">
+                                               x-bind:class="fieldError(field.key) ? 'border-cidst-danger' : ''">
                                     </template>
 
                                     <template x-if="field.type === 'textarea'">
                                         <textarea rows="7" x-bind:id="'field-' + field.key" x-model="current.data[field.key]"
                                                   class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
-                                                  x-bind:class="fieldError(field.key) ? 'border-red-500' : ''"></textarea>
+                                                  x-bind:class="fieldError(field.key) ? 'border-cidst-danger' : ''"></textarea>
                                     </template>
 
                                     <template x-if="field.type === 'number'">
                                         <input type="number" x-bind:id="'field-' + field.key" x-bind:min="field.min" x-bind:max="field.max" x-model.number="current.data[field.key]"
                                                class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
-                                               x-bind:class="fieldError(field.key) ? 'border-red-500' : ''">
+                                               x-bind:class="fieldError(field.key) ? 'border-cidst-danger' : ''">
                                     </template>
 
                                     <template x-if="field.type === 'select'">
@@ -178,7 +178,7 @@
                                     </template>
 
                                     <p x-show="field.help" class="text-xs text-cidst-muted" x-text="field.help"></p>
-                                    <p x-show="fieldError(field.key)" class="text-xs font-medium text-red-600" x-text="fieldError(field.key)"></p>
+                                    <p x-show="fieldError(field.key)" class="text-xs font-medium text-cidst-danger" x-text="fieldError(field.key)"></p>
                                 </div>
                             </template>
 
@@ -193,7 +193,7 @@
 
                                             <select x-bind:id="'design-' + field.key"
                                                     class="w-full rounded-lg border-cidst-border text-sm focus:border-cidst-primary focus:ring-cidst-primary"
-                                                    x-bind:class="fieldError('design.' + field.key) ? 'border-red-500' : ''"
+                                                    x-bind:class="fieldError('design.' + field.key) ? 'border-cidst-danger' : ''"
                                                     x-on:change="setDesign(field.key, $event.target.value)">
                                                 <template x-for="option in field.options" x-bind:key="'option:' + option.value">
                                                     <option x-bind:value="option.value"
@@ -202,7 +202,7 @@
                                                 </template>
                                             </select>
 
-                                            <p x-show="fieldError('design.' + field.key)" class="text-xs font-medium text-red-600" x-text="fieldError('design.' + field.key)"></p>
+                                            <p x-show="fieldError('design.' + field.key)" class="text-xs font-medium text-cidst-danger" x-text="fieldError('design.' + field.key)"></p>
                                         </div>
                                     </template>
                                 </fieldset>

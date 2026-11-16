@@ -2,7 +2,7 @@
     <h1 class="text-2xl font-bold mb-6">Modifier la catégorie</h1>
 
     @if ($errors->any())
-        <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
+        <div class="bg-cidst-danger-soft text-cidst-danger-content p-3 rounded mb-4">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -30,7 +30,7 @@
                             <input type="checkbox" name="delete_pdfs[]" value="{{ $pdf->id }}">
                             📄 {{ $pdf->original_name }}
                             <span class="text-xs text-base-content/60">({{ round($pdf->size / 1024) }} Ko)</span>
-                            <span class="text-xs text-red-600">Supprimer</span>
+                            <span class="text-xs text-cidst-danger">Supprimer</span>
                         </label>
                     @endforeach
                 </div>
