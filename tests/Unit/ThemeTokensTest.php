@@ -36,7 +36,9 @@ it('branche chaque role sur sa variable css dans les jetons', function () {
 it('ne reference dans les jetons que des variables de role connues', function () {
     preg_match_all('/--color-[a-z-]+-rgb/', themeTokensRead('tailwind.tokens.js'), $matches);
 
-    $known = [...array_map(fn (string $role) => ThemeRoles::cssVariable($role), ThemeRoles::keys()), ThemeRoles::PRIMARY_CONTENT_VARIABLE];
+    // Les couleurs d'etat (lot 3f-1) ne sont pas des roles modifiables : elles ont leur propre liste.
+    $status = array_map(fn (string $name) => '--color-'.$name.'-rgb', ['danger', 'danger-soft', 'danger-content']);
+    $known = [...array_map(fn (string $role) => ThemeRoles::cssVariable($role), ThemeRoles::keys()), ThemeRoles::PRIMARY_CONTENT_VARIABLE, ...$status];
 
     expect(array_values(array_unique($matches[0])))->not->toBe([])
         ->and(array_diff($matches[0], $known))->toBe([]);

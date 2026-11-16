@@ -19,5 +19,6 @@ it('ne contient aucun style en dur interdit', function (string $pattern) {
 })->with([
     'gris Tailwind' => ['/\b(?:text|bg|border|ring|divide|placeholder|from|to|via|fill|stroke)-gray-\d{2,3}\b/'],
     'indigo de Breeze' => ['/\b(?:text|bg|border|ring|divide|placeholder|from|to|via|fill|stroke)-indigo-\d{2,3}\b/'],
+    'rouge Tailwind (utiliser cidst-danger)' => ['/\b(?:text|bg|border|ring|divide|placeholder|from|to|via|fill|stroke)-red-\d{2,3}\b/'],
     'variantes dark:' => ['/(?<![\w-])dark:/'],
 ]);
