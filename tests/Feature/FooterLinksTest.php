@@ -238,3 +238,14 @@ it('affiche les liens du pied de page sur les autres pages publiques', function 
     expect(footerLinksNav($html))->toContain('Plan du site')
         ->and(footerLinksLegal($html))->toContain('Confidentialite');
 })->with(['/', '/blog', '/recherche']);
+
+it('garde un nom de route sur place, sans nouvel onglet', function (string $location) {
+    footerLinksMenu('Nous ecrire', $location, ['target' => 'contact.show']);
+
+    $segment = footerLinksSegment(footerLinksFresh($this), $location);
+    $tag = footerLinksAnchor($segment, 'Nous ecrire');
+
+    expect($tag)->toContain('href="'.e(route('contact.show')).'"')
+        ->not->toContain('target=')
+        ->and($segment)->not->toContain('(nouvel onglet)');
+})->with(['footer', 'legal']);
