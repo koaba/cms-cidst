@@ -1,6 +1,8 @@
-# PASSATION TECHNIQUE : cms-cidst (version du 16 novembre 2026, 10 h)
+# PASSATION TECHNIQUE : cms-cidst (version du 16 novembre 2026, 14 h)
 
-Remplace entièrement la version du 13 novembre 2026, 15 h. Les lots 3h-1f (bouton « Écrire » masqué sur /contact) et 3h-2 (recherche dans le menu) sont fusionnés. La branche essai-news-ticker est supprimée.
+Remplace entièrement la version du 16 novembre 2026, 10 h (master 82d4759). Depuis : lots 3h-1d (emplacements de menu), 3d-4c (préréglages de couleurs) et 3h-1d-3 (réseaux sociaux) fusionnés ; lot 3f-1 (couleurs d'erreur) en cours, local seulement. La section 11 liste les écarts constatés à la relecture du code de master aa77d95.
+
+Convention : [A VERIFIER] = non confirmé par une exécution. En cas de conflit entre ce document, le code et les tests, le code et les tests font foi.
 
 ## 0. CONSIGNES PERMANENTES POUR L'ASSISTANT (À RECOLLER EN DÉBUT DE SESSION)
 
@@ -10,33 +12,28 @@ Langue de travail : français. Commits sans accents. Fichiers en LF (un CRLF fai
 
 ## 1. ÉTAT DU DÉPÔT (16 novembre 2026)
 
-Dépôt : github.com/koaba/cms-cidst (public), branche unique master.
-master = origin/master = 82d4759 (fusion --no-ff du lot 3h-2 : recherche dans le menu).
-Tags poussés : stable-2026-11-16-lot3h2 (82d4759), stable-2026-11-13-lot3h1f (26d2f8b), stable-2026-11-13-lot3h1c (b3838ff), stable-2026-11-13-lot3h1e (e45342c).
-Historique récent :
-  82d4759 Merge branch 'feat/recherche-menu'
-  cb072e3 feat: recherche dans le menu public (lot 3h-2)
-  3989f67 test : recherche dans le menu public (lot 3h-2)
-  26d2f8b Merge branch 'feat/ecrire-contact'
-  4885e32 feat: masquer Ecrire du bandeau sur la page Contact (lot 3h-1f)
-  a435477 test : masquer Ecrire du bandeau sur la page Contact (lot 3h-1f)
-  b3838ff Merge branch 'feat/carte-seo-local'
-Aucune autre branche locale ni distante. essai-news-ticker a été supprimée le 13/11/2026 (2 commits d'effet net nul ; le module existe sur master) ; récupérable par git reflog (10849eb) : git branch essai-news-ticker 10849eb.
+Dépôt : github.com/koaba/cms-cidst (public), branche unique master (une branche de lot peut exister localement).
+master = origin/master = aa77d95 (fusion --no-ff du lot 3h-1d-3 : réseaux sociaux).
+Tags récents poussés : stable-2026-11-16-lot3h1d3 (aa77d95), stable-2026-11-16-lot3d4c (merge 2c5ca03), stable-2026-11-16-lot3h2 (82d4759), stable-2026-11-13-lot3h1f (26d2f8b), stable-2026-11-13-lot3h1c (b3838ff), stable-2026-11-13-lot3h1e (e45342c).
+Lots fusionnés depuis la version de 10 h : 3h-1d (emplacements de menu), 3d-4c (préréglages Bordeaux, Ardoise, Sable), 3h-1d-3 (réseaux sociaux).
+essai-news-ticker a été supprimée le 13/11/2026 (2 commits d'effet net nul ; le module existe sur master) ; récupérable par git reflog (10849eb) : git branch essai-news-ticker 10849eb.
 
-Mesures :
-- Pre-push (hook complet) sur 82d4759 : Pest 1593 passés (4474 assertions), 4 processus en parallèle, 300 à 400 s. Pint (545 fichiers) et Larastan (niveau 5) verts.
-- Le push de 82d4759 a été fait avec « git push --no-verify » : le hook avait passé trois fois sur ce même commit, mais le DNS de la machine coupait la connexion pendant les 5 minutes d'attente. Cas d'exception, à ne pas généraliser (voir §6).
-- CI GitHub (PHP 8.3, 8.4, 8.5 ; MySQL 8.4 ; job Front) : NON CONFIRMÉE sur b3838ff, 26d2f8b et 82d4759. À regarder en priorité : le cast float (lot 3h-1c) et la colonne booléenne show_search (lot 3h-2) ne sont exercés sous MySQL que par la CI.
+Lot EN COURS : 3f-1 (couleurs d'erreur), branche locale feat/couleurs-erreur, non fusionnée, non poussée (donc absente du dépôt public : master ne contient aucun jeton danger et compte encore environ 172 occurrences de classes red-* dans 47 fichiers). Mesures : 9 tests rouges et 10 verts avant implémentation ; implémentation appliquée ; Pint, Larastan et npm run build verts ; un test Unit (contraste des erreurs) était rouge à cause de config() indisponible : correctif dans 0003-test-lit-config-themes.php-sans-demarrer-l-applicati.patch, NON ENCORE APPLIQUÉ ; mutations (8) et suite complète NON REJOUÉES.
+
+Mesures sur master aa77d95 (annoncées par le propriétaire, non rejouées lors de la relecture du 16/11 14 h) :
+- Pest 1698 passés (4917 assertions) ; Pint et Larastan niveau 5 verts sur chaque lot.
+- Pushs faits avec « git push --no-verify » : le script de cycle venait de faire passer les mêmes contrôles. Cas d'exception à cause du DNS intermittent, à ne pas généraliser (voir §6).
+- CI GitHub (PHP 8.3, 8.4, 8.5 ; MySQL 8.4 ; job Front) : NON CONFIRMÉE sur aa77d95 [A VERIFIER]. À regarder en priorité : les migrations (location + index des menus, show_search, youtube_url / linkedin_url, map_latitude / map_longitude) ne sont exercées sous MySQL 8.4 que par la CI.
 
 Production : rien n'est déployé et rien ne doit l'être avant la fin du lot 3f et du lot S (sécurité, S1 et S2 au minimum). La conversion WebP est validée en local seulement.
 
 Reste à confirmer côté propriétaire :
-- Lot 3h-2 : contrôle visuel de la loupe du menu à 360, 768, 1024, 1440 et 1920 px (surtout 768 px, champ ouvert), test sans JavaScript (champ visible, envoi du formulaire), touche Échap, case « Afficher la recherche dans le menu » dans /admin/settings.
-- Lot 3h-1f : contrôle visuel de /contact (plus de bouton « Écrire » dans le bandeau) et d'une autre page (le bouton y est).
-- Lot 3h-1e : cache:clear, contrôle visuel du pied de page aux 5 largeurs, saisie d'une description du pied de page.
-- Lot 3h-1c : saisie dans /admin/settings de l'adresse réelle, du vrai e-mail public (encore contact@exemple.com) et du point GPS réel ; contrôle visuel de /contact et du pied de page ; test réel du clic sur « Afficher la carte » et « Itinéraire ».
-- Toujours en suspens : contrôle visuel de /admin/settings (lot 3d-4b) et des pages publiques après le lot 3h-1.
-- Vérifier la CI sur 82d4759.
+- Lot 3h-1d-3 : saisie des adresses YouTube et LinkedIn dans /admin/settings ; contrôle visuel du pied de page aux 5 largeurs.
+- Lot 3h-1d : corriger ou supprimer dans /admin/menus les cibles /actualites, /rapports-2026 et /Menus (aucune route correspondante) [A VERIFIER].
+- Lot 3d-4c : contrôle visuel des trois préréglages (public et /admin/settings).
+- Lot 3h-2 : contrôle visuel de la loupe du menu à 360, 768, 1024, 1440 et 1920 px (surtout 768 px, champ ouvert), test sans JavaScript, touche Échap, case « Afficher la recherche dans le menu ».
+- Lot 3h-1c : saisie de l'adresse réelle, du vrai e-mail public (encore contact@exemple.com) et du point GPS réel ; test réel du clic sur « Afficher la carte » et « Itinéraire ».
+- Vérifier la CI sur aa77d95.
 
 ## 2. STACK ET ENVIRONNEMENT
 
@@ -63,7 +60,7 @@ Chaque lot design : mobile-first, paliers Tailwind par défaut, contrôle à 360
 Assistance IA. Claude n'a pas accès au poste du propriétaire. Il livre des patchs et des FICHIERS .ps1 (à déposer dans Téléchargements), jamais de long bloc à coller : le collage d'un long bloc fait planter PSReadLine. Lancement : powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\Downloads\<fichier>.ps1". Les .ps1 sont en ASCII pur (PowerShell 5 lit un fichier sans BOM en ANSI), avec contrôle de $LASTEXITCODE à chaque étape. Si un script s'arrête, la branche reste en l'état : ne jamais relancer un script de départ dont la branche existe, ni réappliquer un patch ; les scripts de fusion/push sont reprenables (ils reprennent selon la branche courante et l'état du dépôt).
 Ce que l'assistant peut valider de son côté : php -l, Pint (phar obtenu par git clone --depth 1 --branch v1.30.5 https://github.com/laravel/pint, fichier builds/pint, avec --config pint.json), application des patchs sur un clone neuf de master + le commit de tests, scripts PHP autonomes avec classes factices. Il ne peut pas installer Composer, donc ni Pest ni Larastan : les comptes de tests qu'il annonce sont raisonnés, pas mesurés. Il peut lire le dépôt public en clone (lecture seule, pas de push). Les fichiers joints au chat arrivent par pièce jointe.
 Un développeur humain suit le même cycle avec git normal.
-Conventions de commit : trailers « Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com> » et « Claude-Session: <URL de la session en cours> » en un seul paragraphe final. L'URL de session change d'une session à l'autre : utiliser celle de la session courante. Dernière utilisée : https://claude.ai/code/session_01AwWBCsTHHt8QGvHHvDDNGL.
+Conventions de commit : trailers « Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com> » et « Claude-Session: <URL de la session en cours> » en un seul paragraphe final. L'URL de session change d'une session à l'autre : utiliser celle de la session courante. Dernière utilisée : https://claude.ai/code/session_01KWCRuLJEN67X8B8zzPnqEd.
 
 ## 4. ARCHITECTURE À CONNAÎTRE
 
@@ -77,7 +74,10 @@ Conventions de commit : trailers « Co-Authored-By: Claude Sonnet 5.5 <noreply@a
 - Un seul fichier de jetons tailwind.tokens.js, 7 rôles : primary #C41E2A, secondary #17181A, bg #F1F2F4, surface #FFFFFF, text #17181A, muted #4B5057, border #D8DADE. Variables CSS --color-X-rgb. Classes utilitaires cidst-* (bg-cidst-bg, text-cidst-text, bg-cidst-primary, text-cidst-primary-content, border-cidst-border...).
 - Aucune couleur gray-* en dur (test NoHardcodedGrayTest ; ThemeTokenUsageTest). Les accesseurs SiteSetting::primary_color et secondary_color ne servent jamais à générer le thème.
 - Services App\Services\Theme\* : ThemeRoles, ThemePalette, ThemeStyleBuilder, ContrastGuard (bloque l'enregistrement si le texte principal passe sous 4,5:1 sur le fond ou la surface ; les autres écarts sont signalés après coup).
-- Le thème DaisyUI « cidst » de l'admin est encore en hexadécimal figé (lot 3f).
+- Résolution des couleurs par couches, la dernière l'emporte (ThemeStyleBuilder::roles) : défauts -> réglages historiques (primary_color, secondary_color) -> palette du thème (config/themes.php) -> couleurs personnalisées (site_settings.theme_colors, JSON). ContrastGuard ne bloque que le texte principal sous 4,5:1.
+- Préréglages (lot 3d-4c) : config/themes.php contient « cidst » (défaut, sans palette), Bordeaux, Ardoise et Sable. Une palette fournit les 7 rôles, « accent » (pastilles du formulaire des réglages) et primary_content / secondary_content / accent_content (texte posé, >= 4,5:1). Test : ThemePresetsTest. Les préréglages personnalisés NOMMÉS sont reportés : une seule copie personnalisée existe (theme_colors).
+- Couleurs d'état (lot 3f-1, en cours) : trois jetons FIXES, hors thème (un message d'erreur reste rouge quel que soit le préréglage) : danger #B91C1C, danger-soft #FEE2E2, danger-content #991B1B. Source prévue : ThemeRoles::statusDefaults() et variables --color-danger-rgb, --color-danger-soft-rgb, --color-danger-content-rgb dans resources/css/shared.css. Ne pas passer par theme_colors ni ThemeStyleBuilder. Hors périmètre : badges de catégories (Category.php, imposés par CategoryBadgeColorTest) ; verts, bleus, oranges (lot 3f-1b).
+- Le thème DaisyUI « cidst » de l'admin est encore en hexadécimal figé (tailwind.config.js ; lot 3f-2).
 
 ### 4.3 Réglages du site
 - Modèle App\Models\SiteSetting. SiteSetting::current() est en rememberForever (clé site-settings.current) et mémoïsé dans le conteneur ; invalidé à l'enregistrement (événements saved/deleted).
@@ -129,6 +129,20 @@ Saisie admin : champs texte (inputmode decimal) après contact_hours dans le fie
 - SearchController (GET /recherche, nom search) : validation q nullable|string|max:255 ; recherche LIKE (App\Support\Like, jokers échappés) sur le TITRE des articles et des pages visibles, 20 résultats maximum chacun.
 - Tests : MenuSearchTest (22 tests). Mutations : 23 tuées sur 24 ; M16 (retirer md:ml-auto) survit, purement visuelle. Le comportement du script en ligne n'est pas testé (voir §7).
 
+### 4.10 Menus et emplacements (lot 3h-1d)
+- Table menus : colonne location string(20), défaut 'main', index (location, is_active, order). Valeurs : main, footer, legal. CONSTANTES, pas d'enum : Menu::MAIN et Menu::LOCATIONS.
+- Menu::activeByLocation() : une requête -> main (arbre), footer et legal (listes). Menu::activeTree() : arbre du menu principal.
+- Menu::resolved_url : un nom de route donne route() (URL absolue), sinon SafeUrl::sanitize(target) ('#' si refusé). Menu::is_external : vrai seulement pour http(s):// qui n'est pas un nom de route.
+- PublicLayout expose menu(), footerMenu(), legalMenu() ; un cache antérieur sans ces clés donne une liste vide. Footer : links() et legalLinks().
+- Validation (Admin\MenuRequest) : target via App\Rules\SafeLinkUrl ; location dans Menu::LOCATIONS ; footer et legal sont PLATS ; le parent d'un sous-menu doit être du menu principal ; un élément qui a des sous-menus ne peut pas quitter le menu principal.
+- Dette : les liens fixes du pied de page (Contact, Rechercher, Nous trouver) sont encore en dur dans footer.blade.php.
+
+### 4.11 Réseaux sociaux (lot 3h-1d-3)
+- App\Services\Contact\SocialLinks : Facebook (délégué à SiteContact::facebook()), YouTube (youtube_url), LinkedIn (linkedin_url), dans cet ordre. Même interrupteur que les coordonnées (footer_show_contacts).
+- Seules les adresses http(s) sortent : validation url:http,https ET filtre à l'affichage avec SafeUrl. WhatsApp reste une coordonnée (SiteContact::whatsapp) et n'est PAS répété dans SocialLinks.
+- Affichage : Footer::socials() et boucle dans components/footer.blade.php. YouTube et LinkedIn utilisent l'icône générique « lien » (components/footer-icon.blade.php) en attendant de vraies icônes de marque.
+- Migration 2026_11_16_180000 : noms de colonnes EN TOUTES LETTRES, car Larastan déduit les propriétés d'un modèle des noms écrits dans database/migrations ; une boucle ou une constante de noms donne property.notFound.
+
 ## 5. RÈGLES DE TEST À RESPECTER
 
 - Pest sur SQLite en mémoire, cache array, QUEUE_CONNECTION=sync. RefreshDatabase sur tests/Feature. Helpers globaux : adminUser(), publicationUser(), setDeleteCode().
@@ -138,7 +152,8 @@ Saisie admin : champs texte (inputmode decimal) après contact_hours dans le fie
 - Un jeu de données compte un test par cas. Une assertion de page entière casse dès qu'un composant global ajoute un élément : la restreindre à la balise visée (regex sur la section, par exemple <nav class="bg-cidst-surface...>, <section id="footer-cta">). Le menu public contient désormais <form id="menu-search"> et un <input name="q"> sur toutes les pages.
 - {{ }} encode & en &amp; dans les attributs : comparer avec e($url). La sous-chaîne src=" est aussi contenue dans data-map-src=" (utiliser src=" avec espace). Le premier <button type="button"> d'une page est celui du menu mobile.
 - Tests d'absence creux : un test « n'affiche pas X » passe tant que la fonctionnalité n'existe pas. Lors de l'état rouge, les verts non annoncés se comptent et se classent (garde-fou existant, absence vacue, test creux). Seules les mutations prouvent qu'un test d'absence protège vraiment : le coupler à une assertion positive sur la même page, et le faire tuer par une mutation qui retire sa condition.
-- Fichiers du lot 3h-1c : ContactPageLocationTest, MapCoordinatesSettingsTest, PublicFooterLocationTest, SeoLocalJsonLdTest, SiteContactTest, SecurityHeadersCspTest. Lot 3h-1f : FooterContactCtaTest (4). Lot 3h-2 : MenuSearchTest (22). Suite complète : 1593.
+- Fichiers du lot 3h-1c : ContactPageLocationTest, MapCoordinatesSettingsTest, PublicFooterLocationTest, SeoLocalJsonLdTest, SiteContactTest, SecurityHeadersCspTest. Lot 3h-1f : FooterContactCtaTest (4). Lot 3h-2 : MenuSearchTest (22). Suite complète : 1698 sur aa77d95 (annoncé, non rejoué le 16/11 à 14 h).
+- LES TESTS DE tests/Unit/ NE DÉMARRENT PAS L'APPLICATION : ni config(), ni facades, ni base. Lire un fichier de config avec require, ou placer le test dans tests/Feature/. Un test rouge « méthode inexistante » peut cacher ce défaut (cas du lot 3f-1).
 
 ## 6. PIÈGES PowerShell, Blade, git
 
@@ -165,7 +180,8 @@ Git :
 - La recherche ne porte que sur les titres (articles et pages), pas sur le contenu.
 - views_30d encore calculé ; graphiques du tableau de bord en groupBy en mémoire ; carte « Pages » qui compte les programmées ; AudienceService::monthly() groupe par DATE(visited_at) ; pas de redirection depuis un ancien slug ; upload dupliqué dans Admin\PageController ; suivi des visites seulement sur blog.show (filtre des robots à faire) ; 6 avertissements Permissions-Policy en console (lot séparé).
 - PagePublicDisplayTest contient assertDontSee('<img') qui ne peut jamais échouer (test creux préexistant). media:convert-webp sans reprise sur WebP orphelin.
-- Le thème DaisyUI « cidst » est figé en hexadécimal (lot 3f) ; environ 131 occurrences de text-red-* à passer sur les jetons.
+- Le thème DaisyUI « cidst » est figé en hexadécimal (lot 3f-2) ; environ 172 occurrences de classes red-* (47 fichiers) à passer sur les jetons (lot 3f-1), puis bleus, verts, oranges en dur dans les vues admin (lot 3f-1b).
+- Icônes YouTube et LinkedIn génériques ; liens fixes du pied de page encore en dur.
 - L'iframe OpenStreetMap est créée sans attribut sandbox ni referrerpolicy ; la CSP est en report-only par défaut.
 - Validation : seules les règles ayant une clé dans lang/fr/validation.php sont en français.
 - Sécurité : voir docs/lot-s-securite.md (mots de passe min:8 seulement, ranking() avec colonne interpolée dans selectRaw, 12 usages de {!! !!}, APP_DEBUG=true dans .env.example, pas de Dependabot ni npm audit en CI, CSP avec unsafe-inline/unsafe-eval).
@@ -179,21 +195,37 @@ Avant toute mise en production : lot S (sécurité), au moins S1 (configuration)
 
 ## 9. PLAN RESTANT (ORDRE À RESPECTER)
 
-1. 3h-1d : liens du pied de page éditables et réseaux sociaux (table menus avec colonne location ; Facebook, YouTube, WhatsApp, LinkedIn ; emplacement pour les mentions légales).
-2. 3d-4c : préréglages de couleurs (thèmes dans config/themes.php, copies personnalisées en JSON dans site_settings).
-3. 3e : thèmes Clair et Sombre sur le public (bg-cidst-bg text-cidst-text sur le body ; le sombre n'est activable qu'après 3f).
-4. 3e-bis : fêtes (Noël, Pâques par algorithme sans ext-calendar, Pentecôte, Indépendance 20-26 juin, Fête du Travail ; liste à confirmer). Zone réservée aux icônes de fête déjà prévue en haut du pied de page.
-5. 3f : thèmes dans l'administration (DaisyUI branché aux variables, Chart.js sensible au thème, text-red-*).
-6. 3g : composants façon shadcn/ui et style Netflix (<x-button>, carrousel) ; le public recevra un bundle public.js avec Alpine ; sortir le script de la loupe en fichier testé.
-7. Lot S : sécurité, en session dédiée (docs/lot-s-securite.md : S1 configuration, S2 dépendances, S3 mots de passe, S4 injections, S5 accès, S6 uploads, S7 chiffrement, S8 CSP, S9 détection).
+0. Immédiat : finir 3f-1 (appliquer le patch 0003, relancer lot3f1-cycle.ps1 depuis feat/couleurs-erreur, contrôle visuel des erreurs, fusion, tag stable-2026-11-16-lot3f1) ; CI verte sur master ; corriger ou supprimer les cibles de menu /actualites, /rapports-2026, /Menus ; renseigner YouTube et LinkedIn.
+1. 3f-1b : verts, bleus, oranges en dur -> jetons d'état (success, info, warning) sur le modèle de 3f-1.
+2. 3f-2 : DaisyUI de l'administration branché aux variables du thème.
+3. 3f-3 : Chart.js sensible au thème.
+4. 3e : thèmes Clair et Sombre sur le public (le sombre n'est activable qu'après 3f).
+5. 3e-bis : fêtes (Noël, Pâques par algorithme sans ext-calendar, Pentecôte, Indépendance 20-26 juin, Fête du Travail ; liste à confirmer). Zone réservée aux icônes de fête déjà prévue en haut du pied de page.
+6. 3g : composants façon shadcn/ui et style Netflix (<x-button>, carrousel) ; bundle public.js avec Alpine ; script de la loupe en fichier testé.
+7. Lot S : sécurité, en session dédiée (docs/lot-s-securite.md : S1 configuration, S2 dépendances, S3 mots de passe, S4 injections, S5 accès, S6 uploads, S7 chiffrement, S8 CSP, S9 détection). S5 doit traiter le point 2 de la section 11.
 8. Lot 4 : PDF allégés avec Ghostscript. Lot 5 : vidéos WebM avec ffmpeg en tâche de fond (dépend du VPS).
 
-Décisions prises : garde-fou de contraste = bloquer le texte principal sous 4,5:1 et avertir pour le reste ; défauts #C41E2A / #17181A ; thème Itadori retiré ; Contact dans le pied de page, pas de bouton rouge dans le menu ; recherche en loupe à l'extrémité droite du menu, formulaire GET qui marche sans JavaScript, réglage show_search ; un seul interrupteur pour toutes les coordonnées ; carte OpenStreetMap au clic (pas de Google en iframe) ; pas d'horaires dans le JSON-LD ; e-mail dans le JSON-LD mais pas dans l'encart de la page Contact ; pays du JSON-LD dans config/seo.php (MG) ; liens du pied de page éditables via menus.location ; bouton « Écrire » du bandeau masqué sur /contact seulement ; branche essai-news-ticker supprimée.
-Questions ouvertes : confirmation de la liste des fêtes ; stockage des préréglages personnalisés ; adresse, e-mail public et coordonnées GPS réels du CIDST (à saisir dans /admin/settings, jamais dans le code) ; fichier docs/lot-s-securite.md et cette passation à ranger dans docs/ (patch livré).
+Décisions prises : garde-fou de contraste = bloquer le texte principal sous 4,5:1 et avertir pour le reste ; défauts #C41E2A / #17181A ; thème Itadori retiré ; Contact dans le pied de page, pas de bouton rouge dans le menu ; recherche en loupe à l'extrémité droite du menu, formulaire GET qui marche sans JavaScript, réglage show_search ; un seul interrupteur pour toutes les coordonnées ; carte OpenStreetMap au clic (pas de Google en iframe) ; pas d'horaires dans le JSON-LD ; e-mail dans le JSON-LD mais pas dans l'encart de la page Contact ; pays du JSON-LD dans config/seo.php (MG) ; emplacements de menu en constantes (main, footer, legal) ; WhatsApp reste une coordonnée ; préréglages de couleurs fixes en config (copies personnalisées nommées reportées) ; couleurs d'état fixes, hors theme_colors ; bouton « Écrire » du bandeau masqué sur /contact seulement ; branche essai-news-ticker supprimée.
+Questions ouvertes : confirmation de la liste des fêtes ; adresse, e-mail public et coordonnées GPS réels du CIDST (à saisir dans /admin/settings, jamais dans le code).
 
 ## 10. REPRISE IMMÉDIATE
 
-1. Vérifier l'état : git status -sb, git fetch origin, git branch -vv. Attendu : master = origin/master = 82d4759 (ou le commit de fusion des docs qui le suit), arbre propre, tag stable-2026-11-16-lot3h2 présent, aucune autre branche.
-2. Si le patch des docs n'est pas encore appliqué : lancer docs-passation-securite.ps1 (ajoute docs/lot-s-securite.md et docs/passation.md).
-3. Côté propriétaire : vérifier la CI GitHub sur 82d4759 ; contrôle visuel de la loupe du menu aux 5 largeurs, sans JavaScript et avec Échap ; contrôle de /contact ; saisie des coordonnées réelles ; cache:clear si ce n'est pas fait.
-4. Lancer le lot 3h-1d selon la méthode du §3 : écrire d'abord lot3h1d-1-tests.patch, le faire appliquer, mesurer les rouges ET les verts, analyser tout vert non annoncé, puis l'implémentation, puis les mutations, puis la fusion (en fichiers .ps1).
+1. Vérifier l'état : git status -sb, git fetch origin, git log --oneline -8. Attendu : master = origin/master = aa77d95 (ou le commit de fusion des docs qui le suit), tag stable-2026-11-16-lot3h1d3 présent ; la branche feat/couleurs-erreur peut exister localement.
+2. php artisan migrate ; php artisan config:clear ; php artisan cache:clear ; php artisan app:check-environment.
+3. php vendor/bin/pest --parallel --compact (3 à 7 minutes ; attendu 1698 sur master).
+4. Vérifier la CI GitHub sur le dernier commit de master (priorité : jobs MySQL 8.4).
+5. Si feat/couleurs-erreur existe : reprendre le lot 3f-1 (§1) avant tout autre lot, selon la méthode du §3.
+6. Lire docs/lot-s-securite.md avant tout travail de sécurité, et la section 11 ci-dessous.
+
+## 11. ÉCARTS CONSTATÉS À LA RELECTURE DU CODE (master aa77d95, 16 novembre 2026, 14 h)
+
+Lecture statique d'un clone du dépôt public ; rien n'a été exécuté (Composer n'a pas pu télécharger les dépendances dans l'environnement de relecture : Pest, Pint et Larastan non rejoués).
+
+1. Ce fichier docs/passation.md était resté à la version de 10 h (master 82d4759) : remplacé par la présente version.
+2. Le middleware confirm.delete protège les suppressions des articles, pages, sliders, news-tickers et blocs (routes web.php). Il n'est PAS posé sur les suppressions de menus, catégories, catégories PDF, documents PDF et utilisateurs (groupe Super Admin). À décider : l'ajouter, ou documenter que le rôle suffit. À traiter au lot S5 (matrice d'accès).
+3. La ressource admin/users (Super Admin) existe dans les routes, avec la route PATCH reset-password ; elle ne figurait pas dans les listes de routes du résumé.
+4. Storage::disk('public')->delete() est appelé à la main dans MediaSyncService (syncCoverImage, remplacement d'une vidéo téléversée), ImageOptimizer et MediaUploader, alors que la règle est de passer par HasOrphanMediaCleanup::detachAndPruneOrphanMedia(). Seuls les événements de modèle (Media, Video, ContactAttachment) sont légitimes. À auditer : certains appels peuvent être justifiés (fichier pas encore rattaché à un média).
+5. AudienceService::ranking() interpole {$column} dans selectRaw, mais ses trois appelants passent des littéraux (path, referrer_host, device) : pas d'injection aujourd'hui. À fermer par une liste blanche dans la méthode et un test (lot S4).
+6. phpstan-baseline.neon fait 571 lignes : « Larastan niveau 5 vert » inclut cette baseline. À compter et à résorber progressivement.
+7. Les 13 usages de {!! !!} relevés (sitemap, JSON-LD, theme-style, attributs target, logo, media-img, json_encode, nl2br(e())) échappent correctement leurs valeurs. Le CSS du thème est sûr : chaque couleur est validée en #RRGGBB à la saisie et re-validée par ThemeStyleBuilder.
+8. composer.json exige laravel/framework ^13.8 ; la version installée (13.35) vient du composer.lock.
