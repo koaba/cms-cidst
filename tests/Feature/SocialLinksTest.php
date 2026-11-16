@@ -78,6 +78,8 @@ it('ignore une adresse qui n est pas http ou https', function (string $column, s
     ['youtube_url', 'javascript:alert(1)'],
     ['linkedin_url', '//linkedin.com/company/cidst'],
     ['youtube_url', 'data:text/html,x'],
+    ['linkedin_url', 'mailto:contact@example.org'],
+    ['youtube_url', 'tel:+261340000000'],
 ]);
 
 it('ignore une adresse faite d espaces', function () {
@@ -193,4 +195,18 @@ it('n affiche Facebook qu une seule fois', function () {
     ]);
 
     expect(substr_count(socialLinksHtml(), 'data-icon="facebook"'))->toBe(1);
+});
+
+it('dessine une icone pour YouTube et LinkedIn', function () {
+    socialLinksSet([
+        'youtube_url' => SOCIAL_LINKS_YOUTUBE,
+        'linkedin_url' => SOCIAL_LINKS_LINKEDIN,
+        'footer_show_contacts' => true,
+    ]);
+
+    $html = socialLinksHtml();
+
+    foreach (['youtube', 'linkedin'] as $icon) {
+        expect($html)->toMatch('/data-icon="'.$icon.'"[^>]*>\s*<path/');
+    }
 });
