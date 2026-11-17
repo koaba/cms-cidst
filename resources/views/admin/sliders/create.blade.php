@@ -9,7 +9,7 @@
         <div>
             <label class="block font-semibold">Titre</label>
             <input type="text" name="title" value="{{ old('title') }}" class="border w-full p-2 rounded">
-            @error('title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('title') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
@@ -20,7 +20,7 @@
         <div>
             <label class="block font-semibold">Image</label>
             <input type="file" name="image" accept="image/*" class="border w-full p-2 rounded" onchange="document.getElementById('slider-picked-preview').classList.add('hidden')">
-            @error('image') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('image') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 
             <div class="mt-2">
                 <button type="button" class="text-sm border rounded px-3 py-2 bg-base-200 hover:bg-base-300"

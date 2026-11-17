@@ -28,6 +28,33 @@ final class ThemeRoles
         'border' => ['label' => 'Bordures', 'default' => '#D8DADE'],
     ];
 
+    /**
+     * Couleurs d'etat (lot 3f-1) : non modifiables, car une erreur doit rester rouge quel que soit le
+     * theme ou la couleur primaire. « danger » = texte et bordure d'erreur, « danger-soft » = fond doux,
+     * « danger-content » = texte pose sur ce fond. Valeurs lues par resources/css/shared.css.
+     */
+    private const STATUS = [
+        'danger' => '#B91C1C',
+        'danger-soft' => '#FEE2E2',
+        'danger-content' => '#991B1B',
+    ];
+
+    /** @return array<string, string> */
+    public static function statusDefaults(): array
+    {
+        return self::STATUS;
+    }
+
+    /** Variable CSS d'une couleur d'etat, au format « R G B ». */
+    public static function statusVariable(string $name): string
+    {
+        if (! isset(self::STATUS[$name])) {
+            throw new InvalidArgumentException("Couleur d'état inconnue : « {$name} ».");
+        }
+
+        return '--color-'.$name.'-rgb';
+    }
+
     /** @return list<string> */
     public static function keys(): array
     {

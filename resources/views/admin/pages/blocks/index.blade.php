@@ -37,7 +37,7 @@
                 <div class="space-x-2">
                     <a href="{{ route('admin.pages.blocks.edit', [$page, $block->id]) }}" class="text-blue-600 text-sm">Modifier</a>
                     <x-delete-form :action="route('admin.pages.blocks.destroy', [$page, $block->id])" message="Supprimer ce bloc ?">
-                        <button type="submit" class="text-red-600 text-sm">Supprimer</button>
+                        <button type="submit" class="text-cidst-danger text-sm">Supprimer</button>
                     </x-delete-form>
                 </div>
             </div>

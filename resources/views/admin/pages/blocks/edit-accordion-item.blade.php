@@ -12,7 +12,7 @@
             <label class="block text-sm font-medium mb-1">Titre de l'item</label>
             <input type="text" name="title" value="{{ $item->data['title'] }}" class="w-full border rounded p-2 text-sm">
             @error('title')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-cidst-danger text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>
 
@@ -32,7 +32,7 @@
                     <span class="space-x-2">
                         <a href="{{ route('admin.pages.blocks.items.content.edit', [$page, $parent->id, $item->id, $content->id]) }}" class="text-blue-600 hover:underline">Modifier</a>
                         <x-delete-form :action="route('admin.pages.blocks.items.content.destroy', [$page, $parent->id, $item->id, $content->id])" message="Supprimer ce contenu ?">
-                            <button type="submit" class="text-red-600 hover:underline">Supprimer</button>
+                            <button type="submit" class="text-cidst-danger hover:underline">Supprimer</button>
                         </x-delete-form>
                     </span>
                 </li>

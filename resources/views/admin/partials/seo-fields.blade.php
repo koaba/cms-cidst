@@ -16,7 +16,7 @@
                    value="{{ old('seo.canonical_url', $model?->seo?->canonical_url) }}"
                    placeholder="URL canonique (optionnelle, http ou https)"
                    class="input input-bordered w-full" />
-            @error('seo.canonical_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('seo.canonical_url') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <label class="label cursor-pointer justify-start gap-3">

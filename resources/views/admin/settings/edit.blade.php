@@ -5,7 +5,7 @@
     <div class="alert alert-success mb-4">{{ session('success') }}</div>
 @endif
 @if(session('error'))
-    <div class="bg-red-100 text-red-800 p-3 rounded mb-4">{{ session('error') }}</div>
+    <div class="bg-cidst-danger-soft text-cidst-danger-content p-3 rounded mb-4">{{ session('error') }}</div>
 @endif
 @if(session('warnings'))
     <div class="alert alert-warning mb-4" role="status">
@@ -31,7 +31,7 @@
             @endif
             <input type="file" name="logo" accept="image/jpeg,image/png" class="w-full border rounded p-2">
             <p class="text-xs text-base-content/60 mt-1">PNG avec fond transparent recommandé (un JPEG garde un fond plein). Converti en WebP à l'envoi. Laisse vide pour conserver le logo actuel.</p>
-            @error('logo') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('logo') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
@@ -39,7 +39,7 @@
             <input type="number" id="logo_height" name="logo_height" min="24" max="72" step="1"
                    value="{{ old('logo_height', $settings->logo_height) }}" class="w-32 border rounded p-2">
             <p class="text-xs text-base-content/60 mt-1">Entre 24 et 72 px (48 par défaut). La largeur suit les proportions du logo.</p>
-            @error('logo_height') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('logo_height') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <fieldset>
@@ -60,7 +60,7 @@
                 @endforeach
             </div>
             <p class="text-xs text-base-content/60 mt-1">Les couleurs personnalisées ci-dessous passent après la palette du thème choisi.</p>
-            @error('theme') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('theme') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </fieldset>
 
         <fieldset class="space-y-3">
@@ -86,14 +86,14 @@
                                    class="w-32 h-11 border rounded p-2 font-mono uppercase">
                         </div>
                         @foreach ($errors->get('theme_colors.'.$role) as $message)
-                            <p class="text-red-600 text-sm" role="alert">{{ $message }}</p>
+                            <p class="text-cidst-danger text-sm" role="alert">{{ $message }}</p>
                         @endforeach
                     </div>
                 @endforeach
             </div>
 
             @error('theme_colors')
-                <p class="text-red-600 text-sm">{{ $message }}</p>
+                <p class="text-cidst-danger text-sm">{{ $message }}</p>
             @enderror
 
             <div class="border rounded p-3 space-y-1">
@@ -122,7 +122,7 @@
                 <option value="horizontal" {{ old('news_ticker_direction', $settings->news_ticker_direction) === 'horizontal' ? 'selected' : '' }}>Horizontal (défilement latéral)</option>
                 <option value="vertical" {{ old('news_ticker_direction', $settings->news_ticker_direction) === 'vertical' ? 'selected' : '' }}>Vertical (défilement du bas vers le haut)</option>
             </select>
-                      @error('news_ticker_direction') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                      @error('news_ticker_direction') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 <div>
     <label class="flex items-center gap-2 font-medium mb-1">
@@ -135,7 +135,7 @@
         >
         Activer le filigrane par défaut pour les nouvelles vidéos
     </label>
-        @error('video_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('video_watermark_default_enabled') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
 <div>
     <label class="flex items-center gap-2 font-medium mb-1">
@@ -148,7 +148,7 @@
         >
         Activer le filigrane par défaut pour les nouvelles images
     </label>
-    @error('image_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('image_watermark_default_enabled') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
 
 <div>
@@ -162,7 +162,7 @@
         >
         Activer le filigrane par défaut pour les nouveaux PDF
     </label>
-    @error('pdf_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('pdf_watermark_default_enabled') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
 
 <div>
@@ -176,7 +176,7 @@
         >
         Activer le filigrane par défaut pour les nouveaux diaporamas
     </label>
-    @error('diaporama_watermark_default_enabled') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('diaporama_watermark_default_enabled') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
         <div>
             <label class="block font-medium mb-1">Eyebrow (petit label au-dessus du titre)</label>
@@ -197,7 +197,7 @@
             <label class="block font-medium mb-1">Titre d'accroche *</label>
             <input type="text" name="hero_title" value="{{ old('hero_title', $settings->hero_title) }}" required
                    class="w-full border rounded p-2">
-            @error('hero_title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('hero_title') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
@@ -242,7 +242,7 @@
                     <option value="3" {{ old('pages_grid_columns', $settings->pages_grid_columns) == 3 ? 'selected' : '' }}>3 colonnes</option>
                     <option value="4" {{ old('pages_grid_columns', $settings->pages_grid_columns) == 4 ? 'selected' : '' }}>4 colonnes</option>
                 </select>
-                @error('pages_grid_columns') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('pages_grid_columns') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="block font-medium mb-1">Taille des images (grille Pages)</label>
@@ -251,7 +251,7 @@
                     <option value="medium" {{ old('pages_image_size', $settings->pages_image_size) === 'medium' ? 'selected' : '' }}>Moyenne</option>
                     <option value="large" {{ old('pages_image_size', $settings->pages_image_size) === 'large' ? 'selected' : '' }}>Grande</option>
                 </select>
-                @error('pages_image_size') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('pages_image_size') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
               </div>
 <div>
@@ -259,37 +259,37 @@
     <input type="url" name="facebook_url" value="{{ old('facebook_url', $settings->facebook_url) }}"
            placeholder="https://facebook.com/votrepage"
            class="w-full border rounded p-2">
-    @error('facebook_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('facebook_url') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
 <div>
     <label class="block font-medium mb-1">URL YouTube</label>
     <input type="url" name="youtube_url" value="{{ old('youtube_url', $settings->youtube_url) }}"
            placeholder="https://youtube.com/@votrechaine"
            class="w-full border rounded p-2">
-    @error('youtube_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('youtube_url') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
 <div>
     <label class="block font-medium mb-1">URL LinkedIn</label>
     <input type="url" name="linkedin_url" value="{{ old('linkedin_url', $settings->linkedin_url) }}"
            placeholder="https://linkedin.com/company/votreorganisation"
            class="w-full border rounded p-2">
-    @error('linkedin_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('linkedin_url') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
 <div>
     <label class="block font-medium mb-1">Titre de la page Documents PDF</label>
     <input type="text" name="pdf_documents_title" value="{{ old('pdf_documents_title', $settings->pdf_documents_title) }}"
            placeholder="Documents et ressources"
            class="w-full border rounded p-2">
-    @error('pdf_documents_title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('pdf_documents_title') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
 <div>
     <label class="block font-medium mb-1">Contenu introductif de la page Documents PDF</label>
     <textarea name="pdf_documents_content" rows="4"
               placeholder="Texte affiché en haut de la page listant les documents..."
               class="w-full border rounded p-2">{{ old('pdf_documents_content', $settings->pdf_documents_content) }}</textarea>
-    @error('pdf_documents_content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+    @error('pdf_documents_content') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
 </div>
-        <div><label class="block font-medium mb-1">Code de suppression</label><input type="password" name="delete_code" autocomplete="new-password" minlength="8" maxlength="50" class="w-full border rounded p-2"><p class="text-sm opacity-70">Laisser vide pour ne pas changer. Demand&eacute; aux utilisateurs Publication pour supprimer.</p>@error('delete_code') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror</div>
+        <div><label class="block font-medium mb-1">Code de suppression</label><input type="password" name="delete_code" autocomplete="new-password" minlength="8" maxlength="50" class="w-full border rounded p-2"><p class="text-sm opacity-70">Laisser vide pour ne pas changer. Demand&eacute; aux utilisateurs Publication pour supprimer.</p>@error('delete_code') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror</div>
 <fieldset class="border rounded p-4 space-y-3">
     <legend class="font-medium px-1">Formulaire de contact : images jointes</legend>
     <label class="flex items-center gap-2 font-medium">
@@ -299,7 +299,7 @@
     <div>
         <label for="contact_images_max_mb" class="block font-medium mb-1">Taille maximale par image (Mo)</label>
         <input id="contact_images_max_mb" type="number" min="1" max="10" name="contact_images_max_mb" value="{{ old('contact_images_max_mb', $settings->contact_images_max_mb) }}" class="w-32 border rounded p-2">
-        @error('contact_images_max_mb') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('contact_images_max_mb') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
     </div>
     <p class="text-sm opacity-70">Les images sont réencodées et rangées hors du site public. Les PDF ne sont pas acceptés : les visiteurs utilisent le lien de partage.</p>
 </fieldset>
@@ -308,7 +308,7 @@
     <div>
         <label for="contact_public_email" class="block font-medium mb-1">Adresse e-mail affichée sur la page Contact</label>
         <input id="contact_public_email" type="email" name="contact_public_email" maxlength="255" value="{{ old('contact_public_email', $settings->contact_public_email) }}" class="w-full border rounded p-2">
-        @error('contact_public_email') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('contact_public_email') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         <p class="text-sm opacity-70">Les visiteurs peuvent y envoyer un PDF ou un document. Laisser vide pour ne rien afficher.</p>
     </div>
 </fieldset>
@@ -318,31 +318,31 @@
     <div>
         <label for="contact_address" class="block font-medium mb-1">Adresse</label>
         <textarea id="contact_address" name="contact_address" rows="2" maxlength="255" class="w-full border rounded p-2">{{ old('contact_address', $settings->contact_address) }}</textarea>
-        @error('contact_address') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('contact_address') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         <p class="text-sm opacity-70">Une ligne par retour à la ligne.</p>
     </div>
     <div class="grid gap-4 sm:grid-cols-2">
         <div>
             <label for="contact_phone" class="block font-medium mb-1">Téléphone</label>
             <input id="contact_phone" type="tel" name="contact_phone" maxlength="30" value="{{ old('contact_phone', $settings->contact_phone) }}" placeholder="+261 20 22 000 00" class="w-full border rounded p-2">
-            @error('contact_phone') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('contact_phone') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
             <label for="contact_phone_2" class="block font-medium mb-1">Deuxième téléphone</label>
             <input id="contact_phone_2" type="tel" name="contact_phone_2" maxlength="30" value="{{ old('contact_phone_2', $settings->contact_phone_2) }}" placeholder="034 12 345 67" class="w-full border rounded p-2">
-            @error('contact_phone_2') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('contact_phone_2') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
     </div>
     <div>
         <label for="contact_whatsapp" class="block font-medium mb-1">WhatsApp</label>
         <input id="contact_whatsapp" type="tel" name="contact_whatsapp" maxlength="30" value="{{ old('contact_whatsapp', $settings->contact_whatsapp) }}" placeholder="+261 34 12 345 67" class="w-full border rounded p-2">
-        @error('contact_whatsapp') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('contact_whatsapp') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         <p class="text-sm opacity-70">Format international obligatoire (commence par +), sinon le lien WhatsApp ne fonctionnerait pas.</p>
     </div>
     <div>
         <label for="contact_hours" class="block font-medium mb-1">Horaires d'ouverture</label>
         <textarea id="contact_hours" name="contact_hours" rows="2" maxlength="255" class="w-full border rounded p-2">{{ old('contact_hours', $settings->contact_hours) }}</textarea>
-        @error('contact_hours') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('contact_hours') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         <p class="text-sm opacity-70">Une ligne par retour à la ligne, par exemple « Lundi au vendredi : 8h – 17h ».</p>
     </div>
     <div>
@@ -350,12 +350,12 @@
             <div>
                 <label for="map_latitude" class="block font-medium mb-1">Latitude</label>
                 <input id="map_latitude" type="text" inputmode="decimal" name="map_latitude" maxlength="12" value="{{ old('map_latitude', $settings->map_latitude) }}" placeholder="-18.9137" class="w-full border rounded p-2">
-                @error('map_latitude') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('map_latitude') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="map_longitude" class="block font-medium mb-1">Longitude</label>
                 <input id="map_longitude" type="text" inputmode="decimal" name="map_longitude" maxlength="12" value="{{ old('map_longitude', $settings->map_longitude) }}" placeholder="47.5361" class="w-full border rounded p-2">
-                @error('map_longitude') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('map_longitude') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
         </div>
         <p class="mt-1 text-sm opacity-70">Point GPS de l'établissement : les deux champs ou aucun (latitude de -90 à 90, longitude de -180 à 180, virgule ou point). Il affiche la carte sur la page Contact, le lien « Nous trouver » du pied de page et le référencement local. Astuce : clic droit sur le lieu dans Google Maps pour copier les deux valeurs.</p>
@@ -376,13 +376,13 @@
     <div>
         <label for="footer_description" class="block font-medium mb-1">Courte description</label>
         <input id="footer_description" type="text" name="footer_description" maxlength="255" value="{{ old('footer_description', $settings->footer_description) }}" class="w-full border rounded p-2">
-        @error('footer_description') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('footer_description') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         <p class="text-sm opacity-70">Affichée sous le logo. Laisser vide pour ne rien afficher.</p>
     </div>
     <div>
         <label for="footer_copyright" class="block font-medium mb-1">Texte du copyright</label>
         <input id="footer_copyright" type="text" name="footer_copyright" maxlength="255" value="{{ old('footer_copyright', $settings->footer_copyright) }}" placeholder="© {annee} {site}" class="w-full border rounded p-2">
-        @error('footer_copyright') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        @error('footer_copyright') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         <p class="text-sm opacity-70">{annee} devient l'année en cours et {site} le nom du site. Laisser vide pour « © année Nom du site ».</p>
     </div>
 </fieldset>

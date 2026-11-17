@@ -78,7 +78,7 @@ function addDiaporama() {
     wrapper.innerHTML = `
         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
             <input type="text" name="diaporamas[${index}][title]" placeholder="Titre du diaporama (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
-            <button type="button" onclick="ArticleForm.removeDiaporama(${index})" class="text-red-600 text-sm">Supprimer</button>
+            <button type="button" onclick="ArticleForm.removeDiaporama(${index})" class="text-cidst-danger text-sm">Supprimer</button>
         </div>
         <div id="diaporama-${index}-selected" class="flex flex-wrap gap-2 mb-2"></div>
         <div class="flex gap-2">
@@ -111,7 +111,7 @@ function addVideo() {
     wrapper.innerHTML = `
         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
             <input type="text" name="videos[${index}][title]" placeholder="Titre de la vidéo (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
-                        <button type="button" onclick="ArticleForm.removeVideo(${index})" class="text-red-600 text-sm">Supprimer</button>
+                        <button type="button" onclick="ArticleForm.removeVideo(${index})" class="text-cidst-danger text-sm">Supprimer</button>
         </div>
               <label class="flex items-center gap-1 text-xs text-base-content/70 mb-2">
             <input type="checkbox" name="videos[${index}][apply_watermark]" value="1" ${videoWatermarkDefault ? 'checked' : ''}>

@@ -6,7 +6,7 @@
             <label class="block font-medium mb-1">Nom *</label>
             <input type="text" name="name" value="{{ old('name') }}" required
                    class="w-full border rounded p-2">
-            @error('name') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('name') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
         <div class="flex items-center gap-3">
             <x-admin.button type="submit">Créer</x-admin.button>

@@ -9,14 +9,14 @@
             <label class="block font-medium mb-1">Contenu *</label>
             <textarea name="content" rows="3" required
                       class="w-full border rounded p-2">{{ old('content', $newsTicker->content) }}</textarea>
-            @error('content') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('content') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
             <label class="block font-medium mb-1">Lien (optionnel)</label>
             <input type="url" name="link_url" value="{{ old('link_url', $newsTicker->link_url) }}"
                    class="w-full border rounded p-2">
-            @error('link_url') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('link_url') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>

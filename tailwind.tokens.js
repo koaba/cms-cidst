@@ -20,6 +20,9 @@ export const cidstColors = {
     text: rgb('--color-text-rgb'),
     muted: rgb('--color-muted-rgb'),
     border: rgb('--color-border-rgb'),
+    danger: rgb('--color-danger-rgb'),
+    'danger-soft': rgb('--color-danger-soft-rgb'),
+    'danger-content': rgb('--color-danger-content-rgb'),
 };
 
 export const cidstFontFamily = {

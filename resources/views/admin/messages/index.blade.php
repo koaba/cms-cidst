@@ -34,7 +34,7 @@
                         <form method="POST" action="{{ route('admin.messages.destroy', $item) }}" onsubmit="return confirm('Supprimer ce message et ses images ?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600">Supprimer</button>
+                            <button type="submit" class="text-cidst-danger">Supprimer</button>
                         </form>
                     </div>
                 </td>

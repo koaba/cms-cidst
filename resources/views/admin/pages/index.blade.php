@@ -34,7 +34,7 @@
                         <a href="{{ route('admin.pages.edit', $page) }}" class="text-blue-600">Modifier</a>
                         <a href="{{ route('admin.pages.builder.show', $page) }}" class="text-purple-600">Builder</a>
                         <x-delete-form :action="route('admin.pages.destroy', $page)" message="Supprimer cette page ?">
-                            <button type="submit" class="text-red-600">Supprimer</button>
+                            <button type="submit" class="text-cidst-danger">Supprimer</button>
                         </x-delete-form>
                     </td>
                 </tr>

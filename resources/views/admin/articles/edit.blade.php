@@ -2,7 +2,7 @@
     <h1 class="text-2xl font-bold mb-6">Modifier l'article</h1>
 
     @if ($errors->any())
-        <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
+        <div class="bg-cidst-danger-soft text-cidst-danger-content p-3 rounded mb-4">
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -142,7 +142,7 @@
                         <input type="hidden" name="diaporamas[{{ $i }}][id]" value="{{ $diaporama->id }}">
                         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                             <input type="text" name="diaporamas[{{ $i }}][title]" value="{{ $diaporama->title }}" placeholder="Titre du diaporama (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
-                            <label class="flex items-center gap-1 text-xs text-red-600">
+                            <label class="flex items-center gap-1 text-xs text-cidst-danger">
                                 <input type="checkbox" name="delete_diaporamas[]" value="{{ $diaporama->id }}">
                                 Supprimer tout le diaporama
                             </label>
@@ -192,7 +192,7 @@
 
                         <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
                             <input type="text" name="videos[{{ $loop->index }}][title]" value="{{ $video->title }}" placeholder="Titre (optionnel)" class="border rounded p-2 text-sm flex-1 mr-2">
-                            <label class="flex items-center gap-1 text-xs text-red-600">
+                            <label class="flex items-center gap-1 text-xs text-cidst-danger">
                                 <input type="checkbox" name="delete_videos[]" value="{{ $video->id }}">
                                 Supprimer
                             </label>

@@ -33,7 +33,7 @@
                 <td class="p-2 flex gap-2">
                     <a href="{{ route('admin.news-tickers.edit', $item) }}" class="text-blue-600">Modifier</a>
                     <x-delete-form :action="route('admin.news-tickers.destroy', $item)" message="Supprimer cette actualité ?">
-                        <button type="submit" class="text-red-600">Supprimer</button>
+                        <button type="submit" class="text-cidst-danger">Supprimer</button>
                     </x-delete-form>
                 </td>
             </tr>

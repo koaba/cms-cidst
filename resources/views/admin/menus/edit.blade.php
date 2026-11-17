@@ -7,13 +7,13 @@
             <label class="block font-medium mb-1">Libellé *</label>
             <input type="text" name="label" value="{{ old('label', $menu->label) }}" required
                    class="w-full border rounded p-2">
-            @error('label') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('label') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
             <label class="block font-medium mb-1">Cible (route nommée ou URL) *</label>
             <input type="text" name="target" value="{{ old('target', $menu->target) }}" required
                    class="w-full border rounded p-2">
-            @error('target') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('target') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
             <label for="location" class="block font-medium mb-1">Emplacement</label>
@@ -24,7 +24,7 @@
                 @endforeach
             </select>
             <p class="text-xs text-base-content/60 mt-1">Les liens du pied de page et les mentions légales n'ont pas de sous-menus.</p>
-            @error('location') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('location') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
             <label class="block font-medium mb-1">Menu parent</label>
@@ -36,7 +36,7 @@
                     </option>
                 @endforeach
             </select>
-            @error('parent_id') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+            @error('parent_id') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
         </div>
         <div>
             <label class="block font-medium mb-1">Ordre</label>

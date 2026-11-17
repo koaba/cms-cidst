@@ -15,7 +15,7 @@
               onsubmit="return confirm('Supprimer ce menu ?')">
             @csrf
             @method('DELETE')
-            <button type="submit" class="text-red-600">Supprimer</button>
+            <button type="submit" class="text-cidst-danger">Supprimer</button>
         </form>
     </td>
 </tr>

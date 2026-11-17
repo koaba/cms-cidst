@@ -12,12 +12,12 @@
             <div>
                 <label for="name" class="block font-medium mb-1 text-cidst-text">Nom</label>
                 <input id="name" name="name" value="{{ old('name') }}" required class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">
-                @error('name') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('name') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="email" class="block font-medium mb-1 text-cidst-text">Email</label>
                 <input id="email" type="email" name="email" value="{{ old('email') }}" required class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">
-                @error('email') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('email') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="subject" class="block font-medium mb-1 text-cidst-text">Sujet</label>
@@ -26,7 +26,7 @@
             <div>
                 <label for="message" class="block font-medium mb-1 text-cidst-text">Message</label>
                 <textarea id="message" name="message" rows="6" required class="w-full border border-cidst-border rounded p-2 bg-cidst-surface text-cidst-text">{{ old('message') }}</textarea>
-                @error('message') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('message') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
             @if ($imagesEnabled)
                 <div>
@@ -35,9 +35,9 @@
                     <p id="images_help" class="mt-1 text-sm text-cidst-muted">JPG, PNG ou WebP, {{ $imagesMaxFiles }} images au maximum, {{ $imagesMaxMb }} Mo chacune. Pour un PDF ou un autre document, utilisez le lien ci-dessous.</p>
                     <p id="images_status" role="status" aria-live="polite" class="mt-1 text-sm text-cidst-muted"></p>
                     @vite('resources/js/public/contact-images.js')
-                    @error('images') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                    @error('images') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
                     @foreach (collect($errors->get('images.*'))->flatten()->unique() as $error)
-                        <p class="text-red-600 text-sm">{{ $error }}</p>
+                        <p class="text-cidst-danger text-sm">{{ $error }}</p>
                     @endforeach
                 </div>
             @endif
@@ -48,7 +48,7 @@
                 @if ($publicEmail)
                     <p id="contact_public_email" class="mt-1 text-sm text-cidst-muted">Vous pouvez aussi envoyer un PDF ou un document par e-mail &agrave; <a href="mailto:{{ $publicEmail }}" class="underline text-cidst-text">{{ $publicEmail }}</a>.</p>
                 @endif
-                @error('attachment_link') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+                @error('attachment_link') <p class="text-cidst-danger text-sm">{{ $message }}</p> @enderror
             </div>
             <button type="submit" class="inline-flex items-center rounded bg-cidst-primary px-5 py-2 font-medium text-cidst-primary-content hover:opacity-90">Envoyer</button>
         </form>

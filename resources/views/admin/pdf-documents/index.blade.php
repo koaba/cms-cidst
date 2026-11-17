@@ -9,7 +9,7 @@
         </div>
     @endif
     @if (session('error'))
-        <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
+        <div class="bg-cidst-danger-soft text-cidst-danger-content p-3 rounded mb-4">
             {{ session('error') }}
         </div>
     @endif
@@ -33,7 +33,7 @@
                         <form method="POST" action="{{ route('admin.pdf-documents.destroy', $document) }}" onsubmit="return confirm('Supprimer ce document ?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600">Supprimer</button>
+                            <button type="submit" class="text-cidst-danger">Supprimer</button>
                         </form>
                     </td>
                 </tr>

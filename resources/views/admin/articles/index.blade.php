@@ -31,7 +31,7 @@
                     <td class="p-3 flex gap-2">
                         <a href="{{ route('admin.articles.edit', $article) }}" class="text-blue-600">Modifier</a>
                         <x-delete-form :action="route('admin.articles.destroy', $article)" message="Supprimer cet article ?">
-                            <button type="submit" class="text-red-600">Supprimer</button>
+                            <button type="submit" class="text-cidst-danger">Supprimer</button>
                         </x-delete-form>
                     </td>
                 </tr>
