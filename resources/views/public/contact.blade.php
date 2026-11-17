@@ -2,7 +2,7 @@
     <div class="max-w-xl mx-auto">
         <h1 class="text-3xl font-display font-bold mb-6 text-cidst-text">Contact</h1>
         @if (session('success'))
-            <div class="mb-6 rounded border border-green-300 bg-green-50 px-4 py-3 text-green-800">Message envoy&eacute;.</div>
+            <div class="mb-6 rounded border border-cidst-success px-4 py-3 bg-cidst-success-soft text-cidst-success-content">Message envoy&eacute;.</div>
         @endif
         <form method="POST" action="{{ route('contact.store') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf

@@ -5,12 +5,12 @@
     <td class="p-2 text-sm text-base-content/60">{{ $menu->target }}</td>
     <td class="p-2">{{ $menu->order }}</td>
     <td class="p-2">
-        <span class="{{ $menu->is_active ? 'text-green-600' : 'text-base-content/50' }}">
+        <span class="{{ $menu->is_active ? 'text-cidst-success' : 'text-base-content/50' }}">
             {{ $menu->is_active ? 'Oui' : 'Non' }}
         </span>
     </td>
     <td class="p-2 flex gap-2">
-        <a href="{{ route('admin.menus.edit', $menu) }}" class="text-blue-600">Modifier</a>
+        <a href="{{ route('admin.menus.edit', $menu) }}" class="text-cidst-primary">Modifier</a>
         <form action="{{ route('admin.menus.destroy', $menu) }}" method="POST"
               onsubmit="return confirm('Supprimer ce menu ?')">
             @csrf

@@ -4,7 +4,7 @@
     <x-admin.button href="{{ route('admin.pages.create') }}">+ Nouvelle page</x-admin.button>
 
     @if(session('success'))
-        <p class="text-green-600 mt-2">{{ session('success') }}</p>
+        <p class="text-cidst-success mt-2">{{ session('success') }}</p>
     @endif
 
     @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror

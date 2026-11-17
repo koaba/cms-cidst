@@ -26,7 +26,7 @@
                 <td class="p-2">{{ $item->link_url ?? '—' }}</td>
                 <td class="p-2">{{ $item->order }}</td>
                 <td class="p-2">
-                    <span class="{{ $item->is_active ? 'text-green-600' : 'text-base-content/50' }}">
+                    <span class="{{ $item->is_active ? 'text-cidst-success' : 'text-base-content/50' }}">
                         {{ $item->is_active ? 'Oui' : 'Non' }}
                     </span>
                 </td>

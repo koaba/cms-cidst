@@ -5,7 +5,7 @@
     <a href="{{ route('admin.pages.edit', $page) }}" class="text-sm text-base-content/60">&larr; Retour à la page</a>
 
     @if(session('success'))
-        <p class="text-green-600 mt-2">{{ session('success') }}</p>
+        <p class="text-cidst-success mt-2">{{ session('success') }}</p>
     @endif
     @error('delete_code')<div class="alert alert-error mt-2">{{ $message }}</div>@enderror
 

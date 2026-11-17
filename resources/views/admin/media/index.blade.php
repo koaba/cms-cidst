@@ -39,7 +39,7 @@
                                 @endforeach
                             </p>
                         @else
-                            <p class="text-xs text-orange-600 mt-1">Non utilisé</p>
+                            <p class="text-xs text-cidst-warning mt-1">Non utilisé</p>
                         @endif
                     </div>
                 </div>

@@ -23,6 +23,12 @@ export const cidstColors = {
     danger: rgb('--color-danger-rgb'),
     'danger-soft': rgb('--color-danger-soft-rgb'),
     'danger-content': rgb('--color-danger-content-rgb'),
+    success: rgb('--color-success-rgb'),
+    'success-soft': rgb('--color-success-soft-rgb'),
+    'success-content': rgb('--color-success-content-rgb'),
+    warning: rgb('--color-warning-rgb'),
+    'warning-soft': rgb('--color-warning-soft-rgb'),
+    'warning-content': rgb('--color-warning-content-rgb'),
 };
 
 export const cidstFontFamily = {
