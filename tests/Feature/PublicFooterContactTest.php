@@ -222,6 +222,8 @@ it('enregistre les coordonnees', function () {
 
 it('accepte les formats usuels de numero', function (string $value) {
     publicFooterContactSave($this, ['contact_phone' => $value])->assertSessionHasNoErrors();
+
+    expect(SiteSetting::current()->fresh()->contact_phone)->toBe($value);
 })->with(['+261 20 22 000 00', '034 12 345 67', '(020) 22 000 00', '+261.34.12.345.67', '0341234567']);
 
 it('refuse un telephone invalide', function (string $field, string $value) {
