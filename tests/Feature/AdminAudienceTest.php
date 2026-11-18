@@ -23,7 +23,18 @@ it('affiche les chiffres au Super Admin', function () {
 });
 
 it('retombe sur 30 jours quand la periode est invalide', function () {
-    $this->actingAs(adminUser())->get('/admin/audience?period=zzz')->assertOk();
+    // periode invalide : repli reel sur 30 jours
+    foreach ([['a', '/recent', 20], ['b', '/ancien', 40]] as [$hash, $path, $ago]) {
+        SiteVisit::create(['path' => $path, 'visitor_hash' => $hash, 'device' => 'desktop', 'visited_at' => now()->subDays($ago)]);
+    }
+
+    $html = $this->actingAs(adminUser())->get('/admin/audience?period=zzz')->assertOk()
+        ->assertSee('data-audience="visits" data-count="1"', false)
+        ->assertSee('/recent')
+        ->assertDontSee('/ancien')
+        ->getContent();
+
+    expect($html)->toMatch('/aria-current="page"[^>]*>\s*30 jours/');
 });
 
 it('declare l entree de menu reservee au Super Admin', function () {
