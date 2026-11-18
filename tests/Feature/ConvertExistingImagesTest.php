@@ -7,6 +7,7 @@ use App\Models\SiteSetting;
 use App\Models\Slider;
 use App\Services\ImageOptimizer;
 use App\Support\PublicLayout;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
@@ -272,12 +273,28 @@ it('est idempotente : un second passage ne trouve plus rien', function () {
         ->assertSuccessful();
 });
 
-it('annonce le gain en octets apres une conversion', function () {
-    cvtMedia(cvtPut('pages/photo.jpg', cvtJpeg()));
+it('annonce le gain reel en Mo apres une conversion', function () {
+    // Bruit pixel par pixel : il ne se compresse pas comme des aplats, le gain reste mesurable en Mo.
+    mt_srand(11);
+    $noise = imagecreatetruecolor(400, 300);
 
-    $this->artisan('media:convert-webp --force')
-        ->expectsOutputToContain('Gain')
-        ->assertSuccessful();
+    for ($x = 0; $x < 400; $x++) {
+        for ($y = 0; $y < 300; $y++) {
+            imagesetpixel($noise, $x, $y, mt_rand(0, 0xFFFFFF));
+        }
+    }
+
+    $path = cvtPut('pages/photo.jpg', cvtBytes(fn () => imagejpeg($noise, null, 100)));
+    cvtMedia($path);
+    $before = Storage::disk('public')->size($path);
+
+    Artisan::call('media:convert-webp', ['--force' => true]);
+
+    $after = Storage::disk('public')->size('pages/photo.webp');
+    // Precondition : le WebP doit etre assez lourd pour que le gain depasse l arrondi a 2 decimales.
+    expect($after)->toBeGreaterThan(50000);
+    $gain = number_format(($before - $after) / 1024 / 1024, 2, '.', '');
+    expect(Artisan::output())->toContain("Gain : {$gain} Mo.");
 });
 
 it('vide le cache des pages publiques seulement quand un fichier a ete converti', function () {
