@@ -19,7 +19,7 @@ function themeStatusTriplet(string $hex): string
 }
 
 it('declare les trois couleurs d erreur dans ThemeRoles', function () {
-    expect(ThemeRoles::statusDefaults())->toBe([
+    expect(ThemeRoles::statusDefaults())->toMatchArray([
         'danger' => '#B91C1C',
         'danger-soft' => '#FEE2E2',
         'danger-content' => '#991B1B',

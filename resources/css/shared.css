@@ -14,6 +14,12 @@
     --color-danger-rgb: 185 28 28;
     --color-danger-soft-rgb: 254 226 226;
     --color-danger-content-rgb: 153 27 27;
+    --color-success-rgb: 22 101 52;
+    --color-success-soft-rgb: 220 252 231;
+    --color-success-content-rgb: 20 83 45;
+    --color-warning-rgb: 146 64 14;
+    --color-warning-soft-rgb: 254 243 199;
+    --color-warning-content-rgb: 120 53 15;
 }
 @keyframes marquee {
     0% { transform: translateX(100%); }

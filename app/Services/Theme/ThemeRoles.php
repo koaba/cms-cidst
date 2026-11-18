@@ -29,14 +29,20 @@ final class ThemeRoles
     ];
 
     /**
-     * Couleurs d'etat (lot 3f-1) : non modifiables, car une erreur doit rester rouge quel que soit le
-     * theme ou la couleur primaire. « danger » = texte et bordure d'erreur, « danger-soft » = fond doux,
+     * Couleurs d'etat (lots 3f-1 et 3f-1b) : non modifiables, car une erreur reste rouge, un succes vert et une
+     * alerte ambre quel que soit le theme ou la couleur primaire. « danger » = texte et bordure d'erreur, « danger-soft » = fond doux,
      * « danger-content » = texte pose sur ce fond. Valeurs lues par resources/css/shared.css.
      */
     private const STATUS = [
         'danger' => '#B91C1C',
         'danger-soft' => '#FEE2E2',
         'danger-content' => '#991B1B',
+        'success' => '#166534',
+        'success-soft' => '#DCFCE7',
+        'success-content' => '#14532D',
+        'warning' => '#92400E',
+        'warning-soft' => '#FEF3C7',
+        'warning-content' => '#78350F',
     ];
 
     /** @return array<string, string> */

@@ -50,7 +50,7 @@
                         <a
                             href="{{ Storage::url($pdf->path) }}"
                             download
-                            class="inline-block text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            class="inline-block text-sm text-cidst-primary hover:underline font-medium"
                         >
                             &darr; Télécharger
                         </a>

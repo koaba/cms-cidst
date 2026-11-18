@@ -2,13 +2,13 @@
     <h1 class="text-2xl font-bold mb-4">Sliders</h1>
 
     @if($sliders->count() >= config('display.max_sliders'))
-        <p class="text-sm text-amber-600 mt-2">Limite de {{ config('display.max_sliders') }} sliders atteinte — supprimez-en un pour en ajouter un nouveau.</p>
+        <p class="text-sm text-cidst-warning mt-2">Limite de {{ config('display.max_sliders') }} sliders atteinte — supprimez-en un pour en ajouter un nouveau.</p>
     @else
         <x-admin.button href="{{ route('admin.sliders.create') }}">+ Nouveau slider</x-admin.button>
     @endif
 
     @if(session('success'))
-        <p class="text-green-600 mt-2">{{ session('success') }}</p>
+        <p class="text-cidst-success mt-2">{{ session('success') }}</p>
     @endif
     @error('delete_code')<div class="alert alert-error mb-4">{{ $message }}</div>@enderror
     <table class="w-full mt-4 border-collapse">

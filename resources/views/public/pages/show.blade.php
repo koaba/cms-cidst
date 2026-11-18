@@ -15,5 +15,5 @@
             {!! nl2br(e($page->content)) !!}
         </div>
     @endif
-    <a href="{{ route('pages.index') }}" class="text-blue-600 mt-4 inline-block">&larr; Retour aux pages</a>
+    <a href="{{ route('pages.index') }}" class="text-cidst-primary hover:underline mt-4 inline-block">&larr; Retour aux pages</a>
 </x-layout>
