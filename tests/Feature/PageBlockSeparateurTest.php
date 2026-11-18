@@ -31,6 +31,11 @@ it('accepte un separateur sans style', function () {
     );
 
     $response->assertSessionHasNoErrors();
+
+    $block = $page->blocks()->whereNull('parent_id')->first();
+    expect($page->blocks()->count())->toBe(1);
+    expect($block->type)->toBe('separateur');
+    expect($block->data['style'] ?? null)->toBeNull();
 });
 
 it('rejette un style de separateur invalide', function () {

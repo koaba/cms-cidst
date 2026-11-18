@@ -32,6 +32,12 @@ it('accepte une citation sans auteur', function () {
     );
 
     $response->assertSessionHasNoErrors();
+
+    $block = $page->blocks()->whereNull('parent_id')->first();
+    expect($page->blocks()->count())->toBe(1);
+    expect($block->type)->toBe('citation');
+    expect($block->data['content'])->toBe('Sans auteur');
+    expect($block->data['author'] ?? null)->toBeNull();
 });
 
 it('rejette une citation sans contenu', function () {
