@@ -1,5 +1,7 @@
 # PASSATION TECHNIQUE : cms-cidst (version du 16 novembre 2026, 14 h)
 
+> **Mise à jour du 18 novembre 2026 :** l'état du dépôt, les tags, les lots récents (favicon, modèle d'environnement de production, e-mail de contact) et l'ordre de reprise sont dans `docs/passation-44.md`, qui prime sur les sections 1, 9 et 10 ci-dessous.
+
 Remplace entièrement la version du 16 novembre 2026, 10 h (master 82d4759). Depuis : lots 3h-1d (emplacements de menu), 3d-4c (préréglages de couleurs) et 3h-1d-3 (réseaux sociaux) fusionnés ; lot 3f-1 (couleurs d'erreur) en cours, local seulement. La section 11 liste les écarts constatés à la relecture du code de master aa77d95.
 
 Convention : [A VERIFIER] = non confirmé par une exécution. En cas de conflit entre ce document, le code et les tests, le code et les tests font foi.
