@@ -16,7 +16,7 @@ Depot : github.com/koaba/cms-cidst (branche principale : master). Poste du clien
 
 ## 2. Etat git
 
-Etat de reference : tag `stable-2026-11-18-dashstats` (b6c5a0c). Les commits posterieurs sont de la documentation uniquement (`docs/passation-45`, puis ses corrections). Dernier Pest complet : 1752 tests, 5186 assertions, verts (212 s, 4 processus). Pint (567 fichiers) et Larastan : sans erreur. Tests JS : 32 verts.
+Etat de reference : tag `stable-2026-11-18-audiencednt` (0737cd8). Les commits posterieurs sont de la documentation uniquement. Dernier Pest complet : 1756 tests, 5194 assertions, verts (272 s, 4 processus). Pint et Larastan : sans erreur (hook de push). Tests JS : 32 verts.
 
 Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026-11-18-*`, suffixe de date garde par convention) :
 
@@ -37,6 +37,7 @@ Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026
 | mediafeedback | 8124c27 |
 | slugredirects | 445112c |
 | dashstats | b6c5a0c |
+| audiencednt | 0737cd8 |
 
 ## 3. Hooks Husky
 
@@ -52,6 +53,7 @@ Les rubriques de la passation #44 restent valables (gabarits, menu admin, themes
 - **Ordre des medias.** `App\Traits\HasOrderedMediaCollection::reorderMedia(array $orderedIds)` (ids etrangers ignores, places du groupe conservees, renumerotation de 0 a n-1, transaction), appelee par `MediaOrderController::update()`. Retour d'erreur visible dans l'interface : logique testable dans `resources/js/admin/media-reorder-lib.js` (tests node), zone d'erreur rendue et masquee par defaut dans `x-admin.media-reorder-list`.
 - **Tableau de bord.** `DashboardStatsService` (`app/Services/Dashboard/`) : les cartes Articles et Pages utilisent le scope `publiclyVisible()` (contenus programmes et brouillons exclus) ; `views_30d` supprime ; les graphiques sont groupes en SQL (`SqlDate::bucket` + `groupBy`, `DashboardSqlTest`). Test : `tests/Feature/DashboardCountsTest.php`.
 - **Typage des relations Eloquent.** Larastan ne resout `$modele->relation` que si la methode a un type de retour natif ET un docblock generique : `/** @return BelongsTo<Page, $this> */ public function page(): BelongsTo`. Sans cela : `property.notFound` puis `method.notFound` sur le resultat.
+- **Audience : respect du refus de suivi.** `TrackVisit` n'enregistre aucune visite quand la requete porte `DNT: 1` ou `Sec-GPC: 1` (methode `refusesTracking()`). Le hash visiteur est `hash_hmac('sha256', IP|navigateur|date, APP_KEY)`, renouvele chaque jour. Tests : `tests/Feature/AudienceDoNotTrackTest.php` (4 tests, 4 mutations rouges).
 
 ## 5. Methode de travail (a respecter)
 
@@ -72,6 +74,7 @@ Les rubriques de la passation #44 restent valables (gabarits, menu admin, themes
 - `mediafeedback` : l'echec du glisser-deposer est maintenant affiche (message par statut : 422, 419, 403, autres, echec reseau).
 - `slugredirects` : redirection 301 depuis un ancien slug de page (voir section 4).
 - `dashstats` : cartes Articles et Pages sans les contenus programmes ; `views_30d` supprime.
+- `audiencednt` : l'Audience respecte DNT et Sec-GPC ; hash visiteur en HMAC.
 - Audit des listes ordonnees : aucun autre endpoint n'a le defaut d'ordre du Page Builder.
 
 Correction de la passation precedente : les graphiques du tableau de bord etaient deja calcules en SQL (ils ne l'etaient plus en memoire).
@@ -91,7 +94,7 @@ Verifie le 19/11, sans code a ecrire :
 - Pest `--profile` : 473 s en sequentiel, 212 a 252 s en 4 processus. Les 10 tests les plus lents ne pesent que 13 % du total (`SourceEncodingTest` 8 s, `AdminPageTitlesTest` 6,6 s, puis `ConvertExistingImagesTest`). Pas de point chaud : la duree vient de la masse (1752 tests, environ 0,27 s chacun). Aucun lot de performance a faire.
 
 Dette reelle restante :
-- Audience : domaine sensible a la vie privee, confidentialite a durcir.
+- Audience : DNT, Sec-GPC et HMAC faits (lot audiencednt). Reste a decider : anonymiser `visitor_hash` avant 13 mois (decision de conception ; risque faible tant que APP_KEY reste secret dans le `.env` du serveur).
 - Commandes Artisan au role non relu [non verifie] : AuditPhantomColumnBlocks, BackfillMediaDimensions, BackfillMediaVariants, InstallWatermarkLogo, MigrateArticlesToMedia, MigrateSlidersToMedia, MigrateVideosToMedia, PruneUnusedMedia.
 ## 8. A trancher avant la mise en ligne
 
