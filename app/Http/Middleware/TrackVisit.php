@@ -16,6 +16,7 @@ use Throwable;
  * un hash (IP + navigateur + date du jour + APP_KEY) qui change chaque jour, donc
  * impossible de suivre une personne d'un jour a l'autre. Le chemin est enregistre
  * sans sa query string (une recherche ne laisse aucune trace).
+ * Les visiteurs qui envoient DNT: 1 ou Sec-GPC: 1 ne sont pas comptes.
  */
 class TrackVisit
 {
@@ -28,7 +29,7 @@ class TrackVisit
         $response = $next($request);
         $agent = (string) $request->userAgent();
 
-        if (! $request->isMethod('GET') || ! $response->isSuccessful() || $request->user() !== null || $this->isBot($agent) || ! $this->isTracked($request)) {
+        if (! $request->isMethod('GET') || ! $response->isSuccessful() || $request->user() !== null || $this->isBot($agent) || $this->refusesTracking($request) || ! $this->isTracked($request)) {
             return $response;
         }
 
@@ -46,6 +47,12 @@ class TrackVisit
         return (bool) preg_match(self::BOT_PATTERN, $agent);
     }
 
+    /** Signaux de refus du suivi : Do Not Track et Global Privacy Control. */
+    private function refusesTracking(Request $request): bool
+    {
+        return $request->headers->get('DNT') === '1' || $request->headers->get('Sec-GPC') === '1';
+    }
+
     private function isTracked(Request $request): bool
     {
         return Str::is(self::TRACKED_ROUTES, (string) $request->route()?->getName());
@@ -55,7 +62,7 @@ class TrackVisit
     {
         SiteVisit::create([
             'path' => Str::limit('/'.ltrim($request->path(), '/'), 255, ''),
-            'visitor_hash' => hash('sha256', $request->ip().'|'.$agent.'|'.now()->toDateString().'|'.config('app.key')),
+            'visitor_hash' => hash_hmac('sha256', $request->ip().'|'.$agent.'|'.now()->toDateString(), (string) config('app.key')),
             'referrer_host' => $this->referrerHost($request),
             'device' => preg_match('/Mobile|Android|iPhone|iPad/i', $agent) ? 'mobile' : 'desktop',
             'visited_at' => now(),
