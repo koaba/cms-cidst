@@ -76,6 +76,7 @@ Les rubriques de la passation #44 restent valables (gabarits, menu admin, themes
 - `slugredirects` : redirection 301 depuis un ancien slug de page (voir section 4).
 - `dashstats` : cartes Articles et Pages sans les contenus programmes ; `views_30d` supprime.
 - `audiencednt` : l'Audience respecte DNT et Sec-GPC ; hash visiteur en HMAC.
+- `deployerclic` : installation et deploiement sur VPS Ubuntu 24.04. `scripts/install-serveur.sh` (relancable pour mettre a jour), `scripts/deployer.ps1` et `.bat` (un clic depuis Windows : build, envoi, installation), `docs/installation-serveur.md`, `DeploymentScriptsTest`. Jamais execute en reel [non verifie].
 - `createsuperadmin` : commande `app:create-super-admin` (service `SuperAdminCreator`, 7 tests, mutation rouge). Elle cree aussi les roles Super Admin et Publication, que seul `DatabaseSeeder` creait ; refuse si un Super Admin existe deja ; mot de passe a changer a la premiere connexion.
 - Audit des listes ordonnees : aucun autre endpoint n'a le defaut d'ordre du Page Builder.
 
