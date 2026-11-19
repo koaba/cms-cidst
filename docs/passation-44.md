@@ -18,9 +18,9 @@ Poste du client : Windows, Laragon, PowerShell 5, dossier `C:\laragon\www\larave
 
 Hooks Husky : pre-commit = lint PHP des fichiers modifiés. pre-push = Pint, Larastan, puis Pest complet (4 processus, 350 à 460 s).
 
-## 2. État git au 18/11/2026
+## 2. État git au 19/11/2026
 
-master = origin/master = aa89bb3 (fusion de `test/contact-alert-contenu`). Dernier Pest complet : 1730 tests, 5089 assertions, tous verts. Pint et Larastan sans erreur.
+master = origin/master = ab8dd9f (fusion de `test/footer-telephone-enregistre`, état du 19/11/2026). Dernier Pest complet : 1733 tests, 5115 assertions, tous verts (durée de 242 à 427 s selon les exécutions). Pint (560 fichiers) et Larastan sans erreur.
 
 Tags stables (posés après le push de master) :
 
@@ -28,10 +28,17 @@ Tags stables (posés après le push de master) :
 |---|---|
 | stable-2026-11-18-lot3f1b | 50c52a3 |
 | stable-2026-11-18-favicon | a25ac56 |
-| stable-2026-11-18-envprod | f3049ae (replacé par script, sortie non vue : vérifier avec `git rev-parse --short`) |
+| stable-2026-11-18-envprod | f3049ae (vérifié le 19/11 sur le dépôt distant) |
 | stable-2026-11-18-contactalert | aa89bb3 |
+| stable-2026-11-18-routes403 | ecbcf57 |
+| stable-2026-11-18-audience | 890b1a3 |
+| stable-2026-11-18-blocstests | 2ed4d8b |
+| stable-2026-11-18-convertwebp | 70f125f |
+| stable-2026-11-18-footertel | ab8dd9f |
 
-Les branches `feat/favicon-logo`, `feat/env-production-example` et `test/contact-alert-contenu` sont fusionnées et peuvent être supprimées.
+Les branches locales fusionnées ont été supprimées le 19/11. Les branches distantes correspondantes existent encore sur GitHub et peuvent être supprimées (`git push origin --delete ...`).
+
+Les tags de cette série gardent le suffixe de date 2026-11-18 par convention.
 
 ## 3. Méthode de travail
 
@@ -49,6 +56,8 @@ Pièges vécus (3 accidents le 18/11) :
 - Les variables `$env:` de test (APP_ENV=production, etc.) sont à retirer de la session après usage.
 - Format qui évite les erreurs : une seule instruction `& { ... }` avec `if ($LASTEXITCODE -ne 0) { ...; return }` après chaque étape, une fonction de mutation, et un contrôle que chaque mutation est rouge.
 - Erreur Windows « rename ... storage\framework\views ... Accès refusé (code 5) » : verrou antivirus/indexeur. Exclure `storage` dans Windows Security, `php artisan view:clear`, puis `view:cache`. Cause probable des durées de Pest très variables.
+- Le nettoyage de `storage\framework\testing` ne doit jamais supprimer `.gitignore` (fichier versionné) : sinon `git status` affiche `D` et l'arbre n'est plus propre. Utiliser `Get-ChildItem ... -Exclude '.gitignore'`.
+- Une mutation doit être contrôlée sur sa sensibilité : un test dont l'assertion est trop grossière (valeur arrondie, image trop compressible) reste vert sous mutation (cas du gain WebP, 19/11). Le script refuse alors de continuer.
 
 ## 4. Architecture (vérifiée dans le code)
 
@@ -80,19 +89,19 @@ Pièges vécus (3 accidents le 18/11) :
 
 ## 5. Tests : revue du 18/11 (analyse statique avant les derniers lots)
 
-Aucun skip, todo ou only. Aucun test réellement sans assertion (les 8 détectés étaient des attentes Mockery ou `->throws()`).
+Aucun skip, todo ou only, sauf une exception conditionnelle : le test d'orientation EXIF de `ConvertExistingImagesTest` s'ignore si l'extension `exif` est absente (elle est chargée sur le poste du client, vérifié le 19/11). Aucun test réellement sans assertion (les 8 détectés étaient des attentes Mockery ou `->throws()`).
 
 Assertions faibles à renforcer (45 tests n'ont que `assertOk`, `assertRedirect`, `assertSessionHasNoErrors` ou `assertSuccessful` ; la plupart sont légitimes). Priorité :
-- `AdminAudienceTest` « retombe sur 30 jours quand la période est invalide » : vérifier le repli réel, pas seulement le 200.
-- `ConvertExistingImagesTest` (3 tests) : contrôler les fichiers convertis.
-- `PageBlockSeparateurTest` et `PageBlockCitationTest` : vérifier la sauvegarde en base.
-- `PublicFooterContactTest` « formats usuels de numéro ».
+- Fait le 19/11 (tag `audience`) : `AdminAudienceTest` « retombe sur 30 jours quand la période est invalide », repli réel vérifié.
+- Fait le 19/11 (tag `convertwebp`) : `ConvertExistingImagesTest`. Aprés relecture, seul le test « annonce le gain » était faible ; les autres contrôlent déjà les fichiers sur le disque. Le gain affiché est désormais vérifié en valeur.
+- Fait le 19/11 (tag `blocstests`) : `PageBlockSeparateurTest` et `PageBlockCitationTest`, sauvegarde en base vérifiée.
+- Fait le 19/11 (tag `footertel`) : `PublicFooterContactTest` « formats usuels de numéro », valeur enregistrée vérifiée.
 
 Trous encore ouverts :
 - Logique JavaScript de l'invite du code de suppression (`page-builder.js`) : aucun test.
 - Intégration du Page Builder de bout en bout (édition puis affichage public).
-- Droits par rôle : auditer chaque route admin avec un test 403 pour Publication (26 tests de droits seulement).
-- Audience : 27 tests, domaine sensible à la vie privée, à renforcer.
+- Droits par rôle : fait le 19/11 (tag `routes403`), `AdminRouteAccessTest`, 3 tests (auth et rôle sur chaque route admin, redirection vers /login, 403 pour Publication sur les 45 routes Super Admin). Piège : le liage de modèle passe avant `CheckRole`, ce qui impose un `Route::bind` dans le test.
+- Audience : 27 tests, domaine sensible à la vie privée. Le repli de période est renforcé depuis le 19/11 ; reste à durcir la confidentialité (aucune IP ni user-agent stockés).
 - Condition de rôle de la section Raccourcis : couverte par `AdminMenuConfigTest` (`assertDontSee` sur `/admin` pour Publication), mutation jamais faite [non verifie].
 - Pest complet avec `--profile` pour isoler les tests lents et mesurer l'effet de l'exclusion antivirus.
 
@@ -114,9 +123,10 @@ Résolue : titre admin fixe, classes `gray-*` en dur (0 occurrence), balise `nav
 
 ## 8. Ordre recommandé pour la suite
 
-1. Vérifier le tag envprod (`git rev-parse --short stable-2026-11-18-envprod` doit donner f3049ae).
-2. Audit des routes admin et test 403 pour Publication, puis renforcement des assertions faibles listées en 5.
+1. Fait le 19/11 : tag envprod vérifié (f3049ae).
+2. Fait le 19/11 : audit des routes admin et test 403 pour Publication, puis renforcement des assertions faibles listées en 5.
 3. Test du Page Builder de bout en bout et du code de suppression côté JS.
+3 bis. Redirection depuis un ancien slug (SEO) : à faire avant la mise en ligne.
 4. Pest complet `--profile`.
 5. Trancher l'hébergement, le SMTP, le fuseau et les couleurs, puis déployer avec la procédure de la section 7.
 6. Dette de code (section 6), lot par lot.
