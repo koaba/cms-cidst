@@ -1,5 +1,7 @@
 # PASSATION TECHNIQUE #44 : CMS CIDST (18 novembre 2026)
 
+> **Mise a jour du 19 novembre 2026 :** l etat du depot, les lots du 19/11 et l ordre de reprise sont dans `docs/passation-45.md`, qui prime sur les sections 2, 6, 7 et 8 ci-dessous.
+
 Complète `docs/passation.md` (version du 16 novembre, qui garde le détail des rubriques 4.4 à 4.11 : coordonnées, pied de page, SEO, sécurité, recherche du menu, menus, réseaux sociaux). Ce document-ci donne l'état au 18 novembre et les lots postérieurs.
 
 Convention : [non verifie] = aucune sortie reçue ne l'a confirmé. En cas de conflit entre ce document, le code et les tests, le code et les tests font foi.
