@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "test:js": "node --test resources/js/public/contact-images.test.js",
+    "test:js": "node --test resources/js/public/contact-images.test.js resources/js/admin/page-builder.test.js",
     "prepare": "husky"
   },
   "devDependencies": {
