@@ -39,6 +39,7 @@
          data-reorder-url="{{ route('admin.media.reorder') }}"
          data-model-type="{{ $modelType }}"
          data-model-id="{{ $modelId }}">
+        <p class="hidden w-full text-sm text-error" role="alert" data-reorder-status></p>
         @foreach ($items as $media)
             @if ($variant === 'pdf')
                 <label class="flex items-center gap-2 text-sm border rounded px-3 py-2 bg-base-200 cursor-move" draggable="true" data-media-id="{{ $media->id }}">
