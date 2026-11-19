@@ -16,7 +16,7 @@ Depot : github.com/koaba/cms-cidst (branche principale : master). Poste du clien
 
 ## 2. Etat git
 
-Etat de reference : tag `stable-2026-11-18-audiencednt` (0737cd8). Les commits posterieurs sont de la documentation uniquement. Dernier Pest complet : 1756 tests, 5194 assertions, verts (272 s, 4 processus). Pint et Larastan : sans erreur (hook de push). Tests JS : 32 verts.
+Etat de reference : tag `stable-2026-11-19-createsuperadmin` (e907eb9). Les commits posterieurs sont de la documentation uniquement. Dernier Pest complet : 1763 tests, 5222 assertions, verts (321 s, 4 processus). Pint et Larastan : sans erreur (hook de push). Tests JS : 32 verts.
 
 Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026-11-18-*`, suffixe de date garde par convention) :
 
@@ -38,6 +38,7 @@ Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026
 | slugredirects | 445112c |
 | dashstats | b6c5a0c |
 | audiencednt | 0737cd8 |
+| stable-2026-11-19-createsuperadmin (serie du 19/11) | e907eb9 |
 
 ## 3. Hooks Husky
 
@@ -75,6 +76,7 @@ Les rubriques de la passation #44 restent valables (gabarits, menu admin, themes
 - `slugredirects` : redirection 301 depuis un ancien slug de page (voir section 4).
 - `dashstats` : cartes Articles et Pages sans les contenus programmes ; `views_30d` supprime.
 - `audiencednt` : l'Audience respecte DNT et Sec-GPC ; hash visiteur en HMAC.
+- `createsuperadmin` : commande `app:create-super-admin` (service `SuperAdminCreator`, 7 tests, mutation rouge). Elle cree aussi les roles Super Admin et Publication, que seul `DatabaseSeeder` creait ; refuse si un Super Admin existe deja ; mot de passe a changer a la premiere connexion.
 - Audit des listes ordonnees : aucun autre endpoint n'a le defaut d'ordre du Page Builder.
 
 Correction de la passation precedente : les graphiques du tableau de bord etaient deja calcules en SQL (ils ne l'etaient plus en memoire).
@@ -95,10 +97,11 @@ Verifie le 19/11, sans code a ecrire :
 
 Dette reelle restante :
 - Audience : DNT, Sec-GPC et HMAC faits (lot audiencednt). Reste a decider : anonymiser `visitor_hash` avant 13 mois (decision de conception ; risque faible tant que APP_KEY reste secret dans le `.env` du serveur).
+- `app:create-super-admin` demande le mot de passe avant de valider l'e-mail (confort, non bloquant).
 - Commandes Artisan au role non relu [non verifie] : AuditPhantomColumnBlocks, BackfillMediaDimensions, BackfillMediaVariants, InstallWatermarkLogo, MigrateArticlesToMedia, MigrateSlidersToMedia, MigrateVideosToMedia, PruneUnusedMedia.
 ## 8. A trancher avant la mise en ligne
 
-- Hebergement inconnu : procedure standard dans `docs/deploiement.md`. BLOCAGE : aucune commande ne cree le premier Super Admin (lot `app:create-super-admin` a faire avant la mise en ligne ; ne jamais lancer `db:seed` en production). Hebergement (cPanel, VPS ou autre) : conditionne le cron `schedule:run` chaque minute et la procedure (`composer install --no-dev`, `php artisan migrate --force`, `config:cache`, `view:cache`). Verifier poppler (`pdftoppm`) et les limites PHP des images jointes.
+- Hebergement inconnu : procedure standard dans `docs/deploiement.md`. Premier Super Admin : `php artisan app:create-super-admin <email>` (lot createsuperadmin, fait) ; ne jamais lancer `db:seed` en production. Hebergement (cPanel, VPS ou autre) : conditionne le cron `schedule:run` chaque minute et la procedure (`composer install --no-dev`, `php artisan migrate --force`, `config:cache`, `view:cache`). Verifier poppler (`pdftoppm`) et les limites PHP des images jointes.
 - Envoi SMTP reel jamais eprouve (seul `MAIL_MAILER=log` utilise) : plus gros risque. Le mot de passe d'application Google va dans le `.env` du serveur uniquement.
 - Fuseau : TRANCHE le 19/11 : Indian/Antananarivo (deja la valeur par defaut du code et des modeles .env).
 - Couleurs de marque : TRANCHE le 19/11 : #C41E2A / #17181A (deja dans le code ; plus proche du rouge du logo, contraste 5,89). Aucun changement de code.
@@ -106,7 +109,7 @@ Dette reelle restante :
 
 ## 9. Ordre recommande
 
-1. Trancher hebergement, SMTP, fuseau et couleurs (section 8) : ce sont les seuls blocages restants, aucun n'est technique.
+1. Trancher hebergement et SMTP (fuseau et couleurs sont tranches, premier admin fait ; section 8) : ce sont les seuls blocages restants, aucun n'est technique.
 2. Lot « premier vrai envoi d'e-mail de contact » (SMTP reel, mot de passe d'application Google dans le `.env` du serveur uniquement).
 3. Durcir la confidentialite de l'Audience ; relire le role des commandes Artisan de rattrapage.
 4. Deployer avec la procedure de la section 8.
