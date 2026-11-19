@@ -40,6 +40,8 @@ Dossier `C:\laragon\www\laravel-academy`, sur `master` propre et poussee :
 
 ## 5. Premiere installation (dans l'ordre)
 
+Raccourci pour un VPS Ubuntu 24.04 : `scripts/install-serveur.sh` fait les points 1 a 11 ci-dessous, et `scripts/deployer.bat` le lance depuis Windows en un clic (voir `docs/installation-serveur.md`) [non verifie en reel].
+
 1. Recuperer le code sur le serveur : `git clone https://github.com/koaba/cms-cidst`, puis `git checkout <tag stable>`.
 2. `composer install --no-dev --optimize-autoloader` : installe les dependances sans les outils de test.
 3. Envoyer `public/build/` (compile en 4) dans `public/build/` du serveur.
