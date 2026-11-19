@@ -6,6 +6,7 @@ use App\Models\Media;
 use App\Services\MediaOverviewService;
 use App\Services\MediaUploader;
 use Closure;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -89,6 +90,29 @@ trait HasOrderedMediaCollection
 
             $this->media()->attach($media->id, ['order' => $order++]);
         }
+    }
+
+    /**
+     * Reordonne la galerie du modele. Les ids recus (ordre du glisser-deposer)
+     * peuvent ne couvrir qu'un groupe (images seules, PDF seuls) : ils reprennent
+     * les places de ce groupe, les autres medias gardent leur position relative.
+     * Les ids etrangers au modele sont ignores. Les positions sont renumerotees
+     * de 0 a n-1, ce qui resorbe les doublons d'ordre.
+     *
+     * @param  array<int, int|string>  $orderedIds
+     */
+    public function reorderMedia(array $orderedIds): void
+    {
+        $current = $this->media()->orderBy('media.id')->pluck('media.id')->map(fn ($id) => (int) $id)->all();
+        $queue = array_values(array_intersect(array_unique(array_map('intval', $orderedIds)), $current));
+        $subset = array_flip($queue);
+
+        DB::transaction(function () use ($current, $queue, $subset): void {
+            foreach ($current as $position => $mediaId) {
+                $target = isset($subset[$mediaId]) ? array_shift($queue) : $mediaId;
+                $this->media()->updateExistingPivot($target, ['order' => $position]);
+            }
+        });
     }
 
     public function detachOwnedMedia(array $mediaIds): void
