@@ -8,6 +8,8 @@ use App\Contracts\HasPublicUrl;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Str;
 
 class Page extends Model implements HasPublicUrl
@@ -63,6 +65,31 @@ class Page extends Model implements HasPublicUrl
         return $this->isPubliclyVisible() ? 'published' : 'scheduled';
     }
 
+    /** @return HasMany<PageSlugRedirect, $this> */
+    public function slugRedirects(): HasMany
+    {
+        return $this->hasMany(PageSlugRedirect::class);
+    }
+
+    /**
+     * Un ancien slug (page renommee) redirige en 301 vers l'adresse actuelle.
+     * Une page non publique ne revele pas sa nouvelle adresse : 404 comme avant.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $page = parent::resolveRouteBinding($value, $field);
+
+        if ($page === null && $field === 'slug') {
+            $target = PageSlugRedirect::where('old_slug', $value)->first()?->page;
+
+            if ($target?->isPubliclyVisible()) {
+                throw new HttpResponseException(redirect()->to($target->publicUrl(), 301));
+            }
+        }
+
+        return $page;
+    }
+
     public function publicUrl(): string
     {
         return route('pages.show', $this);
@@ -71,6 +98,14 @@ class Page extends Model implements HasPublicUrl
     protected static function boot()
     {
         parent::boot();
+        static::updated(function ($page) {
+            if (! $page->wasChanged('slug')) {
+                return;
+            }
+
+            PageSlugRedirect::where('old_slug', $page->slug)->delete();
+            PageSlugRedirect::updateOrCreate(['old_slug' => $page->getOriginal('slug')], ['page_id' => $page->id]);
+        });
         static::creating(function ($page) {
             $baseSlug = Str::slug($page->slug ?: $page->title);
             $slug = $baseSlug;
