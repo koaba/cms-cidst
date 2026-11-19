@@ -84,8 +84,12 @@ class PageBuilderController extends Controller
     {
         $payload = $request->validated();
 
+        // validated() reconstruit le tableau regle par regle : un nouveau bloc (sans id) arrive apres les blocs qui en ont.
+        // On remet les blocs dans l'ordre du payload (cles numeriques) avant de synchroniser.
+        $items = collect($payload['blocks'])->sortKeys()->values()->all();
+
         try {
-            $blocks = $sync->sync($page, $payload['blocks'], $payload['version'] ?? null, function () use ($request, $verifier) {
+            $blocks = $sync->sync($page, $items, $payload['version'] ?? null, function () use ($request, $verifier) {
                 $error = $verifier->check($request);
 
                 if ($error !== null) {
