@@ -16,7 +16,7 @@ Depot : github.com/koaba/cms-cidst (branche principale : master). Poste du clien
 
 ## 2. Etat git
 
-master = origin/master = b6c5a0c (fusion --no-ff de `fix/dashboard-stats-clean`), avant le lot documentation en cours. Dernier Pest complet : 1752 tests, 5186 assertions, verts (212 s, 4 processus). Pint (567 fichiers) et Larastan : sans erreur. Tests JS : 32 verts.
+Etat de reference : tag `stable-2026-11-18-dashstats` (b6c5a0c). Les commits posterieurs sont de la documentation uniquement (`docs/passation-45`, puis ses corrections). Dernier Pest complet : 1752 tests, 5186 assertions, verts (212 s, 4 processus). Pint (567 fichiers) et Larastan : sans erreur. Tests JS : 32 verts.
 
 Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026-11-18-*`, suffixe de date garde par convention) :
 
@@ -48,7 +48,7 @@ Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026
 
 Les rubriques de la passation #44 restent valables (gabarits, menu admin, themes, contact, tableau de bord, code de suppression, Page Builder, Audience, environnement, taches planifiees). Ajouts et precisions du 19/11 :
 
-- **Redirection d'ancien slug (SEO).** Table `page_slug_redirects` (`page_id`, `old_slug`), modele `App\Models\PageSlugRedirect` (relation `page()`). `Page::resolveRouteBinding()` redirige en 301 vers l'adresse actuelle quand le slug demande est un ancien slug ET que la page cible est publiquement visible ; sinon 404 comme avant. Le hook `updated` de `Page` enregistre l'ancien slug, retire la redirection quand la page reprend un ancien slug, et pointe tous les anciens slugs directement vers la page (pas de chaine). Tests : `tests/Feature/PageSlugRedirectTest.php` (7 tests). Couvre Page seulement : Article n'a pas ce mecanisme [non verifie].
+- **Redirection d'ancien slug (SEO).** Table `page_slug_redirects` (`page_id`, `old_slug`), modele `App\Models\PageSlugRedirect` (relation `page()`). `Page::resolveRouteBinding()` redirige en 301 vers l'adresse actuelle quand le slug demande est un ancien slug ET que la page cible est publiquement visible ; sinon 404 comme avant. Le hook `updated` de `Page` enregistre l'ancien slug, retire la redirection quand la page reprend un ancien slug, et pointe tous les anciens slugs directement vers la page (pas de chaine). Tests : `tests/Feature/PageSlugRedirectTest.php` (7 tests). Les articles n'en ont pas besoin : leur slug est genere a la creation seulement et n'est pas modifiable dans l'administration.
 - **Ordre des medias.** `App\Traits\HasOrderedMediaCollection::reorderMedia(array $orderedIds)` (ids etrangers ignores, places du groupe conservees, renumerotation de 0 a n-1, transaction), appelee par `MediaOrderController::update()`. Retour d'erreur visible dans l'interface : logique testable dans `resources/js/admin/media-reorder-lib.js` (tests node), zone d'erreur rendue et masquee par defaut dans `x-admin.media-reorder-list`.
 - **Tableau de bord.** `DashboardStatsService` (`app/Services/Dashboard/`) : les cartes Articles et Pages utilisent le scope `publiclyVisible()` (contenus programmes et brouillons exclus) ; `views_30d` supprime ; les graphiques sont groupes en SQL (`SqlDate::bucket` + `groupBy`, `DashboardSqlTest`). Test : `tests/Feature/DashboardCountsTest.php`.
 - **Typage des relations Eloquent.** Larastan ne resout `$modele->relation` que si la methode a un type de retour natif ET un docblock generique : `/** @return BelongsTo<Page, $this> */ public function page(): BelongsTo`. Sans cela : `property.notFound` puis `method.notFound` sur le resultat.
@@ -78,15 +78,21 @@ Correction de la passation precedente : les graphiques du tableau de bord etaien
 
 ## 7. Dette et trous ouverts
 
-- Bloc d'upload d'image duplique dans `Admin\PageController` (refactor a couvrir par test avant extraction).
-- Periodes de l'Audience dupliquees par rapport a `DashboardPeriod`.
-- Audience : domaine sensible a la vie privee, confidentialite a durcir.
-- Redirection d'ancien slug : seulement pour les pages ; a etendre aux articles si leur slug est modifiable [non verifie].
-- Condition de role de la section Raccourcis : mutation jamais faite [non verifie].
-- Pest complet avec `--profile` pour isoler les tests lents.
-- Commandes Artisan au role non relu [non verifie] : AuditPhantomColumnBlocks, BackfillMediaDimensions, BackfillMediaVariants, InstallWatermarkLogo, MigrateArticlesToMedia, MigrateSlidersToMedia, MigrateVideosToMedia, PruneUnusedMedia.
-- Branches distantes mergees a supprimer (`git push origin --delete`) : docs/passation-19-11, docs/passation-44, feat/env-production-example, feat/favicon-logo, fix/media-reorder, fix/media-reorder-feedback, test/admin-route-access, test/audience-periode-invalide, test/blocs-separateur-citation, test/contact-alert-contenu, test/convert-webp-gain-reel, test/footer-telephone-enregistre, test/page-builder-bout-en-bout, test/page-builder-js (a verifier avec `git merge-base --is-ancestor`).
+Corrections apres relecture du code (19/11, apres-midi) : ces points de la passation precedente sont SANS OBJET.
+- Graphiques du tableau de bord en memoire : deja groupes en SQL (`SqlDate::bucket`, `DashboardSqlTest`).
+- `views_30d` : supprime (lot dashstats). Carte Pages et carte Articles : corrigees (lot dashstats).
+- Periodes de l'Audience dupliquees : deja mutualisees, le controleur et la vue utilisent `DashboardPeriod`.
+- Bloc d'upload d'image de `Admin\PageController` : il ne reste que 2 lignes d'appel (`fromUpload` puis `attach`), la logique est dans `MediaUploader`. Refactor sans gain.
+- Redirection d'ancien slug pour les articles : inutile, leur slug n'est pas modifiable.
+- Branches distantes mergees : supprimees le 19/11, seule `master` subsiste (distant et local).
 
+Verifie le 19/11, sans code a ecrire :
+- Condition de role des Raccourcis : trois consommateurs de `config/admin_menu.php` portent la condition (vue du tableau de bord, sidebar, `GuideController`). Mutation de chacun en « toujours vrai » : 3 rouges, 0 trou.
+- Pest `--profile` : 473 s en sequentiel, 212 a 252 s en 4 processus. Les 10 tests les plus lents ne pesent que 13 % du total (`SourceEncodingTest` 8 s, `AdminPageTitlesTest` 6,6 s, puis `ConvertExistingImagesTest`). Pas de point chaud : la duree vient de la masse (1752 tests, environ 0,27 s chacun). Aucun lot de performance a faire.
+
+Dette reelle restante :
+- Audience : domaine sensible a la vie privee, confidentialite a durcir.
+- Commandes Artisan au role non relu [non verifie] : AuditPhantomColumnBlocks, BackfillMediaDimensions, BackfillMediaVariants, InstallWatermarkLogo, MigrateArticlesToMedia, MigrateSlidersToMedia, MigrateVideosToMedia, PruneUnusedMedia.
 ## 8. A trancher avant la mise en ligne
 
 - Hebergement inconnu (cPanel, VPS ou autre) : conditionne le cron `schedule:run` chaque minute et la procedure (`composer install --no-dev`, `php artisan migrate --force`, `config:cache`, `view:cache`). Verifier poppler (`pdftoppm`) et les limites PHP des images jointes.
@@ -97,12 +103,11 @@ Correction de la passation precedente : les graphiques du tableau de bord etaien
 
 ## 9. Ordre recommande
 
-1. Nettoyer les branches distantes mergees.
-2. Dette de code, lot par lot (upload d'image de `Admin\PageController`, periodes de l'Audience, redirection d'ancien slug pour les articles).
-3. Pest complet `--profile`.
-4. Trancher hebergement, SMTP, fuseau, couleurs ; deployer ; commencer par un vrai envoi d'e-mail de contact.
+1. Trancher hebergement, SMTP, fuseau et couleurs (section 8) : ce sont les seuls blocages restants, aucun n'est technique.
+2. Lot « premier vrai envoi d'e-mail de contact » (SMTP reel, mot de passe d'application Google dans le `.env` du serveur uniquement).
+3. Durcir la confidentialite de l'Audience ; relire le role des commandes Artisan de rattrapage.
+4. Deployer avec la procedure de la section 8.
 5. Apres la mise en ligne : themes Clair, Sombre et fetes (lots 3e, 3e-bis).
-
 ## 10. Pieges connus
 
 - Coller deux commandes sans saut de ligne les fond en une : un seul bloc par collage, puis une Entree de plus. Ne jamais coller de sortie de tests ni de code d'un autre langage dans PowerShell hors d'un here-string.
