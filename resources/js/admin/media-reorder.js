@@ -1,21 +1,19 @@
-function persistOrder(container) {
-    const url = container.dataset.reorderUrl;
-    const modelType = container.dataset.modelType;
-    const modelId = container.dataset.modelId;
-    const orderedIds = [...container.querySelectorAll('[data-media-id]')]
-        .map(el => parseInt(el.dataset.mediaId, 10));
+import { readOrderedIds, reorderPayload, saveOrder } from './media-reorder-lib.js';
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
-            Accept: 'application/json',
-        },
-        body: JSON.stringify({ mediable_type: modelType, mediable_id: modelId, ordered_ids: orderedIds }),
-    }).catch(() => console.error('Échec de la sauvegarde de l\'ordre des médias.'));
+async function persistOrder(container) {
+    const status = container.querySelector('[data-reorder-status]');
+    const orderedIds = readOrderedIds(container.querySelectorAll('[data-media-id]'));
+    const message = await saveOrder({
+        url: container.dataset.reorderUrl,
+        token: document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+        payload: reorderPayload(container.dataset.modelType, container.dataset.modelId, orderedIds),
+    });
+
+    if (!status) return;
+
+    status.textContent = message;
+    status.classList.toggle('hidden', message === '');
 }
-
 function attachReorder(container) {
     let draggedEl = null;
 
