@@ -31,11 +31,10 @@ class DashboardStatsService
             : PageView::whereBetween('viewed_at', [$period->previousStart(), $period->start()->subSecond()])->count();
 
         $stats = [
-            'articles' => Article::where('is_published', true)->count(),
-            'pages' => Page::where('is_published', true)->count(),
+            'articles' => Article::publiclyVisible()->count(),
+            'pages' => Page::publiclyVisible()->count(),
             'sliders' => Slider::count(),
             'users' => User::count(),
-            'views_30d' => PageView::where('viewed_at', '>=', now()->subDays(30))->count(),
             'views_period' => $viewsPeriod,
             'views_previous' => $viewsPrevious,
             'views_variation' => DashboardPeriod::variation($viewsPeriod, $viewsPrevious),
