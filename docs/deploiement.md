@@ -63,7 +63,16 @@ Il declenche : `page-views:prune` (hebdomadaire), `audience:prune`, `contact:pru
 
 ## 7. Roles et premier administrateur
 
-Constat du 19/11/2026 : aucune commande ne cree le premier Super Admin. Le seeder principal est reserve au developpement. Un lot dedie (`app:create-super-admin`, avec test) est prevu avant la mise en ligne. Tant qu'il n'existe pas, ne pas deployer en production.
+Sur une base vierge (apres `php artisan migrate --force`), aucun compte n'existe. Creer le premier Super Admin :
+
+    php artisan app:create-super-admin admin@exemple.mg --name="Nom Prenom"
+
+- Le mot de passe est demande en saisie masquee, avec confirmation. L'option `--generate` en produit un aleatoire, affiche une seule fois.
+- La commande cree aussi les roles Super Admin et Publication (le seeder n'est pas lance en production).
+- Le mot de passe devra etre change a la premiere connexion.
+- Elle refuse de s'executer si un Super Admin existe deja : les autres comptes se creent ensuite dans l'administration (menu Utilisateurs).
+- Ne PAS lancer `php artisan db:seed` en production.
+- Execution reelle sur le serveur : [non verifie] (les tests passent, tag `stable-2026-11-19-createsuperadmin`).
 
 ## 8. E-mail de contact (SMTP, exemple Gmail)
 
