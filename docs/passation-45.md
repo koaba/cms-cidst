@@ -103,6 +103,8 @@ Dette reelle restante :
 - Commandes Artisan au role non relu [non verifie] : AuditPhantomColumnBlocks, BackfillMediaDimensions, BackfillMediaVariants, InstallWatermarkLogo, MigrateArticlesToMedia, MigrateSlidersToMedia, MigrateVideosToMedia, PruneUnusedMedia.
 ## 8. A trancher avant la mise en ligne
 
+Essai de deploiement prevu sur un serveur gratuit jetable APRES la fin des designs (decision du 19/11, voir section 9).
+
 - Hebergement inconnu : procedure standard dans `docs/deploiement.md`. Premier Super Admin : `php artisan app:create-super-admin <email>` (lot createsuperadmin, fait) ; ne jamais lancer `db:seed` en production. Hebergement (cPanel, VPS ou autre) : conditionne le cron `schedule:run` chaque minute et la procedure (`composer install --no-dev`, `php artisan migrate --force`, `config:cache`, `view:cache`). Verifier poppler (`pdftoppm`) et les limites PHP des images jointes.
 - Envoi SMTP reel jamais eprouve (seul `MAIL_MAILER=log` utilise) : plus gros risque. Le mot de passe d'application Google va dans le `.env` du serveur uniquement.
 - Fuseau : TRANCHE le 19/11 : Indian/Antananarivo (deja la valeur par defaut du code et des modeles .env).
@@ -111,11 +113,14 @@ Dette reelle restante :
 
 ## 9. Ordre recommande
 
-1. Trancher hebergement et SMTP (fuseau et couleurs sont tranches, premier admin fait ; section 8) : ce sont les seuls blocages restants, aucun n'est technique.
-2. Lot « premier vrai envoi d'e-mail de contact » (SMTP reel, mot de passe d'application Google dans le `.env` du serveur uniquement).
-3. Durcir la confidentialite de l'Audience ; relire le role des commandes Artisan de rattrapage.
-4. Deployer avec la procedure de la section 8.
-5. Apres la mise en ligne : themes Clair, Sombre et fetes (lots 3e, 3e-bis).
+DECISION du 19/11 : le deploiement est d'abord TESTE sur un serveur gratuit et jetable, une fois le projet termine cote design (themes compris). Ne pas lancer l'essai avant.
+
+1. Finir les designs : themes Clair, Sombre et fetes (lots 3e, 3e-bis), puis les controles navigateur (Audience, Messages, Guide, favicon). Auparavant prevu apres la mise en ligne ; deplace sur decision du 19/11.
+2. ESSAI DE DEPLOIEMENT sur un serveur gratuit jetable, avec `scripts\deployer.bat` et `docs/installation-serveur.md`. Il faut : Ubuntu 24.04, acces root ou sudo, et un domaine ou sous-domaine pointe sur le serveur (sans domaine, l'installation se termine sans HTTPS). Conditions des offres gratuites non verifiees. Les scripts n'ont jamais ete executes en reel : consigner ici chaque ecart constate. A valider : installation, build envoye, `app:check-environment`, premier admin, mise a jour par relance du script, formulaire de contact.
+3. Trancher l'hebergement definitif et le SMTP (section 8).
+4. Lot « premier vrai envoi d'e-mail de contact » (SMTP reel, mot de passe d'application Google dans le `.env` du serveur uniquement).
+5. Durcir la confidentialite de l'Audience ; relire le role des commandes Artisan de rattrapage.
+6. Deployer en production avec la procedure de `docs/deploiement.md`.
 ## 10. Pieges connus
 
 - Coller deux commandes sans saut de ligne les fond en une : un seul bloc par collage, puis une Entree de plus. Ne jamais coller de sortie de tests ni de code d'un autre langage dans PowerShell hors d'un here-string.
