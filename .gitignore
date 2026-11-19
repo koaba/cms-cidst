@@ -36,3 +36,6 @@ test_output*.txt
 /sitemap_*.txt
 /CIDST-PASSATION-TECHNIQUE.md
 /PASSATION.md
+
+# Acces au serveur de deploiement (secrets, jamais commites)
+scripts/deployer.config.json
