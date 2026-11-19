@@ -16,7 +16,7 @@ Depot : github.com/koaba/cms-cidst (branche principale : master). Poste du clien
 
 ## 2. Etat git
 
-Etat de reference : tag `stable-2026-11-19-createsuperadmin` (e907eb9). Les commits posterieurs sont de la documentation uniquement. Dernier Pest complet : 1763 tests, 5222 assertions, verts (321 s, 4 processus). Pint et Larastan : sans erreur (hook de push). Tests JS : 32 verts.
+Etat de reference : tag `stable-2026-11-19-deployerclic` (c12bb08). Les commits posterieurs sont de la documentation uniquement. Dernier Pest complet : 1769 tests, 5231 assertions, verts (270 s, 4 processus). Pint et Larastan : sans erreur (hook de push). Tests JS : 32 verts.
 
 Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026-11-18-*`, suffixe de date garde par convention) :
 
@@ -39,6 +39,7 @@ Tags stables poses apres la ligne `master -> master` du push (serie `stable-2026
 | dashstats | b6c5a0c |
 | audiencednt | 0737cd8 |
 | stable-2026-11-19-createsuperadmin (serie du 19/11) | e907eb9 |
+| stable-2026-11-19-deployerclic (serie du 19/11) | c12bb08 |
 
 ## 3. Hooks Husky
 
