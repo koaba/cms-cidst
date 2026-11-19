@@ -98,10 +98,10 @@ Dette reelle restante :
 - Commandes Artisan au role non relu [non verifie] : AuditPhantomColumnBlocks, BackfillMediaDimensions, BackfillMediaVariants, InstallWatermarkLogo, MigrateArticlesToMedia, MigrateSlidersToMedia, MigrateVideosToMedia, PruneUnusedMedia.
 ## 8. A trancher avant la mise en ligne
 
-- Hebergement inconnu (cPanel, VPS ou autre) : conditionne le cron `schedule:run` chaque minute et la procedure (`composer install --no-dev`, `php artisan migrate --force`, `config:cache`, `view:cache`). Verifier poppler (`pdftoppm`) et les limites PHP des images jointes.
+- Hebergement inconnu : procedure standard dans `docs/deploiement.md`. BLOCAGE : aucune commande ne cree le premier Super Admin (lot `app:create-super-admin` a faire avant la mise en ligne ; ne jamais lancer `db:seed` en production). Hebergement (cPanel, VPS ou autre) : conditionne le cron `schedule:run` chaque minute et la procedure (`composer install --no-dev`, `php artisan migrate --force`, `config:cache`, `view:cache`). Verifier poppler (`pdftoppm`) et les limites PHP des images jointes.
 - Envoi SMTP reel jamais eprouve (seul `MAIL_MAILER=log` utilise) : plus gros risque. Le mot de passe d'application Google va dans le `.env` du serveur uniquement.
-- Fuseau : Indian/Antananarivo (projet) ou Africa/Nairobi (client) ; meme decalage.
-- Couleurs de marque : #E80000 / #1A1A1A contre #C41E2A / #17181A.
+- Fuseau : TRANCHE le 19/11 : Indian/Antananarivo (deja la valeur par defaut du code et des modeles .env).
+- Couleurs de marque : TRANCHE le 19/11 : #C41E2A / #17181A (deja dans le code ; plus proche du rouge du logo, contraste 5,89). Aucun changement de code.
 - Controles dans le navigateur declares faits par le client, resultats non vus : Audience, Messages, Guide (Super Admin puis Publication), favicon sur /, /login, /admin, /profile.
 
 ## 9. Ordre recommande
