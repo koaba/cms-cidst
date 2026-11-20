@@ -10,6 +10,7 @@ import {
     PointElement,
     Tooltip,
 } from 'chart.js';
+import { chartColors, chartOptions } from './chart-theme-lib.js';
 
 Chart.register(
     BarController,
@@ -23,10 +24,10 @@ Chart.register(
     Tooltip,
 );
 
-const baseOptions = {
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-};
+// Couleurs du theme actif (Clair, Sombre, Bordeaux...) lues sur <html>.
+const rootStyle = getComputedStyle(document.documentElement);
+const colors = chartColors((name) => rootStyle.getPropertyValue(name));
+const baseOptions = chartOptions(colors);
 
 const activityCanvas = document.getElementById('activityChart');
 if (activityCanvas && window.dashboardActivity) {
@@ -37,7 +38,7 @@ if (activityCanvas && window.dashboardActivity) {
             datasets: [{
                 label: 'Articles publiés',
                 data: Object.values(window.dashboardActivity),
-                backgroundColor: '#C41E2A',
+                backgroundColor: colors.primary,
             }],
         },
         options: baseOptions,
@@ -53,8 +54,8 @@ if (viewsCanvas && window.dashboardViews) {
             datasets: [{
                 label: 'Vues',
                 data: Object.values(window.dashboardViews),
-                borderColor: '#C41E2A',
-                backgroundColor: 'rgba(196, 30, 42, 0.1)',
+                borderColor: colors.primary,
+                backgroundColor: colors.primaryFill,
                 fill: true,
                 tension: 0,
             }],
