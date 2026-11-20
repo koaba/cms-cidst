@@ -49,20 +49,26 @@ it('declare dans shared.css et dans les jetons chaque couleur succes et alerte',
 
 it('garde succes et alerte lisibles sur chaque fond de theme et sur leur fond doux', function () {
     $checker = new ContrastChecker;
-    $backgrounds = [ThemeRoles::defaults()['bg'], ThemeRoles::defaults()['surface']];
-
-    // Test unitaire : l'application n'est pas demarree, config() est donc indisponible.
-    foreach ((require dirname(__DIR__, 2).'/config/themes.php')['themes'] as $theme) {
-        foreach (['bg', 'surface'] as $role) {
-            if (isset($theme['palette'][$role])) {
-                $backgrounds[] = $theme['palette'][$role];
-            }
-        }
-    }
-
-    expect(count($backgrounds))->toBeGreaterThan(2);
+    $themes = (require dirname(__DIR__, 2).'/config/themes.php')['themes']; // Test unitaire : config() indisponible.
 
     foreach (['success', 'warning'] as $kind) {
+        $backgrounds = [ThemeRoles::defaults()['bg'], ThemeRoles::defaults()['surface']];
+
+        foreach ($themes as $theme) {
+            // Un theme qui surcharge cette couleur (ex. Sombre) est verifie avec ses propres valeurs par ThemeStatusPaletteTest.
+            if (isset($theme['palette'][$kind])) {
+                continue;
+            }
+
+            foreach (['bg', 'surface'] as $role) {
+                if (isset($theme['palette'][$role])) {
+                    $backgrounds[] = $theme['palette'][$role];
+                }
+            }
+        }
+
+        expect(count($backgrounds))->toBeGreaterThan(2);
+
         foreach ($backgrounds as $background) {
             expect($checker->ratio(SUCCESS_WARNING_TOKENS[$kind], $background))
                 ->toBeGreaterThanOrEqual(4.5, "{$kind} sur {$background}");

@@ -53,7 +53,12 @@ it('garde l erreur lisible sur chaque fond de theme et sur son fond doux', funct
     $backgrounds = [ThemeRoles::defaults()['bg'], ThemeRoles::defaults()['surface']];
 
     // Test unitaire : l'application n'est pas demarree, config() est donc indisponible.
+    // Un theme qui surcharge cette couleur d'etat (ex. Sombre) est verifie avec ses propres valeurs par ThemeStatusPaletteTest.
     foreach ((require dirname(__DIR__, 2).'/config/themes.php')['themes'] as $theme) {
+        if (isset($theme['palette']['danger'])) {
+            continue;
+        }
+
         foreach (['bg', 'surface'] as $role) {
             if (isset($theme['palette'][$role])) {
                 $backgrounds[] = $theme['palette'][$role];
