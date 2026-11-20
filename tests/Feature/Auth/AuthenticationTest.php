@@ -3,9 +3,9 @@
 use App\Models\User;
 
 test('l\'écran de connexion peut s\'afficher', function () {
-    $response = $this->get('/login');
-
-    $response->assertStatus(200);
+    $this->get('/login')
+        ->assertOk()
+        ->assertSee('action="'.route('login').'"', false);
 });
 
 test('les utilisateurs peuvent s\'authentifier via l\'écran de connexion', function () {
