@@ -3,26 +3,31 @@
 use App\Models\Article;
 use App\Models\Page;
 
-it('affiche la liste des pages statiques avec un statut 200', function () {
-    Page::factory()->create(['is_published' => true]);
+it('affiche la liste des pages statiques avec la page publiee', function () {
+    Page::factory()->create(['title' => 'Page visible dans la liste', 'is_published' => true]);
 
-    $response = $this->get(route('pages.index'));
-
-    $response->assertOk();
+    $this->get(route('pages.index'))
+        ->assertOk()
+        ->assertSee('Page visible dans la liste');
 });
 
 it('affiche la liste des pages meme sans page publiee', function () {
-    Page::factory()->create(['is_published' => false]);
+    Page::factory()->create(['title' => 'Page non publiee absente', 'is_published' => false]);
 
-    $response = $this->get(route('pages.index'));
-
-    $response->assertOk();
+    $this->get(route('pages.index'))
+        ->assertOk()
+        ->assertSee('Aucune page pour le moment.')
+        ->assertDontSee('Page non publiee absente');
 });
 
 it('affiche la page de recherche sans parametre', function () {
-    $response = $this->get(route('search'));
+    // Le champ de l'en-tete (type="search") porte aussi name="q" : on cible le champ propre a la page.
+    $html = $this->get(route('search'))
+        ->assertOk()
+        ->assertSee('Entrez un mot')
+        ->getContent();
 
-    $response->assertOk();
+    expect($html)->toMatch('/<input\s+type="text"\s+name="q"/');
 });
 
 it('trouve un article publie correspondant a la recherche', function () {

@@ -8,9 +8,9 @@ it('affiche une page article publique avec un statut 200', function () {
         'is_published' => true,
     ]);
 
-    $response = $this->get(route('blog.show', $article->slug));
-
-    $response->assertOk();
+    $this->get(route('blog.show', $article->slug))
+        ->assertOk()
+        ->assertSee('>Article de test SEO</h1>', false);
 });
 
 it('affiche le titre de l\'article dans le contenu HTML', function () {
