@@ -18,6 +18,9 @@ final class ThemeStyleBuilder
 
     private const HEX = '/^#[0-9A-Fa-f]{6}$/';
 
+    /** Variable DaisyUI => role de couleur. */
+    private const DAISY_BASE = ['--b1' => 'surface', '--b2' => 'bg', '--b3' => 'border', '--bc' => 'text'];
+
     public function __construct(
         private readonly ColorConverter $converter,
         private readonly ContrastChecker $contrast = new ContrastChecker,
@@ -58,6 +61,11 @@ final class ThemeStyleBuilder
 
         foreach (['bg', 'surface', 'text', 'muted', 'border'] as $role) {
             $vars[ThemeRoles::cssVariable($role)] = $this->converter->rgbTriplet($roles->color($role));
+        }
+
+        // Variables de base de DaisyUI (base-100, base-200, base-300, base-content) : elles suivent les roles.
+        foreach (self::DAISY_BASE as $variable => $role) {
+            $vars[$variable] = $this->converter->daisyOklch($roles->color($role));
         }
 
         $vars[ThemeRoles::PRIMARY_CONTENT_VARIABLE] = $this->converter->rgbTriplet($this->contrast->readableTextOn($primary));
