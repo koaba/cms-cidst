@@ -68,6 +68,16 @@ final class ThemeStyleBuilder
             $vars[$variable] = $this->converter->daisyOklch($roles->color($role));
         }
 
+        // Couleurs d'etat : seules celles que la palette du theme surcharge sont emises (cles danger_soft, etc.) ;
+        // sinon shared.css garde la main. Les couleurs personnalisees n'y touchent jamais.
+        foreach (array_keys(ThemeRoles::statusDefaults()) as $status) {
+            $hex = $palette[str_replace('-', '_', $status)] ?? null;
+
+            if (is_string($hex) && preg_match(self::HEX, $hex) === 1) {
+                $vars[ThemeRoles::statusVariable($status)] = $this->converter->rgbTriplet($hex);
+            }
+        }
+
         $vars[ThemeRoles::PRIMARY_CONTENT_VARIABLE] = $this->converter->rgbTriplet($this->contrast->readableTextOn($primary));
 
         $declarations = '';
