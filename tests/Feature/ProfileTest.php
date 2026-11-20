@@ -2,6 +2,17 @@
 
 use App\Models\User;
 
+/**
+ * Vrai si un meme <form> porte cette action ET cette methode (_method).
+ * Necessaire : profile.update et profile.destroy partagent l'URL /profile.
+ */
+function prfFormHasMethod(string $html, string $action, string $method): bool
+{
+    $pattern = '#<form[^>]*action="'.preg_quote($action, '#').'"[^>]*>(?:(?!</form>).)*?name="_method" value="'.$method.'"#s';
+
+    return preg_match($pattern, $html) === 1;
+}
+
 test('la page de profil s\'affiche', function () {
     $user = User::factory()->create();
 
@@ -10,6 +21,11 @@ test('la page de profil s\'affiche', function () {
         ->get('/profile');
 
     $response->assertOk();
+
+    $html = $response->getContent();
+    expect(prfFormHasMethod($html, route('profile.update'), 'patch'))->toBeTrue();
+    expect(prfFormHasMethod($html, route('password.update'), 'put'))->toBeTrue();
+    expect(prfFormHasMethod($html, route('profile.destroy'), 'delete'))->toBeTrue();
 });
 
 test('les informations du profil peuvent être mises à jour', function () {

@@ -34,5 +34,5 @@ it('ne compte rien en double quand la commande est relancee', function () {
 });
 
 it('est planifiee chaque jour', function () {
-    $this->artisan('schedule:list')->expectsOutputToContain('audience:prune')->assertSuccessful();
+    expect(scheduledCron('audience:prune'))->toBe('0 0 * * *');
 });

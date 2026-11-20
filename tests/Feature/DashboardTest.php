@@ -16,7 +16,7 @@ it('affiche le tableau de bord sans erreur SQL (régression DATE_FORMAT/SQLite)'
 
     $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
-    $response->assertOk();
+    $response->assertOk()->assertSee('>Tableau de bord</h1>', false);
 });
 
 it('calcule correctement le nombre d\'articles publiés par mois', function () {

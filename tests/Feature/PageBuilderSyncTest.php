@@ -211,4 +211,6 @@ it('autorise le role Publication', function () {
     builderSave($this, $this->page, [
         ['type' => 'texte', 'data' => ['content' => 'Par Publication']],
     ], $editor)->assertOk();
+
+    expect($this->page->blocks()->first()->data['content'])->toBe('Par Publication');
 });

@@ -1,27 +1,31 @@
 <?php
 
 use App\Models\Article;
+use App\Models\SiteSetting;
 
-it('affiche la page accueil avec un statut 200', function () {
-    $response = $this->get('/');
+it('affiche la page accueil avec le titre d\'accroche des reglages', function () {
+    SiteSetting::current()->update(['hero_title' => 'Titre accroche unique']);
 
-    $response->assertOk();
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Titre accroche unique');
 });
 
-it('affiche la liste du blog avec un statut 200', function () {
-    Article::factory()->create(['is_published' => true]);
+it('affiche la liste du blog avec l\'article publie', function () {
+    Article::factory()->create(['title' => 'Article visible dans la liste', 'is_published' => true]);
 
-    $response = $this->get(route('blog.index'));
-
-    $response->assertOk();
+    $this->get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('Article visible dans la liste');
 });
 
 it('affiche la liste du blog meme sans article publie', function () {
-    Article::factory()->create(['is_published' => false]);
+    Article::factory()->create(['title' => 'Brouillon absent de la liste', 'is_published' => false]);
 
-    $response = $this->get(route('blog.index'));
-
-    $response->assertOk();
+    $this->get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('Aucun article pour le moment.')
+        ->assertDontSee('Brouillon absent de la liste');
 });
 
 it('genere un sitemap.xml valide et non vide', function () {

@@ -3,6 +3,7 @@
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\SiteSetting;
+use App\Services\WatermarkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -89,18 +90,39 @@ it('affiche sans erreur la page édition d\'un article possédant un diaporama',
     // Avant correction, cette requête retournait une 500.
     $response = $this->actingAs($admin)->get(route('admin.articles.edit', $article));
 
-    $response->assertOk();
+    $response->assertOk()->assertSee('value="Diaporama de test"', false);
 });
 
 /* ------------------------------------------------------------------ */
 /*  §2.3 — Filigrane cover et galerie indépendants */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Espionne WatermarkService : renvoie la liste des chemins passes a
+ * watermarkImage(), pour savoir QUI est filigrane (couverture ou galerie).
+ */
+function awmSpyImagePaths(): ArrayObject
+{
+    $paths = new ArrayObject;
+
+    $spy = Mockery::spy(WatermarkService::class);
+    $spy->shouldReceive('watermarkImage')
+        ->andReturnUsing(function (string $path) use ($paths) {
+            $paths->append($path);
+
+            return true;
+        });
+    app()->instance(WatermarkService::class, $spy);
+
+    return $paths;
+}
+
 it('applique le filigrane à la couverture sans l\'appliquer à la galerie quand seule la case cover est cochée', function () {
     $admin = adminUser();
     $category = Category::factory()->create();
 
     Storage::fake('public');
+    $paths = awmSpyImagePaths();
 
     $payload = [
         'title' => 'Article de test filigrane indépendant',
@@ -112,15 +134,36 @@ it('applique le filigrane à la couverture sans l\'appliquer à la galerie quand
         // apply_watermark_images volontairement absent => décoché
     ];
 
-    $response = $this->actingAs($admin)->post(route('admin.articles.store'), $payload);
+    $this->actingAs($admin)
+        ->post(route('admin.articles.store'), $payload)
+        ->assertRedirect(route('admin.articles.index'));
 
-    $response->assertRedirect(route('admin.articles.index'));
+    expect(Article::latest('id')->first())->not->toBeNull();
+    expect($paths->getArrayCopy())->toHaveCount(1);
+    expect($paths[0])->not->toContain('gallery');
+});
 
-    // NOTE : ce test vérifie le comportement HTTP de bout en bout mais ne
-    // vérifie pas le contenu binaire du fichier (présence effective du
-    // filigrane sur l'image) — cela suppose que WatermarkService::watermarkImage()
-    // est déjà testé unitairement par ailleurs, ou à compléter si ce n'est
-    // pas le cas.
-    $article = Article::latest('id')->first();
-    expect($article)->not->toBeNull();
+it('applique le filigrane à la galerie sans l\'appliquer à la couverture quand seule la case galerie est cochée', function () {
+    $admin = adminUser();
+    $category = Category::factory()->create();
+
+    Storage::fake('public');
+    $paths = awmSpyImagePaths();
+
+    $payload = [
+        'title' => 'Article de test filigrane galerie',
+        'content' => 'Contenu de test.',
+        'categories' => [$category->id],
+        'image' => UploadedFile::fake()->image('cover.jpg'),
+        'images' => [UploadedFile::fake()->image('gallery1.jpg')],
+        'apply_watermark_images' => '1',
+        // apply_watermark_cover_image volontairement absent => décoché
+    ];
+
+    $this->actingAs($admin)
+        ->post(route('admin.articles.store'), $payload)
+        ->assertRedirect(route('admin.articles.index'));
+
+    expect($paths->getArrayCopy())->toHaveCount(1);
+    expect($paths[0])->toContain('gallery');
 });

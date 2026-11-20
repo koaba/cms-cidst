@@ -5,9 +5,9 @@ use App\Models\User;
 test('l\'écran de confirmation du mot de passe peut s\'afficher', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->get('/confirm-password');
-
-    $response->assertStatus(200);
+    $this->actingAs($user)->get('/confirm-password')
+        ->assertOk()
+        ->assertSee('action="'.route('password.confirm').'"', false);
 });
 
 test('le mot de passe peut être confirmé', function () {

@@ -5,9 +5,9 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 
 test('l\'écran de lien de réinitialisation du mot de passe peut s\'afficher', function () {
-    $response = $this->get('/forgot-password');
-
-    $response->assertStatus(200);
+    $this->get('/forgot-password')
+        ->assertOk()
+        ->assertSee('action="'.route('password.email').'"', false);
 });
 
 test('un lien de réinitialisation du mot de passe peut être demandé', function () {
@@ -28,9 +28,10 @@ test('l\'écran de réinitialisation du mot de passe peut s\'afficher', function
     $this->post('/forgot-password', ['email' => $user->email]);
 
     Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-        $response = $this->get('/reset-password/'.$notification->token);
-
-        $response->assertStatus(200);
+        $this->get('/reset-password/'.$notification->token)
+            ->assertOk()
+            ->assertSee('action="'.route('password.store').'"', false)
+            ->assertSee('name="token" value="'.$notification->token.'"', false);
 
         return true;
     });

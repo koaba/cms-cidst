@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\URL;
 test('l\'écran de vérification d\'email peut s\'afficher', function () {
     $user = User::factory()->unverified()->create();
 
-    $response = $this->actingAs($user)->get('/verify-email');
-
-    $response->assertStatus(200);
+    $this->actingAs($user)->get('/verify-email')
+        ->assertOk()
+        ->assertSee('action="'.route('verification.send').'"', false);
 });
 
 test('l\'email peut être vérifié', function () {

@@ -52,6 +52,7 @@ function something()
 use App\Enums\UserRole;
 use App\Models\SiteSetting;
 use App\Models\User;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -92,4 +93,18 @@ function publicationUser(): User
 function setDeleteCode(string $code): void
 {
     SiteSetting::current()->forceFill(['delete_code_hash' => Hash::make($code)])->save();
+}
+
+/**
+ * Expression cron de la commande Artisan planifiee (null si elle n'est pas planifiee).
+ * La console est chargee d'abord : routes/console.php n'est lu qu'a ce moment-la.
+ */
+function scheduledCron(string $command): ?string
+{
+    test()->artisan('schedule:list')->assertSuccessful();
+
+    $event = collect(app(Schedule::class)->events())
+        ->first(fn ($event) => str_contains((string) $event->command, $command));
+
+    return $event?->expression;
 }

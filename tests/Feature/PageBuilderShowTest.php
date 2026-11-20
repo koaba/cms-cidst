@@ -99,7 +99,8 @@ it('autorise le role Publication', function () {
 
     $this->actingAs($editor)
         ->get(route('admin.pages.builder.show', $this->page))
-        ->assertOk();
+        ->assertOk()
+        ->assertSee('data-page-builder', false);
 });
 
 it('est relie depuis l\'editeur classique', function () {
