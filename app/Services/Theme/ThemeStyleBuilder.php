@@ -18,6 +18,9 @@ final class ThemeStyleBuilder
 
     private const HEX = '/^#[0-9A-Fa-f]{6}$/';
 
+    /** Cle de palette => variable CSS de la coque d'administration. */
+    private const ADMIN_SHELL = ['admin_bg' => '--admin-bg', 'admin_nav' => '--admin-nav', 'admin_hover' => '--admin-hover', 'admin_text' => '--admin-text'];
+
     /** Variable DaisyUI => role de couleur. */
     private const DAISY_BASE = ['--b1' => 'surface', '--b2' => 'bg', '--b3' => 'border', '--bc' => 'text'];
 
@@ -75,6 +78,15 @@ final class ThemeStyleBuilder
 
             if (is_string($hex) && preg_match(self::HEX, $hex) === 1) {
                 $vars[ThemeRoles::statusVariable($status)] = $this->converter->rgbTriplet($hex);
+            }
+        }
+
+        // Coque d'administration (sidebar, fond) : variables hexadecimales, uniquement si la palette les donne.
+        foreach (self::ADMIN_SHELL as $key => $variable) {
+            $hex = $palette[$key] ?? null;
+
+            if (is_string($hex) && preg_match(self::HEX, $hex) === 1) {
+                $vars[$variable] = $hex;
             }
         }
 
