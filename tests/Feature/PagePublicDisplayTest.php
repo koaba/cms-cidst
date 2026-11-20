@@ -87,7 +87,9 @@ it('affiche une page dont la date de publication est passée', function () {
         'published_at' => now()->subDay(),
     ]);
 
-    $this->get("/pages/{$page->slug}")->assertOk();
+    $this->get("/pages/{$page->slug}")
+        ->assertOk()
+        ->assertSee('>Page publiée hier</h1>', false);
 });
 
 it('affiche une page publiée sans date de planification', function () {
@@ -102,7 +104,9 @@ it('affiche une page publiée sans date de planification', function () {
         'published_at' => null,
     ]);
 
-    $this->get("/pages/{$page->slug}")->assertOk();
+    $this->get("/pages/{$page->slug}")
+        ->assertOk()
+        ->assertSee('>Page publiée sans date</h1>', false);
 });
 
 it('exclut de la liste publique les pages planifiées dans le futur', function () {
