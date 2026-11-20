@@ -19,7 +19,7 @@ it('ne boucle pas indefiniment sur la page profil', function () {
     ]);
 
     $response = $this->actingAs($user)->get(route('profile.edit'));
-    $response->assertOk();
+    $response->assertOk()->assertSee('action="'.route('password.update').'"', false);
 });
 
 it('libere l\'utilisateur apres changement de mot de passe', function () {
