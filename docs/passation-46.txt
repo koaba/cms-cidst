@@ -1,0 +1,230 @@
+PASSATION TECHNIQUE #46 - CMS CIDST - 20 novembre 2026
+=======================================================
+
+Document autonome : un developpeur qui n'a rien suivi doit pouvoir reprendre le projet a partir de ce texte.
+Il complete docs/passation-45.md (19/11) et docs/passation-44.md (detail des rubriques anterieures) ; en cas de conflit entre un document, le code et les tests, LE CODE ET LES TESTS FONT FOI.
+Convention : [non verifie] = je ne l'ai pas confirme dans le code ou par une sortie de test. [d'apres #45] = repris de la passation #45 sans nouvelle verification.
+
+
+1. PROJET
+---------
+
+CMS Laravel du CIDST (Centre d'Information et de Documentation Scientifique et Technique, Madagascar).
+- Site public : blog (articles, categories), pages a blocs, documents PDF, sliders, news ticker, recherche, sitemap.xml, robots.txt, formulaire de contact.
+- Administration : deux roles, Super Admin et Publication (enum App\Enums\UserRole, paquet spatie/laravel-permission).
+- Principes imposes par le client : mobile-first, design harmonise site/admin, SEO soigne, code leger sans redondance, projet evolutif decoupe en lots (une branche par lot), options de personnalisation avancees dans l'administration.
+
+Stack : Laravel 13.x (composer.json : ^13.8, installe 13.42), PHP 8.3, Pest 4, Pint, Larastan, Tailwind 3, DaisyUI 4.12, Alpine.js, Chart.js, Vite 8, Husky.
+Depot : github.com/koaba/cms-cidst, branche unique master.
+Poste du client : Windows, Laragon, PowerShell 5, dossier C:\laragon\www\laravel-academy, MySQL local (base laravel_academy). Les tests tournent en SQLite memoire.
+Production visee : VPS Ubuntu 24.04 (essai sur serveur gratuit jetable prevu, voir section 9).
+
+
+2. ETAT AU 20/11/2026
+---------------------
+
+master = origin/master = e1b0cae (fusion de feat/graphiques-theme).
+Tags stables recents (poses seulement apres la ligne "master -> master" du push) :
+  stable-2026-11-20-daisybase       lot 3e-0
+  stable-2026-11-20-etatparttheme   lot 3e-1
+  stable-2026-11-20-clairsombre     lot 3e-2
+  stable-2026-11-20-graphiquestheme lot 3e-3
+Tags anterieurs : series stable-2026-11-18-* et stable-2026-11-19-* (dernier de la serie du 19 : deployerclic, c12bb08).
+
+Tests au dernier push : Pest 1801 tests, 5466 assertions, verts (4 processus, de 240 a 530 s selon la machine). Tests JS (node --test) : 39 verts. Pint et Larastan : sans erreur.
+Fichiers de test : environ 252 dans tests/Feature, 13 dans tests/Unit.
+Aucune autre branche que master (locale et distante), sauf branche de travail en cours.
+
+Environnement de travail de l'assistant (utile pour reproduire) : clone, "composer install --no-scripts", cp .env.example .env, php artisan key:generate, puis "php artisan test --parallel --processes=4". Node 22 pour "npm ci" et "npx vite build".
+
+
+3. METHODE DE TRAVAIL (A RESPECTER)
+-----------------------------------
+
+Cycle d'un lot :
+  1. Branche feat/<nom> depuis master (master propre et egal a origin/master).
+  2. Test ROUGE d'abord, sur une assertion (jamais sur une erreur de syntaxe ou un import manquant).
+  3. Implementation minimale.
+  4. Mutation de controle d'une ligne : le test DOIT passer au rouge. Si le test reste vert, l'assertion est trop grossiere : ajouter un cas limite (exemple vecu : abaisser le seuil de contraste 4,5 a 3,0 restait vert tant qu'aucun cas n'etait entre 3 et 4,5).
+  5. Restauration (vert), Pint, Larastan, Pest complet.
+  6. Commit, push (le hook rejoue tout), fusion en merge commit (--no-ff, jamais squash), push de master, verification master == origin/master, ALORS SEULEMENT tag stable-AAAA-MM-JJ-<lot>, push du tag, suppression de la branche locale.
+
+Regles Git : git add fichier par fichier, jamais git add . ; pas de --no-verify ; le hook ne controle pas les tags (un tag pousse a tort sur un commit rouge a deja du etre supprime).
+
+Hooks Husky :
+  pre-commit : lint PHP des fichiers modifies.
+  pre-push : Pint --test, Larastan, npm run test:js, Pest complet en parallele. Un push de suppression de branche ou de tag saute les verifications.
+
+Tests Pest : helpers communs dans tests/Pest.php (adminUser(), publicationUser(), setDeleteCode()). Les fonctions declarees dans un fichier de test sont GLOBALES : prefixer chaque helper (exemples : spa* dans ThemeStatusPaletteTest, cs* dans ThemeClairSombreTest, mro*, dsql*, dcnt*) ; ne jamais nommer un helper visit() (reserve par Pest). Les constantes globales de test aussi (CS_ROLES, SPA_FAMILIES...).
+Dossier : un test qui appelle config(), view() ou la base doit etre dans tests/Feature (le dossier Unit ne demarre pas l'application ; Pest.php lie TestCase a Feature seulement). Un test Unit qui a besoin de la config lit le fichier : (require dirname(__DIR__, 2).'/config/themes.php')['themes'].
+Tests JS : node --test sans dependance, via "npm run test:js" (liste de fichiers dans package.json : l'ajouter a chaque nouveau fichier .test.js). Logique pure dans resources/js/**/xxx-lib.js, branchement DOM minimal dans le fichier appelant.
+Accents : dans les fichiers PHP, sequences \u{e9} ou entites HTML (PowerShell 5 abime l'affichage). Commits sans accents.
+Scripts d'edition cote Windows : un seul bloc "& { ... }" colle d'un coup, ancre comptee (refus si le nombre d'occurrences differe de 1), idempotents, UTF-8 sans BOM, detection CRLF/LF, mutation dans try/finally qui restaure le fichier.
+Avant le Pest complet sous Windows : TEMP et TMP vers storage\framework\tmp, puis php artisan view:clear (restaurer ensuite).
+
+
+4. ARCHITECTURE BACK-END
+------------------------
+
+4.1 Dossiers (nombre de fichiers PHP)
+  app/Blocks (15) : BlockRegistry et Rules/ (une classe de regles par type de bloc).
+  app/Console (15) : commandes Artisan (liste en 4.9).
+  app/Http (65) : controleurs, middleware, requetes. app/Models (21). app/Services (39). app/Support (6). app/View (8, composants Blade). app/Observers (3). app/Traits (2). app/Concerns (4). app/Contracts (3). app/Enums (1 : UserRole). app/Jobs (1). app/Mail (1). app/Rules (2).
+  config/ : admin_menu, app, auth, cache, contact, database, display, filesystems, logging, mail, media, page_blocks, permission, queue, security, seo, services, session, themes, watermark.
+  database/migrations : 75 fichiers.
+  scripts/ : deployer.bat, deployer.ps1, install-serveur.sh.
+  docs/ : REQUIREMENTS.md, deploiement.md, installation-serveur.md, lot-s-securite.md, passation.md, passation-44.md, passation-45.md.
+  .github/workflows/tests.yml : integration continue (un test CiWorkflowTest le surveille) [contenu exact non relu].
+
+4.2 Modeles (app/Models)
+  Article, Category, Page, PageBlock, PageSlugRedirect, PageView, SeoMeta, Media, Mediable (pivot), Diaporama, Video, Slider, NewsTicker, Menu, PdfCategory, PdfDocument, SiteSetting, SiteVisit, ContactMessage, ContactAttachment, User.
+  Relations Eloquent : pour Larastan, methode a type de retour natif ET docblock generique, ex. /** @return BelongsTo<Page, $this> */ public function page(): BelongsTo.
+
+4.3 Droits
+  Enum UserRole : SuperAdmin, Publication ; UserRole::middleware(...) construit le middleware de route.
+  Groupe commun (les deux roles) : /admin (tableau de bord), /admin/guide, articles, pages (+ blocs, builder), sliders, news-tickers, mediatheque.
+  Groupe Super Admin seul : menus, categories, pdf-categories, pdf-documents, settings, audience, messages (+ pieces jointes), users.
+  Role Publication : la suppression exige un code de suppression (middleware confirm.delete = ConfirmDeleteCode ; DeleteCodeVerifier ; helper de test setDeleteCode()). Le code se regle dans les Reglages (Super Admin).
+  Dernier Super Admin protege (test LastSuperAdminGuard). Changement de mot de passe force a la premiere connexion (middleware ForcePasswordChange, colonne users.must_change_password).
+  Menu admin : config/admin_menu.php, cles label, route, description, active (motif de route), roles (optionnel). Trois consommateurs : vue du tableau de bord (section Raccourcis), sidebar, GuideController (/admin/guide). La condition de role est portee par ces trois lecteurs (mutation verifiee : 3 rouges).
+
+4.4 Pages a blocs (Page Builder)
+  Types racine (config/page_blocks.php, cle 'types') : texte, separateur, citation, bouton, image, video, section_fond, galerie, pdf, colonnes, accordeon, banniere_hero [liste complete de 'types' non relue ligne a ligne]. Type interne : accordeon_item (cree par le bloc accordeon). 'nestable_in_columns' : types autorises dans une colonne (colonnes interdit ; accordeon exclu volontairement).
+  Ajouter un type = une classe Rules dans app/Blocks/Rules + une ligne dans BlockRegistry::RULES + une entree dans config/page_blocks.php + une vue pages/blocks/_<type>.blade.php.
+  Services : PageBuilder/BlockSyncService (sauvegarde, invalide le cache public, StaleBuilderException en cas de version perimee), BlockFieldCatalog, BlockMediaService.
+  Controleurs : Admin/PageBlockController (CRUD par bloc, reorder), ColumnChildBlockController, AccordionItemController, AccordionItemContentController, PageBuilderController (ecran builder et enregistrement groupe). Vues : admin/pages/builder.blade.php ; JS : resources/js/admin/page-builder.js (+ test).
+  Cache : App\Support\PublicPageCache met en cache l'arbre de rendu d'une page publique (seo, medias, blocs, PDF) ; invalidation globale par "version" (observers, BlockSyncService::sync) ; TTL en filet de securite. La page elle-meme est lue en base (route binding), donc statut et titre sont toujours frais.
+  SEO : redirection 301 depuis un ancien slug de page (table page_slug_redirects ; Page::resolveRouteBinding ; hook updated de Page). Pas necessaire pour les articles (slug fixe apres creation). SeoService, SeoMeta, config/seo.php, SitemapUrlBuilder, SitemapController, RobotsController.
+
+4.5 Mediatheque
+  Media + Mediable (relation polymorphe), Services : MediaUploader, MediaSyncService, ImageOptimizer, ImageVariantService (variantes), ThumbnailService, WatermarkService (filigrane, config/watermark.php), MediaDimensionsReader, MediaOverviewService, ExistingImageConverter.
+  Conversion automatique JPEG/PNG en WebP a l'envoi (config/media.php, coupe-circuit MEDIA_WEBP=false ; l'original n'est pas conserve ; le WebP n'est garde que s'il est plus leger).
+  Miniatures PDF : PdfThumbnail/* (fabrique choisissant Poppler pdftoppm, Imagick ou Null ; variables PDF_THUMBNAIL_DRIVER et PDF_THUMBNAIL_POPPLER_BINARY).
+  Ordre des medias : trait HasOrderedMediaCollection::reorderMedia() (renumerotation 0..n-1, ids etrangers ignores, transaction), appele par Admin/MediaOrderController. JS : media-reorder-lib.js (messages d'erreur par statut). Trait HasOrphanMediaCleanup.
+  Limites dans config/media.php (galerie 20 images, 4 diaporamas, 5 videos de 15 Mo, 10 PDF de 10 Mo).
+
+4.6 Contact
+  Formulaire public /contact : honeypot, limite 5 requetes par minute (throttle:5,1), IP hachee, images jointes optionnelles (max 3, cote max 3000, JPEG qualite 85, config/contact.php), alerte e-mail sans perte du message en base. Services : Contact/ContactImageStore, SiteContact, SocialLinks. Mail : app/Mail (alerte). Admin : menu Messages (Super Admin) avec lecture, marquage lu, bouton Repondre (mailto), pieces jointes et apercu.
+  Retention : CONTACT_IMAGES_RETENTION_DAYS=90, CONTACT_MESSAGES_RETENTION_DAYS=365 (commandes contact:prune-images et contact:prune-messages).
+  ENVOI SMTP REEL JAMAIS EPROUVE (seul MAIL_MAILER=log a ete utilise) : plus gros risque avant la mise en ligne.
+
+4.7 Audience (Super Admin)
+  Tables site_visits (detail 13 mois) et site_visit_daily (totaux journaliers conserves). Middleware TrackVisit : GET reussis, liste blanche de routes, robots exclus, aucune IP ni user-agent stockes, respecte DNT:1 et Sec-GPC:1. Visiteur = hash_hmac('sha256', IP|navigateur|date, APP_KEY), renouvele chaque jour : "Visiteurs (cumul des jours)" compte une personne qui revient chaque jour. Services Dashboard/AudienceService et DashboardPeriod ; page /admin/audience avec historique mensuel. Middleware TrackPageView + table page_views pour les vues de pages (purge hebdomadaire).
+  Decision a prendre : anonymiser visitor_hash avant 13 mois.
+
+4.8 Tableau de bord
+  DashboardController, Services Dashboard/DashboardStatsService (cartes Articles et Pages via le scope publiclyVisible() ; graphiques groupes en SQL avec App\Support\SqlDate::bucket), DashboardTodoService (bloc "A traiter" : brouillons, pages programmees, messages non lus pour le Super Admin), DashboardPeriod (periodes partagees avec l'Audience). Section Raccourcis lue dans config/admin_menu.php. Bulles d'aide : composant admin.help.
+  Graphiques : voir 5.4.
+
+4.9 Commandes Artisan et planification
+  Planifiees (routes/console.php) : page-views:prune (hebdo), audience:prune (quotidien), contact:prune-images (quotidien), contact:prune-messages (quotidien), battement du planificateur chaque minute (cle de cache EnvironmentProbe::SCHEDULER_HEARTBEAT_KEY). Elles ne tournent que si le cron "php artisan schedule:run" passe chaque minute sur le serveur.
+  Outils : app:check-environment (CheckEnvironment, EnvironmentChecker, EnvironmentProbe ; controles de production appliques seulement si APP_ENV=production : APP_DEBUG, courrier, APP_URL, planificateur, file d'attente, lien public/storage, CSP), app:create-super-admin <email> (SuperAdminCreator ; cree aussi les roles ; refuse s'il existe deja un Super Admin ; ne JAMAIS lancer db:seed en production).
+  Rattrapage / migration de donnees (role non relu) [non verifie] : AuditPhantomColumnBlocks, BackfillMediaDimensions, BackfillMediaVariants, ConvertExistingImagesToWebp, InstallWatermarkLogo, MigrateArticlesToMedia, MigrateSlidersToMedia, MigrateVideosToMedia, PruneUnusedMedia.
+
+4.10 Securite et environnement
+  Middleware SecurityHeaders ; config/security.php : CSP en 3 modes (CSP_MODE = off | report-only | enforce ; defaut report-only). Dette connue : script-src garde 'unsafe-inline' et 'unsafe-eval' (Alpine standard, onclick inline dans une quarantaine de vues). Le modele .env.production.example impose CSP_MODE=enforce.
+  .env.production.example (versionne, secrets vides) : APP_ENV=production, APP_DEBUG=false, APP_URL https, APP_TIMEZONE=Indian/Antananarivo, DB mysql, LOG_STACK=daily, LOG_LEVEL=warning, SESSION_SECURE_COOKIE=true, QUEUE_CONNECTION=sync, SMTP smtp.gmail.com:587 avec mot de passe d'application. Le test EnvProductionExampleTest verifie qu'il ne produit que des "ok" au controle d'environnement. Le .env.example standard n'a pas ete modifie.
+  Fuseau : Indian/Antananarivo (tranche). Couleurs de marque : #C41E2A / #17181A (tranche).
+
+4.11 Deploiement
+  scripts/install-serveur.sh (relancable pour mettre a jour), scripts/deployer.ps1 et deployer.bat (un clic depuis Windows : build, envoi, installation), docs/installation-serveur.md, docs/deploiement.md. Test DeploymentScriptsTest. JAMAIS EXECUTES EN REEL [non verifie].
+  Procedure standard : composer install --no-dev, php artisan migrate --force, config:cache, view:cache, cron schedule:run, poppler (pdftoppm) installe, limites PHP adaptees aux images jointes.
+
+
+5. SYSTEME DE THEMES (lots 3d a 3e-3) - LE PLUS RECENT
+-------------------------------------------------------
+
+5.1 Principe : tout part de "roles de couleur" resolus par couches, emis en variables CSS dans <style> de <x-theme-style/> (App\View\Components\ThemeStyle, vue components/theme-style.blade.php, presente dans les layouts public et admin).
+  Couches, la derniere l'emporte (ThemeStyleBuilder::css(?primary, ?secondary, ?theme, ?customColors) et ThemePalette::resolve) :
+    1. defauts de ThemeRoles
+    2. reglages historiques site_settings.primary_color et secondary_color
+    3. palette du theme choisi (config/themes.php, colonne site_settings.theme, defaut 'cidst')
+    4. couleurs personnalisees site_settings.theme_colors (JSON, Super Admin, page Reglages)
+  Une valeur invalide (pas #RRGGBB) ou un role inconnu est ignore. Les couleurs personnalisees ne touchent JAMAIS aux etats (danger, success, warning) ni a la coque admin (admin_*) : seules les palettes de config/themes.php le peuvent.
+
+5.2 Roles : primary, secondary, accent, bg, surface, text, muted, border (+ primary_content, secondary_content, accent_content, couleur du texte pose dessus).
+  Variables emises : --color-<role>-rgb (triplet "R G B" sans virgule, utilise par tailwind.tokens.js), + variables DaisyUI.
+  Etats (ThemeRoles::statusDefaults() / statusVariable()) : danger, success, warning, chacun en base, -soft (fond doux) et -content (texte sur fond doux) ; valeurs par defaut dans :root de resources/css/shared.css (faites pour fond clair).
+  Fichiers : app/Services/Theme/{ThemeRoles, ThemePalette, ThemeStyleBuilder, ColorConverter, ContrastChecker, ContrastGuard}.php ; config/themes.php ; resources/css/shared.css ; tailwind.tokens.js ; tailwind.config.js (DaisyUI + couleurs admin.*).
+  ContrastGuard : garde-fou de lisibilite des couleurs saisies dans les Reglages (bloque texte principal < 4,5 sur bg ou surface ; avertit seulement pour le reste). Le texte sur primaire est calcule (ContrastChecker::readableTextOn), jamais saisi.
+
+5.3 Ce qui a ete fait le 20/11/2026 (4 lots)
+  Lot 3e-0 (daisybase) : ThemeStyleBuilder emet maintenant --b1 (surface), --b2 (bg), --b3 (border), --bc (text) au format DaisyUI (ColorConverter::daisyOklch). Avant, les ~40 usages de bg-base-100, bg-base-200, border-base-300 ne suivaient pas les roles : un theme sombre etait impossible. Le rendu du theme par defaut est inchange (valeurs identiques). Test : tests/Feature/ThemeDaisyBaseTest.php.
+  Lot 3e-1 (etatparttheme) : une palette peut surcharger les etats avec les cles danger, danger_soft, danger_content, success, success_soft, success_content, warning, warning_soft, warning_content. Seules les cles declarees sont emises (--color-danger-rgb...) ; sans surcharge, shared.css garde la main. Test : tests/Feature/ThemeStatusPaletteTest.php, qui contient une GARDE : pour chaque theme de config/themes.php, chaque etat doit atteindre 4,5 de contraste sur bg, surface et son propre fond doux, et le -content sur le -soft. Un futur theme sombre qui oublierait ses etats echoue ici.
+  Lot 3e-2 (clairsombre) : themes 'clair' (rouge du logo sur blanc, accent bleu #1D4ED8, menu quasi noir) et 'sombre' (bg #0F1115, surface #171A21, texte #E8EAED, primaire #FF6B73 avec texte fonce #1A0507, accent #5EEAD4, 9 etats surcharges). Nouvelles cles de palette admin_bg, admin_nav, admin_hover, admin_text -> variables --admin-bg, --admin-nav, --admin-hover, --admin-text (hex), qui pilotent la sidebar et le fond de l'admin : avant ce lot elles etaient FIXES (gris) quel que soit le theme, y compris Bordeaux. Test : tests/Feature/ThemeClairSombreTest.php (17 tests : roles complets, contrastes, theme vraiment clair/sombre par luminance, coque admin lisible, distinction des fonds, emission des variables). Deux anciens tests unitaires (ThemeStatusTokensTest, ThemeSuccessWarningTokensTest) comparaient les etats PAR DEFAUT au fond de TOUS les themes : ils ignorent maintenant les themes qui surchargent l'etat concerne (couvert par la garde du lot 3e-1).
+  Lot 3e-3 (graphiquestheme) : les graphiques du tableau de bord (Chart.js) lisent leurs couleurs dans le theme actif. resources/js/admin/chart-theme-lib.js (fonctions pures : parseRgbTriplet, chartColors, chartOptions ; repli sur les couleurs du theme par defaut si une variable manque ou est invalide), branche dans resources/js/admin/dashboard.js ; texte et grille des axes suivent muted et border. Tests : chart-theme-lib.test.js (7, dans npm run test:js) et tests/Feature/DashboardChartThemeTest.php (garde : aucune couleur en dur dans dashboard.js).
+
+5.4 Themes existants (config/themes.php) : cidst (defaut, pas de palette, utilise les couleurs des Reglages), bordeaux, ardoise, sable (lot 3d-4c, tests ThemePresetsTest : restent dans l'univers du logo, primaire rouge, secondaire quasi noir), clair, sombre. La page Reglages liste les themes en lisant config('themes.themes') (radios) : un nouveau theme apparait sans autre code.
+
+5.5 Recette pour ajouter un theme (ex. fetes)
+  1. Ajouter une entree dans config/themes.php avec label et palette (8 roles + 3 _content ; optionnel admin_* ; etats si le fond est sombre).
+  2. Les gardes existantes la verifient automatiquement (ThemeStatusPaletteTest pour les etats). Si le theme doit etre testé comme Clair/Sombre, dupliquer le jeu de ThemeClairSombreTest pour sa cle.
+  3. Le test 'se distingue des autres themes par son fond' (ThemeClairSombreTest) exige des fonds uniques entre themes ; ThemePresetsTest a son propre dataset ('bordeaux', 'ardoise', 'sable').
+  4. Lancer Pest complet.
+
+5.6 Limites connues du systeme de themes
+  - Rendu visuel de Clair/Sombre NON verifie dans un navigateur [non verifie] : aucun test ne peut juger de l'harmonie. Controle manuel attendu : Reglages > Sombre, puis tableau de bord, liste des pages, un formulaire, le site public.
+  - Les surcouches sur photos (bg-white/90 sur boutons de galerie, points de slider, bouton blanc du hero et de section_fond) restent blanches : voulu, lisibles sur image.
+  - Si le site utilise les fichiers compiles, lancer "npm run build" apres le deploiement du lot 3e-3.
+  - Themes de fetes (lot 3e-bis) : pas encore faits ; mecanisme pret (un theme = une entree de config). A trancher : quelles fetes, quelles couleurs, activation manuelle ou par date.
+
+
+6. ARCHITECTURE FRONT-END
+-------------------------
+
+  Vues : resources/views/{admin, auth, components, emails, layouts, pages, partials, profile, public, sitemap, vendor, welcome.blade.php}. Composants Blade dans resources/views/components (layout public, layout admin sous components/admin/*, footer, menus desktop/mobile, news-ticker, media-img, theme-style, watermark-overlay...). Rendu des blocs : resources/views/pages/blocks/_<type>.blade.php.
+  JS : resources/js/{app.js, admin/, public/}. Fichiers notables : admin/dashboard.js, admin/chart-theme-lib.js, admin/page-builder.js, admin/media-reorder-lib.js, admin/pdf-thumbnail.js, public/contact-images.js. Build Vite 8.
+  Test garde-fou "NoHardcodedGray" : aucune classe gray-* en dur (utiliser les jetons de theme : bg-base-100, text-cidst-*, etc.).
+  Titres admin : tous les ecrans passent un titre (test AdminPageTitles).
+
+
+7. ORDRE RECOMMANDE POUR LA SUITE
+---------------------------------
+
+  1. (Client) Controle visuel de Clair et Sombre, et corrections eventuelles (peut donner un lot 3e-4).
+  2. Lot 3e-bis : themes de fetes (apres decision du client, voir 5.6).
+  3. Controles navigateur declares faits par le client mais jamais vus : Audience, Messages avec compteur, Guide (Super Admin puis Publication), favicon sur /, /login, /admin, /profile [non verifie].
+  4. ESSAI DE DEPLOIEMENT sur un serveur gratuit jetable avec scripts\deployer.bat et docs/installation-serveur.md (Ubuntu 24.04, acces root/sudo, domaine ou sous-domaine pointe ; sans domaine, pas de HTTPS). Decision du 19/11 : seulement APRES la fin des designs. Consigner chaque ecart constate. A valider : installation, build envoye, app:check-environment, premier admin (app:create-super-admin), mise a jour par relance du script, formulaire de contact.
+  5. Trancher l'hebergement definitif et le SMTP ; lot "premier vrai envoi d'e-mail de contact" (mot de passe d'application Google dans le .env du SERVEUR uniquement, jamais versionne).
+  6. Durcir la confidentialite de l'Audience (anonymisation de visitor_hash avant 13 mois) ; relire le role des commandes Artisan de rattrapage.
+  7. Deploiement en production (docs/deploiement.md).
+  8. Revue d'ensemble des tests demandee par le client avant la fin du projet : chasse aux "faux verts" (tests qui ne verifient que assertSessionHasNoErrors(), tests sans mutation de controle), recensement par domaine (contact, themes, audience, droits par role, SEO, environnement) pour reperer ce qui n'est couvert nulle part. Mesure Pest --profile du 19/11 : pas de point chaud, la duree vient de la masse (environ 0,27 s par test).
+
+
+8. DETTE ET TROUS CONNUS
+------------------------
+
+  - Invite JavaScript du code de suppression : test JS du Page Builder ajoute (lot jsbuilder) ; les autres invites [non verifie].
+  - Contenu des e-mails de contact : un test ContactAlertContent existe (lot contactalert) ; couverture exacte [non verifie].
+  - Integration du Page Builder : tests PageBuilderEndToEnd et autres presents ; fichier page-builder.blade.php fourni en debut de projet jamais integre (ne pas le chercher).
+  - app:create-super-admin demande le mot de passe avant de valider l'e-mail (confort, non bloquant).
+  - CSP : 'unsafe-inline' et 'unsafe-eval' encore autorises (voir 4.10).
+  - Anonymisation de visitor_hash avant 13 mois : decision de conception.
+  - Commandes de rattrapage au role non relu (4.9).
+  - Le rendu Sombre/Clair sur toutes les pages publiques n'a pas ete passe en revue ecran par ecran [non verifie].
+
+
+9. PIEGES CONNUS
+----------------
+
+  - PowerShell : deux commandes collees sans saut de ligne se fondent en une ; un seul bloc par collage, puis une Entree de plus ; ne jamais coller de sortie de tests dans PowerShell.
+  - Windows "rename ... storage\framework\views ... Acces refuse (code 5)" : verrou antivirus/indexeur, sans lien avec le code. Exclure le dossier storage dans Windows Security, php artisan view:clear puis view:cache. Cause probable des durees de Pest tres variables (150 a 530 s).
+  - Un git commit oublie laisse les fichiers en M/A : verifier git log et git status avant de pousser.
+  - Un patch applique avec "git apply" sur Windows : utiliser --ignore-whitespace (fins de ligne CRLF/LF).
+  - En .NET/PowerShell, StartsWith(string) est culturel : utiliser StringComparison.Ordinal.
+  - Panne DNS intermittente de la box : "Could not resolve host: github.com" ; contournement par http.curloptResolve (voir passation #45, rubrique 10). Le hook rejoue Pest a chaque push : eviter de pousser sur connexion instable.
+  - Le test EXIF de ConvertExistingImagesTest s'ignore si l'extension exif est absente (presente chez le client).
+  - Laravel 11+ : la variable MAIL_ENCRYPTION n'existe plus.
+  - Ne creer un tag stable qu'apres "master -> master" ; ne jamais taguer un commit rouge.
+
+
+10. COMMENT REPRENDRE EN 10 MINUTES
+-----------------------------------
+
+  git clone https://github.com/koaba/cms-cidst.git ; cd cms-cidst
+  composer install ; cp .env.example .env ; php artisan key:generate
+  npm ci ; npm run test:js
+  php artisan test --parallel --processes=4        (attendu : 1801 tests verts)
+  vendor/bin/pint --test ; vendor/bin/phpstan analyse --memory-limit=1G
+  Lire dans cet ordre : ce document, docs/passation-45.md, config/themes.php, app/Services/Theme/ThemeStyleBuilder.php, config/admin_menu.php, routes/web.php, config/page_blocks.php.
+  Premier lot a ouvrir : retours du client sur le rendu Sombre/Clair, ou themes de fetes (lot 3e-bis).
