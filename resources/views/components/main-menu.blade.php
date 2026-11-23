@@ -2,7 +2,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex justify-between items-center h-20">
             {{-- Logo --}}
-            <a href="/" class="flex items-center gap-3">
+            <a href="/" class="relative flex items-center gap-3">
                 @if($settings->logo_path)
                     @php
                         // Dimensions reelles du fichier : le navigateur reserve la place du logo (pas de CLS).
@@ -14,6 +14,7 @@
                 @else
                     <img src="{{ asset('images/logo-cidst.png') }}" alt="Logo" width="189" height="144" loading="eager" class="w-auto" style="height: {{ $settings->logo_height ?: 48 }}px">
                 @endif
+                <x-festival-decor variant="logo" />
             </a>
             {{-- Menu desktop --}}
             <div class="hidden md:ml-auto md:flex items-center space-x-8">

@@ -1,0 +1,1 @@
+<svg viewBox="0 0 32 32" class="{{ $class ?? '' }}" focusable="false"><rect class="fill-cidst-secondary" x="5" y="14" width="22" height="15" rx="2"/><rect class="fill-cidst-primary" x="3" y="10" width="26" height="6" rx="1.5"/><rect x="14" y="10" width="4" height="19" fill="#F2C14E"/><path d="M16 10c-5-1-8-3-7-6 1-2 5-1 7 3 2-4 6-5 7-3 1 3-2 5-7 6Z" fill="#F2C14E"/></svg>

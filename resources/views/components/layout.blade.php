@@ -10,6 +10,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
     <x-news-ticker />
+    <x-festival-decor />
     <x-main-menu />
     <main class="w-full flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-10">
         @if($sidebar ?? true)

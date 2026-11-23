@@ -1,0 +1,1 @@
+<svg viewBox="0 0 36 28" class="{{ $class ?? '' }}" focusable="false"><path d="M3 2v25" stroke="#000" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/><rect x="4" y="3" width="9" height="18" fill="#fff" stroke="#000" stroke-opacity=".15"/><rect x="13" y="3" width="20" height="9" fill="#FC3D32"/><rect x="13" y="12" width="20" height="9" fill="#007E3A"/></svg>
