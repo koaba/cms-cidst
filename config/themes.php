@@ -16,7 +16,7 @@
  * primaire, secondaire et accent (blanc ici, contraste >= 4,5, verifie par ThemePresetsTest).
  * Tout reste modifiable ensuite par les couleurs personnalisees.
  *
- * Clair et Sombre : lot 3e-2. Les themes de fetes arrivent au lot 3e-bis.
+ * Clair et Sombre : lot 3e-2. Themes de fete : lot 3e-bis-2 (cle 'festive' => true, hors Reglages).
  */
 return [
     'default' => 'cidst',
@@ -131,6 +131,98 @@ return [
                 'warning' => '#FCD34D',
                 'warning_soft' => '#33230A',
                 'warning_content' => '#FDE68A',
+            ],
+        ],
+
+        // Themes de fete (lot 3e-bis-2) : jamais proposes dans les Reglages (cle 'festive'), appliques
+        // automatiquement au site public pendant la fenetre de la fete (config/festivals.php).
+        // Fonds clairs : les couleurs d'etat par defaut restent lisibles. Chaque fond est unique.
+        'fete-noel' => [
+            'label' => 'Noël',
+            'festive' => true,
+            'palette' => [
+                'primary' => '#B91C1C',
+                'primary_content' => '#FFFFFF',
+                'secondary' => '#14532D',
+                'secondary_content' => '#FFFFFF',
+                'accent' => '#92400E',
+                'accent_content' => '#FFFFFF',
+                'bg' => '#FFF7F5',
+                'surface' => '#FFFFFF',
+                'text' => '#1F1416',
+                'muted' => '#5A4A4C',
+                'border' => '#EBD3CF',
+                'admin_bg' => '#FFF7F5',
+                'admin_nav' => '#14532D',
+                'admin_hover' => '#1E6B3C',
+                'admin_text' => '#DCFCE7',
+            ],
+        ],
+
+        'fete-paques' => [
+            'label' => 'Pâques',
+            'festive' => true,
+            'palette' => [
+                'primary' => '#7E22CE',
+                'primary_content' => '#FFFFFF',
+                'secondary' => '#3B1D5A',
+                'secondary_content' => '#FFFFFF',
+                'accent' => '#B45309',
+                'accent_content' => '#FFFFFF',
+                'bg' => '#FAF6FF',
+                'surface' => '#FFFFFF',
+                'text' => '#1E1230',
+                'muted' => '#554568',
+                'border' => '#E3D6F2',
+                'admin_bg' => '#FAF6FF',
+                'admin_nav' => '#3B1D5A',
+                'admin_hover' => '#52307A',
+                'admin_text' => '#E9D5FF',
+            ],
+        ],
+
+        'fete-pentecote' => [
+            'label' => 'Pentecôte',
+            'festive' => true,
+            'palette' => [
+                'primary' => '#C2410C',
+                'primary_content' => '#FFFFFF',
+                'secondary' => '#7C2D12',
+                'secondary_content' => '#FFFFFF',
+                'accent' => '#0369A1',
+                'accent_content' => '#FFFFFF',
+                'bg' => '#FFF6F0',
+                'surface' => '#FFFFFF',
+                'text' => '#231510',
+                'muted' => '#5E4A40',
+                'border' => '#F0D8CA',
+                'admin_bg' => '#FFF6F0',
+                'admin_nav' => '#7C2D12',
+                'admin_hover' => '#9A3B1B',
+                'admin_text' => '#FFEDD5',
+            ],
+        ],
+
+        // Rouge, vert et blanc du drapeau malgache (le vert est assombri pour garder un texte blanc lisible).
+        'fete-independance' => [
+            'label' => 'Indépendance',
+            'festive' => true,
+            'palette' => [
+                'primary' => '#C41E2A',
+                'primary_content' => '#FFFFFF',
+                'secondary' => '#00693A',
+                'secondary_content' => '#FFFFFF',
+                'accent' => '#17181A',
+                'accent_content' => '#FFFFFF',
+                'bg' => '#F5FAF6',
+                'surface' => '#FFFFFF',
+                'text' => '#14201A',
+                'muted' => '#41524A',
+                'border' => '#D3E5D9',
+                'admin_bg' => '#F5FAF6',
+                'admin_nav' => '#17181A',
+                'admin_hover' => '#2A2C30',
+                'admin_text' => '#D1D5DB',
             ],
         ],
     ],
