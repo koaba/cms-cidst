@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Services\Festival\FestivalTheme;
 use App\Services\Theme\ContrastGuard;
 use App\Services\Theme\ThemePalette;
 use App\Services\Theme\ThemeRoles;
@@ -60,7 +61,7 @@ class UpdateSiteSettingRequest extends FormRequest
             'cta_secondary_target' => 'nullable|string|max:255',
             'primary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'secondary_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'theme' => ['nullable', Rule::in(array_keys(config('themes.themes')))],
+            'theme' => ['nullable', Rule::in(array_keys(FestivalTheme::selectable()))],
             'news_ticker_direction' => 'nullable|in:horizontal,vertical',
             'pages_grid_columns' => 'nullable|in:2,3,4',
             'pages_image_size' => 'nullable|in:small,medium,large',

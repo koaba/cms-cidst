@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\SiteSetting;
+use App\Services\Festival\FestivalTheme;
 use App\Services\Theme\ThemeStyleBuilder;
 use Illuminate\View\Component;
 use Illuminate\View\View;
@@ -11,9 +12,11 @@ class ThemeStyle extends Component
 {
     public string $css;
 
-    public function __construct(ThemeStyleBuilder $builder)
+    /** $festive : site public seulement ; l'administration garde toujours le theme choisi. */
+    public function __construct(ThemeStyleBuilder $builder, FestivalTheme $festival, bool $festive = false)
     {
         $settings = SiteSetting::current();
+        $festivalTheme = $festive ? $festival->key(now()) : null;
 
         // Valeur brute : un JSON absent, invalide ou qui n'est pas un tableau est ignoré.
         $raw = $settings->getRawOriginal('theme_colors');
@@ -22,8 +25,8 @@ class ThemeStyle extends Component
         $this->css = $builder->css(
             $settings->getRawOriginal('primary_color'),
             $settings->getRawOriginal('secondary_color'),
-            $settings->getRawOriginal('theme'),
-            is_array($colors) ? $colors : null,
+            $festivalTheme ?? $settings->getRawOriginal('theme'),
+            $festivalTheme === null && is_array($colors) ? $colors : null,
         );
     }
 

@@ -15,6 +15,9 @@
  * (FestivalCalendarTest garantit qu'aucun chevauchement n'existe de 2026 a 2060).
  */
 return [
+    // Interrupteur general (variable FESTIVALS_ENABLED du .env) ; l'interface d'administration viendra au lot 3e-bis-4.
+    'enabled' => env('FESTIVALS_ENABLED', true),
+
     'festivals' => [
         'noel' => [
             'label' => 'Noël',
