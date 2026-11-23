@@ -14,6 +14,7 @@ use App\Models\SiteSetting;
 use App\Observers\PublicLayoutCacheObserver;
 use App\Observers\PublicPageCacheObserver;
 use App\Observers\SitemapCacheObserver;
+use App\Services\Festival\FestivalCalendar;
 use App\Support\PublicLayout;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -26,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(FestivalCalendar::class, fn () => new FestivalCalendar(config('festivals.festivals', [])));
     }
 
     /**
