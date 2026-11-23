@@ -45,7 +45,7 @@
         <fieldset>
             <legend class="block font-medium mb-1">Thème du site</legend>
             <div class="space-y-2">
-                @foreach (config('themes.themes') as $key => $theme)
+                @foreach (\App\Services\Festival\FestivalTheme::selectable() as $key => $theme)
                     <label class="flex items-center gap-3 border rounded p-3 cursor-pointer">
                         <input type="radio" name="theme" value="{{ $key }}" @checked(old('theme', $settings->theme ?? config('themes.default')) === $key)>
                         <span class="font-medium">{{ $theme['label'] }}</span>
