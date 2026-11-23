@@ -23,7 +23,8 @@ Production visee : VPS Ubuntu 24.04 (essai sur serveur gratuit jetable prevu, vo
 2. ETAT AU 20/11/2026
 ---------------------
 
-master = origin/master = e1b0cae (fusion de feat/graphiques-theme).
+master = origin/master = 4035d6b (fusion de docs/passation-46).
+Entre le lot 3e-3 (e1b0cae) et ce document, deux branches de durcissement des tests ont ete fusionnees le 20/11 : feat/tests-affichage (lot 3e-4a, a4964be) et feat/tests-affichage-b (lot 3e-4b, 3e02d2a, 4 familles de tests). Elles ne modifient AUCUN code applicatif (git diff e1b0cae..master sur app, resources, config, routes, database : vide), seulement des tests et tests/Pest.php.
 Tags stables recents (poses seulement apres la ligne "master -> master" du push) :
   stable-2026-11-20-daisybase       lot 3e-0
   stable-2026-11-20-etatparttheme   lot 3e-1
@@ -31,8 +32,8 @@ Tags stables recents (poses seulement apres la ligne "master -> master" du push)
   stable-2026-11-20-graphiquestheme lot 3e-3
 Tags anterieurs : series stable-2026-11-18-* et stable-2026-11-19-* (dernier de la serie du 19 : deployerclic, c12bb08).
 
-Tests au dernier push : Pest 1801 tests, 5466 assertions, verts (4 processus, de 240 a 530 s selon la machine). Tests JS (node --test) : 39 verts. Pint et Larastan : sans erreur.
-Fichiers de test : environ 252 dans tests/Feature, 13 dans tests/Unit.
+Tests au dernier push (4035d6b) : Pest 1800 tests, 5528 assertions, verts (4 processus, 177 s ; de 177 a 530 s selon la machine). Apres le lot 3e-3 on comptait 1801 tests et 5466 assertions : les lots 3e-4a/b ont supprime les deux ExampleTest et renforce de nombreuses assertions (plus d'assertions, un test de moins). Tests JS (node --test) : 39 verts. Pint et Larastan : sans erreur.
+Fichiers de test : environ 252 dans tests/Feature et 13 dans tests/Unit au lot 3e-3 ; tests/Feature/ExampleTest.php et tests/Unit/ExampleTest.php ont ete supprimes depuis (lot 3e-4b).
 Aucune autre branche que master (locale et distante), sauf branche de travail en cours.
 
 Environnement de travail de l'assistant (utile pour reproduire) : clone, "composer install --no-scripts", cp .env.example .env, php artisan key:generate, puis "php artisan test --parallel --processes=4". Node 22 pour "npm ci" et "npx vite build".
@@ -55,7 +56,7 @@ Hooks Husky :
   pre-commit : lint PHP des fichiers modifies.
   pre-push : Pint --test, Larastan, npm run test:js, Pest complet en parallele. Un push de suppression de branche ou de tag saute les verifications.
 
-Tests Pest : helpers communs dans tests/Pest.php (adminUser(), publicationUser(), setDeleteCode()). Les fonctions declarees dans un fichier de test sont GLOBALES : prefixer chaque helper (exemples : spa* dans ThemeStatusPaletteTest, cs* dans ThemeClairSombreTest, mro*, dsql*, dcnt*) ; ne jamais nommer un helper visit() (reserve par Pest). Les constantes globales de test aussi (CS_ROLES, SPA_FAMILIES...).
+Tests Pest : helpers communs dans tests/Pest.php (adminUser(), publicationUser(), setDeleteCode(), scheduledCron($command) [lot 3e-4b : expression cron d'une commande planifiee, null si elle ne l'est pas]). Les fonctions declarees dans un fichier de test sont GLOBALES : prefixer chaque helper (exemples : spa* dans ThemeStatusPaletteTest, cs* dans ThemeClairSombreTest, prf* dans ProfileTest, mro*, dsql*, dcnt*) ; ne jamais nommer un helper visit() (reserve par Pest). Les constantes globales de test aussi (CS_ROLES, SPA_FAMILIES...).
 Dossier : un test qui appelle config(), view() ou la base doit etre dans tests/Feature (le dossier Unit ne demarre pas l'application ; Pest.php lie TestCase a Feature seulement). Un test Unit qui a besoin de la config lit le fichier : (require dirname(__DIR__, 2).'/config/themes.php')['themes'].
 Tests JS : node --test sans dependance, via "npm run test:js" (liste de fichiers dans package.json : l'ajouter a chaque nouveau fichier .test.js). Logique pure dans resources/js/**/xxx-lib.js, branchement DOM minimal dans le fichier appelant.
 Accents : dans les fichiers PHP, sequences \u{e9} ou entites HTML (PowerShell 5 abime l'affichage). Commits sans accents.
@@ -181,7 +182,7 @@ Avant le Pest complet sous Windows : TEMP et TMP vers storage\framework\tmp, pui
 7. ORDRE RECOMMANDE POUR LA SUITE
 ---------------------------------
 
-  1. (Client) Controle visuel de Clair et Sombre, et corrections eventuelles (peut donner un lot 3e-4).
+  1. (Client) Controle visuel de Clair et Sombre, et corrections eventuelles (peut donner un lot 3e-5 : 3e-4a et 3e-4b sont pris par le durcissement des tests).
   2. Lot 3e-bis : themes de fetes (apres decision du client, voir 5.6).
   3. Controles navigateur declares faits par le client mais jamais vus : Audience, Messages avec compteur, Guide (Super Admin puis Publication), favicon sur /, /login, /admin, /profile [non verifie].
   4. ESSAI DE DEPLOIEMENT sur un serveur gratuit jetable avec scripts\deployer.bat et docs/installation-serveur.md (Ubuntu 24.04, acces root/sudo, domaine ou sous-domaine pointe ; sans domaine, pas de HTTPS). Decision du 19/11 : seulement APRES la fin des designs. Consigner chaque ecart constate. A valider : installation, build envoye, app:check-environment, premier admin (app:create-super-admin), mise a jour par relance du script, formulaire de contact.
@@ -189,6 +190,7 @@ Avant le Pest complet sous Windows : TEMP et TMP vers storage\framework\tmp, pui
   6. Durcir la confidentialite de l'Audience (anonymisation de visitor_hash avant 13 mois) ; relire le role des commandes Artisan de rattrapage.
   7. Deploiement en production (docs/deploiement.md).
   8. Revue d'ensemble des tests demandee par le client avant la fin du projet : chasse aux "faux verts" (tests qui ne verifient que assertSessionHasNoErrors(), tests sans mutation de controle), recensement par domaine (contact, themes, audience, droits par role, SEO, environnement) pour reperer ce qui n'est couvert nulle part. Mesure Pest --profile du 19/11 : pas de point chaud, la duree vient de la masse (environ 0,27 s par test).
+     MISE A JOUR 20/11 : la chasse aux faux verts est PARTIELLEMENT FAITE (lots 3e-4a et 3e-4b, commits ef6e16d, e667099, 4de3c5c, fe26792, 0a2ada7) : les tests d'ecrans admin, d'authentification, de pages publiques, de profil, de planification et de rattrapage verifient maintenant leur contenu (formulaire, jeton, methode, frequence cron, image traitee) et plus seulement le statut 200 ; le filigrane cover/galerie est verifie par espion ; les deux ExampleTest sont supprimes. Detail : git log e1b0cae..3e02d2a. Reste a faire : le recensement par domaine (contact, themes, audience, droits par role, SEO, environnement) et les tests encore limites a assertSessionHasNoErrors() [non verifie : recensement non refait apres 3e-4b]. Aucun tag stable pose pour 3e-4a/b a ma connaissance [non verifie].
 
 
 8. DETTE ET TROUS CONNUS
@@ -224,7 +226,7 @@ Avant le Pest complet sous Windows : TEMP et TMP vers storage\framework\tmp, pui
   git clone https://github.com/koaba/cms-cidst.git ; cd cms-cidst
   composer install ; cp .env.example .env ; php artisan key:generate
   npm ci ; npm run test:js
-  php artisan test --parallel --processes=4        (attendu : 1801 tests verts)
+  php artisan test --parallel --processes=4        (attendu : 1800 tests verts, 5528 assertions)
   vendor/bin/pint --test ; vendor/bin/phpstan analyse --memory-limit=1G
   Lire dans cet ordre : ce document, docs/passation-45.md, config/themes.php, app/Services/Theme/ThemeStyleBuilder.php, config/admin_menu.php, routes/web.php, config/page_blocks.php.
   Premier lot a ouvrir : retours du client sur le rendu Sombre/Clair, ou themes de fetes (lot 3e-bis).
