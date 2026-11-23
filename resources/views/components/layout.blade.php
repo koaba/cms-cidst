@@ -6,7 +6,7 @@
     @include('partials.seo-meta', ['model' => $seo ?? null, 'seoPage' => $seoPage ?? null, 'seoReplace' => $seoReplace ?? []])
     @include('partials.favicon')
     @vite('resources/css/public.css')
-    <x-theme-style />
+    <x-theme-style :festive="true" />
 </head>
 <body class="min-h-screen flex flex-col">
     <x-news-ticker />
