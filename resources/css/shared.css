@@ -35,3 +35,16 @@
 .animate-marquee-vertical {
     animation: marquee-vertical 20s linear infinite;
 }
+
+/* Decor de fete (lot 3e-bis-3) : leger balancement, coupe si le visiteur reduit les animations. */
+@keyframes festival-float {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-3px) rotate(4deg); }
+}
+.festival-float {
+    animation: festival-float 3.2s ease-in-out infinite;
+    transform-origin: 50% 80%;
+}
+@media (prefers-reduced-motion: reduce) {
+    .festival-float { animation: none; }
+}
