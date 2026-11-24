@@ -12,6 +12,7 @@ function fdAt(string $date): void
 
 const FD_DATES = [
     'noel' => ['2026-12-25', 'noel'],
+    'nouvelan' => ['2026-12-31', 'nouvelan'],
     'paques' => ['2026-04-05', 'paques'],
     'pentecote' => ['2026-05-24', 'pentecote'],
     'independance' => ['2026-06-26', 'independance'],
@@ -31,7 +32,7 @@ it('n affiche aucun decor hors fenetre', function (string $date) {
     fdAt($date);
 
     $this->get('/')->assertOk()->assertDontSee('data-festival-decor', false);
-})->with(['hors fete' => '2026-07-15', 'lendemain de la fenetre' => '2026-12-27']);
+})->with(['hors fete' => '2026-07-15', 'lendemain de la fenetre' => '2027-01-03']);
 
 it('n affiche aucun decor dans l administration', function () {
     fdAt('2026-12-25');
