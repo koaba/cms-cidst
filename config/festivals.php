@@ -27,6 +27,15 @@ return [
             'theme' => 'fete-noel',
             'decor' => 'noel',
         ],
+        // Fin d'annee : prend le relais de Noel (27 decembre) jusqu'au 2 janvier. Un seul theme pour les deux.
+        'nouvelan' => [
+            'label' => 'Fin d\'année et Nouvel An',
+            'rule' => ['fixed' => [1, 1]],
+            'before' => 5,
+            'after' => 1,
+            'theme' => 'fete-nouvel-an',
+            'decor' => 'nouvelan',
+        ],
         'paques' => [
             'label' => 'Pâques',
             'rule' => ['easter' => 0],
@@ -60,6 +69,7 @@ return [
      */
     'decors' => [
         'noel' => ['logo' => 'hat', 'strip' => ['hat', 'gift', 'gift', 'hat', 'gift', 'gift', 'hat']],
+        'nouvelan' => ['logo' => 'star', 'strip' => ['firework', 'star', 'glass', 'firework', 'star', 'glass', 'firework']],
         'paques' => ['logo' => 'egg', 'strip' => ['egg', 'egg', 'egg', 'egg', 'egg', 'egg', 'egg']],
         'pentecote' => ['logo' => 'flame', 'strip' => ['flame', 'dove', 'flame', 'dove', 'flame', 'dove', 'flame']],
         'independance' => ['logo' => 'flag', 'strip' => ['flag', 'flag', 'flag', 'flag', 'flag', 'flag', 'flag']],
