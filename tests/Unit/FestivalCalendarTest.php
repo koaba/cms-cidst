@@ -45,6 +45,22 @@ it('donne la fenetre de decoration de chaque fete', function (string $key, strin
     ['independance', '06-19..06-27'],
 ]);
 
+it('donne la fenetre en cours ou la prochaine a venir', function (string $key, string $from, string $expected) {
+    [$start, $end] = fcCalendar()->nextWindow($key, new DateTimeImmutable($from));
+
+    expect($start->format('Y-m-d').'..'.$end->format('Y-m-d'))->toBe($expected);
+})->with([
+    ['noel', '2026-11-24', '2026-12-15..2026-12-26'],
+    ['noel', '2026-12-20', '2026-12-15..2026-12-26'],
+    ['noel', '2026-12-26', '2026-12-15..2026-12-26'],
+    ['noel', '2026-12-27', '2027-12-15..2027-12-26'],
+    ['nouvelan', '2026-11-24', '2026-12-27..2027-01-02'],
+    ['nouvelan', '2027-01-02', '2026-12-27..2027-01-02'],
+    ['nouvelan', '2027-01-03', '2027-12-27..2028-01-02'],
+    ['paques', '2026-04-06', '2026-03-29..2026-04-06'],
+    ['paques', '2026-04-07', '2027-03-21..2027-03-29'],
+]);
+
 it('active la fete sur ses bornes exactes, pas un jour de plus ni de moins', function (string $date, ?string $expected) {
     expect(fcOn($date))->toBe($expected);
 })->with([
