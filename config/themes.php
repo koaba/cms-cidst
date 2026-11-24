@@ -159,6 +159,29 @@ return [
             ],
         ],
 
+        // Fin d'annee et Nouvel An (27 decembre - 2 janvier) : bleu nuit et or.
+        'fete-nouvel-an' => [
+            'label' => 'Fin d\'année et Nouvel An',
+            'festive' => true,
+            'palette' => [
+                'primary' => '#1E3A8A',
+                'primary_content' => '#FFFFFF',
+                'secondary' => '#0B1B3F',
+                'secondary_content' => '#FFFFFF',
+                'accent' => '#8A5A00',
+                'accent_content' => '#FFFFFF',
+                'bg' => '#F4F6FC',
+                'surface' => '#FFFFFF',
+                'text' => '#121829',
+                'muted' => '#4A5470',
+                'border' => '#D5DBEE',
+                'admin_bg' => '#F4F6FC',
+                'admin_nav' => '#0B1B3F',
+                'admin_hover' => '#1B2C5E',
+                'admin_text' => '#E0E7FF',
+            ],
+        ],
+
         'fete-paques' => [
             'label' => 'Pâques',
             'festive' => true,
