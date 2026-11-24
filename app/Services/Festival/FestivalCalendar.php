@@ -70,6 +70,28 @@ class FestivalCalendar
         ];
     }
 
+    /**
+     * Fenetre en cours ou la prochaine a venir pour une fete, a partir d'un jour donne (jours inclus).
+     *
+     * @return array{0: DateTimeImmutable, 1: DateTimeImmutable}
+     */
+    public function nextWindow(string $key, DateTimeInterface $from): array
+    {
+        $today = $from->format('Y-m-d');
+        $year = (int) $from->format('Y');
+
+        // Annee precedente incluse : la fenetre de fin d'annee finit en janvier.
+        foreach ([$year - 1, $year] as $candidate) {
+            $window = $this->windowOf($key, $candidate);
+
+            if ($window[1]->format('Y-m-d') >= $today) {
+                return $window;
+            }
+        }
+
+        return $this->windowOf($key, $year + 1);
+    }
+
     /** Cle de la fete decoree ce jour-la, ou null. En cas de chevauchement, la premiere de la config l'emporte. */
     public function activeOn(DateTimeInterface $date): ?string
     {
