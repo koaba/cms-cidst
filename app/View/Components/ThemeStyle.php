@@ -16,7 +16,7 @@ class ThemeStyle extends Component
     public function __construct(ThemeStyleBuilder $builder, FestivalTheme $festival, bool $festive = false)
     {
         $settings = SiteSetting::current();
-        $festivalTheme = $festive ? $festival->key(now()) : null;
+        $festivalTheme = $festive ? $festival->key() : null;
 
         // Valeur brute : un JSON absent, invalide ou qui n'est pas un tableau est ignoré.
         $raw = $settings->getRawOriginal('theme_colors');
