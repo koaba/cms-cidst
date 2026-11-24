@@ -2,32 +2,41 @@
 
 namespace App\View\Components;
 
-use App\Services\Festival\FestivalCalendar;
+use App\Services\Festival\FestivalSettings;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
 /**
  * Decor de fete du site public : bandeau au-dessus du menu ('strip') ou icone sur le logo ('logo').
- * Rien n'est rendu hors fenetre de fete ni si l'interrupteur est coupe (meme calendrier et meme interrupteur
- * que la palette). Les icones viennent de config('festivals.decors').
+ * Rien n'est rendu hors fenetre de fete, si les fetes sont coupees (.env ou administration), si la fete est
+ * desactivee ou si son emplacement ne comprend pas cette variante. Fete, date, emplacement, icones et animation
+ * viennent de FestivalSettings (reglages de l'administration, valeurs par defaut de config/festivals.php).
  */
 class FestivalDecor extends Component
 {
     /** Cle du jeu d'icones de la fete en cours, ou null. */
     public ?string $decor = null;
 
-    /** @var array<string, mixed> */
+    /** @var array{logo?: string, strip?: list<string>} */
     public array $icons = [];
 
-    public function __construct(FestivalCalendar $calendar, public string $variant = 'strip')
-    {
-        $key = config('festivals.enabled') ? $calendar->activeOn(now()) : null;
-        $decor = $key === null ? null : config("festivals.festivals.$key.decor");
-        $icons = is_string($decor) ? config("festivals.decors.$decor") : null;
+    public bool $animated = true;
 
-        if (is_array($icons)) {
+    public function __construct(FestivalSettings $settings, public string $variant = 'strip')
+    {
+        $festival = $settings->activeKey();
+        $decor = $festival === null ? null : config("festivals.festivals.$festival.decor");
+
+        if ($festival === null || ! is_string($decor)) {
+            return;
+        }
+
+        $options = $settings->options($festival);
+
+        if (in_array($options['placement'], ['both', $variant], true)) {
             $this->decor = $decor;
-            $this->icons = $icons;
+            $this->icons = ['logo' => $options['logo'], 'strip' => $settings->strip($festival)];
+            $this->animated = $options['animated'];
         }
     }
 

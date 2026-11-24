@@ -6,20 +6,17 @@ use DateTimeInterface;
 
 /**
  * Theme de fete a appliquer au site public un jour donne : la cle du theme de config/themes.php lie
- * a la fete en cours (config/festivals.php), ou null hors fenetre, si les fetes sont coupees
- * (FESTIVALS_ENABLED) ou si le theme de la fete n'existe pas.
+ * a la fete en cours (config/festivals.php), ou null hors fenetre, si les fetes sont coupees (.env ou
+ * administration), si la fete est desactivee ou si le theme de la fete n'existe pas.
+ * Sans date, c'est le jour que donne FestivalSettings (date simulee pour le seul Super Admin).
  */
 final class FestivalTheme
 {
-    public function __construct(private readonly FestivalCalendar $calendar) {}
+    public function __construct(private readonly FestivalSettings $settings) {}
 
-    public function key(DateTimeInterface $date): ?string
+    public function key(?DateTimeInterface $date = null): ?string
     {
-        if (! config('festivals.enabled', true)) {
-            return null;
-        }
-
-        $festival = $this->calendar->activeOn($date);
+        $festival = $this->settings->activeKey($date);
         $theme = $festival === null ? null : config('festivals.festivals.'.$festival.'.theme');
 
         return is_string($theme) && is_array(config('themes.themes.'.$theme.'.palette')) ? $theme : null;

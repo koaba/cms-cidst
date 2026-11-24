@@ -52,6 +52,9 @@ class SiteSetting extends Model
         'contact_hours',
         'map_latitude',
         'map_longitude',
+        'festivals_enabled',
+        'festivals_simulated_on',
+        'festivals_options',
     ];
 
     protected $hidden = ['delete_code_hash'];
@@ -72,6 +75,9 @@ class SiteSetting extends Model
         'footer_show_contacts' => 'boolean',
         'map_latitude' => 'float',
         'map_longitude' => 'float',
+        'festivals_enabled' => 'boolean',
+        'festivals_simulated_on' => 'date',
+        'festivals_options' => 'array',
     ];
 
     public function getPrimaryColorAttribute($value): string
