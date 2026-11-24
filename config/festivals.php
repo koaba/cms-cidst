@@ -63,9 +63,26 @@ return [
     ],
 
     /*
+     * Bibliotheque d'icones proposees dans Administration > Fetes (lot 3e-bis-4) : cle => libelle.
+     * Ajouter une icone = un partial resources/views/partials/festival/icons/<cle>.blade.php + une ligne ici.
+     */
+    'icons' => [
+        'hat' => 'Bonnet',
+        'gift' => 'Cadeau',
+        'egg' => 'Œuf',
+        'flame' => 'Flamme',
+        'dove' => 'Colombe',
+        'flag' => 'Drapeau malgache',
+        'star' => 'Étoile',
+        'firework' => 'Feu d\'artifice',
+        'glass' => 'Coupe',
+    ],
+
+    /*
      * Decors (lot 3e-bis-3) : icones SVG de resources/views/partials/festival/icons/<nom>.blade.php.
      *  - logo  : icone posee sur le coin du logo du menu.
      *  - strip : icones du bandeau au-dessus du menu (les 4 premieres restent visibles sur mobile).
+     * Ce sont les valeurs PAR DEFAUT : Administration > Fetes (site_settings.festivals_options) peut les changer.
      */
     'decors' => [
         'noel' => ['logo' => 'hat', 'strip' => ['hat', 'gift', 'gift', 'hat', 'gift', 'gift', 'hat']],
