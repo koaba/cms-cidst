@@ -39,6 +39,7 @@ it('donne la fenetre de decoration de chaque fete', function (string $key, strin
     expect(fcWindow($key, 2026))->toBe($window);
 })->with([
     ['noel', '12-15..12-26'],
+    ['nouvelan', '12-27..01-02'],
     ['paques', '03-29..04-06'],
     ['pentecote', '05-21..05-25'],
     ['independance', '06-19..06-27'],
@@ -50,7 +51,13 @@ it('active la fete sur ses bornes exactes, pas un jour de plus ni de moins', fun
     ['2026-12-14', null],
     ['2026-12-15', 'noel'],
     ['2026-12-26', 'noel'],
-    ['2026-12-27', null],
+    ['2026-12-27', 'nouvelan'],
+    ['2026-12-31', 'nouvelan'],
+    ['2027-01-01', 'nouvelan'],
+    ['2027-01-02', 'nouvelan'],
+    ['2027-01-03', null],
+    ['2026-01-02', 'nouvelan'],
+    ['2026-01-03', null],
     ['2026-06-18', null],
     ['2026-06-26', 'independance'],
     ['2026-06-28', null],
