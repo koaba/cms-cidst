@@ -71,7 +71,7 @@ it('traite la demande : base et fichiers archives, droits restreints', function 
         ->and($backup->db_size)->toBe(filesize($base))
         ->and($backup->files_size)->toBe(filesize($files));
 
-    $listing = shell_exec('tar -tzf '.escapeshellarg($files));
+    $listing = gzdecode((string) file_get_contents($files));
     expect($listing)->toContain('app/image.txt');
 });
 
