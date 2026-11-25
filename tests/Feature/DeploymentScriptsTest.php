@@ -15,6 +15,30 @@ it('garde install-serveur.sh en fins de ligne LF', function () {
     expect(file_get_contents(base_path('scripts/install-serveur.sh')))->not->toContain("\r");
 });
 
+it('vide le cache apres les migrations', function () {
+    $script = file_get_contents(base_path('scripts/install-serveur.sh'));
+    $clear = strpos($script, 'artisan cache:clear');
+
+    expect($clear)->toBeInt()
+        ->and($clear)->toBeGreaterThan(strpos($script, 'artisan migrate --force'))
+        ->and($clear)->toBeLessThan(strpos($script, 'artisan config:cache'));
+});
+
+it('ouvre dans le pare-feu le port SSH reel et non un profil fixe', function () {
+    $script = file_get_contents(base_path('scripts/install-serveur.sh'));
+
+    expect($script)->toContain('sshd -T')
+        ->and($script)->toContain('ufw allow "${SSH_PORT:-22}/tcp"')
+        ->and($script)->not->toContain('ufw allow OpenSSH');
+});
+
+it('met en cache longue duree les fichiers Vite dans la configuration Nginx', function () {
+    $script = file_get_contents(base_path('scripts/install-serveur.sh'));
+
+    expect($script)->toContain('location /build/')
+        ->and($script)->toContain('immutable');
+});
+
 it('lance deployer.ps1 depuis le fichier .bat', function () {
     expect(file_get_contents(base_path('scripts/deployer.bat')))->toContain('deployer.ps1');
 });
