@@ -1,0 +1,253 @@
+PASSATION TECHNIQUE #50 - CMS CIDST - 25 novembre 2026
+======================================================
+
+Document AUTONOME : il remplace la lecture des passations #47, #48 et #49 (qui ne sont pas dans le depot ;
+seuls docs/passation.md, passation-44.md, passation-45.md et passation-46.txt y sont). Pour l'architecture
+generale d'origine, lire aussi docs/passation-46.txt. En cas de conflit entre un document, le code et les
+tests, LE CODE ET LES TESTS FONT FOI. Convention : [non verifie] = pas confirme par une sortie de test ou
+par le code.
+
+Profil attendu du developpeur : Laravel senior, code propre, precis, sans redondance, debogage rapide ;
+full stack avec sens du design (UI/UX, Tailwind, Alpine.js), CMS evolutif (un lot = une branche).
+
+
+1. PROJET ET STACK
+------------------
+CMS Laravel du CIDST (Madagascar).
+  Site public : blog, pages a blocs, documents PDF, sliders, news ticker, recherche, sitemap, robots,
+  contact, themes de couleurs, decors de fetes.
+  Administration : roles Super Admin et Publication (App\Enums\UserRole, spatie/laravel-permission).
+Imperatifs du client : mobile-first, design harmonise site/admin, SEO, code leger sans redondance, evolutif,
+options de personnalisation avancees dans l'administration.
+Stack : Laravel 13.x, PHP 8.3, Pest 4, Pint, Larastan (niveau 5 + phpstan-baseline.neon), Tailwind 3 (DEUX
+builds : admin et public), DaisyUI 4.12 (admin seulement), Alpine.js, Chart.js, Vite 8, Husky.
+Depot : github.com/koaba/cms-cidst (branche master, public).
+Poste client : Windows, Laragon, PowerShell 5, C:\laragon\www\laravel-academy, MySQL. Tests : SQLite memoire.
+Fuseau : Indian/Antananarivo (APP_TIMEZONE). Couleurs de marque : #C41E2A (rouge) / #17181A (noir).
+Production prevue : VPS Ubuntu 24.04, Nginx, PHP-FPM 8.3, MySQL, Let's Encrypt (voir section 7).
+CACHE_STORE=database ; QUEUE_CONNECTION=sync en production (aucun worker a maintenir) ; SESSION_DRIVER=database.
+
+
+2. ETAT AU 25/11/2026 (12h)
+---------------------------
+CERTAIN (sorties collees par le client) :
+  Tags stables sur master (du plus recent au plus ancien) :
+    stable-2026-11-25-deployhardening (c0e515b)  durcissement du script d'installation serveur
+    stable-2026-11-24-testscoverage   (d708c9f)  tests des 5 trous restants
+    stable-2026-11-24-festivaladmin   (963907f)  page Administration > Fetes (lot 3e-bis-4)
+    stable-2026-11-24-festivalnewyear              fete "Fin d'annee et Nouvel An" (3e-bis-3b)
+    stable-2026-11-23-festivaldecor                decors (3e-bis-3)
+    stable-2026-11-23-festivalthemes               themes de fete (3e-bis-2)
+    stable-2026-11-23-festivalscalendar            calendrier des fetes (3e-bis-1)
+Lot deploy-hardening : FUSIONNE ET TAGUE. master c0e515b == origin/master, tag
+  stable-2026-11-25-deployhardening. Contenu : tests/Feature/DeploymentScriptsTest.php (3 gardes ajoutees,
+  27ef232) et scripts/install-serveur.sh (0adf7d7) : cache:clear apres migrate ; port SSH reel dans ufw ; gzip et
+  cache longue duree de /build/ dans Nginx. Suite complete au push : 1936 tests passes (6569 assertions), Pint
+  et Larastan verts. Branche supprimee en local et sur origin (restent sur origin : feat/festival-themes et
+  feat/festivals-calendar, fusionnees, a supprimer si voulu).
+NON FAIT / [non verifie] :
+  - AUCUN controle visuel : /admin/festivals (Clair, Sombre, mobile) ; site public avec date simulee pour
+    chaque fete (decor et theme, bureau et mobile). Decision du client : a faire AVANT LA FIN DU PROJET.
+  - Les 3 icones du Nouvel An (star, firework, glass) et la colombe (Pentecote) sont des propositions non
+    validees visuellement. Les fenetres before/after de toutes les fetes sont des choix a valider.
+  - Les scripts scripts/install-serveur.sh et scripts/deployer.ps1 n'ont JAMAIS ete executes en reel.
+  - Les branches MySQL et PostgreSQL de App\Support\SqlDate::bucket ne sont pas testees (tests en SQLite).
+  - Mutations de controle non faites sur le lot 3e-bis-4 (FestivalSettingsTest) ; faites sur les 5 fichiers de
+    tests du lot tests-coverage (une mutation par fichier, toutes tuees) et sur 3 gardes de deploy-hardening.
+
+
+3. ARCHITECTURE FONCTIONNELLE (resume)
+--------------------------------------
+Controleurs publics : ArticleController (blog, route blog.show avec middleware track.view:article), PageController,
+  PdfDocumentController, SliderController, SearchController, ContactController (throttle 5/min),
+  SitemapController, RobotsController, HomeController.
+Administration : app/Http/Controllers/Admin/*Controller.php ; requetes dans app/Http/Requests/Admin/.
+  Reglages generaux : SiteSettingController + UpdateSiteSettingRequest (refuse un theme de fete via
+  FestivalTheme::selectable()) + app/Services/SiteSettingService.php.
+Menu admin : config/admin_menu.php = UNE SEULE source pour la barre laterale, les raccourcis du tableau de bord
+  et le Guide. Chaque entree : label, route, description UNIQUE et non vide, active, 'roles' optionnel.
+  Descriptions avec sequences \u{e9} (PHP). Tests : AdminMenuConfigTest, AdminMenuDescriptionTest,
+  AdminGuideTest, AdminSidebarTest.
+Medias : table media + pivot polymorphe mediables (order, alt, caption). Modeles avec relation media() :
+  Article, Slider, PageBlock (et diaporamas). Traits : HasOrderedMediaCollection, HasOrphanMediaCleanup.
+  Media::deleting supprime les fichiers (path, thumbnail_path, variants). Job ProcessMediaImage (variantes).
+  Services : MediaUploader, MediaOverviewService, ExistingImageConverter.
+Page builder : PageBlock (type, data json, parent_id, slot_index, order), blocs imbriques (colonnes, accordeon).
+Statistiques : PageView (vue anonyme par article, dedoublonnee par IP hashee sur 1 h via le middleware
+  TrackPageView), SiteVisit (Audience, visitor_hash en HMAC), App\Services\Dashboard\* ; regroupements par
+  date via App\Support\SqlDate::bucket (mysql/mariadb DATE_FORMAT, pgsql to_char, sqlite strftime).
+Commandes Artisan (toutes ont au moins un test) : app:check-environment, app:create-super-admin,
+  app:migrate-videos-to-media, articles:migrate-to-media, sliders:migrate-to-media, blocks:audit-phantom-columns,
+  media:backfill-dimensions, media:backfill-variants, media:convert-webp, media:prune, watermark:install-logo,
+  contact:prune-images, contact:prune-messages, page-views:prune, audience:prune.
+  Planification (routes/console.php) : page-views:prune hebdo ; audience:prune, contact:prune-images et
+  contact:prune-messages quotidiens ; battement de coeur du planificateur. Cron serveur : schedule:run /min.
+Securite : CSP en mode enforce (CSP_MODE), cookies de session securises en production, validation stricte
+  (Rule::in), middleware de route par role ; AdminRouteAccessTest exige auth + role sur toute route admin.
+
+
+4. SYSTEME DES FETES (lots 3e-bis-1 a 4)
+----------------------------------------
+config/festivals.php (UTF-8 reel) :
+  'enabled' => env('FESTIVALS_ENABLED', true) : coupe-circuit .env, PRIORITAIRE sur la base.
+  'festivals' : l'ORDRE compte (la premiere fenetre l'emporte ; FestivalCalendarTest garantit qu'aucune
+  fenetre ne se chevauche de 2026 a 2060). Chaque fete : label, rule, before, after, theme, decor.
+      noel          fixed 12-25   avant 10, apres 1  -> 15/12..26/12   theme fete-noel          decor noel
+      nouvelan      fixed 01-01   avant 5,  apres 1  -> 27/12..02/01   theme fete-nouvel-an     decor nouvelan
+                    (label "Fin d'annee et Nouvel An" ; un seul theme ; la fenetre deborde sur janvier)
+      paques        easter 0      avant 7,  apres 1                    theme fete-paques       decor paques
+      pentecote     easter 49     avant 3,  apres 1                    theme fete-pentecote    decor pentecote
+      independance  fixed 06-26   avant 7,  apres 1                    theme fete-independance decor independance
+  'icons'  : bibliotheque cle => libelle : hat, gift, egg, flame, dove, flag, star, firework, glass.
+  'decors' : par decor, 'logo' (icone du coin du logo) et 'strip' (7 icones du bandeau) = valeurs PAR DEFAUT,
+  surchargeables depuis l'administration.
+Icones : resources/views/partials/festival/icons/<cle>.blade.php (SVG inline, accepte $class). Couleurs de theme via
+  fill-cidst-primary / fill-cidst-secondary / stroke-cidst-primary ; couleurs fixes en attributs SVG.
+  Le build Tailwind PUBLIC ne scanne que views/public, pages, partials/**, components/*.blade.php (pas les
+  sous-dossiers de components) : le balisage des icones DOIT rester dans partials/.
+
+Classes (namespace App\Services\Festival) :
+  FestivalCalendar (pure, singleton dans AppServiceProvider::register) : easter(year), dayOf(key, year),
+    windowOf(key, year), activeOn(date) -> CLE DE FETE ou null (teste year-1, year, year+1), nextWindow(key, from).
+  FestivalSettings (final, injectee, PAS un singleton) :
+    enabled() = config('festivals.enabled') ET switchedOn() ; switchedOn() = interrupteur de la base seul
+    (colonne absente => true) ; simulatedOn() = date simulee enregistree ; today() = date simulee SEULEMENT si
+    l'utilisateur connecte est Super Admin, sinon now() ; activeKey(?date) = CLE DE FETE active ou null ;
+    options(cle), strip(cle) (cycle jusqu'a 7), normalize(array) (liste blanche), update(array).
+    Constantes PLACEMENTS (both|strip|logo|none), STRIP_SLOTS = 7.
+  FestivalTheme : key(?DateTimeInterface) renvoie la cle du THEME de la fete active (ex. 'fete-noel'), PAS la
+    cle de fete ; selectable() = themes de config/themes.php sans 'festive' => true.
+Composants : App\View\Components\ThemeStyle (ThemeStyleBuilder, FestivalTheme, bool $festive = false) : si
+  $festive, le theme de fete passe avant site_settings.theme ET avant les couleurs personnalisees ; la base
+  n'est jamais modifiee. App\View\Components\FestivalDecor (FestivalSettings, string $variant = 'strip').
+Vues : layout public <x-theme-style :festive="true" /> et <x-festival-decor /> (apres le news ticker) ;
+  main-menu <x-festival-decor variant="logo" /> ; layout admin <x-theme-style /> (jamais festif, jamais de decor).
+  Le cache PublicLayout ne contient que des donnees : le decor suit la date.
+Themes de fete (config/themes.php, 'festive' => true) : fete-noel, fete-nouvel-an (bleu nuit et or), fete-paques,
+  fete-pentecote, fete-independance. Fonds clairs UNIQUES, textes blancs, contraste >= 4,5 (verifie par tests).
+Themes choisissables dans Administration > Reglages : entre autres 'clair' et 'sombre' (palettes completes avec
+  couleurs d'etat surchargees pour 'sombre'). Il n'y a PAS de bascule clair/sombre utilisateur : c'est un
+  reglage de site qui s'applique au public ET a l'administration.
+
+Administration > Fetes (/admin/festivals, routes admin.festivals.edit GET et admin.festivals.update PUT,
+  groupe Super Admin ; FestivalController + UpdateFestivalSettingsRequest ; vue admin/festivals/edit.blade.php) :
+  interrupteur general, date de simulation (Y-m-d, vide = aucune), et par fete : activation, emplacement, icone
+  du logo, 7 listes d'icones du bandeau (les 4 premieres visibles sur mobile ; case vide ignoree), animation,
+  apercu des reglages ENREGISTRES, prochaine periode. La case de base affiche switchedOn() (jamais enabled()).
+  Avertissement si FESTIVALS_ENABLED=false.
+Colonnes de site_settings : festivals_enabled (bool, defaut true), festivals_simulated_on (date, null),
+  festivals_options (json) = { "<cle de fete>": { enabled, placement, logo, strip[], animated } }.
+PIEGE DE DEPLOIEMENT : SiteSetting::current() est mis en cache "pour toujours" (Cache::rememberForever + memo
+  conteneur, invalide a chaque sauvegarde). Apres une migration, le modele en cache n'a pas les nouvelles
+  colonnes. Le code est protege (getAttribute(...) ?? true), ET depuis feat/deploy-hardening le script
+  d'installation lance artisan cache:clear apres migrate. A la main : php artisan migrate puis cache:clear.
+Hors lot : choix du TYPE d'icones (SVG ou GIF) : seule la bibliotheque SVG existe. Les GIF exigent un envoi de
+  fichiers (stockage, validation, securite) : lot 3e-bis-5 PROPOSE, en attente de la decision du client.
+
+
+5. CONVENTIONS ET GARDES AUTOMATIQUES
+-------------------------------------
+  - Toute vue admin doit declarer <x-admin.layout title="..."> (AdminPageTitlesTest).
+  - NoHardcodedGrayTest (toutes les vues) : pas de text|bg|border|ring|fill|stroke-<gray, red, green, emerald,
+    orange, yellow, amber, indigo>-NNN, pas de dark: ; blue interdit hors admin/profile/auth ; utiliser les jetons
+    cidst-* et DaisyUI (alert-*, text-base-content/NN).
+  - SiteSettingQueryCountTest : une page publique ne requete site_settings qu'UNE fois : toujours passer par
+    SiteSetting::current() (jamais SiteSetting::first()).
+  - Gardes de themes : ThemeStatusPaletteTest, ThemeSelectionTest, ThemeClairSombreTest, ThemeStatusTokensTest,
+    ThemeSuccessWarningTokensTest. Un theme de fete avec un fond deja utilise, ou sombre sans etats surcharges,
+    les fait echouer. Les tests de couleur lisent des triplets "R G B" dans --color-<role>-rgb.
+  - DeploymentScriptsTest : scripts de deploiement en ASCII, install-serveur.sh en LF, .gitignore contient
+    scripts/deployer.config.json, cache:clear entre migrate et config:cache, port SSH reel dans ufw (pas de
+    "ufw allow OpenSSH"), location /build/ immutable.
+  - Larastan niveau 5 : eviter "??" sur une propriete de modele non nullable (utiliser getAttribute()).
+  - Helpers de tests/Pest.php : adminUser(), publicationUser(), setDeleteCode(), scheduledCron().
+  - Accents : sequences \u{e9} ou entites dans les PHP de code ; config/themes.php, config/festivals.php et vues
+    Blade en vrai UTF-8. Fins de ligne LF (sauf *.bat).
+  - Tailwind public : toute classe doit apparaitre en toutes lettres dans components/*.blade.php ou partials/**.
+  - Ne pas appeler <x-theme-style :festive="true" /> ni <x-festival-decor /> dans un layout d'administration.
+  - FestivalTheme::key() renvoie une cle de THEME ; FestivalCalendar::activeOn() et FestivalSettings::activeKey()
+    renvoient une cle de FETE. Ne pas les confondre.
+
+
+6. PIEGES CONNUS (tests et outillage)
+-------------------------------------
+  - Pest : toHaveKey($cle, $valeur) : le 2e argument est la VALEUR ATTENDUE, pas un message. Les messages sont
+    acceptes par toBeTrue(), toBeArray(), etc.
+  - Fonctions et constantes d'un fichier de test sont GLOBALES : les prefixer (ft*, fc*, fd*, fs*, pm*, ms*, ap*,
+    tp*, FD_, FS_, TP_...). Les jeux de donnees Pest sont evalues AVANT le demarrage de l'application : pas de
+    config() ni de view() dans une fonction appelee par un dataset.
+  - Un test qui utilise config(), view() ou la base va dans tests/Feature. Pour fixer une date :
+    Carbon::setTestNow(Carbon::parse($d, config('app.timezone'))) et le remettre a null en afterEach.
+  - MUTATION DE CONTROLE : ne JAMAIS restaurer un fichier avec "git checkout -- <fichier>" tant qu'il n'est pas
+    commite (cela ecrase les modifications non commitees, c'est arrive sur deploy-hardening). Restaurer depuis
+    une copie en memoire, ou commiter d'abord.
+  - Ne taguer qu'apres "master -> master" (master == origin/master) ; jamais un commit rouge.
+  - Un zip livre SANS dossier racine (sinon Expand-Archive cree un sous-dossier). Un script PowerShell qui s'arrete
+    apres l'extraction du zip l'a deja SUPPRIME : ne pas le relancer tel quel ; verifier d'abord avec git log,
+    git tag et git status.
+  - Un echec de push peut etre reseau ("Could not resolve host") : le hook de pre-push a alors deja valide Pest
+    complet ; relancer le push suffit.
+  - Dettes inchangees : CSP avec unsafe-inline/unsafe-eval, anonymisation de visitor_hash avant 13 mois, SMTP
+    (Gmail, mot de passe d'application) jamais eprouve, scripts de deploiement jamais executes, rendu
+    Sombre/Clair non revu ecran par ecran.
+
+
+7. DEPLOIEMENT (docs/installation-serveur.md, docs/deploiement.md)
+------------------------------------------------------------------
+  scripts\deployer.bat -> scripts\deployer.ps1 : cree scripts\deployer.config.json (Hote, Utilisateur, Port, Domaine,
+  EmailAdmin, Cle ; jamais commite), verifie master propre et alignee sur GitHub, choisit le dernier tag stable-*
+  (ou -Tag), npm run build, envoie le build (tar.gz) et install-serveur.sh, lance l'installation, puis
+  app:check-environment.
+  scripts/install-serveur.sh (root, Ubuntu 24.04 uniquement) : paquets, reglages PHP (upload 20M), base et
+  utilisateur MySQL (mot de passe aleatoire dans /root/cidst-install.txt), code du tag dans /var/www/cidst,
+  composer install --no-dev, .env depuis .env.production.example, key:generate, migrate --force, cache:clear,
+  storage:link, config/route/view:cache, Nginx (site cree une seule fois), cron schedule:run, ufw, certbot.
+  Relance = mise a jour ; .env, base, Nginx et certificat existants sont conserves.
+  Limite : la configuration Nginx (gzip, cache de /build/) n'est ecrite qu'a la premiere installation ; sur un
+  serveur existant, supprimer /etc/nginx/sites-available/cidst avant de relancer pour la regenerer.
+  Regles : artisan toujours avec sudo -u www-data ; ne jamais changer APP_KEY apres la mise en ligne ; ne jamais
+  lancer db:seed en production ; sauvegarde avant mise a jour (mysqldump cidst + storage/app).
+  Premier deploiement : renseigner MAIL_USERNAME et MAIL_PASSWORD dans le .env serveur, puis config:cache ;
+  creer l'administrateur : php artisan app:create-super-admin <email>.
+
+
+8. PROCHAINES ETAPES (dans l'ordre)
+-----------------------------------
+  1. (fait) lot deploy-hardening fusionne et tague.
+  2. Deployer sur un serveur JETABLE pour la premiere execution reelle des scripts (essayer aussi un SSH sur un
+     port different de 22) ; hebergement, SMTP, puis production.
+  3. Lots independants de la decision du client : sauvegarde automatique avant mise a jour (mysqldump +
+     storage/app) ; anonymisation de visitor_hash avant 13 mois (RGPD).
+  4. Decision du client sur les icones GIF (lot 3e-bis-5) : type de fichier, poids maximal, qui peut les modifier.
+  5. Avant la fin du projet : controle visuel complet (section 2, "NON FAIT"), Clair et Sombre, mobile et bureau,
+     avec une date simulee pour chaque fete (Noel 2026-12-20, Nouvel An 2026-12-31, Paques 2027-03-25,
+     Pentecote 2027-05-14, Independance 2027-06-20), puis vider la date simulee. Premiere fenetre reelle : Noel
+     le 15/12/2026.
+  6. Mutations de controle a rattraper sur FestivalSettingsTest ; tests MySQL/PostgreSQL de SqlDate si une base
+     de test dediee est un jour disponible.
+  7. (fait des que ce fichier est commite) docs/passation-50.txt dans le depot.
+
+
+9. METHODE ET ENVIRONNEMENT
+---------------------------
+Methode (un lot = une branche) : branche feat/<nom> depuis master propre ; test ROUGE d'abord ; implementation
+minimale ; mutation de controle d'une ligne ; Pint, Larastan, Pest complet ; commits fichier par fichier (jamais
+git add .) ; push (le hook rejoue Pint, Larastan, tests JS, Pest complet) ; fusion --no-ff, jamais squash ;
+verifier master == origin/master ; ALORS SEULEMENT tag stable-AAAA-MM-JJ-<lot>, push du tag ; supprimer la branche.
+Commits sans accents, une ligne : "feat: <resume> (lot X) : <fichier>" ; fins de ligne LF.
+Avant Pest sous Windows : $env:TEMP = "$PWD\storage\framework\tmp"; $env:TMP = $env:TEMP ;
+New-Item -ItemType Directory -Force $env:TEMP | Out-Null ; php artisan view:clear. Un seul bloc "& { ... }" par
+collage ; ne jamais coller de sortie de test dans PowerShell. Livraison : zip avec l'arborescence du projet.
+Assistant : pas d'ecriture sur le depot (pas de compte GitHub lie) ; le client commite et pousse lui-meme. Le clone
+en lecture fonctionne ; composer install ECHOUE (api.github.com bloque) : ni Pest, ni Pint, ni Larastan ne
+tournent dans son environnement ; il verifie seulement la syntaxe (php -l, bash -n) et la logique par banc
+d'essai. npm, Vite, Chromium/Playwright fonctionnent.
+
+Reprendre en 10 minutes :
+  git clone https://github.com/koaba/cms-cidst.git ; cd cms-cidst
+  composer install ; cp .env.example .env ; php artisan key:generate ; php artisan migrate ; npm ci
+  php artisan test --parallel --processes=4 ; vendor/bin/pint --test ; vendor/bin/phpstan analyse --memory-limit=1G
+  Lire : ce document, docs/passation-46.txt, config/festivals.php, config/themes.php, config/admin_menu.php,
+  app/Services/Festival/*.php, app/View/Components/ThemeStyle.php, app/View/Components/FestivalDecor.php,
+  app/Http/Controllers/Admin/FestivalController.php, resources/views/admin/festivals/edit.blade.php,
+  tests/Feature/FestivalSettingsTest.php, scripts/install-serveur.sh, docs/installation-serveur.md.
