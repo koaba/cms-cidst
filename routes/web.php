@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AccordionItemContentController as AdminAccordionI
 use App\Http\Controllers\Admin\AccordionItemController as AdminAccordionItemController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AudienceController;
+use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ColumnChildBlockController as AdminColumnChildBlockController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
@@ -121,6 +122,10 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin)])->group(f
     Route::delete('admin/settings/colors', [SiteSettingController::class, 'resetColors'])->name('admin.settings.colors.reset');
     Route::get('admin/festivals', [FestivalController::class, 'edit'])->name('admin.festivals.edit');
     Route::put('admin/festivals', [FestivalController::class, 'update'])->name('admin.festivals.update');
+    Route::get('admin/backups', [BackupController::class, 'index'])->name('admin.backups.index');
+    Route::post('admin/backups', [BackupController::class, 'store'])->name('admin.backups.store');
+    Route::get('admin/backups/{backup}/download/{file}', [BackupController::class, 'download'])->name('admin.backups.download');
+    Route::delete('admin/backups/{backup}', [BackupController::class, 'destroy'])->name('admin.backups.destroy');
     Route::get('admin/audience', AudienceController::class)->name('admin.audience');
     Route::resource('admin/messages', AdminContactMessageController::class)->only(['index', 'show', 'destroy'])->names('admin.messages');
     Route::get('admin/messages/{message}/attachments/{attachment}', [AdminContactMessageController::class, 'attachment'])->name('admin.messages.attachments.show');

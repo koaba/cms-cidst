@@ -39,3 +39,5 @@ test_output*.txt
 
 # Acces au serveur de deploiement (secrets, jamais commites)
 scripts/deployer.config.json
+
+/storage/backups
