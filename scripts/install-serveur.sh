@@ -58,6 +58,21 @@ FLUSH PRIVILEGES;
 SQL
 
 echo "== 4/9 Code =="
+# Sauvegarde AVANT toute modification d'une installation existante (code, migrations). En cas d'echec,
+# set -e arrete le script : on ne met jamais a jour sans copie de la base et de storage/app.
+BACKUP_ROOT=/var/backups/cidst
+BACKUP_KEEP=7
+if [ -d "$APP_DIR/.git" ] && [ -f "$APP_DIR/.env" ]; then
+    BACKUP_DIR="$BACKUP_ROOT/$(date +%Y%m%d-%H%M%S)"
+    echo "Sauvegarde avant mise a jour : $BACKUP_DIR"
+    mkdir -p "$BACKUP_DIR"
+    chmod 700 "$BACKUP_ROOT" "$BACKUP_DIR"
+    mysqldump --single-transaction --routines "$DB_NAME" | gzip > "$BACKUP_DIR/base.sql.gz"
+    tar -czf "$BACKUP_DIR/storage-app.tgz" -C "$APP_DIR/storage" app
+    chmod 600 "$BACKUP_DIR"/*
+    # Ne garder que les BACKUP_KEEP dernieres sauvegardes.
+    ls -1d "$BACKUP_ROOT"/*/ | sort -r | tail -n +"$((BACKUP_KEEP + 1))" | xargs -r rm -rf
+fi
 mkdir -p /var/www/.home "$APP_DIR"
 chown www-data:www-data /var/www/.home "$APP_DIR"
 if [ ! -d "$APP_DIR/.git" ]; then

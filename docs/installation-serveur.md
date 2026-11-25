@@ -34,5 +34,5 @@ Paquets (Nginx, PHP 8.3, MySQL, poppler, Certbot, pare-feu), reglages PHP pour l
 - Toujours lancer `artisan` avec `sudo -u www-data` : en root, des fichiers de `storage/` deviennent illisibles pour le site.
 - Ne jamais changer `APP_KEY` apres la mise en ligne (sessions et hash des visiteurs de l'Audience).
 - Ne jamais lancer `php artisan db:seed` en production.
-- Sauvegarde avant une mise a jour : `mysqldump cidst > sauvegarde.sql` et copie de `/var/www/cidst/storage/app`.
+- Sauvegarde : le script en fait une automatiquement avant chaque mise a jour, dans `/var/backups/cidst/AAAAMMJJ-HHMMSS/` (`base.sql.gz` et `storage-app.tgz`, droits 600, 7 dernieres conservees). Si elle echoue, la mise a jour s'arrete. Elles restent SUR le serveur : copier regulierement le dossier ailleurs (poste ou stockage distant), sinon la perte du serveur emporte aussi les sauvegardes. Restauration de la base : `gunzip -c base.sql.gz | mysql cidst` ; des fichiers : `tar -xzf storage-app.tgz -C /var/www/cidst/storage` puis `chown -R www-data:www-data /var/www/cidst/storage`. [non verifie en reel]
 - Si le certificat HTTPS echoue, verifier le DNS puis relancer le deploiement.
