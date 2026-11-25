@@ -19,6 +19,9 @@ Schedule::command('contact:prune-images')->daily();
 
 Schedule::command('contact:prune-messages')->daily();
 
+// Traite les sauvegardes demandees depuis l'administration (hors requete web).
+Schedule::command('backup:process')->everyMinute()->withoutOverlapping()->runInBackground();
+
 // Battement lu par app:check-environment : prouve que le cron tourne (voir EnvironmentProbe).
 Schedule::call(fn () => Cache::forever(EnvironmentProbe::SCHEDULER_HEARTBEAT_KEY, time()))
     ->everyMinute()
