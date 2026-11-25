@@ -98,6 +98,9 @@ fi
 
 echo "== 7/9 Base, liens et caches =="
 artisan migrate --force
+# CACHE_STORE=database : les reglages du site sont en cache sans fin ; apres une migration ils n'ont pas
+# les nouvelles colonnes (passation #49, 4.3). Vider le cache a chaque installation ou mise a jour.
+artisan cache:clear
 artisan storage:link || true
 artisan config:cache
 artisan route:cache || echo "route:cache ignore (a verifier avec app:check-environment)."
@@ -112,6 +115,16 @@ server {
     root /var/www/cidst/public;
     index index.php;
     client_max_body_size 25M;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+
+    # Fichiers Vite : le nom change a chaque build, cache longue duree sans risque.
+    location /build/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;
@@ -137,7 +150,9 @@ systemctl reload nginx
 echo '* * * * * www-data cd /var/www/cidst && php artisan schedule:run >> /dev/null 2>&1' > /etc/cron.d/cidst
 chmod 644 /etc/cron.d/cidst
 
-ufw allow OpenSSH
+# Port SSH reel (deployer.config.json accepte un port different de 22) : sinon le pare-feu coupe l'acces.
+SSH_PORT="$(sshd -T 2>/dev/null | awk '/^port /{print $2; exit}')"
+ufw allow "${SSH_PORT:-22}/tcp"
 ufw allow 'Nginx Full'
 ufw --force enable
 
