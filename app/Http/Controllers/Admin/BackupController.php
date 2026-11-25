@@ -44,7 +44,7 @@ class BackupController extends Controller
 
     public function download(Backup $backup, string $file): BinaryFileResponse
     {
-        abort_unless($backup->status === BackupStatus::Done, 404);
+        abort_unless($backup->status === BackupStatus::Done && isset(self::FILES[$file]), 404);
 
         $path = $backup->filePath(self::FILES[$file]);
 
