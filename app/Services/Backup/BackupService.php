@@ -122,7 +122,8 @@ final class BackupService
     {
         $source = rtrim((string) config('backup.storage_path'), '/\\');
 
-        $process = new Process(['tar', '-czf', $target, '-C', dirname($source), basename($source)], null, null, null, (float) config('backup.timeout'));
+        // Chemin relatif depuis le dossier cible : un chemin C:\... serait pris pour un hote distant par un tar GNU (Git Bash sous Windows).
+        $process = new Process(['tar', '-czf', basename($target), '-C', dirname($source), basename($source)], dirname($target), null, null, (float) config('backup.timeout'));
         $process->run();
 
         if (! $process->isSuccessful()) {
