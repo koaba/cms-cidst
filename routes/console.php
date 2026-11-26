@@ -23,6 +23,7 @@ Schedule::command('contact:prune-messages')->daily();
 // Demande la sauvegarde automatique quand elle est due (options de l'administration).
 Schedule::command('backup:auto')->hourlyAt(5)->withoutOverlapping();
 Schedule::command('backup:process')->everyMinute()->withoutOverlapping()->runInBackground();
+Schedule::command('backup:sync-files')->everyFiveMinutes()->withoutOverlapping()->runInBackground();
 
 // Battement lu par app:check-environment : prouve que le cron tourne (voir EnvironmentProbe).
 Schedule::call(fn () => Cache::forever(EnvironmentProbe::SCHEDULER_HEARTBEAT_KEY, time()))

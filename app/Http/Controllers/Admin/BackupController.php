@@ -12,6 +12,7 @@ use App\Models\Media;
 use App\Models\PdfDocument;
 use App\Services\Backup\BackupService;
 use App\Services\Backup\BackupSettings;
+use App\Services\Backup\FileMirror;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,12 +27,16 @@ class BackupController extends Controller
         'files' => BackupService::STORAGE_FILE,
     ];
 
-    public function index(BackupSettings $settings): View
+    public function index(BackupSettings $settings, FileMirror $mirror): View
     {
         $free = @disk_free_space(Backup::root() !== '' && is_dir(Backup::root()) ? Backup::root() : storage_path());
 
+        $backups = Backup::query()->with('requester:id,name')->latest('id')->limit(30)->get();
+
         return view('admin.backups.index', [
-            'backups' => Backup::query()->with('requester:id,name')->latest('id')->limit(30)->get(),
+            'backups' => $backups,
+            'latestFull' => $backups->first(fn (Backup $backup) => $backup->scope === BackupScope::All && $backup->status === BackupStatus::Done),
+            'mirror' => $mirror->state(),
             'busy' => Backup::active()->exists(),
             'free' => $free === false ? null : (int) $free,
             'settings' => $settings->all(),
@@ -60,6 +65,20 @@ class BackupController extends Controller
         ]);
 
         return back()->with('success', "Sauvegarde demand\u{e9}e : elle d\u{e9}marre dans la minute.");
+    }
+
+    /** Demande de copie ou de restauration des fichiers : traitee par backup:sync-files, jamais dans la requete. */
+    public function mirror(Request $request, FileMirror $mirror): RedirectResponse
+    {
+        $data = $request->validate(['action' => ['required', Rule::in(FileMirror::ACTIONS)]]);
+
+        if ($mirror->state()['request'] !== null) {
+            return back()->with('error', "Une copie ou une restauration est d\u{e9}j\u{e0} en attente.");
+        }
+
+        $mirror->request((string) $data['action']);
+
+        return back()->with('success', "Demande enregistr\u{e9}e : elle d\u{e9}marre dans les 5 minutes.");
     }
 
     public function updateSettings(UpdateBackupSettingsRequest $request, BackupSettings $settings): RedirectResponse

@@ -25,4 +25,20 @@ return [
     // Duree maximale d'une sauvegarde, en secondes. Au-dela, elle est declaree en echec.
     'timeout' => (int) env('BACKUP_TIMEOUT', 3600),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Copie miroir de storage/app
+    |--------------------------------------------------------------------------
+    | Copie incrementale (fichiers nouveaux ou modifies seulement) traitee par `backup:sync-files`.
+    | Elle double l'espace occupe par storage/app. Le miroir ne supprime jamais rien : un fichier
+    | supprime du site reste dans la copie. Dossier HORS de storage/app (sinon recursion).
+    */
+
+    'mirror' => [
+        'path' => env('BACKUP_MIRROR_PATH', storage_path('backups/miroir')),
+
+        // Espace a laisser libre sur le disque apres une copie, en octets (defaut 500 Mo).
+        'reserve' => (int) env('BACKUP_MIRROR_RESERVE_MB', 500) * 1048576,
+    ],
+
 ];

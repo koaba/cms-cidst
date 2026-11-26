@@ -26,7 +26,7 @@ it('renvoie les valeurs par defaut quand rien n est enregistre', function () {
     config(['backup.keep' => 5]);
 
     expect(app(BackupSettings::class)->all())->toBe([
-        'auto' => false, 'frequency' => 'daily', 'hour' => 2, 'weekday' => 7, 'scope' => 'all', 'keep' => 5,
+        'auto' => false, 'frequency' => 'daily', 'hour' => 2, 'weekday' => 7, 'scope' => 'all', 'keep' => 5, 'mirror' => false,
     ]);
 });
 
@@ -42,14 +42,22 @@ it('remplace toute valeur invalide par la valeur par defaut', function () {
 });
 
 it('enregistre les options depuis l administration, Super Admin seulement', function () {
-    $data = ['auto' => 1, 'frequency' => 'weekly', 'weekday' => 3, 'hour' => 4, 'scope' => 'database', 'keep' => 10];
+    $data = ['auto' => 1, 'frequency' => 'weekly', 'weekday' => 3, 'hour' => 4, 'scope' => 'database', 'keep' => 10, 'mirror' => 1];
 
     $this->actingAs(publicationUser())->put(route('admin.backups.settings'), $data)->assertForbidden();
     $this->actingAs(adminUser())->put(route('admin.backups.settings'), $data)->assertSessionHasNoErrors();
 
     expect(app(BackupSettings::class)->all())->toBe([
-        'auto' => true, 'frequency' => 'weekly', 'hour' => 4, 'weekday' => 3, 'scope' => 'database', 'keep' => 10,
+        'auto' => true, 'frequency' => 'weekly', 'hour' => 4, 'weekday' => 3, 'scope' => 'database', 'keep' => 10, 'mirror' => true,
     ]);
+});
+
+it('refuse une valeur invalide pour la copie miroir', function () {
+    $data = ['auto' => 1, 'frequency' => 'daily', 'weekday' => 1, 'hour' => 2, 'scope' => 'all', 'keep' => 7, 'mirror' => 'peut-etre'];
+
+    $this->actingAs(adminUser())->put(route('admin.backups.settings'), $data)->assertSessionHasErrors('mirror');
+
+    expect(app(BackupSettings::class)->mirror())->toBeFalse();
 });
 
 it('refuse des options invalides sans rien enregistrer', function () {

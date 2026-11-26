@@ -20,7 +20,7 @@ final class BackupSettings
     /** Jours ISO (1 = lundi). */
     public const WEEKDAYS = [1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 4 => 'Jeudi', 5 => 'Vendredi', 6 => 'Samedi', 7 => 'Dimanche'];
 
-    /** @return array{auto: bool, frequency: string, hour: int, weekday: int, scope: string, keep: int} */
+    /** @return array{auto: bool, frequency: string, hour: int, weekday: int, scope: string, keep: int, mirror: bool} */
     public function all(): array
     {
         $stored = SiteSetting::current()->getAttribute('backup_options');
@@ -33,9 +33,15 @@ final class BackupSettings
         return $this->all()['keep'];
     }
 
+    /** Copie miroir de storage/app activee (traitee par backup:sync-files). */
+    public function mirror(): bool
+    {
+        return $this->all()['mirror'];
+    }
+
     /**
      * @param  array<array-key, mixed>  $input
-     * @return array{auto: bool, frequency: string, hour: int, weekday: int, scope: string, keep: int}
+     * @return array{auto: bool, frequency: string, hour: int, weekday: int, scope: string, keep: int, mirror: bool}
      */
     public function normalize(array $input): array
     {
@@ -50,6 +56,7 @@ final class BackupSettings
             'weekday' => $this->int($input['weekday'] ?? null, 1, 7, $defaults['weekday']),
             'scope' => in_array($scope, array_column(BackupScope::cases(), 'value'), true) ? (string) $scope : $defaults['scope'],
             'keep' => $this->int($input['keep'] ?? null, 1, 30, $defaults['keep']),
+            'mirror' => filter_var($input['mirror'] ?? $defaults['mirror'], FILTER_VALIDATE_BOOLEAN),
         ];
     }
 
@@ -87,7 +94,7 @@ final class BackupSettings
             && ! Backup::query()->where('automatic', true)->where('created_at', '>=', $this->lastDueAt($now))->exists();
     }
 
-    /** @return array{auto: bool, frequency: string, hour: int, weekday: int, scope: string, keep: int} */
+    /** @return array{auto: bool, frequency: string, hour: int, weekday: int, scope: string, keep: int, mirror: bool} */
     private function defaults(): array
     {
         return [
@@ -97,6 +104,7 @@ final class BackupSettings
             'weekday' => 7,
             'scope' => BackupScope::All->value,
             'keep' => max(1, min(30, (int) config('backup.keep'))),
+            'mirror' => false,
         ];
     }
 
