@@ -55,6 +55,7 @@ class SiteSetting extends Model
         'festivals_enabled',
         'festivals_simulated_on',
         'festivals_options',
+        'backup_options',
     ];
 
     protected $hidden = ['delete_code_hash'];
@@ -78,6 +79,7 @@ class SiteSetting extends Model
         'festivals_enabled' => 'boolean',
         'festivals_simulated_on' => 'date',
         'festivals_options' => 'array',
+        'backup_options' => 'array',
     ];
 
     public function getPrimaryColorAttribute($value): string

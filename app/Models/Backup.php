@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BackupScope;
 use App\Enums\BackupStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -13,10 +14,12 @@ class Backup extends Model
     /** Nom de dossier genere par BackupService (jamais autre chose : garde-fou avant suppression). */
     public const DIRECTORY_PATTERN = '/^\d{8}-\d{6}$/';
 
-    protected $fillable = ['status', 'requested_by', 'directory', 'db_size', 'files_size', 'error', 'started_at', 'finished_at'];
+    protected $fillable = ['status', 'scope', 'automatic', 'requested_by', 'directory', 'db_size', 'files_size', 'error', 'started_at', 'finished_at'];
 
     protected $casts = [
         'status' => BackupStatus::class,
+        'scope' => BackupScope::class,
+        'automatic' => 'boolean',
         'db_size' => 'integer',
         'files_size' => 'integer',
         'started_at' => 'datetime',
@@ -40,6 +43,16 @@ class Backup extends Model
     public function filePath(string $file): string
     {
         return self::root().'/'.$this->directory.'/'.$file;
+    }
+
+    /** Vrai si cette sauvegarde terminee contient le fichier demande ('database' ou 'files'). */
+    public function hasFile(string $kind): bool
+    {
+        return $this->status === BackupStatus::Done && match ($kind) {
+            'database' => $this->scope->includesDatabase(),
+            'files' => $this->scope->includesFiles(),
+            default => false,
+        };
     }
 
     /** @return BelongsTo<User, $this> */
