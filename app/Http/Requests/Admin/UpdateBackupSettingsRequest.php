@@ -26,6 +26,7 @@ class UpdateBackupSettingsRequest extends FormRequest
             'hour' => ['required', 'integer', 'between:0,23'],
             'scope' => ['required', Rule::enum(BackupScope::class)],
             'keep' => ['required', 'integer', 'between:1,30'],
+            'mirror' => ['sometimes', 'boolean'],
         ];
     }
 
@@ -38,6 +39,7 @@ class UpdateBackupSettingsRequest extends FormRequest
             'hour' => 'heure',
             'scope' => 'contenu',
             'keep' => "nombre de sauvegardes conserv\u{e9}es",
+            'mirror' => 'copie miroir',
         ];
     }
 }
