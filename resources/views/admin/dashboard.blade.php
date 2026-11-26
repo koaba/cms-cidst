@@ -17,6 +17,35 @@
         <a href="{{ route('admin.pages.create') }}" class="btn btn-outline btn-sm">Nouvelle page</a>
         <a href="{{ route('admin.media.index') }}" class="btn btn-outline btn-sm">M&eacute;diath&egrave;que</a>
     </div>
+    @role(\App\Enums\UserRole::SuperAdmin)
+    <section id="sauvegarde" class="mb-8" aria-labelledby="backup-title">
+        <h2 id="backup-title" class="sr-only">Sauvegarde</h2>
+        @if (session('success'))<div class="alert alert-success mb-3">{{ session('success') }}</div>@endif
+        @if (session('error'))<div class="alert alert-error mb-3">{{ session('error') }}</div>@endif
+        <div class="alert {{ $backupDays !== null && $backupDays < 7 ? 'bg-base-100 shadow' : 'alert-warning' }} flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm">
+                @if ($backupBusy)
+                    Sauvegarde en cours ou en attente&hellip;
+                @elseif ($backupDays === null)
+                    Aucune sauvegarde effectu&eacute;e : prot&eacute;gez la base, les images et les PDF du site.
+                @elseif ($backupDays >= 7)
+                    Derni&egrave;re sauvegarde il y a {{ $backupDays }} jours : pensez &agrave; sauvegarder.
+                @elseif ($backupDays === 0)
+                    Derni&egrave;re sauvegarde : aujourd&rsquo;hui.
+                @else
+                    Derni&egrave;re sauvegarde il y a {{ $backupDays }} jour{{ $backupDays > 1 ? 's' : '' }}.
+                @endif
+            </p>
+            <div class="flex flex-wrap gap-2">
+                <form method="POST" action="{{ route('admin.backups.store') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-primary" @disabled($backupBusy)>Sauvegarder maintenant</button>
+                </form>
+                <a href="{{ route('admin.backups.index') }}" class="btn btn-sm btn-outline">Options</a>
+            </div>
+        </div>
+    </section>
+    @endrole
     <section id="raccourcis" class="mb-8" aria-labelledby="shortcuts-title">
         <h2 id="shortcuts-title" class="sr-only">Raccourcis</h2>
         <details data-shortcuts class="group">
