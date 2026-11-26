@@ -51,6 +51,12 @@
                     <span>Activer la sauvegarde automatique</span>
                 </label>
 
+                <input type="hidden" name="mirror" value="0">
+                <label class="flex items-center gap-3 cursor-pointer sm:col-span-2">
+                    <input type="checkbox" name="mirror" value="1" class="toggle toggle-primary" @checked($settings['mirror'])>
+                    <span>Copie miroir des fichiers, mise &agrave; jour toutes les 5 minutes</span>
+                </label>
+
                 <label class="form-control">
                     <span class="label-text mb-1">Fr&eacute;quence</span>
                     <select name="frequency" x-model="freq" class="select select-bordered w-full">
@@ -100,6 +106,56 @@
                     @endif
                 </div>
             </form>
+        </div>
+    </section>
+
+    <section class="card bg-base-100 shadow mb-6" aria-labelledby="backup-mirror">
+        <div class="card-body">
+            <h2 id="backup-mirror" class="card-title text-lg">Copie miroir des fichiers</h2>
+            <p class="text-sm text-base-content/70">
+                @if ($mirror['synced_at'])
+                    Derni&egrave;re copie : {{ $mirror['synced_at']->format('d/m/Y') }} &agrave; {{ $mirror['synced_at']->format('H:i') }},
+                    {{ $mirror['files'] }} fichiers ({{ Illuminate\Support\Number::fileSize($mirror['bytes']) }}).
+                @else
+                    Aucune copie miroir pour le moment.
+                @endif
+                @if ($mirror['restored_at'])
+                    Derni&egrave;re restauration : {{ $mirror['restored_at']->format('d/m/Y') }} &agrave; {{ $mirror['restored_at']->format('H:i') }}.
+                @endif
+            </p>
+            <p class="text-sm text-base-content/70">
+                Le miroir double l&rsquo;espace utilis&eacute; par les fichiers du site et reste sur le m&ecirc;me serveur : une panne du serveur l&rsquo;emporte.
+                Il ne supprime jamais rien. Pour une vraie s&eacute;curit&eacute;, t&eacute;l&eacute;chargez une sauvegarde compl&egrave;te.
+            </p>
+            @if ($mirror['error'])<div class="alert alert-error text-sm break-words">{{ $mirror['error'] }}</div>@endif
+            @if ($mirror['request'])
+                <div class="alert alert-info text-sm">
+                    {{ $mirror['request'] === 'restore' ? 'Restauration' : 'Copie' }} demand&eacute;e : elle d&eacute;marre dans les 5 minutes.
+                </div>
+            @endif
+            <div class="flex flex-wrap items-center gap-3">
+                <form method="POST" action="{{ route('admin.backups.mirror') }}">
+                    @csrf
+                    <input type="hidden" name="action" value="sync">
+                    <button type="submit" class="btn btn-outline" @disabled($mirror['request'])>Copier maintenant</button>
+                </form>
+                <form method="POST" action="{{ route('admin.backups.mirror') }}" x-data
+                      @submit="if (! confirm('Restaurer les fichiers du miroir qui manquent sur le site ? Les fichiers existants ne sont pas modifi&eacute;s. Les fichiers supprim&eacute;s volontairement r&eacute;appara&icirc;tront comme fichiers orphelins, invisibles sur le site.')) $event.preventDefault()">
+                    @csrf
+                    <input type="hidden" name="action" value="restore">
+                    <button type="submit" class="btn btn-outline" @disabled($mirror['request'] || ! $mirror['synced_at'])>Restaurer</button>
+                </form>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 border-t border-base-300 pt-4">
+                <span class="font-semibold">Tout t&eacute;l&eacute;charger</span>
+                @if ($latestFull)
+                    <span class="text-sm text-base-content/70">sauvegarde compl&egrave;te du {{ $latestFull->created_at->format('d/m/Y H:i') }} :</span>
+                    <a href="{{ route('admin.backups.download', [$latestFull, 'database']) }}" class="btn btn-sm btn-outline">Base</a>
+                    <a href="{{ route('admin.backups.download', [$latestFull, 'files']) }}" class="btn btn-sm btn-outline">Fichiers</a>
+                @else
+                    <span class="text-sm text-base-content/70">Aucune sauvegarde compl&egrave;te termin&eacute;e : lancez &laquo; Tout sauvegarder &raquo;.</span>
+                @endif
+            </div>
         </div>
     </section>
 
