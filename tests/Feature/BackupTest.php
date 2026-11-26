@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\BackupScope;
 use App\Enums\BackupStatus;
 use App\Models\Backup;
 use App\Services\Backup\BackupService;
@@ -161,4 +162,48 @@ it('ne supprime jamais un dossier hors du format genere', function () {
 
 it('planifie le traitement chaque minute sans chevauchement', function () {
     expect(scheduledCron('backup:process'))->toBe('* * * * *');
+});
+
+it('ne sauvegarde que la base quand le type est base seule', function () {
+    $backup = Backup::create(['status' => BackupStatus::Pending, 'scope' => BackupScope::Database]);
+
+    $this->artisan('backup:process')->assertSuccessful();
+
+    $backup->refresh();
+    expect($backup->status)->toBe(BackupStatus::Done)
+        ->and($backup->db_size)->toBeInt()
+        ->and($backup->files_size)->toBeNull()
+        ->and(is_file($backup->filePath(BackupService::DATABASE_FILE)))->toBeTrue()
+        ->and(is_file($backup->filePath(BackupService::STORAGE_FILE)))->toBeFalse();
+});
+
+it('ne sauvegarde que les fichiers quand le type est fichiers seuls', function () {
+    $backup = Backup::create(['status' => BackupStatus::Pending, 'scope' => BackupScope::Files]);
+
+    $this->artisan('backup:process')->assertSuccessful();
+
+    $backup->refresh();
+    expect($backup->db_size)->toBeNull()
+        ->and($backup->files_size)->toBeInt()
+        ->and(is_file($backup->filePath(BackupService::DATABASE_FILE)))->toBeFalse()
+        ->and(is_file($backup->filePath(BackupService::STORAGE_FILE)))->toBeTrue();
+});
+
+it('refuse de telecharger un fichier que la sauvegarde ne contient pas', function () {
+    $backup = bkDone('20260101-000001', 1);
+    $backup->update(['scope' => BackupScope::Database]);
+
+    $this->actingAs(adminUser())->get(route('admin.backups.download', [$backup, 'database']))->assertOk();
+    $this->actingAs(adminUser())->get(route('admin.backups.download', [$backup, 'files']))->assertNotFound();
+});
+
+it('applique la retention separement pour chaque type de sauvegarde', function () {
+    config(['backup.keep' => 1]);
+    bkDone('20260101-000001', 1)->update(['scope' => BackupScope::Database]);
+    bkDone('20260101-000002', 2)->update(['scope' => BackupScope::Database]);
+    bkDone('20260101-000003', 3);
+
+    app(BackupService::class)->prune();
+
+    expect(Backup::pluck('id')->all())->toBe([2, 3]);
 });
