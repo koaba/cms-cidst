@@ -2,6 +2,7 @@
 
 namespace App\Services\Backup;
 
+use App\Enums\BackupScope;
 use App\Enums\BackupStatus;
 use App\Models\Backup;
 use Illuminate\Support\Facades\File;
@@ -9,7 +10,7 @@ use RuntimeException;
 use Symfony\Component\Process\Process;
 
 /**
- * Fabrique une sauvegarde (base + storage/app) dans <backup.path>/AAAAMMJJ-HHMMSS/.
+ * Fabrique une sauvegarde (base et/ou storage/app, selon son type) dans <backup.path>/AAAAMMJJ-HHMMSS/.
  * Meme format que scripts/install-serveur.sh : base.sql.gz et storage-app.tgz, droits 700/600.
  */
 final class BackupService
@@ -17,6 +18,8 @@ final class BackupService
     public const DATABASE_FILE = 'base.sql.gz';
 
     public const STORAGE_FILE = 'storage-app.tgz';
+
+    public function __construct(private readonly BackupSettings $settings) {}
 
     public function run(Backup $backup): void
     {
@@ -26,37 +29,48 @@ final class BackupService
         File::ensureDirectoryExists(Backup::root(), 0700);
         File::ensureDirectoryExists($dir, 0700);
 
+        $result = ['status' => BackupStatus::Done, 'directory' => $name, 'finished_at' => now(), 'error' => null];
+
         try {
-            $this->dumpDatabase($dir.'/'.self::DATABASE_FILE);
-            $this->archiveStorage($dir.'/'.self::STORAGE_FILE);
-            @chmod($dir.'/'.self::DATABASE_FILE, 0600);
-            @chmod($dir.'/'.self::STORAGE_FILE, 0600);
+            if ($backup->scope->includesDatabase()) {
+                $this->dumpDatabase($dir.'/'.self::DATABASE_FILE);
+                $result['db_size'] = $this->seal($dir.'/'.self::DATABASE_FILE);
+            }
+
+            if ($backup->scope->includesFiles()) {
+                $this->archiveStorage($dir.'/'.self::STORAGE_FILE);
+                $result['files_size'] = $this->seal($dir.'/'.self::STORAGE_FILE);
+            }
         } catch (\Throwable $e) {
             File::deleteDirectory($dir);
 
             throw $e;
         }
 
-        $backup->update([
-            'status' => BackupStatus::Done,
-            'directory' => $name,
-            'db_size' => (int) filesize($dir.'/'.self::DATABASE_FILE),
-            'files_size' => (int) filesize($dir.'/'.self::STORAGE_FILE),
-            'finished_at' => now(),
-            'error' => null,
-        ]);
+        $backup->update($result);
 
         $this->prune();
     }
 
-    /** Ne garde que les `backup.keep` dernieres sauvegardes terminees et les echecs recents. */
+    /** Ne garde que les N dernieres sauvegardes terminees de CHAQUE type, et les echecs recents. */
     public function prune(): void
     {
-        $kept = Backup::done()->latest('id')->limit(max(1, (int) config('backup.keep')))->pluck('id');
+        $keep = $this->settings->keep();
 
-        Backup::done()->whereNotIn('id', $kept)->get()->each->delete();
+        foreach (BackupScope::cases() as $scope) {
+            $kept = Backup::done()->where('scope', $scope->value)->latest('id')->limit($keep)->pluck('id');
+
+            Backup::done()->where('scope', $scope->value)->whereNotIn('id', $kept)->get()->each->delete();
+        }
 
         Backup::where('status', BackupStatus::Failed->value)->where('created_at', '<', now()->subDays(30))->get()->each->delete();
+    }
+
+    private function seal(string $file): int
+    {
+        @chmod($file, 0600);
+
+        return (int) filesize($file);
     }
 
     private function dumpDatabase(string $target): void
