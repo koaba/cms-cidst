@@ -125,6 +125,7 @@ Route::middleware(['auth', UserRole::middleware(UserRole::SuperAdmin)])->group(f
     Route::get('admin/backups', [BackupController::class, 'index'])->name('admin.backups.index');
     Route::post('admin/backups', [BackupController::class, 'store'])->name('admin.backups.store');
     Route::put('admin/backups/settings', [BackupController::class, 'updateSettings'])->name('admin.backups.settings');
+    Route::post('admin/backups/mirror', [BackupController::class, 'mirror'])->name('admin.backups.mirror');
     Route::get('admin/backups/{backup}/download/{file}', [BackupController::class, 'download'])->name('admin.backups.download');
     Route::delete('admin/backups/{backup}', [BackupController::class, 'destroy'])->name('admin.backups.destroy');
     Route::get('admin/audience', AudienceController::class)->name('admin.audience');
