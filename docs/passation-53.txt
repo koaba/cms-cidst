@@ -1,0 +1,321 @@
+PASSATION TECHNIQUE #53 - CMS CIDST - 27 novembre 2026
+======================================================
+
+Document AUTONOME : remplace les passations #47 a #52. Seuls docs/passation.md, passation-44.md,
+passation-45.md, passation-46.txt et passation-50.txt sont CONFIRMES dans le depot ; la #52 et la presente
+sont a ajouter dans docs/ [non verifie tant que non commitees].
+En cas de conflit entre un document, le code et les tests, LE CODE ET LES TESTS FONT FOI.
+Convention : [non verifie] = pas confirme par une sortie de test ou par le code.
+
+Profil attendu : Laravel senior, code propre, precis, sans redondance, debogage rapide ; full stack avec
+sens du design (UI/UX, Tailwind, Alpine.js) ; CMS evolutif (un lot = une branche).
+Avant d'avancer : TOUJOURS verifier l'etat reel du depot (git status, git log, tags) : des travaux ont deja
+ete faits, et un lot a deja ete retrouve non commite apres une session perdue.
+
+
+1. PROJET ET STACK
+------------------
+CMS Laravel du CIDST (Madagascar).
+  Site public : blog, pages a blocs, documents PDF (filigrane), sliders, news ticker, recherche, sitemap,
+  robots, contact, themes de couleurs, decors de fetes.
+  Administration : roles Super Admin et Publication (App\Enums\UserRole, spatie/laravel-permission).
+Imperatifs du client : mobile-first, design harmonise site/admin, SEO, code leger sans redondance, evolutif,
+options de personnalisation avancees dans l'administration.
+Stack : Laravel 13.x, PHP 8.3, Pest 4, Pint, Larastan (niveau 5 + phpstan-baseline.neon), Tailwind 3 (DEUX
+builds : admin et public), DaisyUI 4.12 (admin seulement), Alpine.js, Chart.js, Vite 8, Husky.
+Depot : github.com/koaba/cms-cidst (branche master, public).
+Poste client : Windows, Laragon, PowerShell 5, C:\laragon\www\laravel-academy, MySQL. Tests : SQLite memoire.
+Fuseau : Indian/Antananarivo. Couleurs de marque : #C41E2A (rouge) / #17181A (noir).
+Production prevue : VPS Ubuntu 24.04, Nginx, PHP-FPM 8.3, MySQL, Let's Encrypt.
+CACHE_STORE=database ; QUEUE_CONNECTION=sync en production (aucun worker) ; SESSION_DRIVER=database.
+
+
+2. ETAT AU 27/11/2026
+---------------------
+master == origin/master == 3a472b0 ("Merge branch 'feat/backup-mirror'"). Arbre propre, aucune branche de
+lot ouverte. Dernier hook : Pint propre, Larastan 0 erreur, Pest 1991 passes, 1 ignore (droits Unix 600 sous
+Windows), 6775 assertions.
+Tags stables sur master (du plus recent au plus ancien) :
+  stable-2026-11-26-backupmirror     (3a472b0)  copie miroir + restauration des fichiers
+  stable-2026-11-26-backupoptions    (4252b46)  portee, sauvegarde automatique, bloc du tableau de bord
+  stable-2026-11-25-backupdashboard  (1862669)  boutons de sauvegarde du tableau de bord
+  stable-2026-11-25-backupbeforeupdate, 11-25-deployhardening, 11-24-testscoverage, 11-24-festivaladmin,
+  11-24-festivalnewyear, 11-23-festivaldecor, 11-23-festivalthemes, 11-23-festivalscalendar
+Branches restantes sur origin (fusionnees, a supprimer si voulu) : feat/festival-themes,
+  feat/festivals-calendar. Commande : git push origin --delete feat/festival-themes feat/festivals-calendar
+STASH A NE PAS PERDRE : stash@{0} "wip style-options" (cree sur feat/builder-style-options). Cette branche
+  n'existe ni en local ni sur origin. Contenu [non verifie]. Inspection (PowerShell : apostrophes
+  OBLIGATOIRES autour de stash@{0}, sinon "Too many revisions") :
+    git stash show --stat 'stash@{0}'
+    git stash show -p 'stash@{0}' | more
+  Ne PAS faire git stash drop / git stash clear. Il concerne les options de style du builder (exigence
+  "personnalisation avancee").
+
+NON FAIT / [non verifie] :
+  - AUCUN controle visuel (admin/festivals, page Sauvegardes avec le bloc miroir, site avec dates simulees,
+    Clair/Sombre, mobile).
+  - Icones du Nouvel An (star, firework, glass) et colombe (Pentecote) non validees visuellement ; fenetres
+    before/after des fetes a valider.
+  - scripts/install-serveur.sh et scripts/deployer.ps1 JAMAIS executes en reel.
+  - Sauvegardes et copie miroir JAMAIS lancees avec un vrai MySQL ni sur un vrai serveur (SQLite + dossiers
+    temporaires seulement). Procedure de restauration par SSH non verifiee en reel.
+  - Branches MySQL/PostgreSQL de App\Support\SqlDate::bucket non testees. SMTP (Gmail) jamais eprouve.
+  - Mutations de controle non faites sur FestivalSettingsTest ni sur BackupSettings / BackupController.
+
+DECISIONS DU CLIENT : tout le cote serveur (deploiement, domaine, SMTP, production) est reporte A LA FIN ;
+d'abord regler les problemes et le design. Controle visuel complet avant la fin du projet.
+
+
+3. LOTS SAUVEGARDES (3 lots fusionnes)
+--------------------------------------
+Principe : un bouton ou le planificateur ECRIT une demande ; une commande planifiee la traite hors requete
+web (QUEUE sync + max_execution_time rendent impossible un travail long dans la requete).
+
+3.1 backup-dashboard (tag backupdashboard)
+  config/backup.php : path (env BACKUP_PATH, defaut storage/backups, HORS de storage/app), storage_path
+    (storage/app), connection (null = defaut), keep (env BACKUP_KEEP, 7), timeout (env BACKUP_TIMEOUT, 3600).
+  Table backups : id, status (string 20, defaut pending, index), requested_by (FK users, nullOnDelete),
+    directory (string 20), db_size, files_size (bigint), error (text), started_at, finished_at, timestamps.
+  App\Enums\BackupStatus : Pending, Running, Done, Failed ; label(), badge(), isActive().
+  App\Models\Backup : DIRECTORY_PATTERN /^\d{8}-\d{6}$/ ; root() ; filePath() ; hasFile('database'|'files') ;
+    requester() ; scopes active, pending, done, stale (running depuis plus de timeout+300 s) ; hook deleting
+    qui supprime le dossier SEULEMENT s'il respecte le motif. Casts en PROPRIETE $casts.
+  App\Services\Backup\BackupService (final) : run(Backup) cree <root>/AAAAMMJJ-HHMMSS (0700), base.sql.gz et
+    storage-app.tgz (0600) ; en cas d'exception supprime le dossier partiel et relance ; prune().
+    mysql/mariadb : mysqldump --single-transaction --routines --no-tablespaces, mot de passe dans MYSQL_PWD,
+    flux ecrit au fil de l'eau (gzwrite + clearOutput). sqlite : copie gzip. Autre pilote : RuntimeException.
+    archive : tar -czf <nom relatif> -C <parent de storage/app> app, cwd = dossier cible.
+  Commande backup:process (chaque minute) : marque en echec les "running" perimees, traite la plus ancienne
+    pending. Controleur Admin\BackupController : index, store, download (liste blanche database|files),
+    destroy (409 si active). Menu admin "Sauvegardes" (Super Admin).
+
+3.2 backup-options (tag backupoptions)
+  App\Enums\BackupScope : All, Database, Files ; label(), button(), includesDatabase(), includesFiles().
+  Migrations 2026_11_25_170000 (colonnes scope et automatic sur backups [non relue en detail]) et
+    2026_11_25_170100 (site_settings.backup_options, json nullable, cast array).
+  App\Services\Backup\BackupSettings : all(), keep(), mirror(), normalize(), update(), lastDueAt(), nextDueAt(),
+    isDue(). Options : auto (bool), frequency (daily|weekly), hour (0-23), weekday (1-7 ISO), scope, keep
+    (1-30), mirror (bool, defaut false). Liste blanche a l'ecriture, defauts a la lecture.
+  Commande backup:auto (planifiee hourlyAt(5)) : cree une demande automatique si l'echeance est passee et
+    qu'aucune automatique n'existe depuis ; ne se declenche pas pendant une sauvegarde active.
+  prune() garde les `keep` dernieres done de CHAQUE portee ; echecs supprimes apres 30 jours.
+  Route PUT admin.backups.settings (UpdateBackupSettingsRequest). Bloc "sauvegardes" au tableau de bord
+    (alerte si aucune sauvegarde, ou ancienne), reserve au Super Admin.
+
+3.3 backup-mirror (tag backupmirror) - LOT RECONSTRUIT
+  Le zip original du lot ayant ete perdu, le lot a ete reecrit par l'assistant a partir de master ; les tests
+  et le hook ont fait foi (3 mutations de controle tuees).
+  config/backup.php : mirror.path (env BACKUP_MIRROR_PATH, defaut storage/backups/miroir, HORS de
+    storage/app), mirror.reserve (env BACKUP_MIRROR_RESERVE_MB, 500 -> octets).
+  App\Services\Backup\FileMirror (final) : sync() copie storage/app -> <miroir>/app de facon INCREMENTALE
+    (fichier absent, de taille differente ou plus ancien) ; restore() copie <miroir>/app -> storage/app SANS
+    JAMAIS ecraser un fichier existant ; le miroir ne supprime JAMAIS rien ; copie via fichier .part puis
+    rename ; garde d'espace libre (RuntimeException si espace restant < reserve) ; miroir dans la source =
+    RuntimeException ; liens symboliques ignores. Etat dans <miroir>/etat.json (synced_at, restored_at, files,
+    bytes, error, request) : AUCUNE migration. request(sync|restore) = demande de l'administration.
+  Commandes : backup:sync-files (planifiee everyFiveMinutes, withoutOverlapping, runInBackground : traite une
+    demande en attente, sinon copie si l'option mirror est active ; echec = erreur dans etat.json) ;
+    backup:restore-files [--force] (confirmation RestoreBackupFiles::QUESTION).
+  Route POST admin.backups.mirror (action = sync|restore ; refuse un doublon). Page Sauvegardes : interrupteur
+    "Copie miroir" dans le formulaire automatique, bloc "Copie miroir des fichiers" (etat, Copier maintenant,
+    Restaurer avec confirmation JS), "Tout telecharger" = liens Base et Fichiers de la derniere sauvegarde
+    COMPLETE terminee (pas un zip unique). docs/sauvegardes.md : procedure complete, restauration par SSH.
+  Tests : tests/Feature/BackupMirrorTest.php (fonctions bm*), BackupSettingsTest.php (fonctions bs*, tableaux
+    exacts avec cle mirror), BackupTest.php (fonctions bk*).
+  Mutations de controle (dans le script de lot) : garde d'espace, jamais d'ecrasement a la restauration,
+    recopie d'un fichier plus recent de meme taille.
+Limites volontaires : espace disque DOUBLE pour storage/app (premiere copie ~345 Mo sur la reference, en tache
+  de fond) ; fichiers supprimes volontairement reapparaissent en ORPHELINS (invisibles) apres Restaurer ;
+  miroir et archives sur le MEME serveur (seul "Tout telecharger" protege d'une panne) ; pas d'envoi
+  d'archive par le navigateur (upload 20 Mo) : restauration d'un fichier telecharge par SSH uniquement ; pas de
+  chiffrement ; pas de copie hors serveur. Les dumps contiennent des hash de mots de passe : Super Admin
+  seulement. Sans cron schedule:run (Laragon) : php artisan schedule:work.
+Exigence serveur : www-data doit pouvoir ecrire dans storage/ (dossiers storage/backups et miroir).
+Distinct de la sauvegarde ROOT du script d'installation (/var/backups/cidst, section 7).
+
+
+4. ARCHITECTURE FONCTIONNELLE (resume)
+--------------------------------------
+Controleurs publics : ArticleController (route blog.show + middleware track.view:article), PageController,
+  PdfDocumentController, SliderController, SearchController, ContactController (throttle 5/min),
+  SitemapController, RobotsController, HomeController.
+Administration : app/Http/Controllers/Admin/*Controller.php ; requetes dans app/Http/Requests/Admin/.
+  Reglages : SiteSettingController + UpdateSiteSettingRequest + SiteSettingService.
+Menu admin : config/admin_menu.php = UNE SEULE source (barre laterale, raccourcis du tableau de bord, Guide).
+  Chaque entree : label, route, description UNIQUE et non vide, active, 'roles' optionnel.
+Groupes de routes : auth seul ; auth + role Super Admin|Publication ; auth + role Super Admin (structure,
+  reglages, fetes, sauvegardes, audience, messages, utilisateurs). AdminRouteAccessTest exige auth + role
+  sur TOUTE route admin.
+Medias : table media + pivot polymorphe mediables. Modeles avec media() : Article, Slider, PageBlock,
+  diaporamas. Traits HasOrderedMediaCollection, HasOrphanMediaCleanup. Job ProcessMediaImage. Services :
+  MediaUploader, MediaOverviewService, ExistingImageConverter. Limite PDF : max_pdf_upload_kb (10 Mo).
+Filigrane : App\Services\WatermarkService (config/watermark.php) ; watermarkPdf() reimporte chaque page via
+  FPDI + TCPDF et NE COMPRESSE PAS : un PDF lourd reste lourd. Ne pas modifier les reglages du filigrane.
+Page builder : PageBlock (type, data json, parent_id, slot_index, order), blocs imbriques.
+Statistiques : PageView (dedoublonnee 1 h par IP hashee), SiteVisit (visitor_hash = HMAC(IP|navigateur|jour,
+  APP_KEY), aucune IP stockee, DNT et Sec-GPC respectes ; audience:prune resume les visites de plus de
+  13 mois). Regroupements par date : App\Support\SqlDate::bucket.
+Suppression : middleware confirm.delete (code de suppression exige des non Super Admin) + <x-delete-form>.
+Commandes Artisan (toutes testees) : app:check-environment, app:create-super-admin, backup:process,
+  backup:auto, backup:sync-files, backup:restore-files, media:*, contact:prune-*, page-views:prune,
+  audience:prune, blocks:audit-phantom-columns, etc.
+  Planification : backup:process chaque minute ; backup:sync-files toutes les 5 minutes ; backup:auto a hh:05 ;
+  page-views:prune hebdo ; audience:prune, contact:prune-images, contact:prune-messages quotidiens ; battement
+  de coeur. Cron serveur : schedule:run chaque minute.
+Securite : CSP en enforce (CSP_MODE), cookies securises en production, validation stricte (Rule::in).
+
+SYSTEME DES FETES (lots 3e-bis-1 a 4) :
+  config/festivals.php : enabled (env FESTIVALS_ENABLED, prioritaire sur la base), festivals (ORDRE = priorite,
+    fenetres jamais chevauchantes de 2026 a 2060 : noel 15/12-26/12, nouvelan 27/12-02/01, paques, pentecote,
+    independance), icons, decors.
+  App\Services\Festival : FestivalCalendar (pure, singleton), FestivalSettings (PAS singleton ; today() = date
+    simulee SEULEMENT pour un Super Admin connecte), FestivalTheme (key() = cle de THEME). Ne pas confondre cle
+    de fete et cle de theme.
+  Composants ThemeStyle (:festive="true" cote public seulement) et FestivalDecor. Jamais dans le layout admin.
+  Icones SVG dans resources/views/partials/festival/icons/ (le build Tailwind PUBLIC ne scanne pas
+  components/**, seulement views/public, pages, partials/**, components/*.blade.php).
+  Admin > Fetes : /admin/festivals. Colonnes site_settings : festivals_enabled, festivals_simulated_on,
+  festivals_options. Hors lot : icones GIF (lot 3e-bis-5) en attente de decision du client.
+  PIEGE : SiteSetting::current() est en cache "pour toujours" ; apres migration, cache:clear.
+
+
+5. CONVENTIONS ET GARDES AUTOMATIQUES
+-------------------------------------
+  - Toute vue admin : <x-admin.layout title="..."> (AdminPageTitlesTest).
+  - NoHardcodedGrayTest : pas de text|bg|border|ring|fill|stroke-<gray, red, green, emerald, orange, yellow,
+    amber, indigo>-NNN, pas de dark: ; blue interdit hors admin/profile/auth ; utiliser cidst-* et DaisyUI.
+  - SiteSettingQueryCountTest : toujours SiteSetting::current(), jamais ::first().
+  - Gardes de themes : ThemeStatusPaletteTest, ThemeSelectionTest, ThemeClairSombreTest, ThemeStatusTokensTest,
+    ThemeSuccessWarningTokensTest (contraste >= 4,5).
+  - DeploymentScriptsTest : scripts ASCII, install-serveur.sh en LF, deployer.config.json ignore, cache:clear
+    entre migrate et config:cache, port SSH reel dans ufw, /build/ immutable, sauvegarde (BACKUP_KEEP=7, 600).
+  - Larastan niveau 5 : pas de "??" sur propriete de modele non nullable ; casts en propriete $casts ; pas de
+    "?->" suivi de "??" quand le type n'est jamais nul (cas rencontre : BackupScope::tryFrom()?->value ??).
+  - Helpers tests/Pest.php : adminUser(), publicationUser(), setDeleteCode(), scheduledCron().
+  - Accents : \u{e9} ou entites dans le PHP ; configs themes/festivals et vues Blade en UTF-8. Fins de ligne LF.
+  - Tests de vues Blade : si la vue ecrit des entites (&eacute;), assertSee('...&eacute;...', false) ; un
+    assertSee avec un accent brut ne trouve rien.
+  - Tests d'options : BackupSettingsTest compare des tableaux EXACTS (toBe) : ajouter une cle de reglage oblige
+    a mettre ce test a jour.
+  - Tailwind public : toute classe en toutes lettres dans components/*.blade.php ou partials/**.
+  - Une route admin NE DOIT PAS porter de contrainte (whereIn, where) qui renvoie 404 pour la valeur "1" :
+    valider les parametres dans le controleur.
+
+
+6. PIEGES CONNUS (tests et outillage)
+-------------------------------------
+  - Pest : toHaveKey($cle, $valeur) : le 2e argument est la VALEUR attendue.
+  - Fonctions/constantes d'un fichier de test sont GLOBALES : les prefixer (ft*, fc*, fd*, fs*, bk*, bs*, bm*).
+    Les datasets sont evalues AVANT le demarrage de l'application (pas de config()/view()).
+  - Dates : Carbon::setTestNow(...) puis null en afterEach.
+  - TAR SOUS WINDOWS : le hook pre-push tourne dans Git Bash ; le tar GNU de Git passe avant tar.exe et prend
+    "C:\..." pour un hote distant. Toujours donner a tar un chemin RELATIF (cwd = dossier cible). Reproduction :
+    C:\Program Files\Git\usr\bin en tete du PATH (le script de lot le fait).
+  - Un test peut passer seul et echouer dans la suite complete : laisser le hook faire foi avant de fusionner.
+  - MUTATION DE CONTROLE : ne JAMAIS "git checkout -- <fichier>" sur un fichier non commite. Restaurer depuis
+    une copie en memoire. La chaine ciblee doit etre UNIQUE dans le fichier (Replace remplace tout).
+  - Ne taguer qu'apres "master == origin/master" ; jamais un commit rouge.
+  - PowerShell 5 :
+      * 'stash@{0}' toujours entre apostrophes ; sinon "Too many revisions specified".
+      * "git push 2>&1 | Tee-Object" affiche des NativeCommandError COSMETIQUES (stderr) : le push a reussi
+        s'il affiche "master -> master" ou "[new tag]".
+      * $ErrorActionPreference = 'Continue' dans les fonctions d'attente reseau.
+      * Ne pas utiliser Contains('') pour detecter "deja corrige" (toujours vrai).
+      * Les caracteres accentues du hook s'affichent mal (encodage console), sans effet.
+  - Zip livre SANS dossier racine, nomme lot-<nom>.zip ; le script le cherche d'abord dans
+    %USERPROFILE%\Downloads. Un script PowerShell qui s'arrete apres Expand-Archive l'a deja supprime :
+    verifier git log / git tag / git status avant de relancer.
+  - Un bloc de reprise doit detecter l'etat reel (fichiers non commites / commite / fusionne / pousse) ;
+    refuser le tag si la fusion n'est pas sur origin/master. Un lot "perdu" se retrouve d'abord avec
+    git branch -a, git status, git stash list, puis une recherche du zip.
+  - DNS du poste intermittent : ipconfig /flushdns, DNS 8.8.8.8 / 1.1.1.1. Le script de lot reessaie seul.
+  - Les commandes de la checklist serveur se tapent DANS la session ssh.
+  - Dettes : CSP unsafe-inline/unsafe-eval ; duree de retention de l'Audience (decision client) ; SMTP ;
+    scripts de deploiement jamais executes ; rendu Sombre/Clair non revu ecran par ecran.
+
+
+7. DEPLOIEMENT (docs/installation-serveur.md, docs/deploiement.md)
+------------------------------------------------------------------
+  scripts\deployer.bat -> deployer.ps1 : cree scripts\deployer.config.json (jamais commite), verifie master
+  propre et alignee, choisit le dernier tag stable-* (ou -Tag), npm run build, envoie build + script,
+  installe, lance app:check-environment. public/build n'est PAS dans Git (pas de Node en production).
+  scripts/install-serveur.sh (root, Ubuntu 24.04) : paquets, PHP (upload 20M), base MySQL (mot de passe dans
+  /root/cidst-install.txt), code du tag dans /var/www/cidst, composer --no-dev, .env, key:generate,
+  SAUVEGARDE root avant mise a jour (mysqldump + tar de storage/app dans /var/backups/cidst/AAAAMMJJ-HHMMSS,
+  7 conservees, droits 700/600), migrate --force, cache:clear, storage:link, caches, Nginx (cree une seule
+  fois : gzip, cache /build/), cron www-data schedule:run, ufw, certbot. Relance = mise a jour.
+  Regles : artisan avec sudo -u www-data ; ne jamais changer APP_KEY apres mise en ligne ; jamais db:seed en
+  production. Restauration : docs/sauvegardes.md [non verifie en reel].
+  Premier deploiement : MAIL_USERNAME / MAIL_PASSWORD dans le .env serveur, puis config:cache ;
+  administrateur : php artisan app:create-super-admin <email>.
+  A prevoir pour les sauvegardes en production : verifier l'espace libre AVANT d'activer le miroir ; www-data
+  ecrit dans storage/ ; cron schedule:run indispensable (sinon aucune sauvegarde ne tourne).
+
+
+8. PROCHAINES ETAPES (dans l'ordre recommande)
+----------------------------------------------
+  1. CONTROLE VISUEL (bloquant, sans code) : captures Clair/Sombre/mobile de admin/festivals, de la page
+     Sauvegardes (bloc miroir, formulaire automatique, historique) et du site avec dates simulees : Noel
+     2026-12-20, Nouvel An 2026-12-31, Paques 2027-03-25, Pentecote 2027-05-14, Independance 2027-06-20 ;
+     vider la date simulee ensuite. Premiere fenetre reelle : Noel le 15/12/2026. Corriger selon les captures.
+  2. Regler le stash "wip style-options" (section 2) : l'inspecter, puis le reprendre sur une branche
+     feat/builder-style-options recreee depuis master, ou l'abandonner sciemment. Ne jamais le supprimer
+     sans l'avoir lu.
+  3. LOT feat/pdf-compression (session dediee, demande du client) : compresser le PDF AVANT watermarkPdf(),
+     sans toucher a config/watermark.php. Ghostscript (gs) lance via Symfony Process (chemin relatif, comme
+     BackupService), reglage /ebook (150 dpi) ; ne garder le resultat que s'il est PLUS LEGER ; ne jamais
+     bloquer l'envoi si gs est absent ou echoue (report() et on continue) ; activation et qualite par .env ;
+     ajouter ghostscript a scripts/install-serveur.sh et a app:check-environment ; test rouge d'abord +
+     mutation de controle. En attendant, conseiller au client : gswin64c -sDEVICE=pdfwrite
+     -dPDFSETTINGS=/ebook ... avant l'envoi (limite actuelle 10 Mo par PDF).
+  4. Mise a jour, OPTION A (recommandee) : le tableau de bord compare la version installee au dernier tag
+     stable-* et affiche "version X disponible" ; la mise a jour reste faite par deployer.bat. Options B
+     (demande + script root via sudoers limite), C (archive publiee + releases/ + lien symbolique current) et
+     D (git/composer par www-data, DECONSEILLEE) a trancher avec le client.
+  5. Decisions client A DEMANDER DES MAINTENANT : (a) icones GIF (lot 3e-bis-5 : type, poids maximal, qui
+     modifie) ; (b) retention de l'Audience (13 mois ; si reduite, la rendre configurable par .env sur le
+     modele CONTACT_IMAGES_RETENTION_DAYS).
+  6. Sauvegardes, suites : chiffrement (age ou gpg, voir docs/lot-s-securite.md), copie hors serveur (SFTP,
+     S3 ou Google Drive), restauration assistee de la base si le client la veut. A faire APRES le premier
+     serveur reel.
+  7. Mutations de controle de FestivalSettingsTest, BackupSettings, BackupController ; tests MySQL/PostgreSQL
+     de SqlDate si une base dediee devient disponible.
+  8. EN DERNIER : premier deploiement sur un serveur jetable (essayer un SSH hors port 22), verification
+     reelle des scripts, d'une sauvegarde + restauration avec un vrai MySQL, du miroir, SMTP, puis production.
+
+
+9. METHODE ET ENVIRONNEMENT
+---------------------------
+Methode (un lot = une branche) : feat/<nom> depuis master propre ; test ROUGE d'abord ; implementation
+minimale ; mutation de controle ; Pint, Larastan, Pest complet ; commits fichier par fichier (jamais
+git add .) ; push (le hook rejoue Pint, Larastan, tests JS, Pest complet, ~7 min par push) ; fusion --no-ff,
+jamais squash ; verifier master == origin/master ; ALORS SEULEMENT tag stable-AAAA-MM-JJ-<lot>, push du tag ;
+supprimer la branche. Commits sans accents, une ligne : "feat: <resume> (lot X) : <fichier>" ; LF.
+Script de lot type (a reutiliser) : un seul bloc "& { ... }" ; Wait-Net (reseau), Push-Retry, Mutate
+(restauration depuis la memoire), refus de continuer si un fichier inattendu est modifie, liste ordonnee
+fichier -> message de commit, etapes : branche, extraction du zip, tests cibles, tests avec le tar GNU de
+Git, mutations, Pint, Larastan, commits, push, fusion, verification, tag, nettoyage.
+Avant Pest sous Windows : $env:TEMP = "$PWD\storage\framework\tmp"; $env:TMP = $env:TEMP ;
+New-Item -ItemType Directory -Force $env:TEMP | Out-Null ; php artisan view:clear. Ne jamais coller de
+sortie de test dans PowerShell. Livraison : zip avec l'arborescence du projet, SANS dossier racine ; en cas
+de doute sur un zip, preferer des modifications scriptees en place (remplacement du texte exact, ancien
+texte verifie d'abord).
+Assistant : pas d'ecriture sur le depot ; le client commite et pousse. Le clone en lecture (HTTPS) fonctionne ;
+si le clone de l'assistant contient des fichiers du zip, "git pull" avorte : git fetch puis git reset --hard
+origin/master dans SON bac a sable. composer install ECHOUE (packagist bloque) : ni Pest, ni Pint, ni
+Larastan ne tournent chez l'assistant ; php-cli s'installe par apt (apt-get update d'abord : php -l, bancs
+d'essai avec stubs) ; npm, Vite, Chromium/Playwright fonctionnent.
+
+Reprendre en 10 minutes :
+  git clone https://github.com/koaba/cms-cidst.git ; cd cms-cidst
+  composer install ; cp .env.example .env ; php artisan key:generate ; php artisan migrate ; npm ci
+  php artisan test --parallel --processes=4 ; vendor/bin/pint --test ; vendor/bin/phpstan analyse --memory-limit=1G
+  Verifier d'abord : git status -sb ; git log --oneline -5 ; git tag --sort=-creatordate | head -5 ;
+  git stash list.
+  Lire : ce document, docs/passation-50.txt (detail des fetes), docs/passation-46.txt, docs/sauvegardes.md,
+  config/backup.php, app/Services/Backup/*.php (BackupService, BackupSettings, FileMirror),
+  app/Console/Commands/{ProcessBackup,AutoBackup,SyncBackupFiles,RestoreBackupFiles}.php,
+  app/Http/Controllers/Admin/BackupController.php, tests/Feature/Backup*.php, config/festivals.php,
+  config/themes.php, config/admin_menu.php, app/Services/Festival/*.php, app/Services/WatermarkService.php,
+  scripts/install-serveur.sh, docs/installation-serveur.md.
+On a deja avance sur le projet donc il faut bien verifier avant d'avancer.
